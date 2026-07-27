@@ -1,5 +1,13 @@
-.bzr
-.bzrignore
-.DS_Store
-custom.prf
-*.swp
+```
+# Environment
+.env
+.env.local
+.env.*
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Original rules preserved
+*.log
+```
