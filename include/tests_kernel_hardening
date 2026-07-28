@@ -29,12 +29,12 @@
     # Description : Check sysctl parameters
     # Sysctl      : net.ipv4.icmp_ignore_bogus_error_responses (=1)
     if [ ! "${SYSCTL_READKEY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no KRNL-6000 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check sysctl key pairs in scan profile"
+    Register --test-no KRNL-6000 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查扫描配置文件中的 sysctl 键值对"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         DATA_TO_SCAN=""
         N=0
-        Display --indent 2 --text "- Comparing sysctl key pairs with scan profile"
+        Display --indent 2 --text "- 正在将 sysctl 键值对与扫描配置文件进行比较"
 
         # First scan optional profiles only (ignore default and custom)
         for PROFILE in ${PROFILES}; do
@@ -83,29 +83,29 @@
                         fi
                     done
                     if [ ${positive_match} -eq 1 ]; then
-                        LogText "Result: sysctl key ${tFINDkey} contains equal expected and current value (${tFINDexpvalue})"
-                        Display --indent 4 --text "- ${tFINDkey} (exp: ${tFINDexpvalue})" --result "${STATUS_OK}" --color GREEN
+                        LogText "结果：sysctl 键 ${tFINDkey} 的当前值符合预期值（${tFINDexpvalue}）"
+                        Display --indent 4 --text "- ${tFINDkey}（预期：${tFINDexpvalue}）" --result "${STATUS_OK}" --color GREEN
                         AddHP ${tFINDhp} ${tFINDhp}
                     else
-                        LogText "Result: sysctl key ${tFINDkey} has a different value than expected in scan profile. Expected=${tFINDexpvalue}, Real=${tFINDcurvalue}"
-                        Display --indent 4 --text "- ${tFINDkey} (exp: ${tFINDexpvalue})" --result "${STATUS_DIFFERENT}" --color RED
+                        LogText "结果：sysctl 键 ${tFINDkey} 的当前值与扫描配置文件中的预期值不同。预期=${tFINDexpvalue}，当前=${tFINDcurvalue}"
+                        Display --indent 4 --text "- ${tFINDkey}（预期：${tFINDexpvalue}）" --result "${STATUS_DIFFERENT}" --color RED
                         AddHP 0 ${tFINDhp}
                         FOUND=1
                         N=$((N + 1))
                         ReportDetails --test "${TEST_NO}" --service "sysctl" --field "${tFINDkey}" --value "${tFINDcurvalue}" --preferredvalue "${tFINDexpvalue}" --description "${tFINDdesc}"
                     fi
                 else
-                    LogText "Result: key ${tFINDkey} does not exist on this machine"
+                    LogText "结果：本机不存在 sysctl 键 ${tFINDkey}"
                 fi
             else
-                LogText "Skipped test for ${tFINDkey} via profile"
+                LogText "已通过配置文件跳过 ${tFINDkey} 的检查"
             fi
         done
 
         # Add suggestion if one or more sysctls have a different value than scan profile
         if [ ${FOUND} -eq 1 ]; then
-            LogText "Result: found ${N} keys that can use tuning, according scan profile"
-            ReportSuggestion "${TEST_NO}" "One or more sysctl values differ from the scan profile and could be tweaked" "" "Change sysctl value or disable test (skip-test=${TEST_NO}:<sysctl-key>)"
+            LogText "结果：根据扫描配置文件，共发现 ${N} 个可以调整的 sysctl 键"
+            ReportSuggestion "${TEST_NO}" "一个或多个 sysctl 值与扫描配置文件不同，可以进行调整" "" "修改 sysctl 值，或禁用此检查（skip-test=${TEST_NO}:<sysctl-key>）"
         fi
     fi
 #
