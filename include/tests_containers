@@ -35,9 +35,9 @@
     # Test        : CONT-8004
     # Description : Query running Solaris zones
     if [ -x ${ROOTDIR}usr/sbin/zoneadm ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no CONT-8004 --os Solaris --weight L --network NO --category security --description "Query running Solaris zones"
+    Register --test-no CONT-8004 --os Solaris --weight L --network NO --category security --description "查询正在运行的 Solaris 区域"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: query zoneadm to list all running zones"
+        LogText "检查：使用 zoneadm 查询全部正在运行的区域"
         FIND=$(${ROOTDIR}usr/sbin/zoneadm list -p | ${AWKBINARY} -F: '{ if ($2!="global") print $0 }')
         if [ -n "${FIND}" ]; then
             COUNT=0
@@ -45,14 +45,14 @@
                 COUNT=$((COUNT + 1))
                 ZONEID=$(echo ${ITEM} | ${CUTBINARY} -d ':' -f1)
                 ZONENAME=$(echo ${ITEM} | ${CUTBINARY} -d ':' -f2)
-                LogText "Result: found zone ${ZONENAME} (running)"
+                LogText "结果：发现正在运行的区域 ${ZONENAME}"
                 Report "solaris_running_zone[]=${ZONENAME} [id:${ZONEID}]"
             done
-            LogText "Result: total of ${COUNT} running zones"
-            Display --indent 2 --text "- Checking Solaris Zones" --result "FOUND ${COUNT} zones" --color GREEN
+            LogText "结果：共有 ${COUNT} 个正在运行的区域"
+            Display --indent 2 --text "- 正在检查 Solaris 区域" --result "发现 ${COUNT} 个区域" --color GREEN
         else
-            LogText "Result: no running zones found"
-            Display --indent 2 --text "- Checking Solaris Zones" --result "${STATUS_NONE}" --color WHITE
+            LogText "结果：未发现正在运行的区域"
+            Display --indent 2 --text "- 正在检查 Solaris 区域" --result "${STATUS_NONE}" --color WHITE
         fi
     fi
 #
@@ -78,15 +78,15 @@
 #
     # Test        : CONT-8102
     # Description : Checking Docker daemon status and basic information for later tests
-    Register --test-no CONT-8102 --weight L --network NO --category security --description "Checking Docker status and information"
+    Register --test-no CONT-8102 --weight L --network NO --category security --description "检查 Docker 状态和基本信息"
     if [ ${SKIPTEST} -eq 0 ]; then
         if IsRunning "dockerd"; then
-            LogText "Result: found Docker daemon running"
+            LogText "结果：发现正在运行的 Docker 守护进程"
             Report "docker_daemon_running=1"
             DOCKER_DAEMON_RUNNING=1
             RUN_DOCKER_TESTS=1
             Display --indent 4 --text "- Docker"
-            Display --indent 6 --text "- Docker daemon" --result "${STATUS_RUNNING}" --color GREEN
+            Display --indent 6 --text "- Docker 守护进程" --result "${STATUS_RUNNING}" --color GREEN
         fi
     fi
 #
@@ -96,30 +96,30 @@
     # Description : Checking Docker info for any warnings
     # Notes       : Hardening points are awarded, as usually warnings are the result of missing controls to restrict boundaries like memory
     if HasData "${DOCKERBINARY}"; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no CONT-8104 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Checking Docker info for any warnings"
+    Register --test-no CONT-8104 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 Docker 信息中是否存在警告"
     if [ ${SKIPTEST} -eq 0 ]; then
         COUNT=0
-        LogText "Test: Check for any warnings"
+        LogText "检查：Docker 是否存在警告"
         FIND=$(${DOCKERBINARY} version 2>&1)
         if [ $? -gt 0 ]; then
-            Display --indent 8 --text "- Docker status" --result "${STATUS_ERROR}" --color RED
-            LogText "Result: disabling further Docker tests as docker version gave exit code other than zero (0)"
+            Display --indent 8 --text "- Docker 状态" --result "${STATUS_ERROR}" --color RED
+            LogText "结果：docker version 返回非零退出码，已停止后续 Docker 检查"
             RUN_DOCKER_TESTS=0
         fi
         FIND=$(${DOCKERBINARY} info 2>&1 | ${GREPBINARY} -E "^WARNING:|^ERROR:" | ${CUTBINARY} -d " " -f 2- | ${SEDBINARY} 's/ /:space:/g')
         if [ ! "${FIND}" = "" ]; then
-            LogText "Result: found warning(s) in output"
+            LogText "结果：输出中发现警告"
             for I in ${FIND}; do
                 J=$(echo ${I} | ${SEDBINARY} 's/:space:/ /g')
-                LogText "Output: ${J}"
+                LogText "输出：${J}"
                 COUNT=$((COUNT + 1))
             done
-            Display --indent 8 --text "- Docker info output (warnings)" --result "${COUNT}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Run 'docker info' to see warnings applicable to Docker daemon"
+            Display --indent 8 --text "- Docker 信息输出（警告）" --result "${COUNT}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "执行 'docker info' 查看适用于 Docker 守护进程的警告"
             AddHP 3 4
         else
-            LogText "Result: no warnings found from 'docker info' output"
-            Display --indent 8 --text "- Docker info output (warnings)" --result "${STATUS_NONE}" --color GREEN
+            LogText "结果：'docker info' 输出中未发现警告"
+            Display --indent 8 --text "- Docker 信息输出（警告）" --result "${STATUS_NONE}" --color GREEN
             AddHP 1 1
         fi
     fi
@@ -130,36 +130,36 @@
     # Description : Checking Docker containers (basic stats)
     # Notes       : Hardening points are awarded, if there aren't a lot of stopped containers
     if [ -n "${DOCKERBINARY}" -a ${RUN_DOCKER_TESTS} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no CONT-8106 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Gather basic stats from Docker"
+    Register --test-no CONT-8106 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "收集 Docker 的基本统计信息"
     if [ ${SKIPTEST} -eq 0 ]; then
-        Display --indent 6 --text "- Containers"
+        Display --indent 6 --text "- 容器"
 
         # Check total of containers
-        LogText "Test: checking total amount of Docker containers"
+        LogText "检查：Docker 容器总数"
         DOCKER_CONTAINERS_TOTAL=$(${DOCKERBINARY} info 2> /dev/null | ${GREPBINARY} -E "^[ \t]?Containers: " | ${AWKBINARY} '{ print $2 }')
         if [ -z "${DOCKER_CONTAINERS_TOTAL}" ]; then
             DOCKER_CONTAINERS_TOTAL=0
         fi
 
-        LogText "Result: docker info shows ${DOCKER_CONTAINERS_TOTAL} containers"
+        LogText "结果：docker info 显示 ${DOCKER_CONTAINERS_TOTAL} 个容器"
         DOCKER_CONTAINERS_TOTAL2=$(${DOCKERBINARY} ps -a 2> /dev/null | ${GREPBINARY} -c -v "CONTAINER")
-        LogText "Result: docker ps -a shows ${DOCKER_CONTAINERS_TOTAL2} containers"
+        LogText "结果：docker ps -a 显示 ${DOCKER_CONTAINERS_TOTAL2} 个容器"
         if [ ! "${DOCKER_CONTAINERS_TOTAL}" = "${DOCKER_CONTAINERS_TOTAL2}" ]; then
-            LogText "Result: difference detected, which is unexpected"
-            ReportSuggestion "${TEST_NO}" "Test output of both 'docker ps -a' and 'docker info', to determine why they report a different amount of containers"
-            Display --indent 8 --text "- Total containers" --result "${STATUS_UNKNOWN}" --color RED
+            LogText "结果：检测到数量差异，此情况不符合预期"
+            ReportSuggestion "${TEST_NO}" "检查 'docker ps -a' 和 'docker info' 的输出，确认二者报告不同容器数量的原因"
+            Display --indent 8 --text "- 容器总数" --result "${STATUS_UNKNOWN}" --color RED
         else
-            Display --indent 8 --text "- Total containers" --result "${DOCKER_CONTAINERS_TOTAL}" --color WHITE
+            Display --indent 8 --text "- 容器总数" --result "${DOCKER_CONTAINERS_TOTAL}" --color WHITE
         fi
 
         # Check running instances
         DOCKER_CONTAINERS_RUNNING=$(${DOCKERBINARY} ps 2> /dev/null | ${GREPBINARY} -c -v "CONTAINER")
         if [ ${DOCKER_CONTAINERS_RUNNING} -gt 0 ]; then
-            Display --indent 10 --text "- Running containers" --result "${DOCKER_CONTAINERS_RUNNING}" --color GREEN
-            LogText "Result: ${DOCKER_CONTAINERS_RUNNING} containers are currently active"
+            Display --indent 10 --text "- 正在运行的容器" --result "${DOCKER_CONTAINERS_RUNNING}" --color GREEN
+            LogText "结果：当前有 ${DOCKER_CONTAINERS_RUNNING} 个活动容器"
             Report "docker_containers_running=${DOCKER_CONTAINERS_RUNNING}"
         else
-            LogText "Result: no active containers"
+            LogText "结果：没有活动容器"
             Report "docker_containers_running=0"
         fi
     fi
@@ -170,18 +170,18 @@
     # Description : Checking Docker number of unused containers
     # Notes       : Hardening points are awarded, if there aren't a lot of stopped containers
     if [ -n "${DOCKERBINARY}" -a ${RUN_DOCKER_TESTS} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no CONT-8107 --preqs-met ${PREQS_MET} --weight L --network NO --category performance --description "Check number of Docker containers"
+    Register --test-no CONT-8107 --preqs-met ${PREQS_MET} --weight L --network NO --category performance --description "检查 Docker 容器数量"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check if there aren't too many unused containers on the system
         if [ ${DOCKER_CONTAINERS_TOTAL} -gt 0 ]; then
             DOCKER_CONTAINERS_UNUSED=$((DOCKER_CONTAINERS_TOTAL - DOCKER_CONTAINERS_RUNNING))
             if [ ${DOCKER_CONTAINERS_UNUSED} -gt 10 ]; then
-                ReportSuggestion "${TEST_NO}" "More than 10 unused containers found on the system. Clean up old containers by using output of 'docker ps -a' command"
-                Display --indent 8 --text "- Unused containers" --result "${DOCKER_CONTAINERS_UNUSED}" --color RED
+                ReportSuggestion "${TEST_NO}" "系统中发现超过 10 个未使用的容器。可根据 'docker ps -a' 的输出清理旧容器"
+                Display --indent 8 --text "- 未使用的容器" --result "${DOCKER_CONTAINERS_UNUSED}" --color RED
                 AddHP 0 2
             else
-                LogText "Result: found ${DOCKER_CONTAINERS_UNUSED} unused containers"
-                Display --indent 8 --text "- Unused containers" --result "${DOCKER_CONTAINERS_UNUSED}" --color YELLOW
+                LogText "结果：发现 ${DOCKER_CONTAINERS_UNUSED} 个未使用的容器"
+                Display --indent 8 --text "- 未使用的容器" --result "${DOCKER_CONTAINERS_UNUSED}" --color YELLOW
                 AddHP 1 1
             fi
         fi
@@ -193,27 +193,27 @@
     # Description : Checking Docker file permissions
     # Notes       : /var/run/docker.sock - Usually root as owner, docker as group - should not be world writable
     if [ -n "${DOCKERBINARY}" -a ${RUN_DOCKER_TESTS} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no CONT-8108 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check file permissions for Docker files"
+    Register --test-no CONT-8108 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 Docker 文件权限"
     if [ ${SKIPTEST} -eq 0 ]; then
         NOT_WORLD_WRITABLE="${ROOTDIR}var/run/docker.sock"
         for FILE in ${NOT_WORLD_WRITABLE}; do
-            LogText "Test: Check ${FILE}"
+            LogText "检查：${FILE}"
             if [ -f ${FILE} ]; then
-                LogText "Result: file ${FILE} found, permissions will be tested"
+                LogText "结果：发现文件 ${FILE}，将检查其权限"
                 if IsWorldWritable ${FILE}; then
-                    LogText "Result: file is writable by others, which is a security risk (e.g. privilege escalation)"
-                    ReportWarning "${TEST_NO}" "Docker file is world writable" "${FILE}" "-"
+                    LogText "结果：该文件允许其他用户写入，存在安全风险，例如权限提升"
+                    ReportWarning "${TEST_NO}" "Docker 文件允许所有用户写入" "${FILE}" "-"
                     DOCKER_FILE_PERMISSIONS_WARNINGS=$((DOCKER_FILE_PERMISSIONS_WARNINGS + 1))
                 else
-                    LogText "Result: file ${FILE} is not writable by others, which is fine"
+                    LogText "结果：文件 ${FILE} 不允许其他用户写入，权限正常"
                 fi
             fi
         done
         if [ ${DOCKER_FILE_PERMISSIONS_WARNINGS} -gt 0 ]; then
-            Display --indent 4 --text "- File permissions" --result "${STATUS_WARNING}"S --color YELLOW
+            Display --indent 4 --text "- 文件权限" --result "${STATUS_WARNING}"S --color YELLOW
             AddHP 0 5
         else
-            Display --indent 4 --text "- File permissions" --result "${STATUS_OK}" --color GREEN
+            Display --indent 4 --text "- 文件权限" --result "${STATUS_OK}" --color GREEN
             AddHP 5 5
         fi
     fi
