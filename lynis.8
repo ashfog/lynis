@@ -1,198 +1,186 @@
-.TH Lynis 8 "14 Feb 2020" "1.32" "Unix System Administrator's Manual"
+.TH Lynis 8 "2020年2月14日" "1.32" "Unix 系统管理员手册"
 
 
-.SH "NAME"
+.SH "名称"
 \fB
 \fB
 \fB
-Lynis \fP\- System and security auditing tool
+Lynis \fP\- 系统与安全审计工具
 \fB
-.SH "SYNOPSIS"
+.SH "用法"
 .nf
 .fam C
 
-\fBlynis\fP [scan mode] [other options]
+\fBlynis\fP [扫描模式] [其他选项]
 .fam T
 .fi
-.SH "DESCRIPTION"
+.SH "说明"
 
-\fBLynis\fP is a security auditing tool for Linux, macOS, and other systems based
-on UNIX. The tool checks the system and the software configuration, to see if
-there is any room for improvement the security defenses. All details are stored
-in a log file. Findings and other discovered data is stored in a report file.
-This can be used to compare differences between audits. \fBLynis\fP can run
-interactively or as a cronjob. Root permissions (e.g. sudo) are not required,
-however provide more details during the audit.
+\fBLynis\fP 是一款适用于 Linux、macOS 以及其他 UNIX 类系统的安全审计工具。
+它会检查系统和软件配置，找出安全防护方面可以改进的地方。完整检查过程会写入日志文件，
+发现的问题和其他检测结果会写入报告文件，可用于比较不同审计之间的变化。
+\fBLynis\fP 既可以交互运行，也可以通过计划任务自动运行。使用 Lynis 不强制要求 root 权限
+（例如 sudo），但使用管理员权限通常可以获得更完整的检查结果。
 .PP
-The following system areas may be checked:
+可能检查的系统范围包括：
 .IP
-\- Boot loader files
+\- 引导加载程序文件
 .IP
-\- Configuration files
+\- 配置文件
 .IP
-\- Software packages
+\- 软件包
 .IP
-\- Directories and files related to logging and auditing
+\- 与日志记录和安全审计有关的目录及文件
 .IP
 
-.SH "FIRST TIME USAGE"
-When running \fBLynis\fP for the first time, run: lynis audit system
+.SH "首次使用"
+第一次运行 \fBLynis\fP 时，请执行：lynis audit system
 
-.SH "COMMANDS"
-.IP "audit \<type\>"
-Perform an audit of the selected type
+.SH "命令"
+.IP "audit \<类型\>"
+执行指定类型的审计
 .IP "upload-only"
-Upload the available report data file
+上传现有的报告数据文件
 
-See HELPERS section for more commands.
+更多命令请参阅“辅助命令”部分。
 
-.SH "SCAN TYPES"
+.SH "扫描类型"
 
 .IP "audit system"
-Performs a system audit, which is the most common audit.
-.IP "audit system remote \<host\>"
-Provide commands to do a remote scan.
+执行系统安全审计，这是最常用的扫描方式。
+.IP "audit system remote \<主机\>"
+显示执行远程扫描所需的命令。
 .PP
-For more scan modes, see the helper utilities.
+更多扫描方式请查看辅助工具。
 
-.SH "OPTIONS"
+.SH "选项"
 
 .TP
-.B \-\-auditor <name>
-Define the name of the auditor/pentester. When a full name is used, add double
-quotes, like "Your Name".
+.B \-\-auditor <名称>
+设置审计人员或渗透测试人员的名称。填写完整姓名时，请使用双引号，例如 "Your Name"。
 .TP
 .B \-\-cronjob
-Perform automatic scan with cron safe options (no colors, no questions, no
-breaks).
+使用适合计划任务的方式自动扫描：不显示颜色、不提问、不中途暂停。
 .TP
 .B \-\-debug
-Display debug information to screen for troubleshooting purposes.
+在屏幕上显示调试信息，便于排查问题。
 .TP
 .B \-\-developer
-Display detailed information useful for developers when creating tests.
+显示适合开发者创建检查项目时使用的详细信息。
 .TP
 .B \-\-forensics
-Perform the audit on a running or mounted system (see \-\-rootdir)
+对正在运行的系统或已挂载的系统执行审计（参见 \-\-rootdir）。
 .TP
 .B \-\-help
-Show available commands and most-used options.
+显示可用命令和常用选项。
 .TP
-.B \-\-logfile </path/to/logfile>
-Defines location and name of log file, instead of default /var/log/lynis.log.
+.B \-\-logfile </日志文件路径>
+自定义日志文件的位置和名称，默认值为 /var/log/lynis.log。
 .TP
 .B \-\-man
-Show the man page. Useful for systems that do not have the man page installed.
+显示本手册页。适合系统中尚未安装 Lynis 手册页时使用。
 .TP
 .B \-\-no\-colors
-Disable colored output.
+关闭彩色输出。
 .TP
 .B \-\-no\-log
-Redirect all logging information to /dev/null, prevents sensitive information to
-be written to disk.
+将全部日志输出到 /dev/null，避免敏感信息写入磁盘。
 .TP
 .B \-\-no\-plugins
-Do not run any of the enabled plugins.
+不运行任何已启用的插件。
 .TP
 .B \-\-pentest
-Run a non-privileged scan, usually used for penetration testing. Some of the
-tests will be skipped if they require root permissions.
+使用非管理员权限进行扫描，通常用于渗透测试。需要 root 权限的部分检查会被跳过。
 .TP
-.B \-\-plugin\-dir </path/to/plugins>
-Define location where plugins can be found.
+.B \-\-plugin\-dir </插件目录路径>
+指定插件所在目录。
 .TP
-.B \-\-profile <file>
-Provide alternative profile to perform the scan.
+.B \-\-profile <文件>
+使用指定的配置文件执行扫描。
 .TP
 .B \-\-quick (\-Q)
-Do a quick scan (default: don't wait for user input).
+快速扫描，默认不会等待用户输入。
 .TP
 .B \-\-quiet (\-q)
-Run quietly and do not show anything to the screen. Will also enable quick mode.
+静默运行，不在屏幕上显示内容，同时启用快速模式。
 .TP
-.B \-\-report\-file <file>
-Provide an alternative name for report file.
+.B \-\-report\-file <文件>
+自定义报告文件的名称或路径。
 .TP
 .B \-\-reverse\-colors
-Optimize screen output for light backgrounds.
+针对浅色背景优化终端显示。
 .TP
-.B \-\-tests TEST-IDs
-Only run the specific test(s). When using multiple tests, add quotes around the
-line.
+.B \-\-tests 检查编号
+只运行指定的检查项目。指定多个检查编号时，请用引号将整组编号括起来。
 .TP
-.B \-\-tests\-from\-category "<category>"
-Tests are only performed if they belong to the defined category. Use the command
-\ 'show categories' to determine all valid options.
+.B \-\-tests\-from\-category "<分类>"
+只运行属于指定分类的检查。可执行 'show categories' 查看所有可用分类。
 .TP
-.B \-\-tests\-from\-group "<group>"
-Similar to \-\-tests\-from\-category. Only perform tests from a particular group.
-Use 'show groups' to determine valid options.
+.B \-\-tests\-from\-group "<分组>"
+与 \-\-tests\-from\-category 类似，只运行指定分组中的检查。
+可执行 'show groups' 查看所有可用分组。
 .TP
 .B \-\-use-cwd
-Run from the current working directory.
+从当前工作目录运行。
 .TP
 .B \-\-upload
-Upload data to Lynis Enterprise server (profile option: upload=yes).
+将数据上传到 Lynis Enterprise 服务器（配置项：upload=yes）。
 .TP
 .B \-\-verbose
-Show more details on screen, such as components that could not found. These
-details are hidden by default.
+在屏幕上显示更多细节，例如未找到的组件。这些信息默认隐藏。
 .TP
 .B \-\-wait
-Wait for user to continue. This adds a break after each section (opposed of
-\-\-quick).
+等待用户确认后继续，在每个检查章节结束后暂停，与 \-\-quick 相反。
 .TP
 .B \-\-warnings\-only
-Run quietly, except show warnings.
+以静默方式运行，但仍显示警告。
 .RE
 .PP
 .RS
-Multiple parameters are allowed, though some parameters can only be used together
-with others. When running Lynis without any parameters, help will be shown and
-the program will exit.
+可以同时使用多个参数，但某些参数只能搭配特定命令使用。直接运行 Lynis 而不提供任何参数时，
+程序会显示帮助信息并退出。
 .RE
 .PP
-.SH "HELPERS"
-Lynis has special helpers to do certain tasks. This way the framework of Lynis is
-used, while at the same time storing most of the functionality in a separated
-file. This speeds up execution and keeps the code clean.
+.SH "辅助命令"
+Lynis 提供了一些用于完成特定任务的辅助命令。这些命令复用 Lynis 的整体框架，
+同时把主要功能保存在独立文件中，以提高运行效率并保持代码结构清晰。
 
 .IP "audit"
-Run audit on the system or on other targets
-.IP "configure \<parameter\>"
-Change or add settings to the config file
-.IP "generate \<parameter\>"
-Generate specific details such as host IDs
-.IP "show \<parameter\>"
-Show information, such as configuration and paths
-.IP "update \<parameter\>"
-Perform activities regarding updating
+对系统或其他目标执行审计
+.IP "configure \<参数\>"
+修改配置文件中的设置
+.IP "generate \<参数\>"
+生成主机编号等指定信息
+.IP "show \<参数\>"
+显示配置、路径等信息
+.IP "update \<参数\>"
+执行与更新有关的操作
 .PP
-To use a helper, run 'lynis' followed by the helper name.
+使用辅助命令时，请在 'lynis' 后填写辅助命令名称。
 
-.SH "EXIT CODES"
-Lynis uses exit codes to signal any invoking script. Currently the following codes are used:
+.SH "退出代码"
+Lynis 使用退出代码向调用它的脚本说明运行结果。目前使用以下代码：
 .IP 0
-Program exited normally
+程序正常退出
 .IP 1
-Fatal error
+发生严重错误
 .IP 64
-An unknown parameter is used, or incomplete
+使用了未知参数，或参数不完整
 .IP 65
-Incorrect data encountered
+遇到不正确的数据
 .IP 66
-Can't open file or directory
+无法打开文件或目录
 .IP 78
-Lynis found 1 or more warnings or configurations errors (with error-on-warnings=yes)
+Lynis 发现一个或多个警告或配置错误（启用 error-on-warnings=yes 时）
 
-.SH "BUGS"
-Bugs can be reported via GitHub at https://github.com/CISOfy/lynis or via support@cisofy.com
+.SH "问题反馈"
+可以通过 GitHub https://github.com/CISOfy/lynis 或 support@cisofy.com 报告问题。
 
-.SH "DOCUMENTATION"
-Supporting documentation can be found via https://cisofy.com/support/
+.SH "文档"
+相关文档请访问 https://cisofy.com/support/
 
-.SH "LICENSING"
-Lynis is licensed as GPLv3. The tool was created by Michael Boelen in 2007. Since 2013 its development has been taken over by CISOfy under the management of Michael Boelen. Plugins may have a different license.
+.SH "许可证"
+Lynis 使用 GPLv3 许可证。该工具由 Michael Boelen 于 2007 年创建，自 2013 年起由 CISOfy 在 Michael Boelen 的管理下继续开发。插件可能使用不同的许可证。
 
-.SH "CONTACT INFORMATION"
-Support requests and project related questions can be addressed via e-mail: lynis-dev@cisofy.com.
+.SH "联系信息"
+技术支持和项目相关问题可发送邮件至：lynis-dev@cisofy.com。
