@@ -55,16 +55,16 @@
     # Set color related to rating
     if [ ${HPINDEX} -lt 50 ]; then
         HPCOLOR="${RED}"
-        HIDESCRIPTION="System has not or a low amount been hardened"
+        HIDESCRIPTION="系统尚未加固，或仅进行了少量加固"
     elif [ ${HPINDEX} -gt 49 -a ${HPINDEX} -lt 80 ]; then
         HPCOLOR="${YELLOW}"
-        HIDESCRIPTION="System has been hardened, but could use additional hardening"
+        HIDESCRIPTION="系统已经进行了一定加固，但仍有提升空间"
     elif [ ${HPINDEX} -gt 79 -a ${HPINDEX} -lt 90 ]; then
         HPCOLOR="${GREEN}"
-        HIDESCRIPTION="System seem to be decent hardened"
+        HIDESCRIPTION="系统加固程度较好"
     elif [ ${HPINDEX} -gt 89 ]; then
         HPCOLOR="${GREEN}"
-        HIDESCRIPTION="System seem to be well hardened"
+        HIDESCRIPTION="系统加固程度良好"
     fi
 
     case ${HPAOBLOCKS} in
@@ -92,15 +92,15 @@
     esac
 
     HPGRAPH="[${HPCOLOR}${HPBLOCKS}${NORMAL}${HPEMPTY}]"
-    LogText "Hardening index : [${HPINDEX}] [${HPBLOCKS}${HPEMPTY}]"
-    LogText "Hardening strength: ${HIDESCRIPTION}"
+    LogText "加固指数：[${HPINDEX}] [${HPBLOCKS}${HPEMPTY}]"
+    LogText "加固程度：${HIDESCRIPTION}"
 #
 #################################################################################
 #
     # Only show overview if not running in quiet mode
     if [ ${QUIET} -eq 0 ]; then
         echo ""; echo "================================================================================"
-        echo ""; echo "  -[ ${WHITE}${PROGRAM_NAME} ${PROGRAM_VERSION} Results${NORMAL} ]-"
+        echo ""; echo "  -[ ${WHITE}${PROGRAM_NAME} ${PROGRAM_VERSION} 扫描结果${NORMAL} ]-"
         echo "";
 
 
@@ -120,9 +120,9 @@
             # Show warnings from logfile
             SWARNINGS=$(${GREPBINARY} 'Warning: ' ${LOGFILE} | sed 's/ /!space!/g')
             if [ -z "${SWARNINGS}" ]; then
-                echo "  ${OK}Great, no warnings${NORMAL}"; echo ""
+                echo "  ${OK}很好，没有发现警告${NORMAL}"; echo ""
             else
-                echo "  ${WARNING}Warnings${NORMAL} (${TOTAL_WARNINGS}):"
+                echo "  ${WARNING}警告${NORMAL}（${TOTAL_WARNINGS} 项）："
                 echo "  ${WHITE}----------------------------${NORMAL}"
                 for WARNING in ${SWARNINGS}; do
                     SOLUTION=""
@@ -138,8 +138,8 @@
                     done
                     IS_CUSTOM=$(echo ${ADDLINK} | grep "^CUST")
                     echo "  ${RED}!${NORMAL} ${SHOWWARNING}"
-                    if [ ! "${DETAILS}" = "-" -a -n "${DETAILS}" ]; then echo "    - Details  : ${CYAN}${DETAILS}${NORMAL}"; fi
-                    if [ ${SHOW_REPORT_SOLUTION} -eq 1 -a ! "${SOLUTION}" = "-" ]; then echo "    - Solution : ${SOLUTION}"; fi
+                    if [ ! "${DETAILS}" = "-" -a -n "${DETAILS}" ]; then echo "    - 详细信息：${CYAN}${DETAILS}${NORMAL}"; fi
+                    if [ ${SHOW_REPORT_SOLUTION} -eq 1 -a ! "${SOLUTION}" = "-" ]; then echo "    - 处理方法：${SOLUTION}"; fi
                     if [ -z "${IS_CUSTOM}" ]; then
                         echo "      ${CONTROL_URL_PROTOCOL}://${CONTROL_URL_PREPEND}${ADDLINK}${CONTROL_URL_APPEND}"
                     else
@@ -153,9 +153,9 @@
             SUGGESTIONS=$(${GREPBINARY} 'Suggestion: ' ${LOGFILE} | sed 's/ /!space!/g')
 
             if [ -z "${SUGGESTIONS}" ]; then
-                echo "  ${OK}No suggestions${NORMAL}"; echo ""
+                echo "  ${OK}没有改进建议${NORMAL}"; echo ""
             else
-                echo "  ${YELLOW}Suggestions${NORMAL} (${TOTAL_SUGGESTIONS}):"
+                echo "  ${YELLOW}改进建议${NORMAL}（${TOTAL_SUGGESTIONS} 项）："
                 echo "  ${WHITE}----------------------------${NORMAL}"
                 for SUGGESTION in ${SUGGESTIONS}; do
                     SOLUTION=""
@@ -172,102 +172,102 @@
                     done
                     IS_CUSTOM=$(echo ${ADDLINK} | grep "^CUST")
                     echo "  ${YELLOW}*${NORMAL} ${SHOWSUGGESTION}"
-                    if [ ! "${DETAILS}" = "-" -a -n "${DETAILS}" ]; then echo "    - Details  : ${CYAN}${DETAILS}${NORMAL}"; fi
-                    if [ ${SHOW_REPORT_SOLUTION} -eq 1 -a ! "${SOLUTION}" = "-" ]; then echo "    - Solution : ${SOLUTION}"; fi
+                    if [ ! "${DETAILS}" = "-" -a -n "${DETAILS}" ]; then echo "    - 详细信息：${CYAN}${DETAILS}${NORMAL}"; fi
+                    if [ ${SHOW_REPORT_SOLUTION} -eq 1 -a ! "${SOLUTION}" = "-" ]; then echo "    - 处理方法：${SOLUTION}"; fi
                     # Show relevant articles if the database is available
                     if [ -f ${DBDIR}/control-links.db ]; then
-                        echo "    - Related resources"
+                        echo "    - 相关资料"
                         ARTICLES=$($AWKBINARY -F \; -v control=${RELATED_CONTROL} '{if($1==control && $2=="blog"){print $2";"$3";"$4";"}}' "${DBDIR}/control-links.db" | sed 's/ /!space!/g')
                         if [ -n "${ARTICLES}" ]; then
                             for ITEM in ${ARTICLES}; do
                                 ITEM=$(echo ${ITEM} | sed 's/!space!/ /g')
                                 ARTICLE=$(echo ${ITEM} | awk -F\; '{print $2}')
                                 ARTICLE_LINK=$(echo ${ITEM} | awk -F\; '{print $3}')
-                                echo "      * Article: ${CYAN}${ARTICLE}${NORMAL}: ${ARTICLE_LINK}"
+                                echo "      * 文章：${CYAN}${ARTICLE}${NORMAL}：${ARTICLE_LINK}"
                             done
                         fi
                     fi
                     if [ -z "${IS_CUSTOM}" ]; then
-                        echo "      * Website: ${GRAY}${CONTROL_URL_PROTOCOL}://${CONTROL_URL_PREPEND}${ADDLINK}${CONTROL_URL_APPEND}${NORMAL}"
+                        echo "      * 网址：${GRAY}${CONTROL_URL_PROTOCOL}://${CONTROL_URL_PREPEND}${ADDLINK}${CONTROL_URL_APPEND}${NORMAL}"
                     else
-                        echo "      * Details: ${GRAY}${CUSTOM_URL_PROTOCOL}://${CUSTOM_URL_PREPEND}${ADDLINK}${CUSTOM_URL_APPEND}${NORMAL}"
+                        echo "      * 详细信息：${GRAY}${CUSTOM_URL_PROTOCOL}://${CUSTOM_URL_PREPEND}${ADDLINK}${CUSTOM_URL_APPEND}${NORMAL}"
                     fi
                     echo ""
                 done
             fi
             # Show tip on how to continue (next steps)
             if [ ! "${SWARNINGS}" = "" -o ! "${SUGGESTIONS}" = "" ]; then
-                echo "  ${CYAN}Follow-up${NORMAL}:"
+                echo "  ${CYAN}后续操作${NORMAL}："
                 echo "  ${WHITE}----------------------------${NORMAL}"
-                echo "  ${WHITE}-${NORMAL} Show details of a test (lynis show details TEST-ID)"
-                echo "  ${WHITE}-${NORMAL} Check the logfile for all details (less ${LOGFILE})"
-                echo "  ${WHITE}-${NORMAL} Read security controls texts (https://cisofy.com)"
-                if [ ${UPLOAD_DATA} -eq 0 ]; then echo "  ${WHITE}-${NORMAL} Use --upload to upload data to central system (Lynis Enterprise users)"; fi
+                echo "  ${WHITE}-${NORMAL} 查看某项检查的详细信息（lynis show details 检查编号）"
+                echo "  ${WHITE}-${NORMAL} 查看日志中的全部细节（less ${LOGFILE}）"
+                echo "  ${WHITE}-${NORMAL} 阅读安全检查项说明（https://cisofy.com）"
+                if [ ${UPLOAD_DATA} -eq 0 ]; then echo "  ${WHITE}-${NORMAL} Lynis Enterprise 用户可使用 --upload 将数据上传到中央系统"; fi
                 echo ""
             fi
             echo "================================================================================"
             echo ""
-            echo "  ${WHITE}Lynis security scan details${NORMAL}:"
+            echo "  ${WHITE}Lynis 安全扫描详情${NORMAL}："
             echo ""
-            echo "  ${SECTION}Scan mode${NORMAL}:"
+            echo "  ${SECTION}扫描模式${NORMAL}："
             if [ ${DEVOPS_MODE} -eq 1 ]; then
-                echo "  Normal [ ]  Forensics [ ]  Integration [▆]  Pentest [ ]"
+                echo "  常规 [ ]  取证 [ ]  集成 [▆]  渗透测试 [ ]"
             elif [ ${FORENSICS_MODE} -eq 1 ]; then
-                echo "  Normal [ ]  Forensics [▆]  Integration [ ]  Pentest [ ]"
+                echo "  常规 [ ]  取证 [▆]  集成 [ ]  渗透测试 [ ]"
             elif [ ${PENTESTINGMODE} -eq 1 ]; then
                 if [ ${PRIVILEGED} -eq 0 ]; then
-                    echo "  Normal [ ]  Forensics [ ]  Integration [ ]  Pentest [▆] (running non-privileged)"
+                    echo "  常规 [ ]  取证 [ ]  集成 [ ]  渗透测试 [▆]（普通用户运行）"
                 else
-                    echo "  Normal [ ]  Forensics [ ]  Integration [ ]  Pentest [▆] (running privileged)"
+                    echo "  常规 [ ]  取证 [ ]  集成 [ ]  渗透测试 [▆]（特权用户运行）"
                 fi
             else
-                echo "  Normal [▆]  Forensics [ ]  Integration [ ]  Pentest [ ]"
+                echo "  常规 [▆]  取证 [ ]  集成 [ ]  渗透测试 [ ]"
             fi
             echo ""
 
-            echo "  ${SECTION}Lynis modules${NORMAL}:"
+            echo "  ${SECTION}Lynis 检查模块${NORMAL}："
             if [ ${COMPLIANCE_TESTS_PERFORMED} -eq 1 ]; then
                 if [ ${COMPLIANCE_FINDINGS_FOUND} -eq 0 ]; then COMPLIANCE="${GREEN}V"; else COMPLIANCE="${RED}X"; fi
             else
                 COMPLIANCE="${YELLOW}?"
             fi
-            echo "  - Compliance status      [${COMPLIANCE}${NORMAL}]"
-            echo "  - Security audit         [${GREEN}V${NORMAL}]"
-            echo "  - Vulnerability scan     [${GREEN}V${NORMAL}]"
+            echo "  - 合规检查状态           [${COMPLIANCE}${NORMAL}]"
+            echo "  - 安全审计               [${GREEN}V${NORMAL}]"
+            echo "  - 漏洞扫描               [${GREEN}V${NORMAL}]"
             echo ""
-            echo "  ${SECTION}Details${NORMAL}:"
-            echo "  ${CYAN}Hardening index${NORMAL} : ${WHITE}${HPINDEX}${NORMAL} ${HPGRAPH}"
-            echo "  ${CYAN}Tests performed${NORMAL} : ${WHITE}${CTESTS_PERFORMED}${NORMAL}"
+            echo "  ${SECTION}扫描统计${NORMAL}："
+            echo "  ${CYAN}加固指数${NORMAL}：${WHITE}${HPINDEX}${NORMAL} ${HPGRAPH}"
+            echo "  ${CYAN}已执行检查${NORMAL}：${WHITE}${CTESTS_PERFORMED}${NORMAL}"
             if [ ${SKIP_PLUGINS} -eq 0 ]; then
-                echo "  ${CYAN}Plugins enabled${NORMAL} : ${WHITE}${N_PLUGIN_ENABLED}${NORMAL}"
+                echo "  ${CYAN}已启用插件${NORMAL}：${WHITE}${N_PLUGIN_ENABLED}${NORMAL}"
             else
-                echo "  ${CYAN}Plugins enabled${NORMAL} : ${WHITE}Skipped${NORMAL}"
+                echo "  ${CYAN}已启用插件${NORMAL}：${WHITE}已跳过${NORMAL}"
             fi
             echo ""
-            echo "  ${SECTION}Software components${NORMAL}:"
+            echo "  ${SECTION}安全软件组件${NORMAL}："
             if [ ${FIREWALL_ACTIVE} -eq 1 ]; then FIREWALL="${GREEN}V"; else FIREWALL="${RED}X"; fi
             if [ ${MALWARE_SCANNER_INSTALLED} -eq 1 ]; then MALWARE="${GREEN}V"; else MALWARE="${RED}X"; fi
             if [ ${IDS_IPS_TOOL_FOUND} -eq 1 ]; then IDSIPS="${GREEN}V"; else IDSIPS="${RED}X"; fi
 
-            echo "  - Firewall               [${FIREWALL}${NORMAL}]"
+            echo "  - 防火墙                 [${FIREWALL}${NORMAL}]"
             #echo "  - Integrity monitoring   [${IDSIPS}${NORMAL}]"
-            echo "  - Intrusion software     [${IDSIPS}${NORMAL}]"
-            echo "  - Malware scanner        [${MALWARE}${NORMAL}]"
+            echo "  - 入侵检测/防御工具      [${IDSIPS}${NORMAL}]"
+            echo "  - 恶意软件扫描器         [${MALWARE}${NORMAL}]"
 
             echo ""
-            echo "  ${SECTION}Files${NORMAL}:"
-            echo "  - Test and debug information      : ${WHITE}${LOGFILE}${NORMAL}"
-            echo "  - Report data                     : ${WHITE}${REPORTFILE}${NORMAL}"
+            echo "  ${SECTION}结果文件${NORMAL}："
+            echo "  - 检查与调试日志：${WHITE}${LOGFILE}${NORMAL}"
+            echo "  - 报告数据文件：${WHITE}${REPORTFILE}${NORMAL}"
             echo ""
             echo "================================================================================"
             if [ ${PROGRAM_LV} -gt ${PROGRAM_AC} ]; then
-                echo "  ${NOTICE}Notice: ${WHITE}${PROGRAM_NAME} ${GEN_UPDATE_AVAILABLE}${NORMAL}"
+                echo "  ${NOTICE}提示：${WHITE}${PROGRAM_NAME} ${GEN_UPDATE_AVAILABLE}${NORMAL}"
                 echo "  ${GEN_CURRENT_VERSION} : ${WHITE}${PROGRAM_AC}${NORMAL}    ${GEN_LATEST_VERSION} : ${WHITE}${PROGRAM_LV}${NORMAL}"
                 echo "================================================================================"
             else
                 if [ ${OLD_RELEASE} -eq 1 ]; then
                     echo ""
-                    echo "  ${NOTICE}Notice: ${WHITE}This version of ${PROGRAM_NAME} is older than 6 months and might be outdated. Check the project page if a newer version is available.${NORMAL}"
+                    echo "  ${NOTICE}提示：${WHITE}当前 ${PROGRAM_NAME} 版本发布已超过 6 个月，可能已经过时。请前往项目页面检查是否有新版本。${NORMAL}"
                     echo ""
                 echo "================================================================================"
                 fi 
@@ -289,7 +289,7 @@
                         echo ""
                         echo "  ${CYAN}${GEN_WHAT_TO_DO}:${NORMAL}"
                         echo "  ${TEXT_YOU_CAN_HELP_LOGFILE} (${LOGFILE})."
-                        echo "  Go to https://cisofy.com/contact/ and send your file to the e-mail address listed"
+                        echo "  请访问 https://cisofy.com/contact/，并将日志发送到页面列出的邮箱地址"
                         echo ""
                         echo "================================================================================"
                     fi
@@ -298,11 +298,11 @@
                 # If end-of-life check failed, ask to submit
                 if [ ! "${PROGRAM_LV}" = "0" -a ${EOL} -eq 255 ]; then
                     echo ""
-                    echo "  ${SECTION}Notice: ${WHITE}No OS entry was found in the end-of-life database${NORMAL}"
+                    echo "  ${SECTION}提示：${WHITE}停止支持数据库中没有找到当前操作系统记录${NORMAL}"
                     echo ""
                     echo "  ${CYAN}${GEN_WHAT_TO_DO}:${NORMAL}"
-                    echo "  Please submit a pull request on GitHub to include your OS version and the end date of this OS version is being supported"
-                    echo "  URL: ${PROGRAM_SOURCE}"
+                    echo "  请在 GitHub 提交拉取请求，补充操作系统版本及其停止支持日期"
+                    echo "  地址：${PROGRAM_SOURCE}"
                     echo ""
                     echo "================================================================================"
                 fi 
@@ -336,8 +336,8 @@
     if [ ${QUIET} -eq 0 ]; then
         echo "  ${WHITE}${PROGRAM_NAME}${NORMAL} ${PROGRAM_VERSION}"
         echo ""
-        echo "  Auditing, system hardening, and compliance for UNIX-based systems"
-        echo "  (Linux, macOS, BSD, and others)"
+        echo "  面向 UNIX 类系统的安全审计、系统加固与合规检查"
+        echo "  （支持 Linux、macOS、BSD 等系统）"
         echo ""
         echo "  ${PROGRAM_COPYRIGHT}"
         echo "  ${WHITE}${PROGRAM_EXTRAINFO}${NORMAL}"
