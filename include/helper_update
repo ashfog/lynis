@@ -44,7 +44,7 @@ FETCH_EXISTS=$(which fetch 2> /dev/null | grep -v "no [^ ]* in ")
 # Update version
 if [ "$1" = "release" ]; then
 
-    ${ECHOCMD} "Deprecated: this function is no longer available. Use a package (https://packages.cisofy.com), or deploy via a custom package or script."
+    ${ECHOCMD} "此功能已停用。请使用软件包（https://packages.cisofy.com），或通过自定义软件包或脚本部署。"
 
 # Update check
 elif [ "$1" = "info" ]; then
@@ -64,21 +64,21 @@ elif [ "$1" = "info" ]; then
 
         echo ""; echo " == ${WHITE}${PROGRAM_NAME}${NORMAL} =="
         echo ""
-        echo "  Version            : ${PROGRAM_VERSION}"
-        echo -n "  Status             : "
+        echo "  当前版本          : ${PROGRAM_VERSION}"
+        echo -n "  更新状态          : "
         if [ ${PROGRAM_LV} -eq 0 ]; then
-            echo "${RED}Unknown${NORMAL}";
+            echo "${RED}无法确定${NORMAL}";
         elif [ ${PROGRAM_LV} -gt ${PROGRAM_AC} ]; then
-            echo "${YELLOW}Outdated${NORMAL}";
-            echo "  Installed version  : ${PROGRAM_AC}"
-            echo "  Latest version     : ${PROGRAM_LV}"
+            echo "${YELLOW}需要更新${NORMAL}";
+            echo "  已安装版本        : ${PROGRAM_AC}"
+            echo "  最新版本          : ${PROGRAM_LV}"
         else
-            echo "${GREEN}Up-to-date${NORMAL}"
+            echo "${GREEN}已是最新版${NORMAL}"
         fi
-        echo "  Release date       : ${PROGRAM_RELEASE_DATE}"
-        echo "  Project page       : ${PROGRAM_WEBSITE}"
-        echo "  Source code        : ${PROGRAM_SOURCE}"
-        echo "  Latest package     : ${PROGRAM_PACKAGE}"
+        echo "  发布日期          : ${PROGRAM_RELEASE_DATE}"
+        echo "  项目主页          : ${PROGRAM_WEBSITE}"
+        echo "  源代码            : ${PROGRAM_SOURCE}"
+        echo "  最新软件包        : ${PROGRAM_PACKAGE}"
         echo ""; echo ""
         echo "${PROGRAM_COPYRIGHT}"
         echo ""
@@ -102,7 +102,7 @@ elif [ "$1" = "check" ]; then
         fi
 
 else
-    ${ECHOCMD} "${RED}Error: ${WHITE}Unknown parameter $1.${NORMAL} Aborting.."
+    ${ECHOCMD} "${RED}错误：${WHITE}无法识别参数 $1。${NORMAL}程序已停止。"
     ExitFatal
 fi
 
