@@ -18,23 +18,23 @@
 #################################################################################
 
 if [ $# -eq 0 ]; then
-    Display --indent 2 --text "${RED}Error: ${WHITE}Provide a file${NORMAL}"
+    Display --indent 2 --text "${RED}错误：${WHITE}请提供一个文件${NORMAL}"
     Display --text " "; Display --text " "
     ExitFatal
 else
     FILE=$(echo $1 | grep -E "^http|https")
     if HasData "${FILE}"; then
-        echo "Provide a file (not a URL)"
+        echo "请提供本地文件，不要使用网址"
         ExitFatal
     else
         if [ -f $1 ]; then
             AUDIT_FILE="$1"
         else
-            Display --indent 2 --text "File $1 does not exist"
+            Display --indent 2 --text "文件 $1 不存在"
             ExitFatal
         fi
     fi
-    Display --indent 2 --text "File to audit = ${AUDIT_FILE}"
+    Display --indent 2 --text "待审计文件 = ${AUDIT_FILE}"
 fi
 
 #####################################################
@@ -50,7 +50,7 @@ fi
     for I in ${FIND}; do
         IMAGE=$(echo ${I} | sed 's/:space:/ /g' | awk '{ if ($1=="FROM") { print $2 }}')
         TAG=$(echo ${IMAGE} | cut -d':' -f2)
-        Display --indent 2 --text "Found image:" --result "${IMAGE}"
+        Display --indent 2 --text "发现镜像：" --result "${IMAGE}"
 
         IS_DEBIAN=$(echo ${IMAGE} | grep -i debian)
         IS_FEDORA=$(echo ${IMAGE} | grep -i fedora)
@@ -63,28 +63,28 @@ fi
         if [ -n "${IS_UBUNTU}" ]; then IMAGE="ubuntu"; fi
         if [ -n "${IS_ALPINE}" ]; then IMAGE="alpine"; fi
         if [ -n "${IS_LATEST}" ]; then
-            ReportWarning "dockerfile" "latest TAG used. Specifying a targeted OS image and version is better for reproducible results."
+            ReportWarning "dockerfile" "使用了 latest 标签。明确指定操作系统镜像及版本，更有利于获得可重复的构建结果。"
         fi
 
         case ${IMAGE} in
             "debian")
-                LogText "Image = Debian based"
+                LogText "镜像基于 Debian"
                 PKGMGR="apt"
                 ;;
             "fedora*")
-                LogText "  Image = Fedora based"
+                LogText "镜像基于 Fedora"
                 PKGMGR="yum"
                 ;;
             "ubuntu")
-                LogText "  Image = Ubuntu based"
+                LogText "镜像基于 Ubuntu"
                 PKGMGR="apt"
                 ;;
             "alpine")
-                LogText "  Image = Alpine based"
+                LogText "镜像基于 Alpine"
                 PKGMGR="apk"
                 ;;
             *)
-                Display --indent 2 --text "Unknown image" --result "" --color YELLOW
+                Display --indent 2 --text "无法识别镜像" --result "" --color YELLOW
                 ;;
         esac
     done
@@ -96,21 +96,21 @@ fi
 
     MAINTAINER=$(grep -E -i "*MAINTAINER" ${AUDIT_FILE} | sed 's/=/ /g' | cut -d'"' -f 2)
     if [ -z "${MAINTAINER}" ]; then
-        ReportWarning "dockerfile" "No maintainer found. Unclear who created this file."
+        ReportWarning "dockerfile" "未找到维护者信息，无法确定该文件由谁创建。"
     else
-        Display --indent 2 --text "Maintainer" --result "${MAINTAINER}"
+        Display --indent 2 --text "维护者" --result "${MAINTAINER}"
     fi
 
     ENTRYPOINT=$(grep "^ENTRYPOINT" ${AUDIT_FILE} | cut -d' ' -f2 )
     if [ -z "${ENTRYPOINT}" ]; then
-        ReportWarning "dockerfile" "No ENTRYPOINT defined in Dockerfile."
+        ReportWarning "dockerfile" "Dockerfile 中未定义 ENTRYPOINT。"
     else
         Display --indent 2 --text "ENTRYPOINT" --result "${ENTRYPOINT}"
     fi
 
     FIND=$(grep "^CMD" ${AUDIT_FILE} | cut -d' ' -f2 )
     if [ -z "${FIND}" ]; then
-        ReportWarning "dockerfile" "No CMD defines in Dockerfile."
+        ReportWarning "dockerfile" "Dockerfile 中未定义 CMD。"
     else
         CMD=$(echo ${FIND})
         Display --indent 2 --text "CMD" --result "${CMD}"
@@ -118,10 +118,10 @@ fi
 
     FIND=$(grep "^USER" ${AUDIT_FILE} | cut -d' ' -f2 )
     if [ -z "${FIND}" ]; then
-        ReportWarning "dockerfile" "No user declared in Dockerfile. Container will execute command as root"
+        ReportWarning "dockerfile" "Dockerfile 中未声明用户，容器将以 root 身份执行命令。"
     else
         USER=$(echo ${FIND})
-        Display --indent 2 --text "User" --result "${USER}"
+        Display --indent 2 --text "运行用户" --result "${USER}"
     fi
 #
 ##################################################################################################
@@ -132,35 +132,35 @@ fi
     "apt")
         FIND=$(grep -E "apt-get(.*) install" ${AUDIT_FILE})
         if [ ! "${FIND}" = "" ]; then
-            LogText "Found installation via apt-get"
+            LogText "发现通过 apt-get 安装软件的命令"
         else
-            LogText "No installations found via apt-get"
+            LogText "未发现通过 apt-get 安装软件的命令"
         fi
         ;;
      "apk")
         FIND=$(grep -E "apk(.*) add" ${AUDIT_FILE})
         if [ ! "${FIND}" = "" ]; then
-            LogText "Found installation via apk"
+            LogText "发现通过 apk 安装软件的命令"
         else
-            LogText "No installations found via apk"
+            LogText "未发现通过 apk 安装软件的命令"
         fi
         ;;
     *)
-        LogText "Unknown package manager"
+        LogText "无法识别软件包管理器"
     ;;
     esac
 
     FIND=$(grep -E " (gcc|libc6-dev|make)" ${AUDIT_FILE} | grep -v "^#")
     if [ ! "${FIND}" = "" ]; then
-        ReportWarning "dockerfile" "Possible development utilities found, which is not advised for production environment"
-        LogText "Details: ${FIND}"
+        ReportWarning "dockerfile" "发现可能用于开发的软件工具，不建议在生产环境镜像中保留这些工具。"
+        LogText "详细信息：${FIND}"
     fi
 
     # SSH
     FIND_OPENSSH=$(grep openssh ${AUDIT_FILE})
     if [ ! "${FIND_OPENSSH}" = "" ]; then
-        Display --indent 2 --text "OpenSSH" --result "FOUND" --color RED
-        ReportSuggestion "dockerfile" "Don't use OpenSSH in container, use 'docker exec' instead"
+        Display --indent 2 --text "OpenSSH" --result "已发现" --color RED
+        ReportSuggestion "dockerfile" "不建议在容器中使用 OpenSSH，请改用 'docker exec'。"
     fi
 #
 ##################################################################################################
@@ -169,17 +169,17 @@ fi
 
     FILE_DOWNLOAD=0
 
-    LogText "Checking usage of cURL"
+    LogText "正在检查 cURL 的使用情况"
     FIND_CURL=$(grep curl ${AUDIT_FILE})
     if [ ! "${FIND_CURL}" = "" ]; then
-        Display --indent 4 --text "Download tool" --result "curl"
+        Display --indent 4 --text "下载工具" --result "curl"
         FILE_DOWNLOAD=1
     fi
 
-    LogText "Checking usage of wget"
+    LogText "正在检查 wget 的使用情况"
     FIND_WGET=$(grep wget ${AUDIT_FILE})
     if HasData "${FIND_WGET}"; then
-        Display --indent 4 --text "Download tool" --result "wget"
+        Display --indent 4 --text "下载工具" --result "wget"
         FILE_DOWNLOAD=1
     fi
 
@@ -187,8 +187,8 @@ fi
     FIND=$(grep "^ADD http" ${AUDIT_FILE})
     if HasData "${FIND}"; then
         FILE_DOWNLOAD=1
-        ReportWarning "dockerfile" "Found download of file via ADD. Unclear if the integrity of this file is checked, or file is signed"
-        LogText "Details: ${FIND}"
+        ReportWarning "dockerfile" "发现通过 ADD 下载文件，无法确认是否校验了文件完整性或数字签名。"
+        LogText "详细信息：${FIND}"
     fi
 
     if [ ${FILE_DOWNLOAD} -eq 1 ]; then
@@ -196,21 +196,21 @@ fi
         SSL_USED_FIND=$(grep -E "(https)" ${AUDIT_FILE})
 
         if HasData "${SSL_USED_FIND}"; then
-            SSL_USED="YES"
+            SSL_USED="是"
             COLOR="GREEN"
         else
-            SSL_USED="NO"
+            SSL_USED="否"
             COLOR="RED"
-            ReportSuggestion "Use SSL downloads when possible to increase security (DNSSEC, HTTPS, validation of domain, avoid MitM)"
+            ReportSuggestion "尽可能使用安全下载方式，以提高安全性，例如 DNSSEC、HTTPS、域名验证，并降低中间人攻击风险。"
         fi
-        Display --indent 2 --text "Integrity testing performed" --result "${SSL_USED}" --color ${COLOR}
+        Display --indent 2 --text "是否使用安全下载" --result "${SSL_USED}" --color ${COLOR}
         HASHING_USED=$(grep -E "(sha1sum|sha256sum|sha512sum)" ${AUDIT_FILE})
-        Display --indent 2 --text "Hashing" --result "${HASHING_USED}"
+        Display --indent 2 --text "哈希校验" --result "${HASHING_USED}"
         KEYS_USED=$(grep -E "(apt-key adv)" ${AUDIT_FILE}| sed 's/RUN apt-key adv//g'| sed 's/--keyserver/Key Server:/g' | sed 's/--recv/Key Value:/g')
-        Display --indent 2 --text "Signing keys used" --result "${KEYS_USED}"
-        Display --indent 2 --text "All downloads properly checked" --result "?"
+        Display --indent 2 --text "使用的签名密钥" --result "${KEYS_USED}"
+        Display --indent 2 --text "所有下载是否均已正确校验" --result "?"
     else
-        Display --indent 2 --text "No files seems to be downloaded in this Dockerfile"
+        Display --indent 2 --text "此 Dockerfile 中似乎没有下载文件"
 
     fi
 #
@@ -220,14 +220,14 @@ fi
 
     FIND=$(grep -i "chmod 777" ${AUDIT_FILE})
     if HasData "${FIND}"; then
-        ReportWarning "dockerfile" "Warning: chmod 777 found"
+        ReportWarning "dockerfile" "警告：发现 chmod 777"
     fi
 #
 ##################################################################################################
 #
 
     # Removing temp file
-    LogText "Action: Removing temporary file ${TMP_FILE}"
+    LogText "正在删除临时文件 ${TMP_FILE}"
     if [ -f ${TMP_FILE} ]; then
         rm -f ${TMP_FILE}
     fi
