@@ -28,13 +28,13 @@
     # Data upload destination
     if [ "${UPLOAD_SERVER}" = "" ]; then UPLOAD_SERVER="portal.cisofy.com"; fi
     UPLOAD_URL="https://${UPLOAD_SERVER}/upload/"
-    LogText "Upload server: ${UPLOAD_SERVER}"
-    LogText "URL to upload to: ${UPLOAD_URL}"
+    LogText "上传服务器：${UPLOAD_SERVER}"
+    LogText "上传地址：${UPLOAD_URL}"
 
     # License server (set to upload server if not configured)
     if [ "${LICENSE_SERVER}" = "" ]; then LICENSE_SERVER="${UPLOAD_SERVER}"; fi
     LICENSE_SERVER_URL="https://${LICENSE_SERVER}/license/"
-    LogText "License server: ${LICENSE_SERVER}"
+    LogText "许可证服务器：${LICENSE_SERVER}"
 
     # Additional options to curl
     if [ "${UPLOAD_OPTIONS}" = "" ]; then
@@ -57,25 +57,25 @@
 #
 #####################################################################################
 
-    Output "Lynis Enterprise data uploader starting"
-    Output "Settings file: ${SETTINGS_FILE}"
+    Output "Lynis Enterprise 数据上传程序正在启动"
+    Output "配置文件：${SETTINGS_FILE}"
 
     # Check if we can find curl
     # Suggestion: If you want to keep the system hardened, copying the binary from a trusted source is a good alternative.
     #             Restrict access to this binary to the user who is running this script.
     if IsEmpty "${CURLBINARY}"; then
-        echo "Fatal: can't find curl binary. Please install the related package or put the binary in the PATH. Quitting.."
-        LogText "Error: Could not find cURL binary"
+        echo "严重错误：找不到 curl 命令。请安装相关软件包，或将 curl 加入 PATH。程序已停止。"
+        LogText "错误：找不到 cURL 命令"
         exit 1
     fi
 
     # Extra the license key from the settings file
     if [ "${LICENSE_KEY}" = "" ]; then
-        echo "Fatal: no license key found. Quitting.."
-        LogText "Error: no license key was specified in the profile (${PROFILE})"
+        echo "严重错误：未找到许可证密钥。程序已停止。"
+        LogText "错误：配置文件中未设置许可证密钥（${PROFILE}）"
         ExitFatal
     else
-        Output "License key = ${LICENSE_KEY}"
+        Output "许可证密钥 = ${LICENSE_KEY}"
         # Create a temporary file to use during upload (prevent license key being displayed in process table)
         CreateTempFile || ExitFatal
         LICENSE_KEY_FILE="${TEMP_FILE}"
@@ -93,21 +93,21 @@
     # Check report file
     if [ -f ${REPORTFILE} ]; then
 
-        Output "${WHITE}Report file found.${NORMAL} Starting with content check."
+        Output "${WHITE}已找到报告文件。${NORMAL}正在检查文件内容。"
 
         FIND=$(${GREPBINARY} "finish=true" ${REPORTFILE})
-        if [ $? -gt 0 ]; then ExitFatal "The report is not complete, skipping upload"; fi
+        if [ $? -gt 0 ]; then ExitFatal "报告尚未完整生成，已跳过上传"; fi
 
-        Output "${WHITE}Report file found.${NORMAL} Starting with connectivity check."
+        Output "${WHITE}已找到报告文件。${NORMAL}正在检查网络连接。"
 
             if [ ! "${UPLOAD_PROXY_SERVER}" = "" ]; then
-                LogText "Upload: Proxy is configured: ${UPLOAD_SERVER}"
+                LogText "上传：已配置代理服务器：${UPLOAD_SERVER}"
                 # Port is optional
                 if [ ! "${UPLOAD_PROXY_PORT}" = "" ]; then
-                    LogText "Upload: Proxy port number is ${UPLOAD_PROXY_PORT}"
+                    LogText "上传：代理端口为 ${UPLOAD_PROXY_PORT}"
                     UPLOAD_PROXY_PORT=":${UPLOAD_PROXY_PORT}"
                 fi
-                LogText "Upload: Proxy protocol is ${UPLOAD_PROXY_PROTOCOL}"
+                LogText "上传：代理协议为 ${UPLOAD_PROXY_PROTOCOL}"
                 case ${UPLOAD_PROXY_PROTOCOL} in
                     "http"|"https")
                         UPLOAD_PROXY="${UPLOAD_PROXY_PROTOCOL}://${UPLOAD_PROXY_SERVER}${UPLOAD_PROXY_PORT}"
@@ -118,7 +118,7 @@
                         CURL_OPTIONS="${CURL_OPTIONS} --socks5 ${UPLOAD_PROXY}"
                     ;;
                     *)
-                        echo "Unknown protocol. Please report to lynis-dev@cisofy.com"
+                        echo "无法识别代理协议，请联系 lynis-dev@cisofy.com"
                         ExitFatal
                     ;;
                 esac
@@ -132,142 +132,142 @@
 
         # License check
 
-        LogText "Command used: ${CURLBINARY}${CURL_OPTIONS} -s -S --data-urlencode "licensekey@${LICENSE_KEY_FILE}" --data-urlencode "collector_version=${PROGRAM_VERSION}" ${LICENSE_SERVER_URL} 2> /dev/null"
+        LogText "执行的命令：${CURLBINARY}${CURL_OPTIONS} -s -S --data-urlencode "licensekey@${LICENSE_KEY_FILE}" --data-urlencode "collector_version=${PROGRAM_VERSION}" ${LICENSE_SERVER_URL} 2> /dev/null"
         UPLOAD=$(${CURLBINARY}${CURL_OPTIONS} -s -S --data-urlencode "licensekey@${LICENSE_KEY_FILE}" --data-urlencode "collector_version=${PROGRAM_VERSION}" ${LICENSE_SERVER_URL} 2> /dev/null)
 
         EXITCODE=$?
-        LogText "Exit code: ${EXITCODE}"
+        LogText "退出码：${EXITCODE}"
         if [ ${EXITCODE} -gt 0 ]; then
 
-            Display --indent 2 --text "- License check" --result "FAILED" --color RED
+            Display --indent 2 --text "- 许可证检查" --result "失败" --color RED
 
             echo ""
 
             case ${EXITCODE} in
                     2)
-                        LogText "Result: could not initialize"
-                        LogText "Possible cause: most likely your cURL version is too old and does not support the --data-urlencode option."
-                        LogText "Suggestion: copy the data to a different server and use a new cURL version there, or use the Lynis Collector tool."
-                        echo "${RED}Error (2)${NORMAL}: could not initialize cURL."
+                        LogText "结果：无法初始化"
+                        LogText "可能原因：cURL 版本过旧，不支持 --data-urlencode 选项。"
+                        LogText "建议：将数据复制到其他服务器并使用新版 cURL 上传，或使用 Lynis Collector。"
+                        echo "${RED}错误（2）${NORMAL}：无法初始化 cURL。"
                         ;;
                     5)
-                        LogText "Result: could not resolve the defined proxy server (${UPLOAD_PROXY_SERVER})."
-                        LogText "Suggestion: check if the proxy is properly defined in the profile."
-                        echo "${RED}Error (5)${NORMAL}: could not use the defined proxy (${UPLOAD_PROXY_SERVER}). See ${LOGFILE} for details."
+                        LogText "结果：无法解析已配置的代理服务器（${UPLOAD_PROXY_SERVER}）。"
+                        LogText "建议：检查配置文件中的代理设置是否正确。"
+                        echo "${RED}错误（5）${NORMAL}：无法使用已配置的代理（${UPLOAD_PROXY_SERVER}）。详情请查看 ${LOGFILE}。"
                         ;;
                     6)
-                        echo "${RED}Error (6)${NORMAL}: Could not resolve the hostname of central server."
+                        echo "${RED}错误（6）${NORMAL}：无法解析中央服务器的主机名。"
                         ;;
                     7)
-                        LogText "Result: could not contact license server."
-                        LogText "Details: used URL ${LICENSE_SERVER_URL}"
-                        LogText "Suggestion: check if the upload host is correctly configured."
-                        echo "${RED}Error (7)${NORMAL}: license server not available."
+                        LogText "结果：无法连接许可证服务器。"
+                        LogText "详细信息：使用的地址为 ${LICENSE_SERVER_URL}"
+                        LogText "建议：检查上传服务器地址是否配置正确。"
+                        echo "${RED}错误（7）${NORMAL}：许可证服务器不可用。"
                         ;;
                     59)
-                        echo "${RED}Error (59)${NORMAL}: Could not connect because of used SSL cipher."
-                        LogText "Result: SSL cipher used is not understood or accepted."
+                        echo "${RED}错误（59）${NORMAL}：由于所用 SSL 加密套件不受支持，无法建立连接。"
+                        LogText "结果：所用 SSL 加密套件无法识别或不被接受。"
                         ;;
                     60)
-                        echo "${RED}Error (60)${NORMAL}: Self-signed certificate used on Lynis Enterprise node${NORMAL}"
-                        echo "If you want to accept a self-signed certificate, configure your profile and set the -k option in the upload-options."
-                        echo "Example: ${WHITE}$0 configure settings upload-options=-k${NORMAL}"
-                        LogText "Result: found self-signed certificate, however cURL -k option not used."
+                        echo "${RED}错误（60）${NORMAL}：Lynis Enterprise 节点使用了自签名证书${NORMAL}"
+                        echo "需要接受自签名证书时，请在配置文件的 upload-options 中加入 -k 选项。"
+                        echo "示例：${WHITE}$0 configure settings upload-options=-k${NORMAL}"
+                        LogText "结果：发现自签名证书，但未使用 cURL 的 -k 选项。"
                         ;;
                     77)
-                        echo "${YELLOW}Error (77)${NORMAL}: Could not use CA certificates to check certificate chain. See ${LOGFILE} for details."
-                        LogText "Result: could not use CA certificates to check certificate chain"
-                        LogText "Possible cause: missing CA certificates, or no permissions to access them"
-                        LogText "Suggestion: update your ca-certificates package. Usually updating your packages already solves the issue with missing CA certificates."
+                        echo "${YELLOW}错误（77）${NORMAL}：无法使用 CA 证书检查证书链。详情请查看 ${LOGFILE}。"
+                        LogText "结果：无法使用 CA 证书检查证书链"
+                        LogText "可能原因：缺少 CA 证书，或没有读取证书的权限"
+                        LogText "建议：更新 ca-certificates 软件包。通常更新系统软件包即可解决 CA 证书缺失问题。"
                         ;;
                     83)
-                        echo "${YELLOW}Error (83)${NORMAL}: Could not check used certificate of server. See ${LOGFILE} for details." ;;
+                        echo "${YELLOW}错误（83）${NORMAL}：无法检查服务器使用的证书。详情请查看 ${LOGFILE}。" ;;
                     *)
-                        echo "${RED}Upload Error: ${NORMAL}cURL exited with code ${EXITCODE}. See ${LOGFILE} for details."
-                        LogText "Result: cURL exited with code ${EXITCODE}. See man page of cURL for the meaning of this code."
+                        echo "${RED}上传错误：${NORMAL}cURL 退出码为 ${EXITCODE}。详情请查看 ${LOGFILE}。"
+                        LogText "结果：cURL 退出码为 ${EXITCODE}。退出码含义请查看 cURL 手册。"
                         ;;
             esac
 
             echo ""
-            echo "${RED}Upload Error${NORMAL}: License could not be checked. See ${LOGFILE} for details."
-            echo "Suggested command: tail -n 20 ${LOGFILE}"
+            echo "${RED}上传错误${NORMAL}：无法检查许可证。详情请查看 ${LOGFILE}。"
+            echo "建议执行：tail -n 20 ${LOGFILE}"
             echo ""
 
-            LogText "Suggestion: run the cURL command manually without the options -s and -S"
-            LogText "Result: quitting, can't check license"
+            LogText "建议：手动执行 cURL 命令，并移除 -s 和 -S 选项"
+            LogText "结果：无法检查许可证，程序正在退出"
             # Quit if license is not valid, to reduce load on both client and server.
             ExitFatal
         fi
 
         UPLOAD_CODE=$(echo ${UPLOAD} | head -n 1 | awk '{ if ($1=="Response") { print $2 }}')
         if [ "${UPLOAD_CODE}" = "100" ]; then
-            Output "${WHITE}License is valid${NORMAL}"
-            LogText "Result: license is valid"
-            Display --indent 2 --text "- License check" --result "${STATUS_DONE}" --color GREEN
+            Output "${WHITE}许可证有效${NORMAL}"
+            LogText "结果：许可证有效"
+            Display --indent 2 --text "- 许可证检查" --result "${STATUS_DONE}" --color GREEN
         else
-            LogText "Result: error while checking license"
-            LogText "Output: ${UPLOAD_CODE}"
-            echo "${RED}Fatal error: ${WHITE}Error while checking the license.${NORMAL}"
+            LogText "结果：检查许可证时发生错误"
+            LogText "输出：${UPLOAD_CODE}"
+            echo "${RED}严重错误：${WHITE}检查许可证时发生错误。${NORMAL}"
             echo ""
-            echo "Possible causes and steps you can take:"
-            echo "- Connection with license server could not be established (try address in your web browser)"
-            echo "- Incorrect server has been configured in profile"
-            echo "- License is expired (listed in Configuration screen) or No credits left (listed in Configuration screen)"
-            echo "- Collector version of Lynis version outdated (upgrade to latest version of Lynis and/or Lynis Collector)"
+            echo "可能原因及处理方法："
+            echo "- 无法连接许可证服务器（可在浏览器中尝试打开该地址）"
+            echo "- 配置文件中设置了错误的服务器地址"
+            echo "- 许可证已过期，或账户可用额度已经用完"
+            echo "- Lynis 或 Lynis Collector 版本过旧，请升级到最新版本"
             echo ""
-            echo "If you need support in solving this, please contact support@cisofy.com and include this screen output."
+            echo "需要技术支持时，请联系 support@cisofy.com，并附上本屏幕输出。"
             echo ""
-            echo "URL: ${LICENSE_SERVER_URL}"
-            echo "Key: ${LICENSE_KEY}"
-            Output "Debug information: ${UPLOAD}"
+            echo "地址：${LICENSE_SERVER_URL}"
+            echo "密钥：${LICENSE_KEY}"
+            Output "调试信息：${UPLOAD}"
             # Quit
             ExitFatal
         fi
 
         # Check for host IDs
         if [ -n "${HOSTID}" -a -n "${HOSTID2}" ]; then
-            Output "${WHITE}Found hostid: ${HOSTID}${NORMAL}"
+            Output "${WHITE}已找到 hostid：${HOSTID}${NORMAL}"
             # Try to connect
-            Output "Uploading data.."
-            LogText "Command used: ${CURLBINARY}${CURL_OPTIONS} -s -S --data-urlencode \"data@${REPORTFILE}\" --data-urlencode \"licensekey@${LICENSE_KEY_FILE}\" --data-urlencode \"hostid=${HOSTID}\" ${UPLOAD_URL}"
-            LogText "Tip: try running ${CURLBINARY}${CURL_OPTIONS} --data-urlencode \"data@${REPORTFILE}\" --data-urlencode \"licensekey@${LICENSE_KEY_FILE}\" --data-urlencode \"hostid=${HOSTID}\" ${UPLOAD_URL}"
-            LogText "Tip: to just retry an upload, use: lynis upload-only"
+            Output "正在上传数据……"
+            LogText "执行的命令：${CURLBINARY}${CURL_OPTIONS} -s -S --data-urlencode \"data@${REPORTFILE}\" --data-urlencode \"licensekey@${LICENSE_KEY_FILE}\" --data-urlencode \"hostid=${HOSTID}\" ${UPLOAD_URL}"
+            LogText "提示：可尝试执行 ${CURLBINARY}${CURL_OPTIONS} --data-urlencode \"data@${REPORTFILE}\" --data-urlencode \"licensekey@${LICENSE_KEY_FILE}\" --data-urlencode \"hostid=${HOSTID}\" ${UPLOAD_URL}"
+            LogText "提示：仅重试上传时，请执行：lynis upload-only"
             UPLOAD=$(${CURLBINARY}${CURL_OPTIONS} -s -S --data-urlencode "data@${REPORTFILE}" --data-urlencode "licensekey@${LICENSE_KEY_FILE}" --data-urlencode "hostid=${HOSTID}" --data-urlencode "hostid2=${HOSTID2}" ${UPLOAD_URL} 2> /dev/null)
             EXITCODE=$?
-            LogText "Exit code: ${EXITCODE}"
+            LogText "退出码：${EXITCODE}"
             if [ ${EXITCODE} -gt 0 ]; then
-                Display --indent 2 --text "- Data upload (${UPLOAD_SERVER})" --result "${STATUS_FAILED}" --color RED
+                Display --indent 2 --text "- 数据上传（${UPLOAD_SERVER}）" --result "${STATUS_FAILED}" --color RED
 
                 echo ""
-                echo "${RED}Upload Error${NORMAL}: cURL could not upload data. See ${LOGFILE} for details."
-                echo "Suggested command: tail -n 20 ${LOGFILE}"
+                echo "${RED}上传错误${NORMAL}：cURL 无法上传数据。详情请查看 ${LOGFILE}。"
+                echo "建议执行：tail -n 20 ${LOGFILE}"
                 echo ""
                 case ${EXITCODE} in
-                    5) echo "${YELLOW}Error (5): ${NORMAL}Could not resolve the hostname of the proxy." ;;
-                    6) echo "${YELLOW}Error (6): ${NORMAL}Could not resolve the hostname of central server." ;;
-                    7) echo "${YELLOW}Error (7): ${NORMAL}Could not connect to central server or proxy server." ;;
-                    59) echo "${YELLOW}Error (59): ${NORMAL}Could not connect because of used SSL cipher." ;;
-                    83) echo "${YELLOW}Error (83): ${NORMAL}Could not check used certificate of server." ;;
-                    *) echo "Related exit code: ${YELLOW}${EXITCODE}${NORMAL}. See man page of cURL for the meaning of this code." ;;
+                    5) echo "${YELLOW}错误（5）：${NORMAL}无法解析代理服务器的主机名。" ;;
+                    6) echo "${YELLOW}错误（6）：${NORMAL}无法解析中央服务器的主机名。" ;;
+                    7) echo "${YELLOW}错误（7）：${NORMAL}无法连接中央服务器或代理服务器。" ;;
+                    59) echo "${YELLOW}错误（59）：${NORMAL}由于所用 SSL 加密套件不受支持，无法建立连接。" ;;
+                    83) echo "${YELLOW}错误（83）：${NORMAL}无法检查服务器使用的证书。" ;;
+                    *) echo "相关退出码：${YELLOW}${EXITCODE}${NORMAL}。退出码含义请查看 cURL 手册。" ;;
                 esac
-                if [ ! "${UPLOAD}" = "" ]; then echo ""; echo "Debug:"; echo ${UPLOAD}; fi
+                if [ ! "${UPLOAD}" = "" ]; then echo ""; echo "调试信息："; echo ${UPLOAD}; fi
                 echo ""
                 # Quit
                 ExitClean
             else
-                Display --indent 2 --text "- Data upload (${UPLOAD_SERVER})" --result "${STATUS_DONE}" --color GREEN
+                Display --indent 2 --text "- 数据上传（${UPLOAD_SERVER}）" --result "${STATUS_DONE}" --color GREEN
             fi
         else
-            echo "${RED}Error${NORMAL}: No hostid and/or hostid2 found. Can not upload report file."
-            echo "Suggested command: lynis generate hostids --save"
+            echo "${RED}错误${NORMAL}：未找到 hostid 或 hostid2，无法上传报告文件。"
+            echo "建议执行：lynis generate hostids --save"
             echo ""
-            echo "Note: do not replicate the values to other systems, as it needs to be unique per system"
+            echo "注意：不要将这些标识复制到其他系统，每台系统都必须使用唯一值。"
 
             # Quit
             ExitFatal
         fi
     else
-         Output "${YELLOW}No report file found to upload.${NORMAL}"
+         Output "${YELLOW}未找到可上传的报告文件。${NORMAL}"
          ExitFatal
     fi
 
