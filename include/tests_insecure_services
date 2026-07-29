@@ -36,18 +36,18 @@
 #
     # Test        : INSE-8000
     # Description : Check for installed inetd package
-    Register --test-no INSE-8000 --package-manager-required --weight L --network NO --category security --description "Installed inetd package"
+    Register --test-no INSE-8000 --package-manager-required --weight L --network NO --category security --description "检查是否安装 inetd 软件包"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check for installed inetd daemon
-        LogText "Test: Checking if inetd is installed"
+        LogText "检查：inetd 是否已安装"
         if PackageIsInstalled "inetd" || PackageIsInstalled "inetutils-inetd"; then
             INETD_PACKAGE_INSTALLED=1
-            LogText "Result: inetd is installed"
-            Display --indent 2 --text "- Installed inetd package" --result "${STATUS_FOUND}" --color YELLOW
+            LogText "结果：inetd 已安装"
+            Display --indent 2 --text "- 已安装的 inetd 软件包" --result "${STATUS_FOUND}" --color YELLOW
             #ReportSuggestion "${TEST_NO}" "If there are no inetd services required, it is recommended that the daemon be removed"
         else
-            LogText "Result: inetd is NOT installed"
-            Display --indent 2 --text "- Installed inetd package" --result "${STATUS_NOT_FOUND}" --color GREEN
+            LogText "结果：未安装 inetd"
+            Display --indent 2 --text "- 已安装的 inetd 软件包" --result "${STATUS_NOT_FOUND}" --color GREEN
         fi
     fi
 #
@@ -56,17 +56,17 @@
     # Test        : INSE-8002
     # Description : Check for inetd status
     if [ ${INETD_PACKAGE_INSTALLED} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no INSE-8002 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check for enabled inet daemon"
+    Register --test-no INSE-8002 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 inetd 守护进程是否启用"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check running processes
-        LogText "Test: Searching for active inet daemon"
+        LogText "检查：搜索活动的 inetd 守护进程"
         if IsRunning "inetd" || IsRunning "inetutils-inetd"; then
-            LogText "Result: inetd is running"
-            Display --indent 4 --text "- inetd status" --result "${STATUS_ACTIVE}" --color GREEN
+            LogText "结果：inetd 正在运行"
+            Display --indent 4 --text "- inetd 状态" --result "${STATUS_ACTIVE}" --color GREEN
             INETD_ACTIVE=1
         else
-            LogText "Result: inetd is NOT running"
-            Display --indent 4 --text "- inetd status" --result "${STATUS_NOT_ACTIVE}" --color GREEN
+            LogText "结果：inetd 未运行"
+            Display --indent 4 --text "- inetd 状态" --result "${STATUS_NOT_ACTIVE}" --color GREEN
         fi
     fi
 #
@@ -75,16 +75,16 @@
     # Test        : INSE-8004
     # Description : Check for inetd configuration file (inetd)
     if [ ${INETD_ACTIVE} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no INSE-8004 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Presence of inetd configuration file"
+    Register --test-no INSE-8004 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 inetd 配置文件是否存在"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check configuration file
-        LogText "Test: Searching for file ${INETD_CONFIG_FILE}"
+        LogText "检查：搜索文件 ${INETD_CONFIG_FILE}"
         if [ -f ${INETD_CONFIG_FILE} ]; then
-            LogText "Result: ${INETD_CONFIG_FILE} exists"
-            Display --indent 4 --text "- Checking inetd.conf" --result "${STATUS_FOUND}" --color WHITE
+            LogText "结果：${INETD_CONFIG_FILE} 存在"
+            Display --indent 4 --text "- 正在检查 inetd.conf" --result "${STATUS_FOUND}" --color WHITE
         else
-            LogText "Result: ${INETD_CONFIG_FILE} does not exist"
-            Display --indent 4 --text "- Checking inetd.conf" --result "${STATUS_NOT_FOUND}" --color WHITE
+            LogText "结果：${INETD_CONFIG_FILE} 不存在"
+            Display --indent 4 --text "- 正在检查 inetd.conf" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
 #
@@ -93,18 +93,18 @@
     # Test        : INSE-8006
     # Description : Check for inetd configuration file contents if inetd is NOT active
     if [ ${INETD_ACTIVE} -eq 0 -a -f ${INETD_CONFIG_FILE} ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no INSE-8006 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check configuration of inetd when disabled"
+    Register --test-no INSE-8006 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 inetd 禁用时的配置内容"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check if any service is enabled in /etc/inetd.conf (inetd is not active, see test INSE-8002)
-        LogText "Test: check if all services are disabled when inetd is disabled"
+        LogText "检查：inetd 禁用时是否仍配置了已启用服务"
         FIND=$(${GREPBINARY} -v "^#" ${INETD_CONFIG_FILE} | ${GREPBINARY} -v "^$")
         if [ -z "${FIND}" ]; then
-            LogText "Result: no services found in ${INETD_CONFIG_FILE}"
-            Display --indent 4 --text "- Checking enabled inetd services" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：${INETD_CONFIG_FILE} 中未发现服务"
+            Display --indent 4 --text "- 正在检查已启用的 inetd 服务" --result "${STATUS_OK}" --color GREEN
         else
-            LogText "Result: found services in inetd, even though inetd is not running"
-            Display --indent 4 --text "- Checking enabled inetd services" --result "${STATUS_SUGGESTION}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Although inetd is not running, make sure no services are enabled in ${INETD_CONFIG_FILE}, or remove inetd service"
+            LogText "结果：inetd 未运行，但配置中仍发现服务"
+            Display --indent 4 --text "- 正在检查已启用的 inetd 服务" --result "${STATUS_SUGGESTION}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "虽然 inetd 未运行，但仍应确认 ${INETD_CONFIG_FILE} 中没有启用服务，或移除 inetd 服务"
         fi
     fi
 #
@@ -113,18 +113,18 @@
     # Test        : INSE-8016
     # Description : Check for telnet enabled via inetd
     if [ ${INETD_ACTIVE} -eq 1 -a -f ${INETD_CONFIG_FILE} ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no INSE-8016 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check for telnet via inetd"
+    Register --test-no INSE-8016 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 inetd 是否启用了 Telnet"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: checking telnet presence in inetd configuration"
+        LogText "检查：inetd 配置中是否存在 Telnet"
         FIND=$(${GREPBINARY} "^telnet" ${INETD_CONFIG_FILE})
         if [ -z "${FIND}" ]; then
-            LogText "Result: telnet not enabled in ${INETD_CONFIG_FILE}"
-            Display --indent 2 --text "- Checking inetd (telnet)" --result "${STATUS_NOT_FOUND}" --color GREEN
+            LogText "结果：${INETD_CONFIG_FILE} 中未启用 Telnet"
+            Display --indent 2 --text "- 正在检查 inetd（Telnet）" --result "${STATUS_NOT_FOUND}" --color GREEN
             AddHP 3 3
         else
-            LogText "Result: telnet enabled in ${INETD_CONFIG_FILE}"
-            Display --indent 2 --text "- Checking inetd (telnet)" --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "Disable telnet in inetd configuration and use SSH instead"
+            LogText "结果：${INETD_CONFIG_FILE} 中已启用 Telnet"
+            Display --indent 2 --text "- 正在检查 inetd（Telnet）" --result "${STATUS_WARNING}" --color RED
+            ReportSuggestion "${TEST_NO}" "在 inetd 配置中禁用 Telnet，并改用 SSH"
             AddHP 1 3
         fi
     fi
@@ -133,17 +133,17 @@
 #
     # Test        : INSE-8100
     # Description : Check for installed xinetd daemon
-    Register --test-no INSE-8100 --package-manager-required --weight L --network NO --category security --description "Check for installed xinetd daemon"
+    Register --test-no INSE-8100 --package-manager-required --weight L --network NO --category security --description "检查是否安装 xinetd 守护进程"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check for installed xinetd daemon
-        LogText "Test: Checking for installed xinetd daemon"
+        LogText "检查：xinetd 守护进程是否已安装"
         if PackageIsInstalled "xinetd"; then
-            LogText "Result: xinetd is installed"
-            Display --indent 2 --text "- Installed xinetd package" --result "${STATUS_FOUND}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "If there are no xinetd services required, it is recommended that the daemon be removed"
+            LogText "结果：xinetd 已安装"
+            Display --indent 2 --text "- 已安装的 xinetd 软件包" --result "${STATUS_FOUND}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "如果不需要任何 xinetd 服务，建议移除该守护进程"
         else
-            LogText "Result: xinetd is NOT installed"
-            Display --indent 2 --text "- Installed xinetd package" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：未安装 xinetd"
+            Display --indent 2 --text "- 已安装的 xinetd 软件包" --result "${STATUS_OK}" --color GREEN
         fi
     fi
 #
@@ -151,17 +151,17 @@
 #
     # Test        : INSE-8102
     # Description : Check for xinetd status
-    Register --test-no INSE-8102 --weight L --network NO --category security --description "Check for active xinet daemon"
+    Register --test-no INSE-8102 --weight L --network NO --category security --description "检查 xinetd 守护进程是否活动"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check running processes
-        LogText "Test: Searching for active extended internet services daemon (xinetd)"
+        LogText "检查：搜索活动的扩展网络服务守护进程 xinetd"
         if IsRunning "xinetd"; then
-            LogText "Result: xinetd is running"
-            Display --indent 4 --text "- xinetd status" --result "${STATUS_ACTIVE}" --color GREEN
+            LogText "结果：xinetd 正在运行"
+            Display --indent 4 --text "- xinetd 状态" --result "${STATUS_ACTIVE}" --color GREEN
             XINETD_ACTIVE=1
         else
-            LogText "Result: xinetd is NOT running"
-            Display --indent 4 --text "- xinetd status" --result "${STATUS_NOT_ACTIVE}" --color GREEN
+            LogText "结果：xinetd 未运行"
+            Display --indent 4 --text "- xinetd 状态" --result "${STATUS_NOT_ACTIVE}" --color GREEN
         fi
     fi
 #
@@ -170,16 +170,16 @@
     # Test        : INSE-8104
     # Description : Check for xinetd configuration file
     if [ ${XINETD_ACTIVE} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no INSE-8104 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check for enabled xinet daemon"
+    Register --test-no INSE-8104 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 xinetd 配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check configuration file
-        LogText "Test: Searching for file ${XINETD_CONFIG_FILE}"
+        LogText "检查：搜索文件 ${XINETD_CONFIG_FILE}"
         if [ -f "${XINETD_CONFIG_FILE}" ]; then
-            LogText "Result: ${XINETD_CONFIG_FILE} exists"
-            Display --indent 6 --text "- Configuration file (xinetd.conf)" --result "${STATUS_FOUND}" --color WHITE
+            LogText "结果：${XINETD_CONFIG_FILE} 存在"
+            Display --indent 6 --text "- 配置文件（xinetd.conf）" --result "${STATUS_FOUND}" --color WHITE
         else
-            LogText "Result: ${XINETD_CONFIG_FILE} does not exist"
-            Display --indent 6 --text "- Configuration file (xinetd.conf)" --result "${STATUS_NOT_FOUND}" --color WHITE
+            LogText "结果：${XINETD_CONFIG_FILE} 不存在"
+            Display --indent 6 --text "- 配置文件（xinetd.conf）" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
 #
@@ -188,18 +188,18 @@
     # Test        : INSE-8106
     # Description : Check for xinetd configuration file contents if xinetd is NOT active
     if [ ${XINETD_ACTIVE} -eq 0 -a -f ${XINETD_CONFIG_FILE} ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no INSE-8106 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check configuration of xinetd when disabled"
+    Register --test-no INSE-8106 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 xinetd 禁用时的配置内容"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check if any service is enabled in /etc/xinetd.d (xinetd is not active, see test INSE-8102)
-        LogText "Test: check if all services are disabled if xinetd is disabled"
+        LogText "检查：xinetd 禁用时是否仍启用了服务"
         FIND=$(${GREPBINARY} -r "disable\s*=\s*no" ${XINETD_CONFIG_DIR})
         if [ -z "${FIND}" ]; then
-            LogText "Result: no services found in ${XINETD_CONFIG_DIR}"
-            Display --indent 6 --text "- Enabled xinetd.d services" --result "${STATUS_NOT_FOUND}" --color GREEN
+            LogText "结果：${XINETD_CONFIG_DIR} 中未发现服务"
+            Display --indent 6 --text "- 已启用的 xinetd.d 服务" --result "${STATUS_NOT_FOUND}" --color GREEN
         else
-            LogText "Result: found services in ${XINETD_CONFIG_DIR}, even though xinetd is not running"
-            Display --indent 6 --text "- Enabled xinetd.d services" --result "${STATUS_FOUND}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Although xinetd is not running, make sure no services are enabled in ${XINETD_CONFIG_DIR}, or remove xinetd service"
+            LogText "结果：xinetd 未运行，但 ${XINETD_CONFIG_DIR} 中仍发现服务"
+            Display --indent 6 --text "- 已启用的 xinetd.d 服务" --result "${STATUS_FOUND}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "虽然 xinetd 未运行，但仍应确认 ${XINETD_CONFIG_DIR} 中没有启用服务，或移除 xinetd 服务"
         fi
     fi
 #
@@ -208,38 +208,38 @@
     # Test        : INSE-8116
     # Description : Check for insecure services enabled via xinetd
     if [ ${XINETD_ACTIVE} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no INSE-8116 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Insecure services enabled via xinetd"
+    Register --test-no INSE-8116 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查通过 xinetd 启用的不安全服务"
     if [ ${SKIPTEST} -eq 0 ]; then
         XINETD_INSECURE_SERVICE_FOUND=0
 
         ITEMS="chargen chargen-dgram chargen-stream daytime daytime-dgram daytime-stream discard discard-dgram discard-stream echo echo-dgram echo-stream time time-dgram time-stream ntalk rexec rlogin rsh rsync talk telnet tftp"
 
         for SERVICE in ${ITEMS}; do
-            LogText "Test: checking service ${SERVICE}"
+            LogText "检查：服务 ${SERVICE}"
             if ! SkipAtomicTest "${TEST_NO}:${SERVICE}"; then
                 FILE="${XINETD_CONFIG_DIR}/${SERVICE}"
                 if [ -f "${FILE}" ]; then
-                    LogText "Test: checking status in xinetd configuration file (${FILE})"
+                    LogText "检查：xinetd 配置文件中的状态（${FILE}）"
                     FIND=$(${GREPBINARY} "disable\s*=\s*no" ${FILE})
                     if [ -n "${FIND}" ]; then
-                        LogText "Result: found insecure service enabled: ${SERVICE}"
+                        LogText "结果：发现已启用的不安全服务：${SERVICE}"
                         XINETD_INSECURE_SERVICE_FOUND=1
-                        ReportSuggestion "${TEST_NO}" "Disable or remove any insecure services in the xinetd configuration" "${SERVICE}" "text:See log file for more details"
+                        ReportSuggestion "${TEST_NO}" "禁用或移除 xinetd 配置中的不安全服务" "${SERVICE}" "text:详情请查看日志文件"
                         Report "insecure_service[]=${SERVICE}"
                     fi
                 fi
             else
-                LogText "Result: skipped, as this item is excluded using the profile"
+                LogText "结果：该项目已通过配置文件排除，因此跳过"
             fi
         done
 
         if [ ${XINETD_INSECURE_SERVICE_FOUND} -eq 0 ]; then
-            LogText "Result: no insecure services found in xinetd configuration"
-            Display --indent 6 --text "- Checking xinetd (insecure services)" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：xinetd 配置中未发现不安全服务"
+            Display --indent 6 --text "- 正在检查 xinetd（不安全服务）" --result "${STATUS_OK}" --color GREEN
             AddHP 3 3
         else
-            LogText "Result: one ore more insecure services discovered in xinetd configuration"
-            Display --indent 6 --text "- Checking xinetd (insecure services)" --result "${STATUS_WARNING}" --color RED
+            LogText "结果：xinetd 配置中发现一个或多个不安全服务"
+            Display --indent 6 --text "- 正在检查 xinetd（不安全服务）" --result "${STATUS_WARNING}" --color RED
             AddHP 0 3
         fi
     fi
@@ -249,20 +249,20 @@
     # Test        : INSE-8200
     # Description : Check if tcp_wrappers is installed when inetd/xinetd is active
     if [ ${INETD_ACTIVE} -eq 1 -o ${XINETD_ACTIVE} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no INSE-8200 --package-manager-required --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check if tcp_wrappers is installed when inetd/xinetd is active"
+    Register --test-no INSE-8200 --package-manager-required --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "inetd/xinetd 活动时检查是否安装 tcp_wrappers"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking if tcp_wrappers is installed"
+        LogText "检查：tcp_wrappers 是否已安装"
         FOUND=0
         PACKAGES="tcp_wrappers tcpd"
         for PACKAGE in ${PACKAGES}; do
-            if PackageIsInstalled "${PACKAGE}"; then LogText "Package '${PACKAGE}' is installed"; FOUND=1; fi
+            if PackageIsInstalled "${PACKAGE}"; then LogText "软件包 '${PACKAGE}' 已安装"; FOUND=1; fi
         done
         if [ ${FOUND} -eq 1 ]; then
-            LogText "Result: tcp_wrappers is installed"
-            Display --indent 2 --text "- Checking tcp_wrappers installation" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：tcp_wrappers 已安装"
+            Display --indent 2 --text "- 正在检查 tcp_wrappers 安装状态" --result "${STATUS_OK}" --color GREEN
         else
-            LogText "Result: tcp_wrappers is NOT installed"
-            Display --indent 2 --text "- Checking tcp_wrappers installation" --result "${STATUS_SUGGESTION}" --color YELLOW
+            LogText "结果：未安装 tcp_wrappers"
+            Display --indent 2 --text "- 正在检查 tcp_wrappers 安装状态" --result "${STATUS_SUGGESTION}" --color YELLOW
             #ReportSuggestion "${TEST_NO}" "When network services are using the inetd/xinetd service, the tcp_wrappers package should be installed"
         fi
     fi
@@ -271,21 +271,21 @@
 #
     # Test        : INSE-8300
     # Description : Check if rsh client is installed
-    Register --test-no INSE-8300 --package-manager-required --weight L --network NO --category security --description "Check if rsh client is installed"
+    Register --test-no INSE-8300 --package-manager-required --weight L --network NO --category security --description "检查是否安装 rsh 客户端"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking if rsh client is installed"
+        LogText "检查：rsh 客户端是否已安装"
         FOUND=0
         PACKAGES="rsh rsh-client rsh-redone-client"
         for PACKAGE in ${PACKAGES}; do
-            if PackageIsInstalled "${PACKAGE}"; then LogText "Package '${PACKAGE}' is installed"; FOUND=1; fi
+            if PackageIsInstalled "${PACKAGE}"; then LogText "软件包 '${PACKAGE}' 已安装"; FOUND=1; fi
         done
         if [ ${FOUND} -eq 1 ]; then
-            LogText "Result: rsh client is installed"
-            Display --indent 2 --text "- Installed rsh client package" --result "${STATUS_SUGGESTION}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Remove rsh client when it is not in use or replace with the more secure SSH package"
+            LogText "结果：rsh 客户端已安装"
+            Display --indent 2 --text "- 已安装的 rsh 客户端软件包" --result "${STATUS_SUGGESTION}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "不使用 rsh 客户端时应将其移除，或改用更安全的 SSH 软件包"
         else
-            LogText "Result: rsh client is NOT installed"
-            Display --indent 2 --text "- Installed rsh client package" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：未安装 rsh 客户端"
+            Display --indent 2 --text "- 已安装的 rsh 客户端软件包" --result "${STATUS_OK}" --color GREEN
         fi
     fi
 #
@@ -327,23 +327,23 @@
 #
     # Test        : INSE-8304
     # Description : Check if rsh server is installed
-    Register --test-no INSE-8304 --package-manager-required --weight L --network NO --category security --description "Check if rsh server is installed"
+    Register --test-no INSE-8304 --package-manager-required --weight L --network NO --category security --description "检查是否安装 rsh 服务端"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check if rsh server is installed
-        LogText "Test: Checking if rsh server is installed"
+        LogText "检查：rsh 服务端是否已安装"
         FOUND=0
         PACKAGES="rsh-server rsh-redone-server"
         for PACKAGE in ${PACKAGES}; do
-            if PackageIsInstalled "${PACKAGE}"; then LogText "Package '${PACKAGE}' is installed"; FOUND=1; fi
+            if PackageIsInstalled "${PACKAGE}"; then LogText "软件包 '${PACKAGE}' 已安装"; FOUND=1; fi
         done
         if [ ${FOUND} -eq 1 ]; then
-            LogText "Result: rsh server is installed"
-            Display --indent 2 --text "- Installed rsh server package" --result "${STATUS_SUGGESTION}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Remove the rsh-server package and replace with a more secure alternative like SSH"
+            LogText "结果：rsh 服务端已安装"
+            Display --indent 2 --text "- 已安装的 rsh 服务端软件包" --result "${STATUS_SUGGESTION}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "移除 rsh-server 软件包，并改用 SSH 等更安全的替代方案"
             Report "insecure_service[]=rsh-server"
         else
-            LogText "Result: rsh server is NOT installed"
-            Display --indent 2 --text "- Installed rsh server package" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：未安装 rsh 服务端"
+            Display --indent 2 --text "- 已安装的 rsh 服务端软件包" --result "${STATUS_OK}" --color GREEN
         fi
     fi
 #
@@ -351,20 +351,20 @@
 #
     # Test        : INSE-8310
     # Description : Check if telnet client is installed
-    Register --test-no INSE-8310 --package-manager-required --weight L --network NO --category security --description "Check if telnet client is installed"
+    Register --test-no INSE-8310 --package-manager-required --weight L --network NO --category security --description "检查是否安装 Telnet 客户端"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check if telnet client is installed
-        LogText "Test: Checking if telnet client is installed"
-        if PackageIsInstalled "${PACKAGE}"; then LogText "Package '${PACKAGE}' is installed"; FOUND=1; fi
+        LogText "检查：Telnet 客户端是否已安装"
+        if PackageIsInstalled "${PACKAGE}"; then LogText "软件包 '${PACKAGE}' 已安装"; FOUND=1; fi
 
         if [ ${FOUND} -eq 1 ]; then
-            LogText "Result: telnet client is installed"
-            Display --indent 2 --text "- Installed telnet client package" --result "${STATUS_FOUND}" --color YELLOW
+            LogText "结果：Telnet 客户端已安装"
+            Display --indent 2 --text "- 已安装的 Telnet 客户端软件包" --result "${STATUS_FOUND}" --color YELLOW
             # Telnet client usage might be used for troubleshooting instead of system administration
             #ReportSuggestion "${TEST_NO}" "telnet client contain numerous security exposures and have been replaced with the more secure SSH package"
         else
-            LogText "Result: telnet client is NOT installed"
-            Display --indent 2 --text "- Installed telnet client package" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：未安装 Telnet 客户端"
+            Display --indent 2 --text "- 已安装的 Telnet 客户端软件包" --result "${STATUS_OK}" --color GREEN
         fi
     fi
 #
@@ -372,23 +372,23 @@
 #
     # Test        : INSE-8322
     # Description : Check if telnet server is installed
-    Register --test-no INSE-8322 --package-manager-required --weight L --network NO --category security --description "Check if telnet server is installed"
+    Register --test-no INSE-8322 --package-manager-required --weight L --network NO --category security --description "检查是否安装 Telnet 服务端"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check if TFTP server is installed
-        LogText "Test: Checking if telnet server is installed"
+        LogText "检查：Telnet 服务端是否已安装"
         FOUND=0
         PACKAGES="telnetd telnet-server"
         for PACKAGE in ${PACKAGES}; do
-            if PackageIsInstalled "${PACKAGE}"; then LogText "Package '${PACKAGE}' is installed"; FOUND=1; fi
+            if PackageIsInstalled "${PACKAGE}"; then LogText "软件包 '${PACKAGE}' 已安装"; FOUND=1; fi
         done
         if [ ${FOUND} -eq 1 ]; then
-            LogText "Result: telnet server is installed"
-            Display --indent 2 --text "- Installed telnet server package" --result "${STATUS_FOUND}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Removing the telnet server package and replace with SSH when possible"
+            LogText "结果：Telnet 服务端已安装"
+            Display --indent 2 --text "- 已安装的 Telnet 服务端软件包" --result "${STATUS_FOUND}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "尽可能移除 Telnet 服务端软件包，并改用 SSH"
             Report "insecure_service[]=telnet-server"
         else
-            LogText "Result: telnet server is NOT installed"
-            Display --indent 2 --text "- Installed telnet server package" --result "${STATUS_NOT_FOUND}" --color GREEN
+            LogText "结果：未安装 Telnet 服务端"
+            Display --indent 2 --text "- 已安装的 Telnet 服务端软件包" --result "${STATUS_NOT_FOUND}" --color GREEN
         fi
     fi
 
@@ -397,10 +397,10 @@
 #
     # Test        : INSE-8314
     # Description : Check if NIS client is installed
-    Register --test-no INSE-8314 --package-manager-required --weight L --network NO --category security --description "Check if NIS client is installed"
+    Register --test-no INSE-8314 --package-manager-required --weight L --network NO --category security --description "检查是否安装 NIS 客户端"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=""
-        LogText "Test: Checking if NIS client is installed"
+        LogText "检查：NIS 客户端是否已安装"
         PACKAGES="nis ypbind"
         for PACKAGE in ${PACKAGES}; do
             if PackageIsInstalled "${PACKAGE}"; then
@@ -408,12 +408,12 @@
             fi
         done
         if [ -n "${FOUND}" ]; then
-            LogText "Result: NIS client is installed"
-            Display --indent 2 --text "- Checking NIS client installation" --result "${STATUS_SUGGESTION}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "NIS client should be removed if not required. Use a more secure alternative or a protocol that can use encrypted communications."
+            LogText "结果：NIS 客户端已安装"
+            Display --indent 2 --text "- 正在检查 NIS 客户端安装状态" --result "${STATUS_SUGGESTION}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "不需要 NIS 客户端时应将其移除，并改用更安全或支持加密通信的替代方案。"
         else
-            LogText "Result: NIS client is NOT installed"
-            Display --indent 2 --text "- Checking NIS client installation" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：未安装 NIS 客户端"
+            Display --indent 2 --text "- 正在检查 NIS 客户端安装状态" --result "${STATUS_OK}" --color GREEN
         fi
     fi
 #
@@ -421,10 +421,10 @@
 #
     # Test        : INSE-8316
     # Description : Check if NIS server is installed
-    Register --test-no INSE-8316 --package-manager-required --weight L --network NO --category security --description "Check if NIS server is installed"
+    Register --test-no INSE-8316 --package-manager-required --weight L --network NO --category security --description "检查是否安装 NIS 服务端"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=""
-        LogText "Test: Checking if NIS server is installed"
+        LogText "检查：NIS 服务端是否已安装"
         PACKAGES="nis ypserv"
         for PACKAGE in ${PACKAGES}; do
             if PackageIsInstalled "${PACKAGE}"; then
@@ -432,12 +432,12 @@
             fi
         done
         if [ -n "${FOUND}" ]; then
-            LogText "Result: NIS server is installed"
-            Display --indent 2 --text "- Checking NIS server installation" --result "${STATUS_SUGGESTION}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Removing the ${FOUND} package decreases the risk of the accidental (or intentional) activation of NIS or NIS+ services"
+            LogText "结果：NIS 服务端已安装"
+            Display --indent 2 --text "- 正在检查 NIS 服务端安装状态" --result "${STATUS_SUGGESTION}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "移除 ${FOUND} 软件包可降低意外或人为启用 NIS/NIS+ 服务的风险"
         else
-            LogText "Result: NIS server is NOT installed"
-            Display --indent 2 --text "- Checking NIS server installation" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：未安装 NIS 服务端"
+            Display --indent 2 --text "- 正在检查 NIS 服务端安装状态" --result "${STATUS_OK}" --color GREEN
         fi
     fi
 #
@@ -445,9 +445,9 @@
 #
     # Test        : INSE-8318
     # Description : Check if TFTP client is installed
-    Register --test-no INSE-8318 --package-manager-required --weight L --network NO --category security --description "Check if TFTP client is installed"
+    Register --test-no INSE-8318 --package-manager-required --weight L --network NO --category security --description "检查是否安装 TFTP 客户端"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking if TFTP client is installed"
+        LogText "检查：TFTP 客户端是否已安装"
         FOUND=""
         PACKAGES="atftp tftp tftp-hpa"
         for PACKAGE in ${PACKAGES}; do
@@ -456,12 +456,12 @@
             fi
         done
         if [ -n "${FOUND}" ]; then
-            LogText "Result: TFTP client is installed"
-            Display --indent 2 --text "- Checking TFTP client installation" --result "${STATUS_SUGGESTION}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "It is recommended that TFTP be removed, unless there is a specific need for TFTP (such as a boot server)"
+            LogText "结果：TFTP 客户端已安装"
+            Display --indent 2 --text "- 正在检查 TFTP 客户端安装状态" --result "${STATUS_SUGGESTION}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "除非确有需要（例如启动服务器），否则建议移除 TFTP"
         else
-            LogText "Result: TFTP client is NOT installed"
-            Display --indent 2 --text "- Checking TFTP client installation" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：未安装 TFTP 客户端"
+            Display --indent 2 --text "- 正在检查 TFTP 客户端安装状态" --result "${STATUS_OK}" --color GREEN
         fi
     fi
 #
@@ -469,9 +469,9 @@
 #
     # Test        : INSE-8320
     # Description : Check if TFTP server is installed
-    Register --test-no INSE-8320 --package-manager-required --weight L --network NO --category security --description "Check if TFTP server is installed"
+    Register --test-no INSE-8320 --package-manager-required --weight L --network NO --category security --description "检查是否安装 TFTP 服务端"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking if TFTP server is installed"
+        LogText "检查：TFTP 服务端是否已安装"
         FOUND=""
         PACKAGES="atftpd tftpd tftp-server tftpd-hpa"
         for PACKAGE in ${PACKAGES}; do
@@ -480,12 +480,12 @@
             fi
         done
         if [ -n "${FOUND}" ]; then
-            LogText "Result: TFTP server is installed"
-            Display --indent 2 --text "- Checking TFTP server installation" --result "${STATUS_SUGGESTION}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Removing the ${FOUND} package decreases the risk of the accidental (or intentional) activation of tftp services"
+            LogText "结果：TFTP 服务端已安装"
+            Display --indent 2 --text "- 正在检查 TFTP 服务端安装状态" --result "${STATUS_SUGGESTION}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "移除 ${FOUND} 软件包可降低意外或人为启用 TFTP 服务的风险"
         else
-            LogText "Result: TFTP server is NOT installed"
-            Display --indent 2 --text "- Checking TFTP server installation" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：未安装 TFTP 服务端"
+            Display --indent 2 --text "- 正在检查 TFTP 服务端安装状态" --result "${STATUS_OK}" --color GREEN
         fi
     fi
 #
@@ -494,18 +494,18 @@
     # Test        : INSE-8050
     # Description : Check for insecure services on macOS
     if [ -n "${LAUNCHCTL_BINARY}" ]; then PREQS_MET="YES"; SKIPREASON=""; else PREQS_MET="NO"; SKIPREASON="No launchctl binary on this system"; fi
-    Register --test-no INSE-8050 --os "macOS" --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight M --network NO --category security --description "Check for insecure services on macOS"
+    Register --test-no INSE-8050 --os "macOS" --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight M --network NO --category security --description "检查 macOS 上的不安全服务"
     if [ ${SKIPTEST} -eq 0 ]; then
         TEST_SERVICES="com.apple.fingerd com.apple.ftp-proxy"
         for ITEM in ${TEST_SERVICES}; do
             if ${LAUNCHCTL_BINARY} list | ${GREPBINARY} -sq ${ITEM}; then
                 Display --indent 2 --text "- ${ITEM}" --result "${STATUS_NO}" --color RED
-                LogText "Result: found ${ITEM}, which is considered an insecure service"
-                ReportSuggestion "${TEST_NO}" "Consider disabling service ${ITEM}" "launchctl" "-"
+                LogText "结果：发现 ${ITEM}，该服务被视为不安全"
+                ReportSuggestion "${TEST_NO}" "建议禁用服务 ${ITEM}" "launchctl" "-"
                 AddHP 0 1
             else
                 Display --indent 2 --text "- ${ITEM}" --result "${STATUS_OK}" --color GREEN
-                LogText "Result: did not find ${ITEM}, which is fine"
+                LogText "结果：未发现 ${ITEM}，状态正常"
                 AddHP 1 1
             fi
         done
