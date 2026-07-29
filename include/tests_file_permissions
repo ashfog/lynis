@@ -27,40 +27,40 @@
 #
     # Test        : FILE-7524
     # Description : Perform file permissions check
-    Register --test-no FILE-7524 --weight L --network NO --category security --description "Perform file permissions check"
+    Register --test-no FILE-7524 --weight L --network NO --category security --description "执行文件权限检查"
     if [ ${SKIPTEST} -eq 0 ]; then
-        Display --indent 2 --text "- Starting file permissions check"
-        LogText "Test: Checking file permissions"
+        Display --indent 2 --text "- 正在开始文件权限检查"
+        LogText "检查：文件权限"
         FOUND=0
         for PROFILE in ${PROFILES}; do
-            LogText "Using profile ${PROFILE} for baseline."
+            LogText "使用配置文件 ${PROFILE} 作为权限基准。"
             FILES=$(${GREPBINARY} -E '^permfile=|^permdir=' ${PROFILE} | ${CUTBINARY} -d= -f2 | ${CUTBINARY} -d: -f1)
             for F in ${FILES}; do
-                LogText "Test: checking file/directory ${F}"
+                LogText "检查：文件/目录 ${F}"
                 if [ -f "${F}" ]; then
                     PERMS=$(${GREPBINARY} '^permfile=' ${PROFILE} | ${GREPBINARY} "=${F}:" | ${CUTBINARY} -d: -f2)
                     if HasCorrectFilePermissions "${F}" "${PERMS}"; then
-                        Display --indent 4 --text "File: ${F}" --result "${STATUS_OK}" --color GREEN
+                        Display --indent 4 --text "文件：${F}" --result "${STATUS_OK}" --color GREEN
                     else
-                        Display --indent 4 --text "File: ${F}" --result "${STATUS_SUGGESTION}" --color YELLOW
+                        Display --indent 4 --text "文件：${F}" --result "${STATUS_SUGGESTION}" --color YELLOW
                         FOUND=1
                     fi
                 elif [ -d "${F}" ]; then
                     PERMS=$(${GREPBINARY} '^permdir=' ${PROFILE} | ${GREPBINARY} "=${F}:" | ${CUTBINARY} -d: -f2)
                     if HasCorrectFilePermissions "${F}" "${PERMS}"; then
-                        Display --indent 4 --text "Directory: ${F}" --result "${STATUS_OK}" --color GREEN
+                        Display --indent 4 --text "目录：${F}" --result "${STATUS_OK}" --color GREEN
                     else
-                        Display --indent 4 --text "Directory: ${F}" --result "${STATUS_SUGGESTION}" --color YELLOW
+                        Display --indent 4 --text "目录：${F}" --result "${STATUS_SUGGESTION}" --color YELLOW
                         FOUND=1
                     fi
                 else
                     if IsVerbose; then Display --indent 4 --text "${F}" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
-                    LogText "Skipping file/directory ${F} as it does not exist on this system"
+                    LogText "文件/目录 ${F} 在本系统中不存在，已跳过"
                 fi
             done
         done
         if [ ${FOUND} -eq 1 ]; then
-            ReportSuggestion "${TEST_NO}" "Consider restricting file permissions" "See screen output or log file" "text:Use chmod to change file permissions"
+            ReportSuggestion "${TEST_NO}" "建议收紧文件权限" "请查看屏幕输出或日志文件" "text:使用 chmod 修改文件权限"
         fi
     fi
 #
