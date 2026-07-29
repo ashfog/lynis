@@ -33,17 +33,17 @@
 #
     # Test        : HOME-9302
     # Description : Create list with home directories
-    Register --test-no HOME-9302 --weight L --network NO --category security --description "Create list with home directories"
+    Register --test-no HOME-9302 --weight L --network NO --category security --description "创建用户主目录列表"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Read sixth field of /etc/passwd
-        LogText "Test: query ${ROOTDIR}etc/passwd to obtain home directories"
+        LogText "检查：查询 ${ROOTDIR}etc/passwd 以获取用户主目录"
         FIND=$(${AWKBINARY} -F: '{ if ($1 !~ "#") print $6 }' ${ROOTDIR}etc/passwd | ${SORTBINARY} -u)
         for I in ${FIND}; do
             if [ -d ${I} ]; then
-                LogText "Result: found home directory: ${I} (directory exists)"
+                LogText "结果：发现用户主目录 ${I}（目录存在）"
                 Report "home_directory[]=${I}"
             else
-                LogText "Result: found home directory: ${I} (directory does not exist)"
+                LogText "结果：发现用户主目录 ${I}（目录不存在）"
             fi
         done
     fi
@@ -52,7 +52,7 @@
 #
     # Test        : HOME-9304
     # Description : Check if users' home directories permissions are 750 or more restrictive
-    Register --test-no HOME-9304 --weight L --network NO --category security --description "Check if users' home directories permissions are 750 or more restrictive"
+    Register --test-no HOME-9304 --weight L --network NO --category security --description "检查用户主目录权限是否为 750 或更严格"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check if users' home directories permissions are 750 or more restrictive
         FOUND=0
@@ -60,15 +60,15 @@
         while read -r LINE; do
             USER=$(echo ${LINE} | ${CUTBINARY} -d: -f1)
             DIR=$(echo ${LINE} | ${CUTBINARY} -d: -f6)
-            LogText "Test: checking directory '${DIR}' for user '${USER}'"
+            LogText "检查：用户 ${USER} 的目录 '${DIR}'"
             if [ -d "${DIR}" ]; then
                 WRITE_GROUP_PERM=$(${LSBINARY} -ld ${DIR} | ${CUTBINARY} -f1 -d" " | ${CUTBINARY} -c6)
                 OTHER_PERMS=$(${LSBINARY} -ld ${DIR} | ${CUTBINARY} -f1 -d" " | ${CUTBINARY} -c8-10)
                 if [ ! ${WRITE_GROUP_PERM} = "-" -o ! ${OTHER_PERMS} = "---" ]; then
-                    LogText "Result: permissions of home directory ${DIR} of user ${USER} are not strict enough. Should be 750 or more restrictive. Change with: chmod 750 ${DIR}"
+                    LogText "结果：用户 ${USER} 的主目录 ${DIR} 权限不够严格，应为 750 或更严格。可执行：chmod 750 ${DIR}"
                     FOUND=1
                 else
-                    LogText "Result: permissions of home directory ${DIR} of user ${USER} are fine"
+                    LogText "结果：用户 ${USER} 的主目录 ${DIR} 权限正常"
                 fi
             fi
         done << EOF
@@ -76,11 +76,11 @@ ${USERDATA}
 EOF
 
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 2 --text "- Permissions of home directories" --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "Double check the permissions of home directories as some might be not strict enough."
+            Display --indent 2 --text "- 用户主目录权限" --result "${STATUS_WARNING}" --color RED
+            ReportSuggestion "${TEST_NO}" "请检查用户主目录权限，部分目录的权限可能不够严格。"
         else
-            Display --indent 2 --text "- Permissions of home directories" --result "${STATUS_OK}" --color GREEN
-            LogText "Result: OK, all permissions of the home directories are 750 or more restrictive"
+            Display --indent 2 --text "- 用户主目录权限" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：正常，所有用户主目录权限均为 750 或更严格"
         fi
     fi
 #
@@ -88,7 +88,7 @@ EOF
 #
     # Test        : HOME-9306
     # Description : Check if users own their home directories
-    Register --test-no HOME-9306 --weight L --network NO --category security --description "Check if users own their home directories"
+    Register --test-no HOME-9306 --weight L --network NO --category security --description "检查用户是否拥有各自的主目录"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check if users own their home directories
         FOUND=0
@@ -96,14 +96,14 @@ EOF
         while read -r LINE; do
             USER=$(echo ${LINE} | ${CUTBINARY} -d: -f1)
             DIR=$(echo ${LINE} | ${CUTBINARY} -d: -f6)
-            LogText "Test: checking directory '${DIR}' for user '${USER}'"
+            LogText "检查：用户 ${USER} 的目录 '${DIR}'"
             if [ -d "${DIR}" ]; then
                 OWNER=$(ls -ld ${DIR} | awk -F" " '{ print $3 }')
                 if [ ! "${OWNER}" = "${USER}" ]; then
-                    LogText "Result: the home directory ${DIR} of user ${USER} is owned by ${OWNER}. Correct: chown ${USER} ${DIR}" 
+                    LogText "结果：用户 ${USER} 的主目录 ${DIR} 当前属于 ${OWNER}。可执行：chown ${USER} ${DIR}"
                     FOUND=1
                 else
-                    LogText "Result: ownership of home directory ${DIR} for user ${USER} looks to be correct"
+                    LogText "结果：用户 ${USER} 的主目录 ${DIR} 所有权正确"
                 fi
             fi
         done << EOF
@@ -111,11 +111,11 @@ ${USERDATA}
 EOF
 
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 2 --text "- Ownership of home directories" --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "Double check the ownership of home directories as some might be incorrect."
+            Display --indent 2 --text "- 用户主目录所有权" --result "${STATUS_WARNING}" --color RED
+            ReportSuggestion "${TEST_NO}" "请检查用户主目录所有权，部分目录的所有者可能不正确。"
         else
-            Display --indent 2 --text "- Ownership of home directories" --result "${STATUS_OK}" --color GREEN
-            LogText "Result: OK, all users own their home directories"
+            Display --indent 2 --text "- 用户主目录所有权" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：正常，所有用户都拥有各自的主目录"
         fi
     fi
 #
@@ -123,7 +123,7 @@ EOF
 #
     # Test        : HOME-9310
     # Description : Check for suspicious shell history files
-    Register --test-no HOME-9310 --weight L --network NO --category security --description "Checking for suspicious shell history files"
+    Register --test-no HOME-9310 --weight L --network NO --category security --description "检查可疑的 Shell 历史记录文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ -n "${HOMEDIRS}" ]; then
             if [ "${OS}" = "Solaris" ]; then
@@ -133,19 +133,19 @@ EOF
                 FIND=$(${FINDBINARY} ${HOMEDIRS} -maxdepth 1 -name ".*history" ! -type f -print)
             fi
             if [ -z "${FIND}" ]; then
-                Display --indent 2 --text "- Checking shell history files" --result "${STATUS_OK}" --color GREEN
-                LogText "Result: Ok, history files are type 'file'."
+                Display --indent 2 --text "- 正在检查 Shell 历史记录文件" --result "${STATUS_OK}" --color GREEN
+                LogText "结果：正常，历史记录均为普通文件。"
             else
-                Display --indent 2 --text "- Checking shell history files" --result "${STATUS_WARNING}" --color RED
-                LogText "Result: the following files seem to be of the wrong file type:"
-                LogText "Output: ${FIND}"
-                LogText "Info: above files could be redirected files to avoid logging and should be investigated"
-                ReportWarning "${TEST_NO}" "Incorrect file type found for shell history file"
+                Display --indent 2 --text "- 正在检查 Shell 历史记录文件" --result "${STATUS_WARNING}" --color RED
+                LogText "结果：以下历史记录的文件类型可能不正确："
+                LogText "输出：${FIND}"
+                LogText "说明：上述路径可能被重定向，以绕过历史记录，应进一步调查"
+                ReportWarning "${TEST_NO}" "发现文件类型不正确的 Shell 历史记录文件"
             fi
-            LogText "Remark: History files are normally of the type 'file'. Symbolic links and other types are suspicious."
+            LogText "备注：历史记录通常应为普通文件，符号链接或其他文件类型值得警惕。"
         else
-            Display --indent 2 --text "- Checking shell history files" --result "${STATUS_SKIPPED}" --color WHITE
-            LogText "Result: Homedirs is empty, therefore test will be skipped"
+            Display --indent 2 --text "- 正在检查 Shell 历史记录文件" --result "${STATUS_SKIPPED}" --color WHITE
+            LogText "结果：用户主目录列表为空，已跳过此检查"
         fi
     fi
 #
@@ -164,20 +164,20 @@ EOF
     #               as much as possible for every find command
     # Profile opt : ignore-home-dir (multiple lines allowed), ignores home directory
     if [ -n "${REPORTFILE}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HOME-9350 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Collecting information from home directories"
+    Register --test-no HOME-9350 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "收集用户主目录信息"
     if [ ${SKIPTEST} -eq 0 ]; then
         IGNORE_HOME_DIRS=$(${GREPBINARY} "^ignore-home-dir=" ${REPORTFILE} | ${AWKBINARY} -F= '{ print $2 }')
         if [ -z "${IGNORE_HOME_DIRS}" ]; then
-            LogText "Result: IGNORE_HOME_DIRS empty, no paths excluded"
+            LogText "结果：IGNORE_HOME_DIRS 为空，没有排除任何路径"
         else
-            LogText "Output: ${IGNORE_HOME_DIRS}"
+            LogText "输出：${IGNORE_HOME_DIRS}"
         fi
     fi
 #
 #################################################################################
 #
 
-WaitForKeyPress
+    WaitForKeyPress
 
 #
 #================================================================================
