@@ -32,13 +32,13 @@
 #
     # Test        : SCHD-7702
     # Description : Check cron daemon
-    Register --test-no SCHD-7702 --weight L --network NO --category security --description "Check status of cron daemon"
+    Register --test-no SCHD-7702 --weight L --network NO --category security --description "检查 Cron 守护进程状态"
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=$(${PSBINARY} aux | ${GREPBINARY} -E "( cron$|/cron(d)? )")
         if IsEmpty "${FIND}"; then
-            LogText "Result: no cron daemon found"
+            LogText "结果：未发现 Cron 守护进程"
         else
-            LogText "Result: cron daemon running"
+            LogText "结果：Cron 守护进程正在运行"
             CROND_RUNNING=1
             Report "crond_running=1"
             Report "scheduler[]=crond"
@@ -49,7 +49,7 @@
 #
     # Test        : SCHD-7704
     # Description : Check crontab / cronjobs
-    Register --test-no SCHD-7704 --weight L --network NO --category security --description "Check crontab/cronjobs"
+    Register --test-no SCHD-7704 --weight L --network NO --category security --description "检查 crontab 和 Cron 任务"
     if [ ${SKIPTEST} -eq 0 ]; then
         BAD_FILE_PERMISSIONS=0
         BAD_FILE_OWNERSHIP=0
@@ -60,77 +60,77 @@
         CRONTAB_FILE="${ROOTDIR}etc/crontab"
         if [ -f ${CRONTAB_FILE} ]; then
             ${GREPBINARY} -E -q -s 'lynis audit system' ${CRONTAB_FILE} && LYNIS_CRONJOB="file:/etc/crontab"
-            if IsWorldWritable ${CRONTAB_FILE}; then LogText "Result: insecure file permissions for cronjob file ${CRONTAB_FILE}"; Report "insecure_fileperms_cronjob[]=${CRONTAB_FILE}"; BAD_FILE_PERMISSIONS=1; AddHP 0 5; fi
-            if ! IsOwnedByRoot ${CRONTAB_FILE}; then LogText "Result: incorrect owner found for cronjob file ${CRONTAB_FILE}"; Report "bad_fileowner_cronjob[]=${CRONTAB_FILE}"; BAD_FILE_OWNERSHIP=1; AddHP 0 5; fi
+            if IsWorldWritable ${CRONTAB_FILE}; then LogText "结果：Cron 任务文件 ${CRONTAB_FILE} 的权限不安全"; Report "insecure_fileperms_cronjob[]=${CRONTAB_FILE}"; BAD_FILE_PERMISSIONS=1; AddHP 0 5; fi
+            if ! IsOwnedByRoot ${CRONTAB_FILE}; then LogText "结果：Cron 任务文件 ${CRONTAB_FILE} 的所有者不正确"; Report "bad_fileowner_cronjob[]=${CRONTAB_FILE}"; BAD_FILE_OWNERSHIP=1; AddHP 0 5; fi
             FindCronJob ${CRONTAB_FILE}
             for ITEM in ${sCRONJOBS}; do
-                LogText "Found cronjob (${CRONTAB_FILE}): ${ITEM}"
+                LogText "发现 Cron 任务（${CRONTAB_FILE}）：${ITEM}"
                 Report "cronjob[]=${ITEM}"
             done
         fi
 
         CRON_DIRS="${ROOTDIR}etc/cron.d"
         for DIR in ${CRON_DIRS}; do
-            LogText "Test: checking directory ${DIR}"
+            LogText "检查：目录 ${DIR}"
             if [ -d ${DIR} ]; then
                 if FileIsReadable ${DIR}; then
-                    LogText "Result: found directory ${DIR}"
-                    LogText "Test: searching files in ${DIR}"
+                    LogText "结果：发现目录 ${DIR}"
+                    LogText "检查：搜索 ${DIR} 中的文件"
                     FIND=$(${FINDBINARY} -L ${DIR} -type f -print | ${GREPBINARY} -v ".placeholder")
                     if IsEmpty "${FIND}"; then
-                        LogText "Result: no files found in ${DIR}"
+                        LogText "结果：${DIR} 中没有文件"
                     else
-                        LogText "Result: found one or more files in ${DIR}. Analyzing files.."
+                        LogText "结果：${DIR} 中发现一个或多个文件，正在分析……"
                         for FILE in ${FIND}; do
-                            if IsWorldWritable ${FILE}; then LogText "Result: insecure file permissions for cronjob file ${J}"; Report "insecure_fileperms_cronjob[]=${J}"; BAD_FILE_PERMISSIONS=1; AddHP 0 5; fi
-                            if ! IsOwnedByRoot ${FILE}; then LogText "Result: incorrect owner found for cronjob file ${J}"; Report "bad_fileowner_cronjob[]=${J}"; BAD_FILE_OWNERSHIP=1; AddHP 0 5; fi
+                            if IsWorldWritable ${FILE}; then LogText "结果：Cron 任务文件 ${J} 的权限不安全"; Report "insecure_fileperms_cronjob[]=${J}"; BAD_FILE_PERMISSIONS=1; AddHP 0 5; fi
+                            if ! IsOwnedByRoot ${FILE}; then LogText "结果：Cron 任务文件 ${J} 的所有者不正确"; Report "bad_fileowner_cronjob[]=${J}"; BAD_FILE_OWNERSHIP=1; AddHP 0 5; fi
                             FILENAME=$(echo ${FILE} | ${AWKBINARY} -F/ '{print $NF}')
                             if [ "${FILENAME}" = "lynis" ]; then ${GREPBINARY} -E -q -s 'lynis audit system' ${CRONTAB_FILE} && LYNIS_CRONJOB="file:${FILE}"; fi
                             FindCronJob ${FILE}
                             if HasData "${sCRONJOBS}"; then
                                 for K in ${sCRONJOBS}; do
-                                    LogText "Result: Found cronjob (${FILE}): ${K}"
+                                    LogText "结果：发现 Cron 任务（${FILE}）：${K}"
                                     Report "cronjob[]=${FILE}"
                                 done
                             fi
                         done
-                        LogText "Result: done with analyzing files in ${DIR}"
+                        LogText "结果：已完成 ${DIR} 中的文件分析"
                     fi
                 else
-                    LogText "Result: can not read file or directory ${DIR}"
+                    LogText "结果：无法读取文件或目录 ${DIR}"
                 fi
             else
-                LogText "Result: directory ${DIR} does not exist"
+                LogText "结果：目录 ${DIR} 不存在"
             fi
         done
 
         CRON_DIRS="${ROOTDIR}etc/cron.hourly ${ROOTDIR}etc/cron.daily ${ROOTDIR}etc/cron.weekly ${ROOTDIR}etc/cron.monthly"
         for I in ${CRON_DIRS}; do
-            LogText "Test: checking directory ${I}"
+            LogText "检查：目录 ${I}"
             if [ -d ${I} ]; then
-                LogText "Result: found directory ${I}"
+                LogText "结果：发现目录 ${I}"
                 if FileIsReadable ${I}; then
-                    LogText "Test: searching files in ${I}"
+                    LogText "检查：搜索 ${I} 中的文件"
                     FIND=$(${FINDBINARY} -L ${I} -type f -print 2> /dev/null | ${GREPBINARY} -v ".placeholder")
                     if [ -z "${FIND}" ]; then
-                        LogText "Result: no files found in ${I}"
+                        LogText "结果：${I} 中没有文件"
                     else
-                        LogText "Result: found one or more files in ${I}. Analyzing files.."
+                        LogText "结果：${I} 中发现一个或多个文件，正在分析……"
                         for FILE in ${FIND}; do
-                            if IsWorldWritable ${FILE}; then LogText "Result: insecure file permissions for cronjob file ${FILE}"; Report "insecure_fileperms_cronjob[]=${FILE}"; BAD_FILE_PERMISSIONS=1; AddHP 0 5; fi
-                            if ! IsOwnedByRoot ${FILE}; then LogText "Result: incorrect owner found for cronjob file ${FILE}"; Report "bad_fileowner_cronjob[]=${FILE}"; BAD_FILE_OWNERSHIP=1; AddHP 0 5; fi
+                            if IsWorldWritable ${FILE}; then LogText "结果：Cron 任务文件 ${FILE} 的权限不安全"; Report "insecure_fileperms_cronjob[]=${FILE}"; BAD_FILE_PERMISSIONS=1; AddHP 0 5; fi
+                            if ! IsOwnedByRoot ${FILE}; then LogText "结果：Cron 任务文件 ${FILE} 的所有者不正确"; Report "bad_fileowner_cronjob[]=${FILE}"; BAD_FILE_OWNERSHIP=1; AddHP 0 5; fi
                             FILENAME=$(echo ${FILE} | ${AWKBINARY} -F/ '{print $NF}')
                             if [ "${FILENAME}" = "lynis" ]; then ${GREPBINARY} -E -q -s 'lynis audit system' ${CRONTAB_FILE} && LYNIS_CRONJOB="file:${FILE}"; fi
-                            LogText "Result: Found cronjob (${I}): ${FILE}"
+                            LogText "结果：发现 Cron 任务（${I}）：${FILE}"
                             Report "cronjob[]=${FILE}"
                         done
-                        LogText "Result: done with analyzing files in ${I}"
+                        LogText "结果：已完成 ${I} 中的文件分析"
                     fi
                 else
-                    LogText "Result: directory permissions are too strict to enter it (which might be good)"
+                    LogText "结果：目录权限过于严格，无法进入（这也可能是合理的安全设置）"
                 fi
             else
-                LogText "Result: directory ${I} does not exist"
+                LogText "结果：目录 ${I} 不存在"
             fi
         done
 
@@ -143,7 +143,7 @@
                     ${GREPBINARY} -E -q -s 'lynis audit system' ${I} && LYNIS_CRONJOB="file:${I}"
                     FindCronJob ${I}
                     for FILE in ${sCRONJOBS}; do
-                        LogText "Found cronjob (/var/spool/cron/crontabs): ${I} (${FILE})"
+                        LogText "发现 Cron 任务（/var/spool/cron/crontabs）：${I}（${FILE}）"
                         Report "cronjob[]=${I}"
                     done
                 fi
@@ -156,7 +156,7 @@
                         ${GREPBINARY} -E -q -s 'lynis audit system' ${I} && LYNIS_CRONJOB="file:${I}"
                         FindCronJob ${I}
                         for FILE in ${sCRONJOBS}; do
-                            LogText "Found cronjob in ${ROOTDIR}var/spool/cron: ${I} (${FILE})"
+                            LogText "在 ${ROOTDIR}var/spool/cron 中发现 Cron 任务：${I}（${FILE}）"
                             LogText "cronjob[]=${I}"
                         done
                     fi
@@ -167,12 +167,12 @@
         # Anacron
         if [ "${OS}" = "Linux" ]; then
             if [ -f /etc/anacrontab ]; then
-                LogText "Test: checking anacrontab"
+                LogText "检查：anacrontab"
                 sANACRONJOBS=$(${GREPBINARY} -E '^([0-9@])' /etc/anacrontab | ${TRBINARY} '\t' ' ' | ${TRBINARY} -s ' ' | ${TRBINARY} ' ' ',' | ${SORTBINARY})
                 if [ -n "${sANACRONJOBS}" ]; then
                     Report "scheduler[]=anacron"
                     for I in ${sANACRONJOBS}; do
-                        LogText "Found anacron job (/etc/anacrontab): ${I}"
+                        LogText "发现 Anacron 任务（/etc/anacrontab）：${I}"
                         Report "cronjob[]=${I}"
                     done
                 fi
@@ -181,13 +181,13 @@
 
         # Show warning when an issue shows up. Even if *both* the permissions and ownership are wrong, just show one (prevent overload of warnings).
         if [ ${BAD_FILE_PERMISSIONS} -eq 1 ]; then
-            ReportWarning "${TEST_NO}" "Found one or more cronjob files with incorrect file permissions (see log for details)"
-            Display --indent 2 --text "- Checking crontab and cronjobs files" --result "${STATUS_WARNING}" --color RED
+            ReportWarning "${TEST_NO}" "发现一个或多个权限不正确的 Cron 任务文件（详情请查看日志）"
+            Display --indent 2 --text "- 正在检查 crontab 和 Cron 任务文件" --result "${STATUS_WARNING}" --color RED
         elif [ ${BAD_FILE_OWNERSHIP} -eq 1 ]; then
-            ReportWarning "${TEST_NO}" "Found one or more cronjob files with incorrect ownership (see log for details)"
-            Display --indent 2 --text "- Checking crontab and cronjob files" --result "${STATUS_WARNING}" --color RED
+            ReportWarning "${TEST_NO}" "发现一个或多个所有者不正确的 Cron 任务文件（详情请查看日志）"
+            Display --indent 2 --text "- 正在检查 crontab 和 Cron 任务文件" --result "${STATUS_WARNING}" --color RED
         else
-            Display --indent 2 --text "- Checking crontab and cronjob files" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 2 --text "- 正在检查 crontab 和 Cron 任务文件" --result "${STATUS_DONE}" --color GREEN
         fi
 
     fi
@@ -196,18 +196,18 @@
 #
     # Test        : SCHD-7718
     # Description : Check atd status
-    Register --test-no SCHD-7718 --weight L --network NO --category security --description "Check at users"
+    Register --test-no SCHD-7718 --weight L --network NO --category security --description "检查 atd 状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking atd status"
+        LogText "检查：atd 状态"
         FIND=$(${PSBINARY} ax | ${GREPBINARY} "/atd" | ${GREPBINARY} -v "grep")
         if [ -n "${FIND}" ]; then
-            LogText "Result: at daemon active"
-            Display --indent 2 --text "- Checking atd status" --result "${STATUS_RUNNING}" --color GREEN
+            LogText "结果：at 守护进程处于活动状态"
+            Display --indent 2 --text "- 正在检查 atd 状态" --result "${STATUS_RUNNING}" --color GREEN
             ATD_RUNNING=1
             Report "scheduler[]=atd"
         else
-            LogText "Result: at daemon not active"
-            if IsVerbose; then Display --indent 2 --text "- Checking atd status" --result "${STATUS_NOT_RUNNING}" --color WHITE; fi
+            LogText "结果：at 守护进程未运行"
+            if IsVerbose; then Display --indent 2 --text "- 正在检查 atd 状态" --result "${STATUS_NOT_RUNNING}" --color WHITE; fi
         fi
     fi
 #
@@ -220,7 +220,7 @@
     #               except the listed ones can schedule jobs. If both can't be
     #               found, only root can schedule jobs.
     if [ ${ATD_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no SCHD-7720 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check at users"
+    Register --test-no SCHD-7720 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查允许使用 at 的用户"
     if [ ${SKIPTEST} -eq 0 ]; then
         AT_UNKNOWN=0
         case ${OS} in
@@ -229,52 +229,52 @@
             Linux)            AT_ALLOW="${ROOTDIR}etc/at.allow";           AT_DENY="${ROOTDIR}etc/at.deny"            ;;
             OpenBSD)          AT_ALLOW="${ROOTDIR}var/cron/at.allow";      AT_DENY="${ROOTDIR}var/cron/at.deny"       ;;
             SunOS)            AT_ALLOW="${ROOTDIR}etc/cron.d/at.allow";    AT_DENY="${ROOTDIR}etc/cron.d/at.deny"     ;;
-            *)                AT_UNKNOWN=1; LogText "Test skipped, files for at unknown"            ;;
+            *)                AT_UNKNOWN=1; LogText "已跳过检查：无法确定此系统的 at 用户配置文件"            ;;
         esac
         if [ ${AT_UNKNOWN} -eq 0 ]; then
-            LogText "Test: checking for file ${AT_ALLOW}"
+            LogText "检查：文件 ${AT_ALLOW}"
             if [ -f ${AT_ALLOW} ]; then
                 FileIsReadable ${AT_ALLOW}
                 if [ ${CANREAD} -eq 1 ]; then
-                    LogText "Result: file ${AT_ALLOW} exists, only listed users can schedule at jobs"
+                    LogText "结果：文件 ${AT_ALLOW} 存在，仅文件中列出的用户可以安排 at 任务"
                     FIND=$(${SORTBINARY} ${AT_ALLOW})
                     if IsEmpty "${FIND}"; then
-                        LogText "Result: File empty, no users are allowed to schedule at jobs"
+                        LogText "结果：文件为空，没有用户被允许安排 at 任务"
                     else
                         for ITEM in ${FIND}; do
-                           LogText "Allowed at user: ${ITEM}"
+                           LogText "允许使用 at 的用户：${ITEM}"
                         done
                     fi
                 else
-                    LogText "Result: can not read ${AT_ALLOW} (no permission)"
+                    LogText "结果：无法读取 ${AT_ALLOW}（权限不足）"
                 fi
             else
-                LogText "Result: file ${AT_ALLOW} does not exist"
-                LogText "Test: checking for file ${AT_DENY}"
+                LogText "结果：文件 ${AT_ALLOW} 不存在"
+                LogText "检查：文件 ${AT_DENY}"
                 if [ -f ${AT_DENY} ]; then
                     FileIsReadable ${AT_DENY}
                     if [ ${CANREAD} -eq 1 ]; then
-                        LogText "Result: file ${AT_DENY} exists, only non listed users can schedule at jobs"
+                        LogText "结果：文件 ${AT_DENY} 存在，只有未列出的用户可以安排 at 任务"
                         FIND=$(${SORTBINARY} ${AT_DENY})
                         if [ -z "${FIND}" ]; then
-                            LogText "Result: file is empty, no users are denied access to schedule jobs"
+                            LogText "结果：文件为空，没有用户被禁止安排 at 任务"
                         else
                             for ITEM in ${FIND}; do
-                                LogText "Denied at user: ${ITEM}"
+                                LogText "禁止使用 at 的用户：${ITEM}"
                             done
                         fi
                     else
-                        LogText "Result: can not read ${AT_DENY} (no permission)"
+                        LogText "结果：无法读取 ${AT_DENY}（权限不足）"
                     fi
                 else
-                    LogText "Result: both ${AT_ALLOW} and ${AT_DENY} do not exist"
-                    LogText "Note: only root can schedule at jobs"
+                    LogText "结果：${AT_ALLOW} 和 ${AT_DENY} 均不存在"
+                    LogText "说明：只有 root 用户可以安排 at 任务"
                     AddHP 1 1
                 fi
             fi
-            Display --indent 4 --text "- Checking at users" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 4 --text "- 正在检查 at 用户" --result "${STATUS_DONE}" --color GREEN
         else
-            Display --indent 4 --text "- Checking at users" --result "${STATUS_SKIPPED}" --color YELLOW
+            Display --indent 4 --text "- 正在检查 at 用户" --result "${STATUS_SKIPPED}" --color YELLOW
         fi
     fi
 #
@@ -283,20 +283,20 @@
     # Test        : SCHD-7724
     # Description : Check scheduled at jobs
     if [ ${ATD_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no SCHD-7724 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check at jobs"
+    Register --test-no SCHD-7724 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查已安排的 at 任务"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Check scheduled at jobs"
+        LogText "检查：已安排的 at 任务"
         FIND=$(atq | ${GREPBINARY} -v "no files in queue" | ${AWKBINARY} '{gsub("\t"," ");print}' | ${SEDBINARY} 's/ /!space!/g')
         if HasData "${FIND}"; then
-            LogText "Result: found one or more jobs"
+            LogText "结果：发现一个或多个 at 任务"
             for ITEM in ${FIND}; do
                 VALUE=$(echo ${ITEM} | ${SEDBINARY} 's/!space!/ /g')
-                LogText "Found at job: ${VALUE}"
+                LogText "发现 at 任务：${VALUE}"
             done
-            Display --indent 4 --text "- Checking at jobs" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- 正在检查 at 任务" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: no pending at jobs"
-            Display --indent 4 --text "- Checking at jobs" --result "${STATUS_NONE}" --color GREEN
+            LogText "结果：没有待执行的 at 任务"
+            Display --indent 4 --text "- 正在检查 at 任务" --result "${STATUS_NONE}" --color GREEN
         fi
     fi
 #
@@ -304,9 +304,9 @@
 #
 
 if [ -z "${LYNIS_CRONJOB}" ]; then
-    LogText "Result: no scheduled Lynis execution found (e.g. crontab, cronjob)"
+    LogText "结果：未发现计划执行的 Lynis 任务（例如 crontab 或 Cron 任务）"
 else
-    LogText "Result: found scheduled Lynis execution (${LYNIS_CRONJOB})"
+    LogText "结果：发现计划执行的 Lynis 任务（${LYNIS_CRONJOB}）"
 fi
 
 WaitForKeyPress
