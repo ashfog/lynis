@@ -47,10 +47,10 @@
 #
     # Test        : USB-1000 (was STRG-1840)
     # Description : Check for disabled USB storage
-    Register --test-no USB-1000 --os Linux --weight L --network NO --category security --description "Check if USB storage is disabled"
+    Register --test-no USB-1000 --os Linux --weight L --network NO --category security --description "检查是否禁用 USB 存储"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
-        LogText "Test: Checking USB storage driver in directory /etc/modprobe.d and configuration file /etc/modprobe.conf"
+        LogText "检查：/etc/modprobe.d 目录和 /etc/modprobe.conf 配置文件中的 USB 存储驱动"
         if [ -d /etc/modprobe.d ]; then
             FIND=$(${LSBINARY} ${ROOTDIR}etc/modprobe.d/* 2> /dev/null)
             if [ -n "${FIND}" ]; then
@@ -58,29 +58,29 @@
                 FIND2=$(${GREPBINARY} -E -r "^blacklist usb[-_]storage" ${ROOTDIR}etc/modprobe.d/*)
                 if [ -n "${FIND}" -o -n "${FIND2}" ]; then
                     FOUND=1
-                    LogText "Result: found usb-storage driver in disabled state (blacklisted)"
+                    LogText "结果：发现 usb-storage 驱动已被禁用（列入黑名单）"
                 fi
             else
-                LogText "Result: uncommon situation. Found /etc/modprobe.d directory, but no files in it."
+                LogText "结果：发现 /etc/modprobe.d 目录，但其中没有文件，这种情况较少见"
             fi
         fi
         if [ -f ${ROOTDIR}etc/modprobe.conf ]; then
             FIND=$(${GREPBINARY} -E "install usb[-_]storage /bin/(false|true)" ${ROOTDIR}etc/modprobe.conf | ${GREPBINARY} "usb-storage" | ${GREPBINARY} -v "#")
             if [ -n "${FIND}" ]; then
                 FOUND=1
-                LogText "Result: found usb-storage driver in disabled state"
+                LogText "结果：发现 usb-storage 驱动已被禁用"
             fi
         fi
         if [ ${FOUND} -eq 0 ]; then
-            LogText "Result: usb-storage driver is not explicitly disabled"
-            Display --indent 2 --text "- Checking usb-storage driver (modprobe config)" --result "${STATUS_NOT_DISABLED}" --color WHITE
+            LogText "结果：usb-storage 驱动未被明确禁用"
+            Display --indent 2 --text "- 正在检查 usb-storage 驱动（modprobe 配置）" --result "${STATUS_NOT_DISABLED}" --color WHITE
             if [ "${USBGUARD_FOUND}" -eq "0" ]; then
-                ReportSuggestion "${TEST_NO}" "Disable drivers like USB storage when not used, to prevent unauthorized storage or data theft"
+                ReportSuggestion "${TEST_NO}" "不使用 USB 存储等驱动时将其禁用，以防止未经授权的存储设备接入或数据被窃取"
             fi
             AddHP 2 3
         else
-            LogText "Result: usb-storage driver is disabled"
-            Display --indent 2 --text "- Checking usb-storage driver (modprobe config)" --result "${STATUS_DISABLED}" --color GREEN
+            LogText "结果：usb-storage 驱动已禁用"
+            Display --indent 2 --text "- 正在检查 usb-storage 驱动（modprobe 配置）" --result "${STATUS_DISABLED}" --color GREEN
             AddHP 3 3
         fi
     fi
@@ -89,48 +89,48 @@
 #
     # Test        : USB-2000 (was STRG-1842)
     # Description : Check USB authorizations
-    Register --test-no USB-2000 --os Linux --weight L --network NO --category security --description "Check USB authorizations"
+    Register --test-no USB-2000 --os Linux --weight L --network NO --category security --description "检查 USB 授权状态"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         USBDEVICESPATH="${ROOTDIR}sys/bus/usb/devices"
-        LogText "Test: checking presence of USB devices path (${USBDEVICESPATH})"
+        LogText "检查：USB 设备路径是否存在（${USBDEVICESPATH}）"
         if [ -d "${USBDEVICESPATH}" ]; then
 
-            LogText "Test: Checking USB devices authorization to connect to the system"
+            LogText "检查：USB 设备连接系统时的授权状态"
             for device in $(find ${USBDEVICESPATH} -name "usb*" -type l -print); do
                 if [ -e "${device}/authorized" -o -e "${device}/authorized_default" ]; then
                     if [ "$(cat "${device}/authorized_default")" = "1" ]; then
                         FOUND=1
-                        LogText "Test: ${device} is authorized by default (authorized_default=1)"
+                        LogText "检查：${device} 默认获得授权（authorized_default=1）"
                         Report "usb_authorized_default_device[]=${device}"
                     fi
                     if [ "$(cat "${device}/authorized")" = "1" ]; then
                         FOUND=1
-                        LogText "Test: ${device} is authorized currently (authorized=1)"
+                        LogText "检查：${device} 当前已授权（authorized=1）"
                         Report "usb_authorized_device[]=${device}"
                     fi
                 else
-                    LogText "Test: no authorized or authorized_default file, assuming ${device} is authorized by default"
+                    LogText "检查：未发现 authorized 或 authorized_default 文件，假定 ${device} 默认获得授权"
                     Report "usb_authorized_default_device[]=${device}"
                     FOUND=1
                 fi
             done
 
             if [ ${FOUND} -eq 1 ]; then
-                LogText "Result: Some USB devices are authorized by default (or temporary) to connect to the system"
-                Display --indent 2 --text "- Checking USB devices authorization" --result "${STATUS_ENABLED}" --color YELLOW
+                LogText "结果：部分 USB 设备默认或临时获准连接系统"
+                Display --indent 2 --text "- 正在检查 USB 设备授权" --result "${STATUS_ENABLED}" --color YELLOW
                 # TODO: create documentation and enable the suggestion
                 #if [ ${USBGUARD_FOUND} -eq 0 ]; then
                 #   ReportSuggestion "${TEST_NO}" "Disable USB devices authorization, to prevent unauthorized storage or data theft"
                 #fi
                 AddHP 0 3
             else
-                LogText "Result: None USB devices are authorized by default (or temporary) to connect to the system"
-                Display --indent 2 --text "- Checking USB devices authorization" --result "${STATUS_DISABLED}" --color GREEN
+                LogText "结果：没有 USB 设备默认或临时获准连接系统"
+                Display --indent 2 --text "- 正在检查 USB 设备授权" --result "${STATUS_DISABLED}" --color GREEN
                 AddHP 3 3
             fi
         else
-            LogText "Result: devices path does not exist"
+            LogText "结果：设备路径不存在"
         fi
     fi
 
@@ -139,14 +139,14 @@
 #
     # Test        : USB-3000
     # Description : Perform USBGuard check
-    Register --test-no USB-3000  --os Linux --weight L --network NO --category security --description "Check for presence of USBGuard"
+    Register --test-no USB-3000  --os Linux --weight L --network NO --category security --description "检查是否安装 USBGuard"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ ${USBGUARD_FOUND} -eq 1 ]; then
-            LogText "Result: USBGuard is installed (${USBGUARDBINARY})"
-            Display --indent 2 --text "- Checking USBGuard" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：已安装 USBGuard（${USBGUARDBINARY}）"
+            Display --indent 2 --text "- 正在检查 USBGuard" --result "${STATUS_FOUND}" --color GREEN
             AddHP 1 1
 
-            LogText "Checking USBGuard configuration file"
+            LogText "正在检查 USBGuard 配置文件"
             if [ -f ${ROOTDIR}etc/usbguard/usbguard-daemon.conf ]; then
                 USBGUARD_CONFIG="${ROOTDIR}etc/usbguard/usbguard-daemon.conf"
             else
@@ -154,29 +154,29 @@
             fi
 
             if [ -n "${USBGUARD_CONFIG}" ]; then
-                LogText "Result: USBGuard configuration found (${USBGUARD_CONFIG})"
-                Display --indent 4 --text "- Configuration" --result "${STATUS_FOUND}" --color GREEN
+                LogText "结果：发现 USBGuard 配置（${USBGUARD_CONFIG}）"
+                Display --indent 4 --text "- 配置" --result "${STATUS_FOUND}" --color GREEN
                 AddHP 1 1
 
-                LogText "Checking USBGuard restore controller device state (RestoreControllerDeviceState)"
+                LogText "正在检查 USBGuard 控制器设备状态恢复设置（RestoreControllerDeviceState）"
                 USBGUARD_RESTORE_POLICY=$(${AWKBINARY} -F '=' -v OPT="RestoreControllerDeviceState" 'index($0, OPT) == 1 {print $2}' ${USBGUARD_CONFIG})
                 if [ -n "${USBGUARD_RESTORE_POLICY}" ]; then
-                    LogText "Result: RestoreControllerDeviceState = ${USBGUARD_RESTORE_POLICY}"
+                    LogText "结果：RestoreControllerDeviceState = ${USBGUARD_RESTORE_POLICY}"
                     case "${USBGUARD_RESTORE_POLICY}" in
                         "true")
-                            Display --indent 6 --text "- Restore controller device state" --result "${USBGUARD_RESTORE_POLICY}" --color YELLOW
-                            LogText "  Consider changing RestoreControllerDeviceState to \"false\""
+                            Display --indent 6 --text "- 恢复控制器设备状态" --result "${USBGUARD_RESTORE_POLICY}" --color YELLOW
+                            LogText "  建议将 RestoreControllerDeviceState 改为 \"false\""
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Consider hardening USBGuard configuration" "RestoreControllerDeviceState (${USBGUARD_RESTORE_POLICY} --> false)"
                             AddHP 0 1
                             ;;
                         "false")
-                            Display --indent 6 --text "- Restore controller device state" --result "${USBGUARD_RESTORE_POLICY}" --color GREEN
+                            Display --indent 6 --text "- 恢复控制器设备状态" --result "${USBGUARD_RESTORE_POLICY}" --color GREEN
                             AddHP 1 1
                             ;;
                         *)
-                            LogText "Result: Invalid configuration for RestoreControllerDeviceState"
-                            Display --indent 6 --text "- Restore controller device state" --result "Invalid" --color RED
+                            LogText "结果：RestoreControllerDeviceState 配置无效"
+                            Display --indent 6 --text "- 恢复控制器设备状态" --result "无效" --color RED
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Fix USBGuard configuration" "RestoreControllerDeviceState invalid \"${USBGUARD_RESTORE_POLICY}\""
                             AddHP 0 1
@@ -184,146 +184,146 @@
                     esac
 
                 else
-                    LogText "Result: RestoreControllerDeviceState not found"
-                    Display --indent 6 --text "- Restore controller device state" --result "NOT FOUND" --color WHITE
+                    LogText "结果：未找到 RestoreControllerDeviceState"
+                    Display --indent 6 --text "- 恢复控制器设备状态" --result "未找到" --color WHITE
                     AddHP 0 1
                 fi
 
-                LogText "Checking USBGuard rule for controllers connected before daemon starts (PresentControllerPolicy)"
+                LogText "正在检查守护进程启动前已连接控制器的 USBGuard 规则（PresentControllerPolicy）"
                 USBGUARD_CONTROLLER_POLICY=$(${AWKBINARY} -F '=' -v OPT="PresentControllerPolicy" 'index($0, OPT) == 1 {print $2}' ${USBGUARD_CONFIG})
                 if [ -n "${USBGUARD_CONTROLLER_POLICY}" ]; then
-                    LogText "Result: PresentControllerPolicy = ${USBGUARD_CONTROLLER_POLICY}"
+                    LogText "结果：PresentControllerPolicy = ${USBGUARD_CONTROLLER_POLICY}"
                     case "${USBGUARD_CONTROLLER_POLICY}" in
                         "allow" | "keep")
-                            Display --indent 6 --text "- Rule for controllers connected before daemon starts" --result "${USBGUARD_CONTROLLER_POLICY}" --color YELLOW
-                            LogText "  Consider changing PresentControllerPolicy to \"apply-policy\", \"block\" or \"reject\""
+                            Display --indent 6 --text "- 守护进程启动前已连接控制器的规则" --result "${USBGUARD_CONTROLLER_POLICY}" --color YELLOW
+                            LogText "  建议将 PresentControllerPolicy 改为 \"apply-policy\"、\"block\" 或 \"reject\""
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Consider hardening USBGuard configuration" "PresentControllerPolicy (${USBGUARD_CONTROLLER_POLICY} --> (apply-policy|block|reject)"
                             AddHP 0 1
                             ;;
                         "apply-policy" | "block" | "reject")
-                            Display --indent 6 --text "- Rule for controllers connected before daemon starts" --result "${USBGUARD_CONTROLLER_POLICY}" --color GREEN
+                            Display --indent 6 --text "- 守护进程启动前已连接控制器的规则" --result "${USBGUARD_CONTROLLER_POLICY}" --color GREEN
                             AddHP 1 1
                             ;;
                         *)
-                            LogText "Result: Invalid configuration for PresentControllerPolicy"
-                            Display --indent 6 --text "- Rule for controllers connected before daemon starts" --result "Invalid" --color RED
+                            LogText "结果：PresentControllerPolicy 配置无效"
+                            Display --indent 6 --text "- 守护进程启动前已连接控制器的规则" --result "无效" --color RED
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Fix USBGuard configuration" "PresentControllerPolicy invalid \"${USBGUARD_CONTROLLER_POLICY}\""
                             AddHP 0 1
                             ;;
                     esac
                 else
-                    LogText "Result: PresentControllerPolicy not found"
-                    Display --indent 6 --text "- Rule for controllers connected before daemon starts" --result "NOT FOUND" --color WHITE
+                    LogText "结果：未找到 PresentControllerPolicy"
+                    Display --indent 6 --text "- 守护进程启动前已连接控制器的规则" --result "未找到" --color WHITE
                     AddHP 0 1
                 fi
 
-                LogText "Checking USBGuard rule for devices connected before daemon starts (PresentDevicePolicy)"
+                LogText "正在检查守护进程启动前已连接设备的 USBGuard 规则（PresentDevicePolicy）"
                 USBGUARD_DEVICE_POLICY=$(${AWKBINARY} -F '=' -v OPT="PresentDevicePolicy" 'index($0, OPT) == 1 {print $2}' ${USBGUARD_CONFIG})
                 if [ -n "${USBGUARD_DEVICE_POLICY}" ]; then
-                    LogText "Result: PresentDevicePolicy = ${USBGUARD_DEVICE_POLICY}"
+                    LogText "结果：PresentDevicePolicy = ${USBGUARD_DEVICE_POLICY}"
                     case "${USBGUARD_DEVICE_POLICY}" in
                         "allow" | "keep")
-                            Display --indent 6 --text "- Rule for devices connected before daemon starts" --result "${USBGUARD_DEVICE_POLICY}" --color YELLOW
-                            LogText "  Consider changing PresentDevicePolicy to \"apply-policy\", \"block\" or \"reject\""
+                            Display --indent 6 --text "- 守护进程启动前已连接设备的规则" --result "${USBGUARD_DEVICE_POLICY}" --color YELLOW
+                            LogText "  建议将 PresentDevicePolicy 改为 \"apply-policy\"、\"block\" 或 \"reject\""
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Consider hardening USBGuard configuration" "PresentDevicePolicy (${USBGUARD_DEVICE_POLICY} --> (apply-policy|block|reject)"
                             AddHP 0 1
                             ;;
                         "apply-policy" | "block" | "reject")
-                            Display --indent 6 --text "- Rule for devices connected before daemon starts" --result "${USBGUARD_DEVICE_POLICY}" --color GREEN
+                            Display --indent 6 --text "- 守护进程启动前已连接设备的规则" --result "${USBGUARD_DEVICE_POLICY}" --color GREEN
                             AddHP 1 1
                             ;;
                         *)
-                            LogText "Result: Invalid configuration for PresentDevicePolicy"
-                            Display --indent 6 --text "- Rule for devices connected before daemon starts" --result "Invalid" --color RED
+                            LogText "结果：PresentDevicePolicy 配置无效"
+                            Display --indent 6 --text "- 守护进程启动前已连接设备的规则" --result "无效" --color RED
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Fix USBGuard configuration" "PresentDevicePolicy invalid \"${USBGUARD_DEVICE_POLICY}\""
                             AddHP 0 1
                             ;;
                     esac
                 else
-                    LogText "Result: PresentDevicePolicy not found"
-                    Display --indent 6 --text "- Rule for devices connected before daemon starts" --result "NOT FOUND" --color WHITE
+                    LogText "结果：未找到 PresentDevicePolicy"
+                    Display --indent 6 --text "- 守护进程启动前已连接设备的规则" --result "未找到" --color WHITE
                     AddHP 0 1
                 fi
 
-                LogText "Checking USBGuard rule for devices inserted after daemon starts (InsertedDevicePolicy)"
+                LogText "正在检查守护进程启动后插入设备的 USBGuard 规则（InsertedDevicePolicy）"
                 USBGUARD_INSERTED_POLICY=$(${AWKBINARY} -F '=' -v OPT="InsertedDevicePolicy" 'index($0, OPT) == 1 {print $2}' ${USBGUARD_CONFIG})
                 if [ -n "${USBGUARD_INSERTED_POLICY}" ]; then
-                    LogText "Result: InsertedDevicePolicy = ${USBGUARD_INSERTED_POLICY}"
+                    LogText "结果：InsertedDevicePolicy = ${USBGUARD_INSERTED_POLICY}"
                     case "${USBGUARD_INSERTED_POLICY}" in
                         "allow" | "keep")
-                            Display --indent 6 --text "- Rule for devices inserted after daemon starts" --result "${USBGUARD_INSERTED_POLICY}" --color YELLOW
-                            LogText "  Consider changing InsertedDevicePolicy to \"apply-policy\", \"block\" or \"reject\""
+                            Display --indent 6 --text "- 守护进程启动后插入设备的规则" --result "${USBGUARD_INSERTED_POLICY}" --color YELLOW
+                            LogText "  建议将 InsertedDevicePolicy 改为 \"apply-policy\"、\"block\" 或 \"reject\""
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Consider hardening USBGuard configuration" "InsertedDevicePolicy (${USBGUARD_INSERTED_POLICY} --> (apply-policy|block|reject)"
                             AddHP 0 1
                             ;;
                         "apply-policy" | "block" | "reject")
-                            Display --indent 6 --text "- Rule for devices inserted after daemon starts" --result "${USBGUARD_INSERTED_POLICY}" --color GREEN
+                            Display --indent 6 --text "- 守护进程启动后插入设备的规则" --result "${USBGUARD_INSERTED_POLICY}" --color GREEN
                             AddHP 1 1
                             ;;
                         *)
-                            LogText "Result: Invalid configuration for InsertedDevicePolicy"
-                            Display --indent 6 --text "- Rule for devices inserted after daemon starts" --result "Invalid" --color RED
+                            LogText "结果：InsertedDevicePolicy 配置无效"
+                            Display --indent 6 --text "- 守护进程启动后插入设备的规则" --result "无效" --color RED
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Fix USBGuard configuration" "InsertedDevicePolicy invalid \"${USBGUARD_INSERTED_POLICY}\""
                             AddHP 0 1
                             ;;
                     esac
                 else
-                    LogText "Result: InsertedDevicePolicy not found"
-                    Display --indent 6 --text "- Rule for devices inserted after daemon starts" --result "NOT FOUND" --color WHITE
+                    LogText "结果：未找到 InsertedDevicePolicy"
+                    Display --indent 6 --text "- 守护进程启动后插入设备的规则" --result "未找到" --color WHITE
                     AddHP 0 1
                 fi
 
-                LogText "Checking USBGuard rule for devices not in RuleFile (ImplicitPolicyTarget)"
+                LogText "正在检查 RuleFile 中未列出设备的 USBGuard 规则（ImplicitPolicyTarget）"
                 USBGUARD_DEFAULT_POLICY=$(${AWKBINARY} -F '=' -v OPT="ImplicitPolicyTarget" 'index($0, OPT) == 1 {print $2}' ${USBGUARD_CONFIG})
                 if [ -n "${USBGUARD_DEFAULT_POLICY}" ]; then
-                    LogText "Result: ImplicitPolicyTarget = ${USBGUARD_DEFAULT_POLICY}"
+                    LogText "结果：ImplicitPolicyTarget = ${USBGUARD_DEFAULT_POLICY}"
                     case "${USBGUARD_DEFAULT_POLICY}" in
                         "allow")
-                            Display --indent 6 --text "- Rule for devices not in RuleFile" --result "${USBGUARD_DEFAULT_POLICY}" --color YELLOW
-                            LogText "  Consider changing ImplicitPolicyTarget to \"block\" or \"reject\""
+                            Display --indent 6 --text "- RuleFile 中未列出设备的规则" --result "${USBGUARD_DEFAULT_POLICY}" --color YELLOW
+                            LogText "  建议将 ImplicitPolicyTarget 改为 \"block\" 或 \"reject\""
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Consider hardening USBGuard configuration" "ImplicitPolicyTarget (${USBGUARD_DEFAULT_POLICY} --> (block|reject)"
                             AddHP 0 1
                             ;;
                         "block"|"reject")
-                            Display --indent 6 --text "- Rule for devices not in RuleFile" --result "${USBGUARD_DEFAULT_POLICY}" --color GREEN
+                            Display --indent 6 --text "- RuleFile 中未列出设备的规则" --result "${USBGUARD_DEFAULT_POLICY}" --color GREEN
                             AddHP 1 1
                             ;;
                         *)
-                            LogText "Result: Invalid configuration for ImplicitPolicyTarget"
-                            Display --indent 6 --text "- Rule for devices not in RuleFile" --result "Invalid" --color RED
+                            LogText "结果：ImplicitPolicyTarget 配置无效"
+                            Display --indent 6 --text "- RuleFile 中未列出设备的规则" --result "无效" --color RED
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Fix USBGuard configuration" "ImplicitPolicyTarget invalid \"${USBGUARD_DEFAULT_POLICY}\""
                             AddHP 0 1
                             ;;
                     esac
                 else
-                    LogText "Result: ImplicitPolicyTarget not found"
-                    Display --indent 4 --text "- Rule for devices not in RuleFile" --result "NOT FOUND" --color WHITE
+                    LogText "结果：未找到 ImplicitPolicyTarget"
+                    Display --indent 4 --text "- RuleFile 中未列出设备的规则" --result "未找到" --color WHITE
                     AddHP 0 1
                 fi
 
-                LogText "Checking RuleFile"
+                LogText "正在检查 RuleFile"
                 USBGUARD_RULES=$(${AWKBINARY} -F '=' -v OPT="RuleFile" 'index($0, OPT) == 1 {print $2}' ${USBGUARD_CONFIG})
                 if [ -n "${USBGUARD_RULES}" ] && [ -f "${USBGUARD_RULES}" ]; then
-                    LogText "Result: RuleFile found (${USBGUARD_RULES})"
+                    LogText "结果：发现 RuleFile（${USBGUARD_RULES}）"
                     Display --indent 4 --text "- RuleFile" --result "${STATUS_FOUND}" --color GREEN
                     AddHP 1 1
 
                     USBGUARD_RULES_ALLOW=$(${GREPBINARY} -E -c "^allow" ${USBGUARD_RULES})
-                    Display --indent 6 --text "- Controllers & Devices allow" --result "${USBGUARD_RULES_ALLOW}" --color WHITE
+                    Display --indent 6 --text "- 允许的控制器和设备" --result "${USBGUARD_RULES_ALLOW}" --color WHITE
                     USBGUARD_RULES_BLOCK=$(${GREPBINARY} -E -c "^block" ${USBGUARD_RULES})
-                    Display --indent 6 --text "- Controllers & Devices block" --result "${USBGUARD_RULES_BLOCK}" --color WHITE
+                    Display --indent 6 --text "- 阻止的控制器和设备" --result "${USBGUARD_RULES_BLOCK}" --color WHITE
                     USBGUARD_RULES_REJECT=$(${GREPBINARY} -E -c "^reject" ${USBGUARD_RULES})
-                    Display --indent 6 --text "- Controllers & Devices reject" --result "${USBGUARD_RULES_REJECT}" --color WHITE
+                    Display --indent 6 --text "- 拒绝的控制器和设备" --result "${USBGUARD_RULES_REJECT}" --color WHITE
                 else
-                    LogText "Result: RuleFile not found (\"man usbguard\" for instructions to install initial policies)"
+                    LogText "结果：未找到 RuleFile（安装初始策略的方法请参阅 man usbguard）"
                     Display --indent 4 --text "- RuleFile" --result "${STATUS_NOT_FOUND}" --color RED
                     # To-Be-Added: assign TEST_NO, create documentation, and enable the suggestion
                     #ReportSuggestion "${TEST_NO}" "Install USBGuard RuleFile" "\"man usbguard\" for instructions to install initial policies"
@@ -331,15 +331,15 @@
                 fi
 
             else
-                Display --indent 4 --text "- Configuration" --result "${STATUS_NOT_FOUND}" --color WHITE
-                LogText "Result: Configuration not found"
+                Display --indent 4 --text "- 配置" --result "${STATUS_NOT_FOUND}" --color WHITE
+                LogText "结果：未找到配置"
                 # To-Be-Added: assign TEST_NO, create documentation, and enable the suggestion
                 #ReportSuggestion "${TEST_NO}" "USBGuard configuration file not found, consider reinstalling"
                 AddHP 0 7
             fi
         else
-            LogText "Result: USBGuard not found"
-            Display --indent 2 --text "- Checking USBGuard" --result "${STATUS_NOT_FOUND}" --color WHITE
+            LogText "结果：未找到 USBGuard"
+            Display --indent 2 --text "- 正在检查 USBGuard" --result "${STATUS_NOT_FOUND}" --color WHITE
             # To-Be-Added: assign TEST_NO, create documentation, and enable the suggestion
             #ReportSuggestion "${TEST_NO}" "Install USBGuard to allow for fine-grained control of USB authorization"
             AddHP 0 8
