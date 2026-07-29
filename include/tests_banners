@@ -32,31 +32,31 @@
 #
     # Test        : BANN-7113
     # Description : Check FreeBSD COPYRIGHT banner file
-    Register --test-no BANN-7113 --os FreeBSD --weight L --network NO --category security --description "Check COPYRIGHT banner file"
+    Register --test-no BANN-7113 --os FreeBSD --weight L --network NO --category security --description "检查 COPYRIGHT 横幅文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Testing existence ${ROOTDIR}COPYRIGHT or ${ROOTDIR}etc/COPYRIGHT"
+        LogText "检查：${ROOTDIR}COPYRIGHT 或 ${ROOTDIR}etc/COPYRIGHT 是否存在"
         if [ -f ${ROOTDIR}COPYRIGHT ]; then
             Display --indent 2 --text "- ${ROOTDIR}COPYRIGHT" --result "${STATUS_FOUND}" --color GREEN
             if [ -s ${ROOTDIR}COPYRIGHT ]; then
-                LogText "Result: ${ROOTDIR}COPYRIGHT available and contains text"
+                LogText "结果：${ROOTDIR}COPYRIGHT 存在且包含内容"
             else
-                LogText "Result: ${ROOTDIR}COPYRIGHT available, but empty"
+                LogText "结果：${ROOTDIR}COPYRIGHT 存在但内容为空"
             fi
         else
             Display --indent 2 --text "- ${ROOTDIR}COPYRIGHT" --result "${STATUS_NOT_FOUND}" --color WHITE
-            LogText "Result: ${ROOTDIR}COPYRIGHT not found"
+            LogText "结果：未找到 ${ROOTDIR}COPYRIGHT"
         fi
 
         if [ -f ${ROOTDIR}etc/COPYRIGHT ]; then
             Display --indent 2 --text "- ${ROOTDIR}etc/COPYRIGHT" --result "${STATUS_FOUND}" --color GREEN
             if [ -s ${ROOTDIR}etc/COPYRIGHT ]; then
-                LogText "Result: ${ROOTDIR}etc/COPYRIGHT available and contains text"
+                LogText "结果：${ROOTDIR}etc/COPYRIGHT 存在且包含内容"
             else
-                LogText "Result: ${ROOTDIR}etc/COPYRIGHT available, but empty"
+                LogText "结果：${ROOTDIR}etc/COPYRIGHT 存在但内容为空"
             fi
         else
             Display --indent 2 --text "- ${ROOTDIR}etc/COPYRIGHT" --result "${STATUS_NOT_FOUND}" --color WHITE
-            LogText "Result: ${ROOTDIR}etc/COPYRIGHT not found"
+            LogText "结果：未找到 ${ROOTDIR}etc/COPYRIGHT"
         fi
     fi
 #
@@ -64,19 +64,19 @@
 #
     # Test        : BANN-7124
     # Description : Check issue banner file
-    Register --test-no BANN-7124 --weight L --network NO --category security --description "Check issue banner file"
+    Register --test-no BANN-7124 --weight L --network NO --category security --description "检查 issue 登录横幅文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking file ${ROOTDIR}etc/issue"
+        LogText "检查：文件 ${ROOTDIR}etc/issue"
         if [ -f ${ROOTDIR}etc/issue ]; then
             # Check for symlink
             if [ -L ${ROOTDIR}etc/issue ]; then
-                LogText "Result: file ${ROOTDIR}etc/issue exists (symlink)"
+                LogText "结果：文件 ${ROOTDIR}etc/issue 存在（符号链接）"
                 Display --indent 2 --text "- ${ROOTDIR}etc/issue" --result SYMLINK --color GREEN
             else
                 Display --indent 2 --text "- ${ROOTDIR}etc/issue" --result "${STATUS_FOUND}" --color GREEN
             fi
         else
-            LogText "Result: file ${ROOTDIR}etc/issue does not exist"
+            LogText "结果：文件 ${ROOTDIR}etc/issue 不存在"
             Display --indent 2 --text "- ${ROOTDIR}etc/issue" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
@@ -87,27 +87,27 @@
     # Description : Check issue file to see if it contains some form of message
     #               to discourage unauthorized users to leave the system alone
     if [ -f ${ROOTDIR}etc/issue ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no BANN-7126 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check issue banner file contents"
+    Register --test-no BANN-7126 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 issue 横幅文件内容"
     if [ ${SKIPTEST} -eq 0 ]; then
         COUNT=0
         FILE="${ROOTDIR}etc/issue"
-        LogText "Test: Checking file ${FILE} contents for legal key words"
+        LogText "检查：在 ${FILE} 中搜索法律警示关键词"
         for ITEM in ${LEGAL_BANNER_STRINGS}; do
             FIND=$(${GREPBINARY} -i "${ITEM}" ${FILE})
             if HasData "${FIND}"; then
-                LogText "Result: found string '${ITEM}'"
+                LogText "结果：发现字符串 '${ITEM}'"
                 COUNT=$((COUNT + 1))
             fi
         done
         # Check if we have 5 or more key words
         if [ ${COUNT} -gt 4 ]; then
-            LogText "Result: Found ${COUNT} key words (5 or more suggested), to warn unauthorized users"
-            Display --indent 4 --text "- ${FILE} contents" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：发现 ${COUNT} 个关键词（建议至少 5 个），可用于警告未授权用户"
+            Display --indent 4 --text "- ${FILE} 内容" --result "${STATUS_OK}" --color GREEN
             AddHP 2 2
         else
-            LogText "Result: Found only ${COUNT} key words (5 or more suggested), to warn unauthorized users and could be increased"
-            Display --indent 4 --text "- ${FILE} contents" --result "${STATUS_WEAK}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Add a legal banner to ${FILE}, to warn unauthorized users"
+            LogText "结果：仅发现 ${COUNT} 个警示关键词（建议至少 5 个），横幅内容仍可加强"
+            Display --indent 4 --text "- ${FILE} 内容" --result "${STATUS_WEAK}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "在 ${FILE} 中添加法律警示横幅，以提醒未授权用户"
             AddHP 0 1
             Report "weak_banner_file[]=${FILE}"
         fi
@@ -117,20 +117,20 @@
 #
     # Test        : BANN-7128
     # Description : Check issue.net banner file
-    Register --test-no BANN-7128 --weight L --network NO --category security --description "Check issue.net banner file"
+    Register --test-no BANN-7128 --weight L --network NO --category security --description "检查 issue.net 登录横幅文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking file ${ROOTDIR}etc/issue.net"
+        LogText "检查：文件 ${ROOTDIR}etc/issue.net"
         if [ -f ${ROOTDIR}etc/issue.net ]; then
             # Check for symlink
             if [ -L ${ROOTDIR}etc/issue.net ]; then
-                LogText "Result: file ${ROOTDIR}etc/issue.net exists (symlink)"
+                LogText "结果：文件 ${ROOTDIR}etc/issue.net 存在（符号链接）"
                 Display --indent 2 --text "- ${ROOTDIR}etc/issue.net" --result SYMLINK --color GREEN
             else
-                LogText "Result: file ${ROOTDIR}etc/issue.net exists"
+                LogText "结果：文件 ${ROOTDIR}etc/issue.net 存在"
                 Display --indent 2 --text "- ${ROOTDIR}etc/issue.net" --result "${STATUS_FOUND}" --color GREEN
             fi
         else
-            LogText "Result: file ${ROOTDIR}etc/issue.net does not exist"
+            LogText "结果：文件 ${ROOTDIR}etc/issue.net 不存在"
             Display --indent 2 --text "- ${ROOTDIR}etc/issue.net" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
@@ -141,26 +141,26 @@
     # Description : Check issue.net file to see if it contains some form of message
     #               to discourage unauthorized users to leave the system alone
     if [ -f ${ROOTDIR}etc/issue.net ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no BANN-7130 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check issue.net banner file contents"
+    Register --test-no BANN-7130 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 issue.net 横幅文件内容"
     if [ ${SKIPTEST} -eq 0 ]; then
         COUNT=0
-        LogText "Test: Checking file ${ROOTDIR}etc/issue.net contents for legal key words"
+        LogText "检查：在 ${ROOTDIR}etc/issue.net 中搜索法律警示关键词"
         for ITEM in ${LEGAL_BANNER_STRINGS}; do
             FIND=$(${GREPBINARY} -i "${ITEM}" ${ROOTDIR}etc/issue.net)
             if HasData "${FIND}"; then
-                LogText "Result: found string '${ITEM}'"
+                LogText "结果：发现字符串 '${ITEM}'"
                 COUNT=$((COUNT + 1))
             fi
         done
         # Check if we have 5 or more key words
         if [ ${COUNT} -gt 4 ]; then
-            LogText "Result: Found ${COUNT} key words, to warn unauthorized users"
-            Display --indent 4 --text "- ${ROOTDIR}etc/issue.net contents" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：发现 ${COUNT} 个用于警告未授权用户的关键词"
+            Display --indent 4 --text "- ${ROOTDIR}etc/issue.net 内容" --result "${STATUS_OK}" --color GREEN
             AddHP 2 2
         else
-            LogText "Result: Found only ${COUNT} key words, to warn unauthorized users and could be increased"
-            Display --indent 4 --text "- ${ROOTDIR}etc/issue.net contents" --result "${STATUS_WEAK}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Add legal banner to /etc/issue.net, to warn unauthorized users"
+            LogText "结果：仅发现 ${COUNT} 个警示关键词，横幅内容仍可加强"
+            Display --indent 4 --text "- ${ROOTDIR}etc/issue.net 内容" --result "${STATUS_WEAK}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "在 /etc/issue.net 中添加法律警示横幅，以提醒未授权用户"
             AddHP 0 1
         fi
     fi
