@@ -25,23 +25,23 @@
 #################################################################################
 #
     InsertSection "${SECTION_FILE_INTEGRITY}"
-    Display --indent 2 --text "- Checking file integrity tools"
+    Display --indent 2 --text "- 正在检查文件完整性工具"
 #
 #################################################################################
 #
     # Test        : FINT-4310
     # Description : Check if AFICK is installed
-    Register --test-no FINT-4310 --weight L --network NO --category security --description "AFICK availability"
+    Register --test-no FINT-4310 --weight L --network NO --category security --description "检查 AFICK 是否可用"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking AFICK binary"
+        LogText "检查：AFICK 可执行文件"
         if [ -n "${AFICKBINARY}" ]; then
-            LogText "Result: AFICK is installed (${AFICKBINARY})"
+            LogText "结果：已安装 AFICK（${AFICKBINARY}）"
             Report "file_integrity_tool[]=afick"
             FILE_INT_TOOL="afick"
             FILE_INT_TOOL_FOUND=1
             Display --indent 4 --text "- AFICK" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: AFICK is not installed"
+            LogText "结果：未安装 AFICK"
             if IsVerbose; then Display --indent 4 --text "- AFICK" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
@@ -50,17 +50,17 @@
 #
     # Test        : FINT-4314
     # Description : Check if AIDE is installed
-    Register --test-no FINT-4314 --weight L --network NO --category security --description "AIDE availability"
+    Register --test-no FINT-4314 --weight L --network NO --category security --description "检查 AIDE 是否可用"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking AIDE binary"
+        LogText "检查：AIDE 可执行文件"
         if [ -n "${AIDEBINARY}" ]; then
-            LogText "Result: AIDE is installed (${AIDEBINARY})"
+            LogText "结果：已安装 AIDE（${AIDEBINARY}）"
             Report "file_integrity_tool[]=aide"
             FILE_INT_TOOL="aide"
             FILE_INT_TOOL_FOUND=1
             Display --indent 4 --text "- AIDE" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: AIDE is not installed"
+            LogText "结果：未安装 AIDE"
             if IsVerbose; then Display --indent 4 --text "- AIDE" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
@@ -70,28 +70,28 @@
     # Test        : FINT-4315
     # Description : Check AIDE configuration file
     if [ -n "${AIDEBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no FINT-4315 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check AIDE configuration file"
+    Register --test-no FINT-4315 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 AIDE 配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         AIDE_CONFIG_LOCS="${ROOTDIR}etc ${ROOTDIR}etc/aide ${ROOTDIR}usr/local/etc"
-        LogText "Test: search for aide.conf in ${AIDE_CONFIG_LOCS}"
+        LogText "检查：在 ${AIDE_CONFIG_LOCS} 中搜索 aide.conf"
         for I in ${AIDE_CONFIG_LOCS}; do
             if [ -f "${I}/aide.conf" ]; then
-                LogText "Result: found aide.conf in directory ${I}"
+                LogText "结果：在目录 ${I} 中发现 aide.conf"
                 AIDECONFIG="${I}/aide.conf"
             fi
         done
 
         if [ -z "${AIDECONFIG}" ]; then
-            Display --indent 6 --text "- AIDE config file" --result "${STATUS_NOT_FOUND}" --color RED
-            ReportWarning "${TEST_NO}" "No AIDE configuration file was found, needed for AIDE functionality"
+            Display --indent 6 --text "- AIDE 配置文件" --result "${STATUS_NOT_FOUND}" --color RED
+            ReportWarning "${TEST_NO}" "未找到 AIDE 配置文件，AIDE 正常工作需要该文件"
         else
-            LogText "Checking configuration file ${AIDECONFIG} for errors"
+            LogText "正在检查配置文件 ${AIDECONFIG} 是否存在错误"
             FIND=$(${AIDEBINARY} --config=${AIDECONFIG} -D)
             if [ $? -eq 0 ]; then
-                Display --indent 6 --text "- AIDE config file" --result "${STATUS_FOUND}" --color GREEN
+                Display --indent 6 --text "- AIDE 配置文件" --result "${STATUS_FOUND}" --color GREEN
             else
-                Display --indent 6 --text "- AIDE config file" --result "${STATUS_WARNING}" --color YELLOW
-                ReportSuggestion "${TEST_NO}" "Check the AIDE configuration file as it may contain errors"
+                Display --indent 6 --text "- AIDE 配置文件" --result "${STATUS_WARNING}" --color YELLOW
+                ReportSuggestion "${TEST_NO}" "检查 AIDE 配置文件，其中可能存在错误"
             fi
         fi
     fi
@@ -101,28 +101,28 @@
     # Test        : FINT-4316
     # Description : Presence of AIDE database and size check
     if [ -n "${AIDEBINARY}" -a -n "${AIDECONFIG}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no FINT-4316 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Presence of AIDE database and size check"
+    Register --test-no FINT-4316 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 AIDE 数据库是否存在及其大小"
     if [ ${SKIPTEST} -eq 0 ]; then
         AIDE_DB=$(${GREPBINARY} -E '(^database|^database_in)=' ${AIDECONFIG} | ${SEDBINARY} "s/.*://")
         if case ${AIDE_DB} in @@*) ;; *) false;; esac; then
             I=$(${GREPBINARY} "@@define.*DBDIR" ${AIDECONFIG} | ${AWKBINARY} '{print $3}')
             AIDE_DB=$(echo ${AIDE_DB} | ${SEDBINARY} "s#.*}#${I}#")
         fi
-        LogText "Test: search for AIDE database on disk ${AIDE_DB}"
+        LogText "检查：在磁盘上搜索 AIDE 数据库 ${AIDE_DB}"
 
         if [ ! -e "${AIDE_DB}" ]; then
-            Display --indent 6 --text "- AIDE database" --result "${STATUS_NOT_FOUND}" --color RED
-            LogText "Result: AIDE database ${AIDE_DB} does not exist"
-            ReportWarning "${TEST_NO}" "No AIDE database was found, needed for AIDE functionality"
+            Display --indent 6 --text "- AIDE 数据库" --result "${STATUS_NOT_FOUND}" --color RED
+            LogText "结果：AIDE 数据库 ${AIDE_DB} 不存在"
+            ReportWarning "${TEST_NO}" "未找到 AIDE 数据库，AIDE 正常工作需要该数据库"
         else
-            LogText "Checking database size ${AIDE_DB}"
+            LogText "正在检查数据库大小 ${AIDE_DB}"
             if [ -s "${AIDE_DB}" ]; then
-                Display --indent 6 --text "- AIDE database" --result "${STATUS_FOUND}" --color GREEN
-                LogText "Result: AIDE database ${AIDE_DB} exist and has a size greater than zero"
+                Display --indent 6 --text "- AIDE 数据库" --result "${STATUS_FOUND}" --color GREEN
+                LogText "结果：AIDE 数据库 ${AIDE_DB} 存在且大小大于零"
             else
-                Display --indent 6 --text "- AIDE database" --result "${STATUS_WARNING}" --color YELLOW
-                LogText "Result: AIDE database ${AIDE_DB} exist but has a size of zero"
-                ReportSuggestion "${TEST_NO}" "Check the AIDE database as it may contain errors"
+                Display --indent 6 --text "- AIDE 数据库" --result "${STATUS_WARNING}" --color YELLOW
+                LogText "结果：AIDE 数据库 ${AIDE_DB} 存在，但大小为零"
+                ReportSuggestion "${TEST_NO}" "检查 AIDE 数据库，其中可能存在错误"
             fi
         fi
         unset AIDE_DB I
@@ -132,17 +132,17 @@
 #
     # Test        : FINT-4318
     # Description : Check if Osiris is installed
-    Register --test-no FINT-4318 --weight L --network NO --category security --description "Osiris availability"
+    Register --test-no FINT-4318 --weight L --network NO --category security --description "检查 Osiris 是否可用"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking Osiris binary"
+        LogText "检查：Osiris 可执行文件"
         if [ -n "${OSIRISBINARY}" ]; then
-            LogText "Result: Osiris is installed (${OSIRISBINARY})"
+            LogText "结果：已安装 Osiris（${OSIRISBINARY}）"
             Report "file_integrity_tool[]=osiris"
             FILE_INT_TOOL="osiris"
             FILE_INT_TOOL_FOUND=1
             Display --indent 4 --text "- Osiris" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: Osiris is not installed"
+            LogText "结果：未安装 Osiris"
             if IsVerbose; then Display --indent 4 --text "- Osiris" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
@@ -151,17 +151,17 @@
 #
     # Test        : FINT-4322
     # Description : Check if Samhain is installed
-    Register --test-no FINT-4322 --weight L --network NO --category security --description "Samhain availability"
+    Register --test-no FINT-4322 --weight L --network NO --category security --description "检查 Samhain 是否可用"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking Samhain binary"
+        LogText "检查：Samhain 可执行文件"
         if [ -n "${SAMHAINBINARY}" ]; then
-            LogText "Result: Samhain is installed (${SAMHAINBINARY})"
+            LogText "结果：已安装 Samhain（${SAMHAINBINARY}）"
             Report "file_integrity_tool[]=samhain"
             FILE_INT_TOOL="samhain"
             FILE_INT_TOOL_FOUND=1
             Display --indent 4 --text "- Samhain" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: Samhain is not installed"
+            LogText "结果：未安装 Samhain"
             if IsVerbose; then Display --indent 4 --text "- Samhain" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
@@ -170,17 +170,17 @@
 #
     # Test        : FINT-4326
     # Description : Check if Tripwire is installed
-    Register --test-no FINT-4326 --weight L --network NO --category security --description "Tripwire availability"
+    Register --test-no FINT-4326 --weight L --network NO --category security --description "检查 Tripwire 是否可用"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking Tripwire binary"
+        LogText "检查：Tripwire 可执行文件"
         if [ -n "${TRIPWIREBINARY}" ]; then
-            LogText "Result: Tripwire is installed (${TRIPWIREBINARY})"
+            LogText "结果：已安装 Tripwire（${TRIPWIREBINARY}）"
             Report "file_integrity_tool[]=tripwire"
             FILE_INT_TOOL="tripwire"
             FILE_INT_TOOL_FOUND=1
             Display --indent 4 --text "- Tripwire" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: Tripwire is not installed"
+            LogText "结果：未安装 Tripwire"
             if IsVerbose; then Display --indent 4 --text "- Tripwire" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
@@ -189,17 +189,17 @@
 #
     # Test        : FINT-4328
     # Description : Check if OSSEC system integrity tool is running
-    Register --test-no FINT-4328 --weight L --network NO --category security --description "OSSEC syscheck daemon running"
+    Register --test-no FINT-4328 --weight L --network NO --category security --description "检查 OSSEC syscheck 守护进程是否运行"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking if OSSEC syscheck daemon is running"
+        LogText "检查：OSSEC syscheck 守护进程是否正在运行"
         if IsRunning "ossec-syscheckd"; then
-            LogText "Result: syscheck (OSSEC) active"
+            LogText "结果：syscheck（OSSEC）处于活动状态"
             Report "file_integrity_tool[]=ossec"
             FILE_INT_TOOL="ossec-syscheck"
             FILE_INT_TOOL_FOUND=1
-            Display --indent 4 --text "- OSSEC (syscheck)" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- OSSEC（syscheck）" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: syscheck (OSSEC) is not active"
+            LogText "结果：syscheck（OSSEC）未处于活动状态"
             if IsVerbose; then Display --indent 4 --text "- OSSEC" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
@@ -209,17 +209,17 @@
     # Test        : FINT-4330
     # Description : Check if mtree is installed
     # Note        : Usually on BSD and similar
-    Register --test-no FINT-4330 --weight L --network NO --category security --description "mtree availability"
+    Register --test-no FINT-4330 --weight L --network NO --category security --description "检查 mtree 是否可用"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking mtree binary"
+        LogText "检查：mtree 可执行文件"
         if [ -n "${MTREEBINARY}" ]; then
-            LogText "Result: mtree is installed (${MTREEBINARY})"
+            LogText "结果：已安装 mtree（${MTREEBINARY}）"
             Report "file_integrity_tool[]=mtree"
             FILE_INT_TOOL="mtree"
             FILE_INT_TOOL_FOUND=1
             Display --indent 4 --text "- mtree" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: mtree is not installed"
+            LogText "结果：未安装 mtree"
             if IsVerbose; then Display --indent 4 --text "- mtree" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
@@ -229,18 +229,18 @@
     # Test        : FINT-4334
     # Description : Check if LFD is used (part of CSF suite)
     if [ -f ${CSF_CONFIG} ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no FINT-4334 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check lfd daemon status"
+    Register --test-no FINT-4334 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 lfd 守护进程状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        Display --indent 4 --text "- lfd (CSF)" --result "${STATUS_FOUND}" --color GREEN
-        LogText "Test: determine lfd status"
+        Display --indent 4 --text "- lfd（CSF）" --result "${STATUS_FOUND}" --color GREEN
+        LogText "检查：确定 lfd 状态"
         if IsRunning "lfd - sleeping"; then
-            LogText "Result: lfd daemon is running (CSF)"
+            LogText "结果：lfd 守护进程正在运行（CSF）"
             Report "file_integrity_tool[]=csf-lfd"
-            Display --indent 6 --text "- LFD (CSF) daemon" --result "${STATUS_RUNNING}" --color GREEN
+            Display --indent 6 --text "- LFD（CSF）守护进程" --result "${STATUS_RUNNING}" --color GREEN
             FILE_INT_TOOL="csf-lfd"
             FILE_INT_TOOL_FOUND=1
         else
-            Display --indent 6 --text "- LFD (CSF) daemon" --result "${STATUS_NOT_RUNNING}" --color YELLOW
+            Display --indent 6 --text "- LFD（CSF）守护进程" --result "${STATUS_NOT_RUNNING}" --color YELLOW
         fi
     fi
 #
@@ -249,30 +249,30 @@
     # Test        : FINT-4336
     # Description : Check if LFD is enabled (part of CSF suite)
     if [ -f ${CSF_CONFIG} ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no FINT-4336 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check lfd configuration status"
+    Register --test-no FINT-4336 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 lfd 配置状态"
     if [ ${SKIPTEST} -eq 0 ]; then
         # LFD configuration parameters
         ENABLED=$(${GREPBINARY} "^LF_DAEMON = \"1\"" ${CSF_CONFIG})
         if [ -n "${ENABLED}" ]; then
-            LogText "Result: lfd service is configured to run"
-            Display --indent 6 --text "- Configuration status" --result "${STATUS_ENABLED}" --color GREEN
+            LogText "结果：lfd 服务已配置为运行"
+            Display --indent 6 --text "- 配置状态" --result "${STATUS_ENABLED}" --color GREEN
         else
-            LogText "Result: lfd service is configured NOT to run"
-            Display --indent 6 --text "- Configuration status" --result "${STATUS_DISABLED}" --color YELLOW
+            LogText "结果：lfd 服务已配置为不运行"
+            Display --indent 6 --text "- 配置状态" --result "${STATUS_DISABLED}" --color YELLOW
         fi
-        ENABLED=$(${GREPBINARY} "^LF_DIRWATCH =" ${CSF_CONFIG} | ${AWKBINARY} '{ print $3 }' | ${SEDBINARY} 's/\"//g')
+        ENABLED=$(${GREPBINARY} "^LF_DIRWATCH =" ${CSF_CONFIG} | ${AWKBINARY} '{ print $3 }' | ${SEDBINARY} 's/"//g')
         if [ ! "${ENABLED}" = "0" -a -n "${ENABLED}" ]; then
-            LogText "Result: lfd directory watching is enabled (value: ${ENABLED})"
-            Display --indent 6 --text "- Temporary directory watches" --result "${STATUS_ENABLED}" --color GREEN
+            LogText "结果：已启用 lfd 目录监控（值：${ENABLED}）"
+            Display --indent 6 --text "- 临时目录监控" --result "${STATUS_ENABLED}" --color GREEN
         else
-            LogText "Result: lfd directory watching is disabled"
-            Display --indent 6 --text "- Temporary directory watches" --result "${STATUS_DISABLED}" --color YELLOW
+            LogText "结果：已禁用 lfd 目录监控"
+            Display --indent 6 --text "- 临时目录监控" --result "${STATUS_DISABLED}" --color YELLOW
         fi
-        ENABLED=$(${GREPBINARY} "^LF_DIRWATCH_FILE =" ${CSF_CONFIG} | ${AWKBINARY} '{ print $3 }' | ${SEDBINARY} 's/\"//g')
+        ENABLED=$(${GREPBINARY} "^LF_DIRWATCH_FILE =" ${CSF_CONFIG} | ${AWKBINARY} '{ print $3 }' | ${SEDBINARY} 's/"//g')
         if [ ! "${ENABLED}" = "0" -a -n "${ENABLED}" ]; then
-            Display --indent 6 --text "- Directory/File watches" --result "${STATUS_ENABLED}" --color GREEN
+            Display --indent 6 --text "- 目录/文件监控" --result "${STATUS_ENABLED}" --color GREEN
         else
-            Display --indent 6 --text "- Directory/File watches" --result "${STATUS_DISABLED}" --color YELLOW
+            Display --indent 6 --text "- 目录/文件监控" --result "${STATUS_DISABLED}" --color YELLOW
         fi
     fi
 #
@@ -280,18 +280,18 @@
 #
     # Test        : FINT-4338
     # Description : Check if osquery system integrity tool is running
-    Register --test-no FINT-4338 --weight L --network NO --category security --description "osqueryd syscheck daemon running"
+    Register --test-no FINT-4338 --weight L --network NO --category security --description "检查 osqueryd syscheck 守护进程是否运行"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking if osqueryd syscheck daemon is running"
+        LogText "检查：osqueryd syscheck 守护进程是否正在运行"
         if IsRunning "osqueryd"; then
-            LogText "Result: syscheck (osquery) installed"
+            LogText "结果：已安装 syscheck（osquery）"
             Report "file_integrity_tool[]=osquery"
             FILE_INT_TOOL="osquery"
             FILE_INT_TOOL_FOUND=1
-            Display --indent 4 --text "- osquery daemon (syscheck)" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- osquery 守护进程（syscheck）" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: syscheck (osquery) not installed"
-            if IsVerbose; then Display --indent 4 --text "- osquery daemon (syscheck)" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
+            LogText "结果：未安装 syscheck（osquery）"
+            if IsVerbose; then Display --indent 4 --text "- osquery 守护进程（syscheck）" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
 #
@@ -299,21 +299,21 @@
 #
     # Test        : FINT-4339
     # Description : Check IMA/EVM status
-    if [ ! -z "${EVMCTLBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; SKIPREASON="No evmctl binary found"; fi
-    Register --test-no FINT-4339 --os Linux --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "Check IMA/EVM status"
+    if [ ! -z "${EVMCTLBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; SKIPREASON="未找到 evmctl 可执行文件"; fi
+    Register --test-no FINT-4339 --os Linux --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "检查 IMA/EVM 状态"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         if [ -e /sys/kernel/security/ima ]; then
             FOUND=$(${CAT_BINARY} /sys/kernel/security/ima/runtime_measurements_count)
         fi
         if [ "${FOUND}" -ne 1 ]; then
-            LogText "Result: EVM tools found but IMA/EVM disabled"
-            Display --indent 2 --text "- IMA/EVM (status)" --result "${STATUS_DISABLED}" --color YELLOW
+            LogText "结果：发现 EVM 工具，但 IMA/EVM 已禁用"
+            Display --indent 2 --text "- IMA/EVM（状态）" --result "${STATUS_DISABLED}" --color YELLOW
         else
-            LogText "Result: EVM tools found, IMA/EVM enabled"
+            LogText "结果：发现 EVM 工具，IMA/EVM 已启用"
             FILE_INT_TOOL="evmctl"
             FILE_INT_TOOL_FOUND=1
-            Display --indent 2 --text "- IMA/EVM (status)" --result "${STATUS_ENABLED}" --color GREEN
+            Display --indent 2 --text "- IMA/EVM（状态）" --result "${STATUS_ENABLED}" --color GREEN
         fi
     fi
 #
@@ -321,8 +321,8 @@
 #
     # Test        : FINT-4340
     # Description : Check dm-integrity status
-    if [ ! -z "${INTEGRITYSETUPBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; SKIPREASON="No integritysetup binary found"; fi
-    Register --test-no FINT-4340 --os Linux --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "Check dm-integrity status"
+    if [ ! -z "${INTEGRITYSETUPBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; SKIPREASON="未找到 integritysetup 可执行文件"; fi
+    Register --test-no FINT-4340 --os Linux --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "检查 dm-integrity 状态"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         ROOTPROTECTED=0
@@ -332,7 +332,7 @@
 		FIND=$(${INTEGRITYSETUPBINARY} status "${DEVICE}" | ${GREPBINARY} -E 'type:.*INTEGRITY')
 		if [ ! -z "${FIND}" ]; then
 		    FOUND=1
-		    LogText "Result: found dm-integrity device ${DEVICE}"
+		    LogText "结果：发现 dm-integrity 设备 ${DEVICE}"
 		    if [ "${DEVICE}" = "${ROOTDEVICE}" ]; then
 			ROOTPROTECTED=1
 		    fi
@@ -340,20 +340,20 @@
 	    fi
 	done
         if [ "${FOUND}" -ne 1 ]; then
-            LogText "Result: dm-integrity tools found but no active devices"
-            Display --indent 2 --text "- dm-integrity (status)" --result "${STATUS_DISABLED}" --color WHITE
+            LogText "结果：发现 dm-integrity 工具，但没有活动设备"
+            Display --indent 2 --text "- dm-integrity（状态）" --result "${STATUS_DISABLED}" --color WHITE
         else
-            LogText "Result: dm-integrity tools found, active devices"
+            LogText "结果：发现 dm-integrity 工具和活动设备"
 	    if [ ${ROOTPROTECTED} -eq 1 ]; then
-		LogText "Result: root filesystem is protected by dm-integrity"
-		Display --indent 2 --text "- dm-integrity (status)" --result "${STATUS_ENABLED}" --color GREEN
+		LogText "结果：根文件系统受 dm-integrity 保护"
+		Display --indent 2 --text "- dm-integrity（状态）" --result "${STATUS_ENABLED}" --color GREEN
 	    else
-		LogText "Result: root filesystem is not protected by dm-integrity but active devices found"
-		Display --indent 2 --text "- dm-integrity (status)" --result "${STATUS_FOUND}" --color YELLOW
+		LogText "结果：发现活动的 dm-integrity 设备，但根文件系统未受其保护"
+		Display --indent 2 --text "- dm-integrity（状态）" --result "${STATUS_FOUND}" --color YELLOW
 	    fi
             FILE_INT_TOOL="dm-integrity"
             FILE_INT_TOOL_FOUND=1
-            Display --indent 2 --text "- dm-integrity (status)" --result "${STATUS_ENABLED}" --color GREEN
+            Display --indent 2 --text "- dm-integrity（状态）" --result "${STATUS_ENABLED}" --color GREEN
         fi
     fi
 #
@@ -361,8 +361,8 @@
 #
     # Test        : FINT-4341
     # Description : Check dm-verity status
-    if [ ! -z "${VERITYSETUPBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; SKIPREASON="No veritysetup binary found"; fi
-    Register --test-no FINT-4341 --os Linux --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "Check dm-verity status"
+    if [ ! -z "${VERITYSETUPBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; SKIPREASON="未找到 veritysetup 可执行文件"; fi
+    Register --test-no FINT-4341 --os Linux --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "检查 dm-verity 状态"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         ROOTPROTECTED=0
@@ -372,7 +372,7 @@
 		FIND=$(${VERITYSETUPBINARY} status "${DEVICE}" | ${GREPBINARY} -E 'type:.*VERITY')
 		if [ ! -z "${FIND}" ]; then
 		    FOUND=1
-		    LogText "Result: found dm-verity device ${DEVICE}"
+		    LogText "结果：发现 dm-verity 设备 ${DEVICE}"
 		    if [ "${DEVICE}" = "${ROOTDEVICE}" ]; then
 			ROOTPROTECTED=1
 		    fi
@@ -380,16 +380,16 @@
 	    fi
 	done
         if [ "${FOUND}" -ne 1 ]; then
-            LogText "Result: dm-verity tools found but no active devices"
-            Display --indent 2 --text "- dm-verity (status)" --result "${STATUS_DISABLED}" --color WHITE
+            LogText "结果：发现 dm-verity 工具，但没有活动设备"
+            Display --indent 2 --text "- dm-verity（状态）" --result "${STATUS_DISABLED}" --color WHITE
         else
-            LogText "Result: dm-verity tools found, active devices"
+            LogText "结果：发现 dm-verity 工具和活动设备"
 	    if [ ${ROOTPROTECTED} -eq 1 ]; then
-		LogText "Result: root filesystem is protected by dm-verity"
-		Display --indent 2 --text "- dm-verity (status)" --result "${STATUS_ENABLED}" --color GREEN
+		LogText "结果：根文件系统受 dm-verity 保护"
+		Display --indent 2 --text "- dm-verity（状态）" --result "${STATUS_ENABLED}" --color GREEN
 	    else
-		LogText "Result: root filesystem is not protected by dm-verity but active devices found"
-		Display --indent 2 --text "- dm-verity (status)" --result "${STATUS_FOUND}" --color YELLOW
+		LogText "结果：发现活动的 dm-verity 设备，但根文件系统未受其保护"
+		Display --indent 2 --text "- dm-verity（状态）" --result "${STATUS_FOUND}" --color YELLOW
 	    fi
             FILE_INT_TOOL="dm-verity"
             FILE_INT_TOOL_FOUND=1
@@ -400,17 +400,17 @@
 #
     # Test        : FINT-4344
     # Description : Check if Wazuh system integrity tool is running
-    Register --test-no FINT-4344 --weight L --network NO --category security --description "Wazuh syscheck daemon running"
+    Register --test-no FINT-4344 --weight L --network NO --category security --description "检查 Wazuh syscheck 守护进程是否运行"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking if Wazuh syscheck daemon is running"
+        LogText "检查：Wazuh syscheck 守护进程是否正在运行"
         if IsRunning "wazuh-syscheckd"; then
-            LogText "Result: syscheck (Wazuh) active"
+            LogText "结果：syscheck（Wazuh）处于活动状态"
             Report "file_integrity_tool[]=wazuh"
             FILE_INT_TOOL="wazuh-syscheck"
             FILE_INT_TOOL_FOUND=1
-            Display --indent 4 --text "- Wazuh (syscheck)" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- Wazuh（syscheck）" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: syscheck (Wazuh) is not active"
+            LogText "结果：syscheck（Wazuh）未处于活动状态"
             if IsVerbose; then Display --indent 4 --text "- Wazuh" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
@@ -420,17 +420,17 @@
     # Test        : FINT-4402 (was FINT-4316)
     # Description : Check if AIDE is configured to use SHA256 or SHA512 checksums
     if [ ! "${AIDEBINARY}" = "" -a -n "${AIDECONFIG}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no FINT-4402 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "AIDE configuration: Checksums (SHA256 or SHA512)"
+    Register --test-no FINT-4402 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 AIDE 是否配置为使用 SHA256 或 SHA512 校验和"
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=$(${GREPBINARY} -v "^#" ${AIDECONFIG} | ${GREPBINARY} -E "= .*(sha256|sha512)")
         if [ -z "${FIND}" ]; then
-            LogText "Result: No SHA256 or SHA512 found for creating checksums"
-            Display --indent 6 --text "- AIDE config (Checksum)" --result Suggestion --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Use SHA256 or SHA512 to create checksums in AIDE"
+            LogText "结果：未发现使用 SHA256 或 SHA512 创建校验和的配置"
+            Display --indent 6 --text "- AIDE 配置（校验和）" --result Suggestion --color YELLOW
+            ReportSuggestion "${TEST_NO}" "在 AIDE 中使用 SHA256 或 SHA512 创建校验和"
             AddHP 1 3
         else
-            LogText "Result: Found SHA256 or SHA512 found for creating checksums"
-            Display --indent 6 --text "- AIDE config (Checksum)" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：发现使用 SHA256 或 SHA512 创建校验和的配置"
+            Display --indent 6 --text "- AIDE 配置（校验和）" --result "${STATUS_OK}" --color GREEN
             AddHP 2 2
         fi
     fi
@@ -439,17 +439,17 @@
 #
     # Test        : FINT-4350
     # Description : Check if at least one file integrity tool is installed
-    Register --test-no FINT-4350 --weight L --network NO --category security --description "File integrity software installed"
+    Register --test-no FINT-4350 --weight L --network NO --category security --description "检查是否安装文件完整性软件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Check if at least on file integrity tool is available/installed"
+        LogText "检查：是否至少存在一个可用或已安装的文件完整性工具"
         if [ ${FILE_INT_TOOL_FOUND} -eq 1 ]; then
-            LogText "Result: found at least one file integrity tool"
-            Display --indent 2 --text "- Checking presence integrity tool" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：至少发现一个文件完整性工具"
+            Display --indent 2 --text "- 正在检查完整性工具" --result "${STATUS_FOUND}" --color GREEN
             AddHP 5 5
         else
-            LogText "Result: No file integrity tools found"
-            Display --indent 2 --text "- Checking presence integrity tool" --result "${STATUS_NOT_FOUND}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Install a file integrity tool to monitor changes to critical and sensitive files"
+            LogText "结果：未发现文件完整性工具"
+            Display --indent 2 --text "- 正在检查完整性工具" --result "${STATUS_NOT_FOUND}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "安装文件完整性工具，以监控关键和敏感文件的变化"
             AddHP 0 5
         fi
     fi
