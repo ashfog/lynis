@@ -33,14 +33,14 @@
     # Test        : STRG-1902
     # Description : Check rpcinfo
     if [ -n "${RPCINFOBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no STRG-1902 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check rpcinfo registered programs"
+    Register --test-no STRG-1902 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 rpcinfo 注册的程序"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking rpcinfo registered programs"
+        LogText "检查：rpcinfo 注册的程序"
         FIND=$(${RPCINFOBINARY} -p 2> /dev/null | ${TRBINARY} -s ' ' ',')
         for I in ${FIND}; do
             LogText "rpcinfo: ${I}"
         done
-        Display --indent 2 --text "- Query rpc registered programs" --result "${STATUS_DONE}" --color GREEN
+        Display --indent 2 --text "- 查询 RPC 注册程序" --result "${STATUS_DONE}" --color GREEN
     fi
 #
 #################################################################################
@@ -48,14 +48,14 @@
     # Test        : STRG-1904
     # Description : Check nfs versions in rpcinfo
     if [ -n "${RPCINFOBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no STRG-1904 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check nfs rpc"
+    Register --test-no STRG-1904 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 NFS RPC 信息"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking NFS registered versions"
+        LogText "检查：NFS 注册版本"
         FIND=$(${RPCINFOBINARY} -p 2> /dev/null | ${AWKBINARY} '{ if ($5=="nfs") { print $2 } }' | uniq | sort)
         for I in ${FIND}; do
-            LogText "Found version: ${I}"
+            LogText "发现版本：${I}"
         done
-        Display --indent 2 --text "- Query NFS versions" --result "${STATUS_DONE}" --color GREEN
+        Display --indent 2 --text "- 查询 NFS 版本" --result "${STATUS_DONE}" --color GREEN
     fi
 #
 #################################################################################
@@ -63,43 +63,43 @@
     # Test        : STRG-1906
     # Description : Check nfs protocols (TCP/UDP) and port in rpcinfo
     if [ -n "${RPCINFOBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no STRG-1906 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check nfs rpc"
+    Register --test-no STRG-1906 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 NFS RPC 信息"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking NFS registered protocols"
+        LogText "检查：NFS 注册协议"
         FIND=$(${RPCINFOBINARY} -p 2> /dev/null | ${AWKBINARY} '{ if ($5=="nfs") { print $3 } }' | uniq | sort)
         for I in ${FIND}; do
-            LogText "Found protocol: ${I}"
+            LogText "发现协议：${I}"
         done
         if [ -z "${FIND}" ]; then
-            LogText "Output: no NFS protocols found"
+            LogText "输出：未发现 NFS 协议"
         fi
 
         # Check port number
-        LogText "Test: Checking NFS registered ports"
+        LogText "检查：NFS 注册端口"
         FIND=$(${RPCINFOBINARY} -p 2> /dev/null | ${AWKBINARY} '{ if ($5=="nfs") { print $3 } }' | uniq | sort)
         for I in ${FIND}; do
-            LogText "Found port: ${I}"
+            LogText "发现端口：${I}"
         done
         if [ -z "${FIND}" ]; then
-            LogText "Output: no NFS port number found"
+            LogText "输出：未发现 NFS 端口号"
         fi
-        Display --indent 2 --text "- Query NFS protocols" --result "${STATUS_DONE}" --color GREEN
+        Display --indent 2 --text "- 查询 NFS 协议" --result "${STATUS_DONE}" --color GREEN
     fi
 #
 #################################################################################
 #
     # Test        : STRG-1920
     # Description : Check for running NFS daemons
-    Register --test-no STRG-1920 --weight L --network NO --category security --description "Checking NFS daemon"
+    Register --test-no STRG-1920 --weight L --network NO --category security --description "检查 NFS 守护进程"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking running NFS daemon"
+        LogText "检查：正在运行的 NFS 守护进程"
         FIND=$(${PSBINARY} ax | ${GREPBINARY} "nfsd" | ${GREPBINARY} -v "grep")
         if [ -z "${FIND}" ]; then
-            LogText "Output: NFS daemon is not running"
-            Display --indent 2 --text "- Check running NFS daemon" --result "${STATUS_NOT_FOUND}" --color WHITE
+            LogText "输出：NFS 守护进程未运行"
+            Display --indent 2 --text "- 检查运行中的 NFS 守护进程" --result "${STATUS_NOT_FOUND}" --color WHITE
         else
-            LogText "Output: NFS daemon is running"
-            Display --indent 2 --text "- Check running NFS daemon" --result "${STATUS_FOUND}" --color GREEN
+            LogText "输出：NFS 守护进程正在运行"
+            Display --indent 2 --text "- 检查运行中的 NFS 守护进程" --result "${STATUS_FOUND}" --color GREEN
             NFS_DAEMON_RUNNING=1
         fi
     fi
@@ -116,25 +116,25 @@
     # Test        : STRG-1926
     # Description : Check NFS exports
     if [ ${NFS_DAEMON_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no STRG-1926 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Checking NFS exports"
+    Register --test-no STRG-1926 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 NFS 导出配置"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: check /etc/exports"
+        LogText "检查：/etc/exports"
         if [ -f ${ROOTDIR}etc/exports ]; then
-            LogText "Result: ${ROOTDIR}etc/exports exists"
+            LogText "结果：${ROOTDIR}etc/exports 存在"
             FIND=$(${GREPBINARY} -v "^$" ${ROOTDIR}etc/exports | ${GREPBINARY} -v "^#" | ${SEDBINARY} 's/ /!space!/g')
             if [ -n "${FIND}" ]; then
                 for I in ${FIND}; do
                     I=$(echo ${I} | ${SEDBINARY} 's/!space!/ /g')
-                    LogText "Found line: ${I}"
+                    LogText "发现配置行：${I}"
                 done
             else
-                LogText "Result: ${ROOTDIR}etc/exports does not contain exported file systems"
+                LogText "结果：${ROOTDIR}etc/exports 中没有导出的文件系统"
                 NFS_EXPORTS_EMPTY=1
             fi
-            Display --indent 4 --text "- Checking ${ROOTDIR}etc/exports" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- 正在检查 ${ROOTDIR}etc/exports" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: file /etc/exports does not exist"
-            Display --indent 4 --text "- Checking ${ROOTDIR}etc/exports" --result "${STATUS_NOT_FOUND}" --color WHITE
+            LogText "结果：文件 /etc/exports 不存在"
+            Display --indent 4 --text "- 正在检查 ${ROOTDIR}etc/exports" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
 #
@@ -143,12 +143,12 @@
     # Test        : STRG-1928
     # Description : Check for empty exports file while NFS is running
     if [ ${NFS_DAEMON_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no STRG-1928 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Checking empty /etc/exports"
+    Register --test-no STRG-1928 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查空的 /etc/exports"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ ${NFS_EXPORTS_EMPTY} -eq 1 ]; then
-            Display --indent 6 --text "- Checking empty /etc/exports" --result "${STATUS_SUGGESTION}" --color YELLOW
-            LogText "Result: ${ROOTDIR}etc/exports seems to have no exported file systems"
-            ReportSuggestion "${TEST_NO}" "/etc/exports has no exported file systems, while NFS daemon is running. Check if NFS needs to run on this system"
+            Display --indent 6 --text "- 正在检查空的 /etc/exports" --result "${STATUS_SUGGESTION}" --color YELLOW
+            LogText "结果：${ROOTDIR}etc/exports 似乎没有导出的文件系统"
+            ReportSuggestion "${TEST_NO}" "NFS 守护进程正在运行，但 /etc/exports 中没有导出的文件系统；请确认本系统是否需要运行 NFS"
         fi
     fi
 #
@@ -157,17 +157,17 @@
     # Test        : STRG-1930
     # Description : Check client access to nfs share
     if [ ${NFS_DAEMON_RUNNING} -eq 1 -a ${NFS_EXPORTS_EMPTY} -eq 0 -a ! "${SHOWMOUNTBINARY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no STRG-1930 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check client access to nfs share"
+    Register --test-no STRG-1930 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查客户端对 NFS 共享的访问"
     if [ ${SKIPTEST} -eq 0 ]; then
         sFIND=$(${SHOWMOUNTBINARY} -e | ${AWKBINARY} '{ print $2 }' | ${SEDBINARY} '1d' | ${GREPBINARY} "\*")
         if [ -n "${sFIND}" ]; then
-            LogText "Result: all client are allowed to access a NFS share in /etc/exports"
-            Display --indent 4 --text "- Checking NFS client access" --result "ALL CLIENTS" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Specify clients that are allowed to access a NFS share /etc/exports"
+            LogText "结果：所有客户端都可以访问 /etc/exports 中的 NFS 共享"
+            Display --indent 4 --text "- 正在检查 NFS 客户端访问" --result "所有客户端" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "在 /etc/exports 中明确指定允许访问 NFS 共享的客户端"
             AddHP 2 3
         else
-            LogText "Result: only some clients are allowed to access a NFS share"
-            Display --indent 4 --text "- Checking NFS client access" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：只有部分客户端可以访问 NFS 共享"
+            Display --indent 4 --text "- 正在检查 NFS 客户端访问" --result "${STATUS_OK}" --color GREEN
             AddHP 3 3
         fi
     fi
