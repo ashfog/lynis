@@ -1,0 +1,500 @@
+name: One-time natural Chinese localization
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/natural-chinese-localization.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  localize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Restore stable source before bulk localization
+        shell: bash
+        run: |
+          git checkout f36363355cbafd488e37ac05702cd76bb2ee5e37 -- lynis include
+
+      - name: Translate active user-visible strings naturally
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          from concurrent.futures import ThreadPoolExecutor, as_completed
+          from pathlib import Path
+          import json
+          import random
+          import re
+          import threading
+          import time
+          from typing import Iterable
+
+          import requests
+
+          QUOTED_RE = re.compile(r'"((?:\\.|[^"\\])*)"')
+          CJK_RE = re.compile(r'[\u3400-\u9fff]')
+          EN_WORD_RE = re.compile(r"[A-Za-z][A-Za-z'-]*")
+
+          SCHEME_PREFIXES = ('text:', 'manual:', 'details:', 'solution:', 'file:', 'url:', 'command:')
+          TRANSLATABLE_SCHEMES = ('text:', 'manual:', 'details:', 'solution:')
+
+          COMMANDS = {
+              'hostname', 'postconf', 'sysctl', 'grep', 'egrep', 'awk', 'sed', 'find', 'chmod', 'chown',
+              'systemctl', 'service', 'ntpq', 'ntpctl', 'mount', 'umount', 'modprobe', 'apt', 'apt-get',
+              'apt-cache', 'dpkg', 'rpm', 'yum', 'dnf', 'pacman', 'apk', 'pkg', 'openssl', 'ssh', 'sshd',
+              'ss', 'netstat', 'ifconfig', 'ip', 'auditctl', 'sestatus', 'semanage', 'aa-status',
+              'apparmor_status', 'timedatectl', 'resolvectl', 'journalctl', 'logrotate', 'newsyslog',
+              'squid', 'nginx', 'apachectl', 'httpd', 'php', 'python', 'python2', 'python3', 'perl', 'ruby',
+              'docker', 'podman', 'lsmod', 'lsof', 'lsblk', 'blkid', 'uname', 'who', 'ps', 'cat', 'tail',
+              'head', 'cut', 'sort', 'uniq', 'xargs', 'wc', 'sha1sum', 'sha256sum', 'shasum', 'csum',
+              'updatedb', 'locate.updatedb', 'maldet', 'mdatp', 'clamscan', 'rkhunter', 'chkrootkit',
+              'named-checkconf', 'unbound-checkconf', 'dig', 'drill', 'host', 'showmount', 'rpcinfo',
+              'grub-install', 'grub2-install', 'bootctl', 'kldstat', 'dmesg', 'facter', 'lscpu', 'lshw',
+              'dmidecode', 'svcs', 'rcctl', 'chkconfig', 'launchctl', 'doas', 'sudo', 'sulogin', 'pwck',
+              'grpck', 'arch-audit', 'debsecan', 'debsums', 'zypper', 'swupd', 'emerge', 'portageq',
+          }
+
+          TECHNICAL_TERMS = {
+              'Lynis', 'CISOfy', 'GitHub', 'Linux', 'FreeBSD', 'OpenBSD', 'NetBSD', 'DragonFly', 'Solaris',
+              'AIX', 'HP-UX', 'macOS', 'BSD', 'UNIX', 'Unix', 'AlmaLinux', 'Alpine Linux', 'Arch Linux',
+              'Amazon Linux', 'CentOS', 'Debian', 'Ubuntu', 'Fedora', 'Gentoo', 'Raspbian', 'Red Hat',
+              'Rocky Linux', 'Slackware', 'SUSE', 'openSUSE', 'Void Linux', 'TrueOS', 'Illumos',
+              'systemd', 'SysV', 'OpenRC', 'runit', 'launchd', 'SMF', 'syslog', 'rsyslog', 'syslog-ng',
+              'journald', 'systemd-journal', 'systemd-resolved', 'systemd-timesyncd', 'nginx', 'Apache',
+              'Postfix', 'Exim', 'OpenSMTPD', 'PHP', 'Perl', 'Python', 'Ruby', 'SSH', 'OpenSSH', 'SSL',
+              'TLS', 'OpenSSL', 'NTP', 'OpenNTPD', 'chrony', 'chronyd', 'ntpd', 'DNS', 'DNSSEC', 'BIND',
+              'Unbound', 'PowerDNS', 'IPv4', 'IPv6', 'TCP', 'UDP', 'PAM', 'RPM', 'APT', 'YUM', 'DNF',
+              'pacman', 'apk', 'pkg', 'Portage', 'Docker', 'Podman', 'KVM', 'Xen', 'LXC', 'OpenVZ',
+              'VMware', 'VirtualBox', 'Hyper-V', 'MySQL', 'MariaDB', 'PostgreSQL', 'Redis', 'MongoDB',
+              'Oracle', 'DB2', 'Squid', 'SNMP', 'NFS', 'USB', 'USBGuard', 'UEFI', 'Secure Boot', 'GRUB',
+              'GRUB2', 'LILO', 'ELILO', 'SILO', 'YABOOT', 'SELinux', 'AppArmor', 'TOMOYO', 'iptables',
+              'nftables', 'IPFW', 'PF', 'CVE', 'UID', 'GID', 'FQDN', 'MTU', 'ARP', 'DHCP', 'LDAP', 'NIS',
+              'NIS+', 'Kerberos', 'sudo', 'doas', 'BusyBox', 'Wazuh', 'OSSEC', 'auditd', 'Snoopy',
+              'HostID', 'HOSTID', 'MAC', 'PATH', 'API', 'URL', 'ClamAV', 'CUPS', 'TraceEnable', 'VM',
+              'EC2', 'AWS', 'GCP', 'Azure', 'SCTP', 'DCCP', 'RDS', 'TIPC', 'OOM', 'ACL', 'I/O', 'LSM',
+              'LUKS', 'GPG', 'GLSA', 'PID', 'EOL', 'TXT', 'SDK', 'CLI', 'IDS', 'IPS', 'AV', 'CSF',
+              'LMD', 'LVM', 'RPC', 'TAR', 'DEB', 'SaltStack', 'Puppet', 'CFEngine', 'Cfengine', 'Ansible',
+              'Fail2Ban', 'Rootkit Hunter', 'Linux Malware Detect', 'falcon-sensor', 'Trend Micro',
+              'Synology Antivirus Essential', 'Wazuh Agent', 'mod_evasive', 'mod_reqtimeout', 'mod_qos',
+              'root', 'localhost', 'cron', 'crontab', 'logrotate', 'newsyslog', 'auditctl', 'sestatus',
+              'semanage', 'aa-status', 'apparmor_status', 'TraceEnable', 'register_globals', 'expose_php',
+              'enable_dl', 'allow_url_fopen', 'allow_url_include', 'disable_vrfy_command', 'Safe_ports',
+              'reply_body_max_size', 'httpd_suppress_version_string', 'requirepass', 'rename-command',
+              'ProcessSizeMax', 'Storage', 'ulimit', 'step-tickers', 'hidepid', 'nodev', 'noexec', 'nosuid',
+              'swappiness', 'falseticker', 'stratum', 'SUID', 'SGID', 'set-uid', 'set-gid', 'chroot',
+          }
+
+          ORDINARY_ENGLISH = {
+              'a', 'an', 'the', 'and', 'or', 'to', 'of', 'for', 'in', 'on', 'with', 'from', 'is', 'are',
+              'was', 'were', 'be', 'been', 'being', 'has', 'have', 'had', 'can', 'cannot', 'could', 'should',
+              'would', 'may', 'might', 'must', 'will', 'not', 'no', 'yes', 'all', 'any', 'some', 'none',
+              'check', 'checking', 'checked', 'result', 'test', 'testing', 'search', 'searching', 'scan',
+              'scanning', 'found', 'find', 'finding', 'query', 'querying', 'file', 'files', 'directory',
+              'directories', 'folder', 'path', 'location', 'system', 'service', 'services', 'process',
+              'processes', 'package', 'packages', 'configuration', 'configured', 'option', 'options',
+              'setting', 'settings', 'status', 'warning', 'error', 'note', 'notice', 'information', 'info',
+              'risk', 'suggestion', 'exception', 'enable', 'enabled', 'disable', 'disabled', 'running',
+              'installed', 'available', 'missing', 'invalid', 'valid', 'permissions', 'permission', 'user',
+              'users', 'group', 'groups', 'password', 'network', 'protocol', 'port', 'ports', 'remote',
+              'local', 'update', 'updates', 'version', 'current', 'latest', 'newer', 'older', 'old',
+              'outdated', 'audit', 'security', 'support', 'tool', 'tools', 'binary', 'binaries', 'manager',
+              'client', 'server', 'daemon', 'module', 'modules', 'kernel', 'boot', 'log', 'logs', 'report',
+              'profile', 'plugin', 'plugins', 'custom', 'using', 'used', 'use', 'could', 'please', 'help',
+              'needed', 'required', 'detected', 'active', 'inactive', 'failed', 'failure', 'skipped',
+              'skipping', 'start', 'starting', 'finished', 'successful', 'successfully', 'details', 'more',
+              'less', 'than', 'this', 'that', 'these', 'those', 'your', 'our', 'its', 'it', 'as', 'due',
+              'because', 'if', 'when', 'while', 'only', 'also', 'first', 'last', 'new', 'additional',
+              'possible', 'unknown', 'unexpected', 'incorrect', 'correct', 'readable', 'writable', 'owned',
+              'owner', 'value', 'values', 'method', 'mode', 'type', 'program', 'command', 'commands',
+              'output', 'data', 'action', 'outcome', 'determine', 'review', 'verify', 'validate', 'change',
+              'set', 'add', 'remove', 'delete', 'create', 'stop', 'restart', 'run', 'perform', 'read', 'write',
+              'load', 'import', 'include', 'including', 'exclude', 'install', 'upgrade', 'download', 'language',
+              'translation', 'hostname', 'hardware', 'platform', 'work', 'end', 'life', 'marked', 'date',
+              'month', 'months', 'year', 'years', 'day', 'days', 'time', 'source', 'sources', 'candidate',
+              'candidates', 'entry', 'entries', 'line', 'lines', 'list', 'array', 'queue', 'key', 'keys',
+              'string', 'strings', 'device', 'devices', 'interface', 'interfaces', 'address', 'addresses',
+              'vendor', 'product', 'physical', 'container', 'virtualization', 'virtual', 'machine', 'task',
+              'tasks', 'memory', 'disk', 'volume', 'partition', 'swap', 'scheduler', 'statistics', 'database',
+              'framework', 'policy', 'policies', 'domain', 'domains', 'resolver', 'host', 'hosts', 'connection',
+              'connections', 'socket', 'sockets', 'traffic', 'certificate', 'certificates', 'encryption',
+              'hash', 'integrity', 'vulnerability', 'vulnerabilities', 'authentication', 'shell', 'session',
+              'idle', 'printer', 'printing', 'job', 'jobs', 'web', 'mail', 'message', 'messages', 'proxy',
+              'compiler', 'interpreter', 'component', 'utility', 'administration', 'control', 'collector',
+              'filter', 'editor', 'handling', 'compare', 'rotation', 'mapping', 'tree', 'capabilities',
+              'parameters', 'parameter', 'analysis', 'reboot', 'same', 'different', 'difference', 'exists',
+              'exist', 'discover', 'discovered', 'retrieve', 'retrieving', 'gather', 'gathering', 'return',
+              'returned', 'open', 'closed', 'generated', 'generation', 'looks', 'fine', 'unsafe', 'suspicious',
+              'harmful', 'strict', 'enough', 'unsupported', 'implemented', 'implementation', 'assigned',
+              'maximum', 'minimum', 'currently', 'partial', 'full', 'argument', 'arguments', 'function',
+              'call', 'called', 'cleaning', 'interrupt', 'created', 'temporary', 'belongs', 'probably',
+              'likely', 'accessible', 'unclear', 'unique', 'expected', 'matching', 'distribution', 'removed',
+              'alert', 'denied', 'read-only', 'pointing', 'finally', 'seems', 'complicated', 'often', 'linked',
+              'continue', 'press', 'available', 'present', 'presence', 'consistency', 'responsive', 'selected',
+          }
+
+          COMMAND_PHRASES = [
+              r'pkg\s+audit(?:\s+-[A-Za-z0-9_-]+)?',
+              r'apt-get\s+check', r'apt-cache\s+policy', r'postconf\s+-e\s+[^\s,;]+',
+              r'ntpctl\s+-s\s+status', r'ntpq\s+-[A-Za-z0-9_-]+(?:\s+-[A-Za-z0-9_-]+)*',
+              r'mount\s+-o\s+[^\s,;]+', r'chmod\s+[^\s,;]+\s+[^\s,;]+',
+              r'chown\s+[^\s,;]+\s+[^\s,;]+', r'modprobe\s+[^\s,;]+',
+              r'install\s+MODULENAME\s+/bin/(?:true|false)', r'hostname\s+-s',
+              r'updatedb', r'locate\.updatedb', r'syslog-ng\s+-s',
+          ]
+
+          _local = threading.local()
+
+          def session() -> requests.Session:
+              if not hasattr(_local, 'session'):
+                  s = requests.Session()
+                  s.headers.update({'User-Agent': 'Mozilla/5.0 Lynis localization'})
+                  _local.session = s
+              return _local.session
+
+          def google_translate(text: str) -> str:
+              url = 'https://translate.googleapis.com/translate_a/single'
+              params = {'client': 'gtx', 'sl': 'auto', 'tl': 'zh-CN', 'dt': 't', 'q': text}
+              last_error: Exception | None = None
+              for attempt in range(7):
+                  try:
+                      r = session().get(url, params=params, timeout=30)
+                      if r.status_code == 429:
+                          raise RuntimeError('rate limited')
+                      r.raise_for_status()
+                      data = r.json()
+                      translated = ''.join(part[0] for part in data[0] if part and part[0])
+                      if translated:
+                          return translated
+                      raise RuntimeError('empty translation')
+                  except Exception as exc:
+                      last_error = exc
+                      time.sleep(min(20, (1.6 ** attempt) + random.random()))
+              raise RuntimeError(f'translation failed: {last_error}')
+
+          def is_command_like(text: str) -> bool:
+              x = text.strip()
+              if not x:
+                  return True
+              if x.startswith(('http://', 'https://', 'ftp://')):
+                  return True
+              if re.fullmatch(r'\$\{[^}]+\}', x):
+                  return True
+              if re.search(r'[|><;&]|\$\(|(^|\s)--?[A-Za-z0-9]|/(?:[^\s]+)', x):
+                  return True
+              if re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*=[^\s]+', x):
+                  return True
+              first = x.split()[0].lower() if x.split() else ''
+              if first in COMMANDS:
+                  return True
+              return False
+
+          def selected_fields(line: str, spans: list[re.Match[str]]) -> dict[int, str]:
+              stripped = line.lstrip()
+              selected: dict[int, str] = {}
+              if not stripped or stripped.startswith('#'):
+                  return selected
+
+              if 'Register ' in line and '--description' in line:
+                  pos = line.find('--description')
+                  for i, match in enumerate(spans):
+                      if match.start() > pos:
+                          selected[i] = 'prose'
+                          break
+
+              if 'Display ' in line:
+                  for flag in ('--text', '--result'):
+                      pos = line.find(flag)
+                      if pos >= 0:
+                          for i, match in enumerate(spans):
+                              if match.start() > pos:
+                                  selected[i] = 'prose'
+                                  break
+
+              if any(name in line for name in ('DisplayError ', 'DisplayWarning ', 'DisplaySuggestion ')):
+                  if spans:
+                      selected[0] = 'prose'
+
+              if 'LogText ' in line:
+                  pos = line.find('LogText ')
+                  for i, match in enumerate(spans):
+                      if match.start() > pos:
+                          selected[i] = 'prose'
+                          break
+
+              for function in ('ReportWarning ', 'ReportSuggestion ', 'ReportException '):
+                  pos = line.find(function)
+                  if pos < 0:
+                      continue
+                  after = [i for i, match in enumerate(spans) if match.start() > pos]
+                  if len(after) >= 2:
+                      selected[after[1]] = 'prose'
+                  for idx in after[2:]:
+                      value = spans[idx].group(1)
+                      lower = value.lower()
+                      prefix = next((p for p in SCHEME_PREFIXES if lower.startswith(p)), None)
+                      if prefix in TRANSLATABLE_SCHEMES:
+                          selected[idx] = 'scheme'
+                      elif prefix is None and not is_command_like(value):
+                          selected[idx] = 'prose'
+
+              if 'SKIPREASON=' in line:
+                  pos = line.find('SKIPREASON=')
+                  for i, match in enumerate(spans):
+                      if match.start() > pos:
+                          selected[i] = 'prose'
+                          break
+
+              if stripped.startswith(('echo ', 'printf ')) or re.match(r'^(?:if .*; then )?(?:echo|printf) ', stripped):
+                  if not re.search(r'>\s*\$?\{?(?:LOGFILE|REPORTFILE|SETTINGS_FILE|TMPFILE)', line):
+                      for i, match in enumerate(spans):
+                          value = match.group(1)
+                          if not is_command_like(value):
+                              selected[i] = 'prose'
+              return selected
+
+          def build_mask(text: str) -> tuple[str, list[str]]:
+              saved: list[str] = []
+
+              def save(value: str) -> str:
+                  token = f'XQZ{len(saved):04d}QZX'
+                  saved.append(value)
+                  return token
+
+              patterns = [
+                  r'\\".*?\\"', r'\$\{[^}]+\}', r'\$[A-Za-z_][A-Za-z0-9_]*', r'\$\([^)]*\)',
+                  r'https?://\S+', r'ftp://\S+', r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}',
+                  r'(?<![A-Za-z0-9])/(?:[^\s,;:()\[\]{}]+/?)+', r'--[A-Za-z0-9_-]+(?:=[^\s]+)?',
+                  r'(?<!\w)-[A-Za-z0-9](?!\w)', r'%[-+0-9.]*[sdifouxXeEgGc]', r'\\[ntr]',
+                  r"'[^']*'", r'`[^`]*`', r'\[[A-Za-z]+://[^\]]+\]',
+                  r'\b[A-Za-z_][A-Za-z0-9_]*=[^\s,;]+',
+                  r'\b[A-Z][A-Z0-9_/-]{1,}\b', r'\b[A-Za-z0-9_]+(?:\.[A-Za-z0-9_*?-]+)+\b',
+              ]
+              for phrase in COMMAND_PHRASES:
+                  patterns.insert(0, rf'(?i:{phrase})')
+              regex = re.compile('|'.join(f'(?:{pattern})' for pattern in patterns))
+              text = regex.sub(lambda match: save(match.group(0)), text)
+
+              terms = sorted(TECHNICAL_TERMS, key=len, reverse=True)
+              term_regex = re.compile(r'(?<![A-Za-z0-9_])(?:' + '|'.join(re.escape(term) for term in terms) + r')(?![A-Za-z0-9_])', re.I)
+              text = term_regex.sub(lambda match: save(match.group(0)), text)
+              return text, saved
+
+          def restore_mask(text: str, saved: list[str]) -> str | None:
+              for i, value in enumerate(saved):
+                  token = f'XQZ{i:04d}QZX'
+                  variants = (token, token.lower(), token.upper(), f' {token} ', f' {token.lower()} ', f' {token.upper()} ')
+                  found = False
+                  for variant in variants:
+                      if variant in text:
+                          text = text.replace(variant, value)
+                          found = True
+                  if not found:
+                      compact = re.sub(r'\s+', '', text)
+                      if token not in compact and token.lower() not in compact.lower():
+                          return None
+              return text
+
+          def has_translatable_language(text: str) -> bool:
+              masked, _ = build_mask(text)
+              words = [word.lower() for word in EN_WORD_RE.findall(masked)]
+              ordinary = [word for word in words if word in ORDINARY_ENGLISH]
+              if ordinary:
+                  return True
+              if not CJK_RE.search(text) and len(words) >= 3:
+                  return True
+              return False
+
+          def prepare(value: str, kind: str) -> tuple[str, str, list[str]] | None:
+              prefix = ''
+              body = value
+              if kind == 'scheme':
+                  lower = value.lower()
+                  prefix = next((p for p in TRANSLATABLE_SCHEMES if lower.startswith(p)), '')
+                  if not prefix:
+                      return None
+                  body = value[len(prefix):]
+              if not has_translatable_language(body):
+                  return None
+              masked, saved = build_mask(body)
+              return prefix, masked, saved
+
+          files = [Path('lynis')] + sorted(path for path in Path('include').iterdir() if path.is_file())
+          source_by_file: dict[Path, list[str]] = {}
+          occurrences: list[tuple[Path, int, int, str, str, list[str]]] = []
+          unique_masked: dict[str, None] = {}
+
+          for path in files:
+              try:
+                  lines = path.read_text(encoding='utf-8').splitlines(keepends=True)
+              except UnicodeDecodeError:
+                  continue
+              source_by_file[path] = lines
+              for line_number, line in enumerate(lines):
+                  spans = list(QUOTED_RE.finditer(line))
+                  for index, kind in selected_fields(line, spans).items():
+                      value = spans[index].group(1)
+                      prepared = prepare(value, kind)
+                      if prepared is None:
+                          continue
+                      prefix, masked, saved = prepared
+                      occurrences.append((path, line_number, index, value, prefix, saved))
+                      unique_masked[masked] = None
+
+          print(f'translating {len(unique_masked)} unique strings across {len(occurrences)} occurrences')
+          translations: dict[str, str] = {}
+          failures: dict[str, str] = {}
+
+          def task(masked: str) -> tuple[str, str]:
+              return masked, google_translate(masked)
+
+          with ThreadPoolExecutor(max_workers=6) as executor:
+              futures = {executor.submit(task, masked): masked for masked in unique_masked}
+              for number, future in enumerate(as_completed(futures), 1):
+                  masked = futures[future]
+                  try:
+                      key, translated = future.result()
+                      translations[key] = translated
+                  except Exception as exc:
+                      failures[masked] = str(exc)
+                  if number % 100 == 0:
+                      print(f'completed {number}/{len(futures)} translations; failures={len(failures)}')
+
+          by_line: dict[tuple[Path, int], list[tuple[int, str]]] = {}
+          for path, line_number, index, original, prefix, saved in occurrences:
+              prepared = prepare(original, 'scheme' if prefix else 'prose')
+              if prepared is None:
+                  continue
+              _, masked, _ = prepared
+              translated = translations.get(masked)
+              if not translated:
+                  continue
+              restored = restore_mask(translated, saved)
+              if restored is None:
+                  failures[masked] = 'placeholder restoration failed'
+                  continue
+              restored = restored.strip()
+              restored = restored.replace('结果:', '结果：').replace('检查:', '检查：')
+              restored = restored.replace('信息:', '信息：').replace('警告:', '警告：')
+              restored = restored.replace('注意:', '注意：').replace('错误:', '错误：')
+              restored = restored.replace('建议:', '建议：').replace('风险:', '风险：')
+              restored = re.sub(r'\s+([，。；：！？）])', r'\1', restored)
+              restored = re.sub(r'（\s+', '（', restored)
+              restored = re.sub(r' {2,}', ' ', restored)
+              new_value = prefix + restored
+              new_value = new_value.replace('"', '\\"')
+              if new_value != original:
+                  by_line.setdefault((path, line_number), []).append((index, new_value))
+
+          changed_files: list[str] = []
+          for path, lines in source_by_file.items():
+              changed = False
+              for line_number in range(len(lines)):
+                  replacements = by_line.get((path, line_number))
+                  if not replacements:
+                      continue
+                  line = lines[line_number]
+                  spans = list(QUOTED_RE.finditer(line))
+                  values = [match.group(1) for match in spans]
+                  for index, new_value in replacements:
+                      if index < len(values):
+                          values[index] = new_value
+                  pieces: list[str] = []
+                  last = 0
+                  for match, value in zip(spans, values):
+                      pieces.append(line[last:match.start(1)])
+                      pieces.append(value)
+                      last = match.end(1)
+                  pieces.append(line[last:])
+                  new_line = ''.join(pieces)
+                  if new_line != line:
+                      lines[line_number] = new_line
+                      changed = True
+              if changed:
+                  path.write_text(''.join(lines), encoding='utf-8')
+                  changed_files.append(str(path))
+
+          # Targeted cleanup for protocol prefixes and a few product/status labels.
+          exact_fixes = {
+              'https：//': 'https://', 'http：//': 'http://', 'ftp：//': 'ftp://',
+              'text：': 'text:', 'file：': 'file:', 'url：': 'url:', 'manual：': 'manual:',
+              'command：': 'command:', 'details：': 'details:', 'solution：': 'solution:',
+              'UPDATE AVAILABLE': '有可用更新', 'NON-ACTIVE': '未激活', 'CONFIG ERROR': '配置错误',
+              'NONE FOUND': '未找到', 'NOT OK': '不正常', 'NO MATCH': '无匹配项',
+              'SKIPPED (NOT READABLE)': '已跳过（不可读）',
+          }
+          for path in files:
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              before = text
+              for old, new in exact_fixes.items():
+                  text = text.replace(old, new)
+              if text != before:
+                  path.write_text(text, encoding='utf-8')
+                  if str(path) not in changed_files:
+                      changed_files.append(str(path))
+
+          # Audit untranslated prose after masking technical terms and commands.
+          remaining: list[str] = []
+          for path in files:
+              try:
+                  lines = path.read_text(encoding='utf-8').splitlines()
+              except UnicodeDecodeError:
+                  continue
+              for line_number, line in enumerate(lines, 1):
+                  spans = list(QUOTED_RE.finditer(line))
+                  for index, kind in selected_fields(line, spans).items():
+                      value = spans[index].group(1)
+                      body = value
+                      if kind == 'scheme':
+                          prefix = next((p for p in TRANSLATABLE_SCHEMES if value.lower().startswith(p)), '')
+                          body = value[len(prefix):] if prefix else value
+                      if has_translatable_language(body):
+                          remaining.append(f'{path}:{line_number}: {value}')
+
+          report_lines = [
+              '# Natural localization report',
+              f'# API translation failures: {len(failures)}',
+              f'# Remaining visible prose candidates: {len(remaining)}',
+              '',
+          ]
+          if failures:
+              report_lines.append('## Translation failures')
+              for masked, error in list(failures.items())[:300]:
+                  report_lines.append(f'{masked} :: {error}')
+              report_lines.append('')
+          if remaining:
+              report_lines.append('## Remaining candidates')
+              report_lines.extend(remaining)
+              report_lines.append('')
+          Path('NATURAL_LOCALIZATION_REPORT.txt').write_text('\n'.join(report_lines), encoding='utf-8')
+          Path('/tmp/natural-localization-files').write_text('\n'.join(sorted(set(changed_files))), encoding='utf-8')
+          print(f'changed files={len(set(changed_files))}; failures={len(failures)}; remaining={len(remaining)}')
+          PY
+
+          while IFS= read -r file; do
+            [ -n "$file" ] && sh -n "$file"
+          done < /tmp/natural-localization-files
+
+      - name: Commit translation and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/natural-chinese-localization.yml
+          rm -f .github/workflows/final-localization-cleanup.yml
+          rm -f .github/workflows/complete-localization-cleanup.yml
+          rm -f VISIBLE_ENGLISH_REPORT.txt VISIBLE_ENGLISH_SUMMARY.txt VISIBLE_ENGLISH_STRICT.txt FINAL_COMMAND_DRIFT.txt
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "i18n: complete natural Chinese localization of user output"
+          git push origin HEAD:master
