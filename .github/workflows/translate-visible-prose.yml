@@ -1,0 +1,238 @@
+name: One-time translate remaining visible prose
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/translate-visible-prose.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install offline translator
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check --quiet argostranslate==1.9.6
+      - name: Translate active user-visible prose only
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          import argostranslate.package
+          import argostranslate.translate
+
+          argostranslate.package.update_package_index()
+          packages = argostranslate.package.get_available_packages()
+          pkg = next((p for p in packages if p.from_code == 'en' and p.to_code in ('zh', 'zh_CN', 'zh-CN')), None)
+          if pkg is None:
+              raise SystemExit('English to Chinese Argos package not found')
+          argostranslate.package.install_from_path(pkg.download())
+
+          cjk = re.compile(r'[\u3400-\u9fff]')
+          word_re = re.compile(r"[A-Za-z][A-Za-z'-]*")
+          quoted_re = re.compile(r'"((?:\\.|[^"\\])*)"')
+
+          protected_words = {
+              'Lynis','Linux','FreeBSD','OpenBSD','NetBSD','DragonFly','Solaris','AIX','macOS','BSD','Unix','UNIX',
+              'systemd','syslog','rsyslog','syslog-ng','journald','nginx','Apache','Postfix','Exim','PHP','SSH','SSL','TLS',
+              'NTP','DNS','DNSSEC','IPv4','IPv6','TCP','UDP','PAM','RPM','APT','apt','dpkg','YUM','yum','DNF','dnf','pacman',
+              'apk','pkg','Docker','Podman','KVM','Xen','LXC','MySQL','MariaDB','PostgreSQL','Redis','MongoDB','Oracle','DB2',
+              'Squid','SNMP','NFS','USB','UEFI','GRUB','LILO','SELinux','AppArmor','iptables','nftables','OpenSSL','CVE',
+              'UID','GID','FQDN','MTU','ARP','DHCP','LDAP','NIS','Cron','cron','sudo','doas','BusyBox','Wazuh','auditd',
+              'chrony','OpenNTPD','timesyncd','HostID','HOSTID','MAC','PATH','API','URL','GitHub','CISOfy','ClamAV','BIND',
+              'CUPS','TraceEnable','VM','EC2','AWS','GCP','Azure','SCTP','DCCP','RDS','TIPC','OOM','ACL','I/O','IO',
+              'LSM','LUKS','GPG','GLSA','CVE','PID','EOL','TXT','SDK','CLI','IDS','AV','CSF','OSSEC','LMD',
+          }
+          ordinary = {
+              'the','a','an','and','or','to','of','for','in','on','with','from','is','are','was','were','be','been','being',
+              'check','checking','result','test','found','find','search','searching','file','files','directory','directories',
+              'system','service','services','process','processes','package','packages','configuration','configured','option',
+              'options','status','warning','error','note','notice','information','info','risk','suggestion','enable','enabled',
+              'disable','disabled','running','installed','available','missing','invalid','valid','permissions','permission',
+              'user','users','group','groups','password','network','protocol','port','ports','remote','local','update','version',
+              'current','latest','newer','old','outdated','scan','scanning','audit','security','support','tool','tools','binary',
+              'binaries','manager','client','server','daemon','module','modules','kernel','boot','log','logs','report','profile',
+              'plugin','plugins','custom','using','used','use','could','cannot','can','not','no','yes','please','help','needed',
+              'required','detected','active','inactive','failed','skipped','skipping','start','starting','finished','successful',
+              'details','more','less','than','this','that','these','those','your','our','its','it','as','due','because','if',
+              'when','while','only','all','none','some','one','two','first','last','new','additional','possible','unknown',
+              'unexpected','incorrect','correct','readable','writable','owned','owner','location','path','value','values',
+          }
+
+          def placeholders(text):
+              pats = [
+                  r'\$\{[^}]+\}', r'\$[A-Za-z_][A-Za-z0-9_]*', r'\$\([^)]*\)',
+                  r'https?://\S+', r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}',
+                  r'(?<![A-Za-z0-9])/(?:[^\s,;:()\[\]{}]+/?)+', r'--[A-Za-z0-9_-]+(?:=[^\s]+)?',
+                  r'(?<!\w)-[A-Za-z](?!\w)', r'%[-+0-9.]*[sdifouxXeEgGc]', r'\\[ntr]',
+                  r"'[^']*'", r'`[^`]*`', r'\[[A-Za-z]+://[^\]]+\]',
+                  r'\b[A-Z][A-Z0-9_/-]{1,}\b', r'\b[A-Za-z0-9_]+(?:\.[A-Za-z0-9_*?-]+)+\b',
+                  r'\b[A-Za-z0-9_]+(?:-[A-Za-z0-9_]+)+\b',
+              ]
+              rx = re.compile('|'.join(f'(?:{p})' for p in pats))
+              saved = []
+              def sub(m):
+                  key = f'ZZZPH{len(saved)}ZZZ'
+                  saved.append(m.group(0))
+                  return key
+              return rx.sub(sub, text), saved
+
+          def protect_terms(text):
+              saved = []
+              terms = sorted(protected_words, key=len, reverse=True)
+              rx = re.compile(r'(?<![A-Za-z0-9_])(' + '|'.join(re.escape(x) for x in terms) + r')(?![A-Za-z0-9_])')
+              def sub(m):
+                  key = f'ZZZTERM{len(saved)}ZZZ'
+                  saved.append(m.group(0))
+                  return key
+              return rx.sub(sub, text), saved
+
+          def restore(text, saved, prefix):
+              for i, value in enumerate(saved):
+                  text = text.replace(f'ZZZ{prefix}{i}ZZZ', value)
+                  text = text.replace(f' ZZZ{prefix}{i}ZZZ ', value)
+                  text = text.replace(f'ZZZ{prefix}{i} ZZZ', value)
+              return text
+
+          def natural_language(text):
+              if cjk.search(text):
+                  return False
+              if not re.search(r'[A-Za-z]', text):
+                  return False
+              if re.fullmatch(r'[A-Za-z0-9_.:/=+${}\[\](), -]+', text) and '=' in text and len(word_re.findall(text)) < 3:
+                  return False
+              words = [w.lower() for w in word_re.findall(text)]
+              if len(words) < 2:
+                  return False
+              common = sum(w in ordinary for w in words)
+              return common >= 1 or len(words) >= 4
+
+          def translate_text(text):
+              if not natural_language(text):
+                  return text
+              masked, saved_ph = placeholders(text)
+              masked, saved_terms = protect_terms(masked)
+              try:
+                  translated = argostranslate.translate.translate(masked, 'en', 'zh')
+              except Exception as exc:
+                  print(f'translation failed for {text!r}: {exc}', file=sys.stderr)
+                  return text
+              translated = restore(translated, saved_terms, 'TERM')
+              translated = restore(translated, saved_ph, 'PH')
+              translated = translated.replace('结果:', '结果：').replace('检查:', '检查：').replace('信息:', '信息：')
+              translated = translated.replace('警告:', '警告：').replace('注意:', '注意：').replace('错误:', '错误：')
+              translated = translated.replace('  ', ' ')
+              if not cjk.search(translated):
+                  return text
+              return translated.replace('"', '\\"')
+
+          def selected_indexes(line, spans):
+              stripped = line.lstrip()
+              if not stripped or stripped.startswith('#'):
+                  return set()
+              idx = set()
+              if 'Register ' in line and '--description' in line:
+                  pos = line.find('--description')
+                  for i, m in enumerate(spans):
+                      if m.start() > pos:
+                          idx.add(i); break
+              if 'Display ' in line:
+                  for flag in ('--text', '--result'):
+                      pos = line.find(flag)
+                      if pos >= 0:
+                          for i, m in enumerate(spans):
+                              if m.start() > pos:
+                                  idx.add(i); break
+              if any(x in line for x in ('DisplayError ', 'DisplayWarning ', 'DisplaySuggestion ')):
+                  if spans: idx.add(0)
+              if 'LogText ' in line:
+                  pos = line.find('LogText ')
+                  for i, m in enumerate(spans):
+                      if m.start() > pos:
+                          idx.add(i); break
+              for func in ('ReportWarning ', 'ReportSuggestion ', 'ReportException '):
+                  pos = line.find(func)
+                  if pos >= 0:
+                      after = [i for i,m in enumerate(spans) if m.start() > pos]
+                      for i in after[1:]:
+                          idx.add(i)
+              if 'SKIPREASON=' in line:
+                  pos = line.find('SKIPREASON=')
+                  for i,m in enumerate(spans):
+                      if m.start() > pos:
+                          idx.add(i); break
+              # Direct screen output only; avoid command substitutions and redirected data files.
+              if stripped.startswith(('echo ', 'printf ')) or re.match(r'^(if .*; then )?(echo|printf) ', stripped):
+                  if not re.search(r'>\s*\$?\{?(LOGFILE|REPORTFILE|SETTINGS_FILE|TMPFILE)', line):
+                      idx.update(range(len(spans)))
+              return idx
+
+          files = [Path('lynis')] + sorted(p for p in Path('include').iterdir() if p.is_file())
+          changed_files = []
+          translated_count = 0
+          for path in files:
+              try:
+                  original = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              lines = original.splitlines(keepends=True)
+              new_lines = []
+              file_count = 0
+              for line in lines:
+                  spans = list(quoted_re.finditer(line))
+                  indexes = selected_indexes(line, spans)
+                  if not indexes:
+                      new_lines.append(line); continue
+                  pieces = []
+                  last = 0
+                  for i, m in enumerate(spans):
+                      pieces.append(line[last:m.start(1)])
+                      content = m.group(1)
+                      if i in indexes:
+                          new = translate_text(content)
+                          if new != content:
+                              file_count += 1
+                              content = new
+                      pieces.append(content)
+                      last = m.end(1)
+                  pieces.append(line[last:])
+                  new_lines.append(''.join(pieces))
+              updated = ''.join(new_lines)
+              if updated != original:
+                  path.write_text(updated, encoding='utf-8')
+                  changed_files.append(str(path))
+                  translated_count += file_count
+                  print(f'{path}: translated {file_count} strings')
+
+          if translated_count < 100:
+              raise SystemExit(f'too few translations applied: {translated_count}')
+          Path('/tmp/translated-visible-files').write_text('\n'.join(changed_files), encoding='utf-8')
+          print(f'total translated: {translated_count}; files: {len(changed_files)}')
+          PY
+
+          while IFS= read -r file; do
+            [ -n "$file" ] && sh -n "$file"
+          done < /tmp/translated-visible-files
+
+      - name: Commit translations and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/translate-visible-prose.yml
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add lynis include .github/workflows/translate-visible-prose.yml
+          git commit -m "i18n: translate remaining visible prose"
+          git push origin HEAD:master
