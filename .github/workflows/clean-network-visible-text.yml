@@ -1,0 +1,43 @@
+name: One-time networking visible text cleanup
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/clean-network-visible-text.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+      - name: Clean remaining visible text
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('include/tests_networking')
+          text = path.read_text(encoding='utf-8')
+          pairs = [
+              ('--description "Check systemd-resolved and upstream DNSSEC status"', '--description "检查 systemd-resolved 与上游 DNSSEC 状态"'),
+              ('LogText "Result: 发现混杂模式接口 ${I} (*whitelisted via profile*)"', 'LogText "结果：发现混杂模式接口 ${I}（已通过配置文件加入白名单）"'),
+          ]
+          for old, new in pairs:
+              if text.count(old) != 1:
+                  raise SystemExit(f'原文数量异常: {old!r} -> {text.count(old)}')
+              text = text.replace(old, new)
+          path.write_text(text, encoding='utf-8')
+          PY
+          sh -n include/tests_networking
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add include/tests_networking
+          git commit -m "i18n: clean remaining networking output"
+          git rm .github/workflows/clean-network-visible-text.yml
+          git commit -m "chore: remove networking cleanup workflow"
+          git push origin master
