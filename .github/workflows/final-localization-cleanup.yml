@@ -1,0 +1,232 @@
+name: One-time final localization cleanup
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/final-localization-cleanup.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+      - name: Restore command arguments and clean final output
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, subprocess
+
+          BASE='f36363355cbafd488e37ac05702cd76bb2ee5e37'
+          q=re.compile(r'"((?:\\.|[^"\\])*)"')
+          schemes=('text:','file:','url:','manual:','command:','details:','solution:')
+          known_commands={'hostname','postconf','sysctl','grep','awk','sed','find','chmod','chown','systemctl','service','ntpq','ntpctl','mount','umount','modprobe','apt','apt-get','dpkg','rpm','yum','dnf','pacman','apk','pkg','openssl','ssh','sshd','ss','netstat','ifconfig','ip','auditctl','sestatus','semanage','aa-status','apparmor_status','timedatectl','resolvectl','journalctl','logrotate','newsyslog','squid','nginx','apachectl','httpd','php','python','perl','ruby','docker','podman'}
+
+          def command_like(x):
+              x=x.strip()
+              if not x:return True
+              if x.startswith(('http://','https://','ftp://')):return True
+              if re.search(r'[|><;&]|\$\(|/|--|(^|\s)-[A-Za-z0-9]|=',x):return True
+              if re.fullmatch(r'\$\{[^}]+\}',x):return True
+              if re.fullmatch(r'[A-Za-z0-9_.+:-]+',x):
+                  return x.lower() in known_commands or True
+              first=x.split()[0].lower()
+              return first in known_commands
+
+          def replace_quote_values(line,spans,newvals):
+              out=[];last=0
+              for m,val in zip(spans,newvals):
+                  out.append(line[last:m.start(1)]);out.append(val);last=m.end(1)
+              out.append(line[last:]);return ''.join(out)
+
+          files=[Path('lynis')]+sorted(p for p in Path('include').iterdir() if p.is_file())
+          changed=set()
+          for path in files:
+              try: current=path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:continue
+              try:
+                  parent=subprocess.check_output(['git','show',f'{BASE}:{path}'],text=True)
+              except subprocess.CalledProcessError:
+                  parent=current
+              cls=current.splitlines(keepends=True); pls=parent.splitlines(keepends=True)
+              if len(cls)==len(pls):
+                  nl=[]
+                  for cur,old in zip(cls,pls):
+                      fn=next((f for f in ('ReportWarning ','ReportSuggestion ','ReportException ') if f in cur and f in old),None)
+                      if not fn:
+                          nl.append(cur);continue
+                      cs=list(q.finditer(cur));ps=list(q.finditer(old))
+                      if len(cs)!=len(ps):nl.append(cur);continue
+                      cp=cur.find(fn);op=old.find(fn)
+                      ci=[i for i,m in enumerate(cs) if m.start()>cp]
+                      pi=[i for i,m in enumerate(ps) if m.start()>op]
+                      if len(ci)!=len(pi):nl.append(cur);continue
+                      vals=[m.group(1) for m in cs]
+                      for pos in range(2,len(ci)):
+                          cidx,pidx=ci[pos],pi[pos]
+                          cv,pv=vals[cidx],ps[pidx].group(1)
+                          low=pv.lower()
+                          sch=next((s for s in schemes if low.startswith(s)),None)
+                          if sch:
+                              remainder=re.sub(r'^[A-Za-z]+[：:]','',cv,count=1)
+                              vals[cidx]=pv[:len(sch)]+remainder
+                          elif command_like(pv):
+                              vals[cidx]=pv
+                      nl.append(replace_quote_values(cur,cs,vals))
+                  current=''.join(nl)
+
+              # Repair protocol/scheme tokens that must remain machine-readable.
+              for a,b in [('https：//','https://'),('http：//','http://'),('ftp：//','ftp://'),('text：','text:'),('file：','file:'),('url：','url:'),('manual：','manual:'),('command：','command:'),('details：','details:'),('solution：','solution:')]:
+                  current=current.replace(a,b)
+
+              fixes={
+                'INVALID OPTION (Display)： $1':'无效选项（Display）：$1',
+                'INVALID OPTION (Register)： $1':'无效选项（Register）：$1',
+                'INVALID OPTION (ReportDetails)： $1':'无效选项（ReportDetails）：$1',
+                'INVALID OPTION (ShowComplianceFinding)： $1':'无效选项（ShowComplianceFinding）：$1',
+                'INVALID OPTION (StoreNginxSettings)： $1 $2':'无效选项（StoreNginxSettings）：$1 $2',
+                'INVALID OPTION USED (TestValue)： $1':'使用了无效选项（TestValue）：$1',
+                '- Testing /proc mount (hidepid)':'- 测试 /proc 挂载选项（hidepid）',
+                'UPDATE AVAILABLE':'有可用更新',
+                'NON-ACTIVE':'未激活',
+                'Permissive SELinux object types： ${PERMISSIVE}':'宽容模式 SELinux 对象类型：${PERMISSIVE}',
+                '- Postfix banner':'- Postfix 横幅',
+                'CONFIG ERROR':'配置错误',
+                'NONE FOUND':'未找到',
+                'NOT OK':'不正常',
+                '- PowerDNS authoritative master： YES':'- PowerDNS 权威主服务器：是',
+                '- PowerDNS authoritative master： NO':'- PowerDNS 权威主服务器：否',
+                '- PowerDNS authoritative slave： YES':'- PowerDNS 权威从服务器：是',
+                '- PowerDNS authoritative slave： NO':'- PowerDNS 权威从服务器：否',
+                '- Ansible artifact':'- Ansible 配置痕迹',
+                '- Cfengine (cfagent)':'- Cfengine（cfagent）',
+                '- CFEngine (cf-agent)':'- CFEngine（cf-agent）',
+                '- CFEngine (cf-server)':'- CFEngine（cf-server）',
+                '- Puppet (agent)':'- Puppet（客户端）',
+                '- Puppet (master)':'- Puppet（主服务器）',
+                '- SaltStack minion':'- SaltStack 客户端',
+                '- SaltStack master (salt-master)':'- SaltStack 主服务器（salt-master）',
+                '- Automation tooling':'- 自动化工具',
+                'NO MATCH':'无匹配项',
+                'mod_evasive： anti-DoS/brute force':'mod_evasive：抗 DoS/暴力破解',
+                'SKIPPED (NOT READABLE)':'已跳过（不可读）',
+                'OS： Linux':'操作系统：Linux',
+                'OS： *BSD':'操作系统：*BSD',
+                'url：https://cisofy.com/support/':'网址：https://cisofy.com/support/',
+              }
+              for a,b in fixes.items():current=current.replace(a,b)
+              before=path.read_text(encoding='utf-8')
+              if current!=before:
+                  path.write_text(current,encoding='utf-8');changed.add(str(path))
+
+          # Semantic guard: command-like trailing Report* arguments must equal the pre-rule version.
+          errors=[]
+          for name in sorted(changed):
+              path=Path(name);cur=path.read_text(encoding='utf-8')
+              try:old=subprocess.check_output(['git','show',f'{BASE}:{path}'],text=True)
+              except subprocess.CalledProcessError:continue
+              cl=cur.splitlines();ol=old.splitlines()
+              if len(cl)!=len(ol):continue
+              for n,(a,b) in enumerate(zip(cl,ol),1):
+                  fn=next((f for f in ('ReportWarning ','ReportSuggestion ','ReportException ') if f in a and f in b),None)
+                  if not fn:continue
+                  cs=list(q.finditer(a));ps=list(q.finditer(b));cp=a.find(fn);op=b.find(fn)
+                  ci=[m.group(1) for m in cs if m.start()>cp];pi=[m.group(1) for m in ps if m.start()>op]
+                  for i in range(2,min(len(ci),len(pi))):
+                      pv=pi[i]
+                      if command_like(pv) and not any(pv.lower().startswith(s) for s in schemes) and ci[i]!=pv:
+                          errors.append(f'{name}:{n}: {ci[i]!r} != {pv!r}')
+          if errors:
+              raise SystemExit('command argument drift:\n'+'\n'.join(errors[:50]))
+
+          bad=[]
+          for p in files:
+              try:t=p.read_text(encoding='utf-8')
+              except UnicodeDecodeError:continue
+              for token in ('https：//','http：//','ftp：//','text：','file：','url：','manual：','command：','details：','solution：'):
+                  if token in t:bad.append(f'{p}: {token}')
+          if bad:raise SystemExit('broken machine-readable prefixes:\n'+'\n'.join(bad))
+          Path('/tmp/final-localization-files').write_text('\n'.join(sorted(changed)),encoding='utf-8')
+          print('changed',len(changed),'files')
+          PY
+
+          while IFS= read -r file; do
+            [ -n "$file" ] && sh -n "$file"
+          done < /tmp/final-localization-files
+
+      - name: Final untranslated-string guard
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          q=re.compile(r'"((?:\\.|[^"\\])*)"');cjk=re.compile(r'[\u3400-\u9fff]');word=re.compile(r'[A-Za-z]{2,}')
+          technical_products={'Rootkit Hunter','LMD（Linux Malware Detect）','falcon-sensor','Synology Antivirus Essential','Trend Micro Anti Malware','Wazuh Agent','OSSEC（syscheck）','lfd（CSF）','Wazuh（syscheck）','arch-audit','mod_reqtimeout/mod_qos','expose_php = Off'}
+          def ids(line,sp):
+            s=line.lstrip();o=set()
+            if not s or s.startswith('#'):return o
+            if 'Register ' in line and '--description' in line:
+              p=line.find('--description');
+              for i,m in enumerate(sp):
+                if m.start()>p:o.add(i);break
+            if 'Display ' in line:
+              for f in ('--text','--result'):
+                p=line.find(f)
+                if p>=0:
+                  for i,m in enumerate(sp):
+                    if m.start()>p:o.add(i);break
+            if any(x in line for x in ('DisplayError ','DisplayWarning ','DisplaySuggestion ')) and sp:o.add(0)
+            if 'LogText ' in line:
+              p=line.find('LogText ')
+              for i,m in enumerate(sp):
+                if m.start()>p:o.add(i);break
+            for fn in ('ReportWarning ','ReportSuggestion ','ReportException '):
+              p=line.find(fn)
+              if p>=0:
+                a=[i for i,m in enumerate(sp) if m.start()>p];o.update(a[1:])
+            if 'SKIPREASON=' in line:
+              p=line.find('SKIPREASON=')
+              for i,m in enumerate(sp):
+                if m.start()>p:o.add(i);break
+            if s.startswith(('echo ','printf ')) or re.match(r'^(?:if .*; then )?(?:echo|printf) ',s):o.update(range(len(sp)))
+            return o
+          def allowed(x):
+            z=x.strip()
+            if cjk.search(z):return True
+            if z in technical_products:return True
+            if '${GEN_CHECKING}' in z:return True
+            if re.fullmatch(r'[.A-Za-z0-9_$*|?+^\\/-]+',z):return True
+            if re.fullmatch(r'[A-Za-z0-9_.-]+\s*=\s*\S+',z):return True
+            if z.startswith(('http://','https://')):return True
+            if re.search(r'[|><;&]|\$\(|/|--|(^|\s)-[A-Za-z0-9]|=',z):return True
+            zz=re.sub(r'\$\{[^}]+\}|\$[A-Za-z_][A-Za-z0-9_]*',' ',z)
+            return len(word.findall(zz))<2
+          errors=[];files=[Path('lynis')]+sorted(p for p in Path('include').iterdir() if p.is_file())
+          for p in files:
+            try:ls=p.read_text(encoding='utf-8').splitlines()
+            except UnicodeDecodeError:continue
+            for n,line in enumerate(ls,1):
+              sp=list(q.finditer(line))
+              for i in ids(line,sp):
+                x=sp[i].group(1)
+                if not allowed(x):errors.append(f'{p}:{n}: {x}')
+          if errors:raise SystemExit('remaining untranslated visible strings:\n'+'\n'.join(errors[:200]))
+          print('final untranslated visible strings: 0')
+          PY
+
+      - name: Remove audit artifacts and commit
+        shell: bash
+        run: |
+          rm -f VISIBLE_ENGLISH_REPORT.txt VISIBLE_ENGLISH_SUMMARY.txt VISIBLE_ENGLISH_STRICT.txt
+          rm -f .github/workflows/final-localization-cleanup.yml
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "i18n: finalize complete Chinese user output"
+          git push origin HEAD:master
