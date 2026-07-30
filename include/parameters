@@ -50,7 +50,7 @@
                         "dockerfile")
                             if [ $# = 2 ]; then
                                 echo "${RED}错误：${WHITE}缺少文件名或网址${NORMAL}"
-                                echo "示例：$0 审计 dockerfile /path/to/Dockerfile"
+                                echo "示例：$0 audit dockerfile /path/to/Dockerfile"
                                 ExitFatal
                             else
                                 shift; shift
@@ -66,7 +66,7 @@
                                     #shift
                                     if [ $# -eq 3 ]; then
                                         echo "${RED}错误：${WHITE}缺少远程目标地址${NORMAL}"
-                                        echo "示例：$0 审计 系统 远程 192.168.1.100"
+                                        echo "示例：$0 audit system remote 192.168.1.100"
                                         ExitFatal
                                     else
                                         REMOTE_TARGET="$4"
@@ -77,8 +77,8 @@
                                         echo ""
                                         echo "  远程扫描操作方法："
                                         echo "  =================="
-                                        echo " 目标：${REMOTE_TARGET}"
-                                        echo " 命令：${REMOTE_COMMAND}"
+                                        echo "  目标：${REMOTE_TARGET}"
+                                        echo "  命令：${REMOTE_COMMAND}"
                                         HELPER="system_remote_scan"
                                         HELPER_PARAMS="$@"
                                         CHECK_BINARIES=0
@@ -102,8 +102,8 @@
                             echo "${RED}错误：${WHITE}请指定要审计的目标${NORMAL}"
                             echo " "
                             echo "示例："
-                            echo "lynis 审计 dockerfile"
-                            echo "lynis 审计 系统"
+                            echo "lynis 审核 dockerfile"
+                            echo "lynis审核系统"
                             ExitFatal
                         ;;
                     esac
@@ -111,8 +111,8 @@
                     echo "${RED}错误：${WHITE}请指定要审计的目标${NORMAL}"
                     echo " "
                     echo "示例："
-                    echo "lynis 审计 dockerfile"
-                    echo "lynis 审计 系统"
+                    echo "lynis 审核 dockerfile"
+                    echo "lynis审核系统"
                     ExitFatal
                 fi
             ;;
@@ -183,8 +183,8 @@
                     echo "${RED}错误：${WHITE}请指定更新操作${NORMAL}"
                     echo " "
                     echo "示例："
-                    echo "lynis 更新 检查"
-                    echo "lynis 更新 info"
+                    echo "lynis更新检查"
+                    echo "lynis 更新信息"
                     ExitFatal
                 fi
             ;;
@@ -294,7 +294,7 @@
                     shift
                     SEARCH_PROFILES="$1"
                 else
-                    echo "请指定配置文件，例如：lynis 审计 系统 --profile /home/michael/myprofile.prf"
+                    echo "请指定配置文件，例如：lynis audit system --profile /home/michael/myprofile.prf"
                     exit 1
                 fi
             ;;
@@ -314,7 +314,7 @@
                         ExitCustom 66
                     fi
                 else
-                    echo "请指定插件目录，例如：lynis 审计 系统 --plugindir /home/michael/plugins"
+                    echo "请指定插件目录，例如：lynis audit system --plugindir /home/michael/plugins"
                     exit 1
                 fi
             ;;
@@ -449,21 +449,21 @@
             # Perform tests (deprecated, use audit system)
             --check-all | --checkall | -c)
                 echo "选项 -c 已弃用。"
-                echo "请使用：lynis 审计 系统 [选项]"
+                echo "请使用：lynis audit system [选项]"
                 ExitFatal
             ;;
 
             # View program/database information
             --check-update | --check-updates | --info)
                 echo "选项 --info 已弃用"
-                echo "请使用：lynis 更新 info"
+                echo "请使用：lynis update info"
                 ExitFatal
             ;;
 
             # Display all available options with short alias
             --dump-options | --dumpoptions)
                 echo "选项 --dump-options 已弃用"
-                echo "请使用：lynis show 选项"
+                echo "请使用：lynis show options"
                 ExitFatal
             ;;
 

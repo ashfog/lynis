@@ -36,17 +36,17 @@
     # Goal        : Users should not be able to fill their home directory or temporary directory and creating a Denial of Service
     Register --test-no FILE-6310 --weight L --network NO --category security --description "检查 /tmp、/home 和 /var 目录"
     if [ ${SKIPTEST} -eq 0 ]; then
-        Display --indent 2 --text "- 检查 mount 分"
+        Display --indent 2 --text "- 检查安装点"
         SEPARATED_FILESYTEMS="/home /tmp /var"
         for I in ${SEPARATED_FILESYTEMS}; do
-            LogText "检查： 检查 如果 ${I} 是 mounted separately 或 mounted 在 / 文件 系统"
+            LogText "测试：检查${I}是单独挂载还是挂载在/文件系统上"
             if [ -L ${I} ]; then
                 ShowSymlinkPath ${I}
-                LogText "结果： ${I} 是 一个 符号链接. Manual 检查 必需 到 确定 exact 文件 系统 选项"
-                ReportSuggestion "${TEST_NO}" "Symlinked mount 得分 needs 到 为 checked manually" "${I}" ""
-                Display --indent 4 --text "- 检查 ${I} mount 得分" --result SYMLINK --color WHITE
+                LogText "结果：${I} 是符号链接。需要手动检查以确定确切的文件系统选项"
+                ReportSuggestion "${TEST_NO}" "需要手动检查符号链接挂载点" "${I}" ""
+                Display --indent 4 --text "- 检查${I}挂载点" --result SYMLINK --color WHITE
             elif [ -d ${I} ]; then
-                LogText "结果： 目录 ${I} 存在"
+                LogText "结果：目录 ${I} 存在"
                 case "${OS}" in
                     "AIX") FIND=$(${MOUNTBINARY} | ${AWKBINARY} -v MP=${I} '{ if ($2==MP) { print $2 }}') ;;
                     "HP-UX") FIND=$(${MOUNTBINARY} | ${AWKBINARY} -v MP=${I} '{ if ($1==MP) { print $1 }}') ;;
@@ -54,17 +54,17 @@
                 esac
 
                 if IsEmpty "${FIND}"; then
-                    LogText "结果： ${I} 未找到 在 mount 列表. 目录 大多数 很可能 stored 在 / 文件 系统"
-                    Display --indent 4 --text "- 检查 ${I} mount 得分" --result "${STATUS_SUGGESTION}" --color YELLOW
+                    LogText "结果：在挂载列表中找不到 ${I}。最有可能存储在 / 文件系统上的目录"
+                    Display --indent 4 --text "- 检查${I}挂载点" --result "${STATUS_SUGGESTION}" --color YELLOW
                     ReportSuggestion "${TEST_NO}" "为降低 ${I} 文件系统占满带来的影响，请将 ${I} 放在独立分区中"
                     AddHP 9 10
                 else
-                    LogText "结果： 发现 ${I} 作为 一个 separated mount 得分"
-                    Display --indent 4 --text "- 检查 ${I} mount 得分" --result "${STATUS_OK}" --color GREEN
+                    LogText "结果：找到 ${I} 作为单独的挂载点"
+                    Display --indent 4 --text "- 检查${I}挂载点" --result "${STATUS_OK}" --color GREEN
                     AddHP 10 10
                 fi
             else
-                LogText "结果： 目录 ${I} 不存在"
+                LogText "结果：目录${I}不存在"
             fi
         done
     fi
@@ -75,9 +75,9 @@
     # Description : Checking LVM Volume Groups
     # Notes       : No volume groups found is sent to STDERR for unclear reasons. Filtering both STDERR redirecting and grep.
     if [ ! "${VGDISPLAYBINARY}" = "" -o ! "${LSVGBINARY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no FILE-6311 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 LVM 卷 组"
+    Register --test-no FILE-6311 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 LVM 卷组"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 检查 用于 LVM 卷 组"
+        LogText "测试：检查 LVM 卷组"
         case ${OS} in
             AIX)
                  FIND=$(${LSVGBINARY} -o)
@@ -90,16 +90,16 @@
             ;;
         esac
         if [ -n "${FIND}" ]; then
-            LogText "结果： 发现 一个 或 更多 卷 组"
+            LogText "结果：找到一个或多个卷组"
             for I in ${FIND}; do
-                LogText "发现 LVM 卷 组： ${I}"
+                LogText "找到 LVM 卷组：${I}"
                 Report "lvm_volume_group[]=${I}"
             done
             LVM_VG_USED=1
-            Display --indent 2 --text "- 检查 LVM 卷 组" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 2 --text "- 检查 LVM 卷组" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "结果： 没有 LVM 卷 组 发现"
-            if IsVerbose; then Display --indent 2 --text "- 检查 LVM 卷 组" --result "${STATUS_NONE}" --color WHITE; fi
+            LogText "结果：未找到 LVM 卷组"
+            if IsVerbose; then Display --indent 2 --text "- 检查 LVM 卷组" --result "${STATUS_NONE}" --color WHITE; fi
         fi
     fi
 #
@@ -108,9 +108,9 @@
     # Test        : FILE-6312
     # Description : Checking LVM volumes
     if [ ${LVM_VG_USED} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no FILE-6312 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 LVM volumes"
+    Register --test-no FILE-6312 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 LVM 卷"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 检查 用于 LVM volumes"
+        LogText "测试：检查 LVM 卷"
         case ${OS} in
             AIX)
                  ACTIVE_VG_LIST=$(${LSVGBINARY} -o)
@@ -120,19 +120,19 @@
                  FIND=$(${LVDISPLAYBINARY} | ${GREPBINARY} -v "No volume groups found" | ${GREPBINARY} "LV Name" | ${AWKBINARY} '{ print $3 }' | ${SORTBINARY})
             ;;
             *)
-                 ReportException "${TEST_NO}:1" "Need specific 检查 用于 正在收集 卷管理器 数据"
+                 ReportException "${TEST_NO}:1" "需要特定测试来收集卷管理器数据"
             ;;
         esac
         if [ ! "${FIND}" = "" ]; then
-            LogText "结果： 发现 一个 或 更多 volumes"
+            LogText "结果：找到一本或多卷"
             for I in ${FIND}; do
-                LogText "发现 LVM 卷： ${I}"
+                LogText "找到 LVM 卷：${I}"
                 Report "lvm_volume[]=${I}"
             done
-            Display --indent 4 --text "- 检查 LVM volumes" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- 检查 LVM 卷" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "结果： 没有 LVM 卷 组 发现"
-            Display --indent 4 --text "- 检查 LVM volumes" --result "${STATUS_NONE}" --color WHITE
+            LogText "结果：未找到 LVM 卷组"
+            Display --indent 4 --text "- 检查 LVM 卷" --result "${STATUS_NONE}" --color WHITE
         fi
     fi
 #
@@ -148,20 +148,20 @@
 #
     # Test        : FILE-6323
     # Description : Checking Linux EXT2, EXT3, EXT4 file systems
-    Register --test-no FILE-6323 --os Linux --weight L --network NO --category security --description "检查 EXT 文件 systems"
+    Register --test-no FILE-6323 --os Linux --weight L --network NO --category security --description "检查 EXT 文件系统"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 检查 用于 Linux EXT 文件 systems"
+        LogText "测试：检查 Linux EXT 文件系统"
         FIND=$(${MOUNTBINARY} -t ext2,ext3,ext4 | ${AWKBINARY} '{ print $3","$5 }')
         if [ -n "${FIND}" ]; then
-            LogText "结果： 发现 一个 或 更多 EXT 文件 systems"
+            LogText "结果：找到一个或多个 EXT 文件系统"
             for I in ${FIND}; do
                 FILESYSTEM=$(echo ${I} | ${CUTBINARY} -d ',' -f1)
                 FILETYPE=$(echo ${I} | ${CUTBINARY} -d ',' -f2)
-                LogText "文件 系统： ${FILESYSTEM} (类型： ${FILETYPE})"
+                LogText "文件系统：${FILESYSTEM}（类型：${FILETYPE}）"
                 Report "file_systems_ext[]=${FILESYSTEM}|${FILETYPE}|"
             done
         else
-            LogText "结果： 没有 EXT 文件 systems 发现"
+            LogText "结果：未找到 EXT 文件系统"
         fi
     fi
 #
@@ -169,20 +169,20 @@
 #
     # Test        : FILE-6324
     # Description : Checking Linux XFS file systems
-    Register --test-no FILE-6324 --os Linux --weight L --network NO --category security --description "检查 XFS 文件 systems"
+    Register --test-no FILE-6324 --os Linux --weight L --network NO --category security --description "检查 XFS 文件系统"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 检查 用于 Linux XFS 文件 systems"
+        LogText "测试：检查 Linux XFS 文件系统"
         FIND=$(${MOUNTBINARY} -t xfs | ${AWKBINARY} '{ print $3","$5 }')
         if [ -n "${FIND}" ]; then
-            LogText "结果： 发现 一个 或 更多 XFS 文件 systems"
+            LogText "结果：找到一个或多个 XFS 文件系统"
             for I in ${FIND}; do
                 FILESYSTEM=$(echo ${I} | ${CUTBINARY} -d ',' -f1)
                 FILETYPE=$(echo ${I} | ${CUTBINARY} -d ',' -f2)
-                LogText "文件 系统： ${FILESYSTEM} (类型： ${FILETYPE})"
+                LogText "文件系统：${FILESYSTEM}（类型：${FILETYPE}）"
                 Report "file_systems_xfs[]=${FILESYSTEM}|${FILETYPE}|"
             done
         else
-            LogText "结果： 没有 XFS 文件 systems 发现"
+            LogText "结果：未找到 XFS 文件系统"
         fi
     fi
 #
@@ -191,18 +191,18 @@
     # Test        : FILE-6329
     # Description : Query all FFS/UFS mounts from /etc/fstab
     if [ -f /etc/fstab ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no FILE-6329 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 FFS/UFS 文件 systems"
+    Register --test-no FILE-6329 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 FFS/UFS 文件系统"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： Query /etc/fstab 用于 可用 FFS/UFS mount 分"
+        LogText "测试：查询 /etc/fstab 以获得可用的 FFS/UFS 挂载点"
         FIND=$(${AWKBINARY} '{ if ($3 == "ufs" || $3 == "ffs" ) { print $1":"$2":"$3":"$4":" }}' /etc/fstab)
         if [ -z "${FIND}" ]; then
-            if IsVerbose; then Display --indent 2 --text "- Querying FFS/UFS mount 分 (fstab)" --result "${STATUS_NONE}" --color WHITE; fi
-            LogText "结果： unable 到 find 任何 single mount 得分 (FFS/UFS)"
+            if IsVerbose; then Display --indent 2 --text "- 查询FFS/UFS挂载点（fstab）" --result "${STATUS_NONE}" --color WHITE; fi
+            LogText "结果：无法找到任何单个安装点（FFS/UFS）"
         else
-            Display --indent 2 --text "- Querying FFS/UFS mount 分 (fstab)" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 2 --text "- 查询FFS/UFS挂载点（fstab）" --result "${STATUS_FOUND}" --color GREEN
             Report "filesystem[]=ufs"
             for I in ${FIND}; do
-                LogText "FFS/UFS mount 发现: ${I}"
+                LogText "FFS/UFS 安装座已找到：${I}"
                 Report "mountpoint_ufs[]=${I}"
             done
         fi
@@ -213,18 +213,18 @@
     # Test        : FILE-6330
     # Description : Query ZFS mounts
     # Note        : mount -p does not work under Linux
-    Register --test-no FILE-6330 --os FreeBSD --weight L --network NO --category security --description "检查 ZFS 文件 systems"
+    Register --test-no FILE-6330 --os FreeBSD --weight L --network NO --category security --description "检查 ZFS 文件系统"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 发现 用于 可用 ZFS mount 分"
+        LogText "测试：发现可用的 ZFS 安装点"
         FIND=$(${MOUNTBINARY} -p | ${AWKBINARY} '{ if ($3 == "zfs") { print $1":"$2":"$3":"$4":" }}')
         if [ -z "${FIND}" ]; then
-            Display --indent 2 --text "- Querying ZFS mount 分 (mount -p)" --result "${STATUS_NONE}" --color WHITE
-            LogText "结果： unable 到 find 任何 single mount 得分 (ZFS)"
+            Display --indent 2 --text "- 查询ZFS挂载点（挂载-p）" --result "${STATUS_NONE}" --color WHITE
+            LogText "结果：无法找到任何单个安装点（ZFS）"
         else
-            Display --indent 2 --text "- Querying ZFS mount 分 (mount -p)" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 2 --text "- 查询ZFS挂载点（挂载-p）" --result "${STATUS_FOUND}" --color GREEN
             Report "filesystem[]=zfs"
             for I in ${FIND}; do
-                LogText "ZFS mount 发现： ${I}"
+                LogText "ZFS 安装座已找到：${I}"
                 Report "mountpoint_zfs[]=${I}"
             done
         fi
@@ -234,18 +234,18 @@
 #
     # Test        : FILE-6439
     # Description : Query all HAMMER PFS mounts from /etc/fstab
-    Register --test-no FILE-6439 --os DragonFly --weight L --network NO --category security --description "检查 HAMMER PFS mounts"
+    Register --test-no FILE-6439 --os DragonFly --weight L --network NO --category security --description "检查 HAMMER PFS 安装座"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： Query /etc/fstab 用于 可用 HAMMER PFS mount 分"
+        LogText "测试：查询 /etc/fstab 以获得可用的 HAMMER PFS 挂载点"
         FIND=$(${MOUNTBINARY} -p | ${AWKBINARY} '{ if ($3 == "null") { print $1":"$2":"$3":"$4":" }}')
         if [ -z "${FIND}" ]; then
-            Display --indent 2 --text "- Querying HAMMER PFS mount 分 (mount -p)" --result "${STATUS_NONE}" --color WHITE
-            LogText "结果： unable 到 find 任何 single PFS mount 得分"
+            Display --indent 2 --text "- 查询HAMMER PFS挂载点（挂载-p）" --result "${STATUS_NONE}" --color WHITE
+            LogText "结果：无法找到任何单个 PFS 挂载点"
         else
-            Display --indent 2 --text "- Querying HAMMER PFS mount 分 (mount -p)" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 2 --text "- 查询HAMMER PFS挂载点（挂载-p）" --result "${STATUS_FOUND}" --color GREEN
             Report "filesystem[]=hammer"
             for I in ${FIND}; do
-                LogText "HAMMER mount 发现： ${I}"
+                LogText "HAMMER 安装座已找到：${I}"
                 Report "mountpoint_hammer[]=${I}"
             done
         fi
@@ -256,17 +256,17 @@
     # Test        : FILE-6332
     # Description : Check swap partitions
     if [ -f /etc/fstab ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no FILE-6332 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 交换分区 partitions"
+    Register --test-no FILE-6332 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查交换分区"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
-        LogText "检查： query 交换分区 partitions 从 /etc/fstab 文件"
+        LogText "测试：从 /etc/fstab 文件查询交换分区"
         # Check if third field contains 'swap'
         FIND=$(${AWKBINARY} '{ if ($2=="swap" || $3=="swap") { print $1 }}' /etc/fstab | ${GREPBINARY} -v "^#")
         for I in ${FIND}; do
             FOUND=1
             REAL=""
             UUID=""
-            LogText "交换分区 分区 发现： ${I}"
+            LogText "找到交换分区：${I}"
             # TODO Add a test if partition is not a normal partition (e.g. UUID=)
             # Can be ^/dev/mapper/vg-name_lv-name
             # Can be ^/dev/partition
@@ -275,7 +275,7 @@
             HAS_UUID=$(echo ${I} | ${GREPBINARY} "^UUID=")
             if [ -n "${HAS_UUID}" ]; then
                 UUID=$(echo ${HAS_UUID} | ${AWKBINARY} -F= '{ print $2 }')
-                LogText "结果： 使用 ${UUID} 作为 UUID"
+                LogText "结果：使用 ${UUID} 作为 UUID"
                 if [ -n "${BLKIDBINARY}" ]; then
                     FIND2=$(${BLKIDBINARY} | ${AWKBINARY} '{ if ($2=="UUID=\"${UUID}\"") print $1 }' | ${SEDBINARY} 's/:$//')
                     if [ -n "${FIND2}" ]; then
@@ -285,14 +285,14 @@
                     LogText "结果：未找到 blkid 程序，尝试检查设备列表"
                     sFILE=""
                     if [ -L /dev/disk/by-uuid/${UUID} ]; then
-                        LogText "结果： 发现 磁盘 通过 /dev/disk/by-uuid listing"
+                        LogText "结果：通过 /dev/disk/by-uuid 列表找到磁盘"
                         ShowSymlinkPath /dev/disk/by-uuid/${UUID}
                         if [ -n "${sFILE}" ]; then
                             REAL="${sFILE}"
-                            LogText "结果： 磁盘 是 ${REAL}"
+                            LogText "结果：磁盘为 ${REAL}"
                         fi
                     else
-                        LogText "结果： 没有 符号链接 发现 到 /dev/disk/by-uuid/${UUID}"
+                        LogText "结果：未找到 /dev/disk/by-uuid/${UUID} 的符号链接"
                     fi
                 fi
             fi
@@ -303,10 +303,10 @@
             Report "swap_partition[]=${I},${REAL},"
         done
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 2 --text "- Query 交换分区 partitions (fstab)" --result "${STATUS_OK}" --color GREEN
+            Display --indent 2 --text "- 查询交换分区（fstab）" --result "${STATUS_OK}" --color GREEN
         else
-            Display --indent 2 --text "- Query 交换分区 partitions (fstab)" --result "${STATUS_NONE}" --color YELLOW
-            LogText "结果： 没有 交换分区 partitions 发现 在 /etc/fstab"
+            Display --indent 2 --text "- 查询交换分区（fstab）" --result "${STATUS_NONE}" --color YELLOW
+            LogText "结果：在 /etc/fstab 中找不到交换分区"
         fi
     fi
 #
@@ -317,19 +317,19 @@
     # Examples    : [partition] swap swap defaults 0 0
     #               [partition] none swap sw 0 0
     if [ -f /etc/fstab ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no FILE-6336 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 交换分区 挂载选项"
+    Register --test-no FILE-6336 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查交换安装选项"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Swap partitions should be mounted with 'sw' or 'swap'
-        LogText "检查： 检查 交换分区 partitions 使用 不正确 挂载选项"
+        LogText "测试：检查交换分区的安装选项是否正确"
         FIND=$(${AWKBINARY} '{ if ($3=="swap" && ($4!~/sw/ && $4!="defaults")) { print $1 }}' /etc/fstab)
         if [ -z "${FIND}" ]; then
-            Display --indent 2 --text "- Testing 交换分区 partitions" --result "${STATUS_OK}" --color GREEN
-            LogText "结果： 所有 交换分区 partitions 有 正确 选项 (sw 或 交换分区)"
+            Display --indent 2 --text "- 测试交换分区" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：所有交换分区都有正确的选项（sw 或 swap）"
         else
-            Display --indent 2 --text "- Testing 交换分区 partitions" --result "${STATUS_CHECK_NEEDED}" --color YELLOW
-            LogText "结果： 可能 不正确 挂载选项 已使用 用于 mounting 交换分区 分区 (${FIND})"
+            Display --indent 2 --text "- 测试交换分区" --result "${STATUS_CHECK_NEEDED}" --color YELLOW
+            LogText "结果：用于安装交换分区的安装选项可能不正确（${FIND}）"
             #ReportWarning "${TEST_NO}" "Possible incorrect mount options used for swap partition (${FIND})"
-            ReportSuggestion "${TEST_NO}" "检查 你的 /etc/fstab 文件 用于 交换分区 分区 挂载选项"
+            ReportSuggestion "${TEST_NO}" "检查 /etc/fstab 文件中的交换分区挂载选项"
             LogText "说明：交换分区的选项字段（第 4 列）通常包含 'sw' 或 'swap'"
         fi
     fi
@@ -360,25 +360,25 @@
     if [ ${SKIPTEST} -eq 0 ]; then
         # Proc should be mounted with 'hidepid=2' or 'hidepid=1' at least
         # https://www.kernel.org/doc/html/latest/filesystems/proc.html#chapter-4-configuring-procfs
-        LogText "检查： 检查 proc mount 使用 不正确 挂载选项"
+        LogText "测试：检查 proc mount 的挂载选项是否正确"
         FIND=$(${MOUNTBINARY} | ${GREPBINARY} -E "${ROOTDIR}proc " | ${GREPBINARY} -E -o "hidepid=([0-9]|[a-z][a-z]*)")
         if [ "${FIND}" = "hidepid=4" -o "${FIND}" = "hidepid=ptraceable" ]; then  # https://lwn.net/Articles/817137/
-            Display --indent 2 --text "- Testing /proc mount (hidepid)" --result "${STATUS_OK}" --color GREEN
-            LogText "结果： proc mount mounted 使用 ${FIND}"
+            Display --indent 2 --text "- 测试 /proc 安装座 (hidepid)" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：proc mount 用 ${FIND} 安装"
             AddHP 3 3
         elif [ "${FIND}" = "hidepid=2" -o "${FIND}" = "hidepid=invisible" ]; then
-            Display --indent 2 --text "- Testing /proc mount (hidepid)" --result "${STATUS_OK}" --color GREEN
-            LogText "结果： proc mount mounted 使用 ${FIND}"
+            Display --indent 2 --text "- 测试 /proc 安装座 (hidepid)" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：proc mount 用 ${FIND} 安装"
             AddHP 3 3
         elif [ "${FIND}" = "hidepid=1" -o "${FIND}" = "hidepid=noaccess" ]; then
-            Display --indent 2 --text "- Testing /proc mount (hidepid)" --result "${STATUS_OK}" --color GREEN
-            LogText "结果： proc mount mounted 使用 ${FIND}"
+            Display --indent 2 --text "- 测试 /proc 安装座 (hidepid)" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：proc mount 用 ${FIND} 安装"
             AddHP 2 3
         elif [ -z "${FIND}" ]; then
             # HIDEPID1_SUGGESTION=" (or at least hidepid=1)"
             AddHP 0 3
-            Display --indent 2 --text "- Testing /proc mount (hidepid)" --result "${STATUS_SUGGESTION}" --color YELLOW
-            LogText "结果： /proc filesystem 是 不 mounted 使用 选项 hidepid=1 或 hidepid=2"
+            Display --indent 2 --text "- 测试 /proc 安装座 (hidepid)" --result "${STATUS_SUGGESTION}" --color YELLOW
+            LogText "结果：/proc 文件系统未使用选项 hidepid=1 或 hidepid=2 挂载"
             # TODO ReportSuggestion "${TEST_NO}" "Consider mounting /proc via /etc/fstab with mount option hidepid=2" "/proc" "-"
         fi
     fi
@@ -388,28 +388,28 @@
     # Test        : FILE-6354
     # Description : Search files within /tmp which are older than 3 months
     if [ -d ${ROOTDIR}tmp ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no FILE-6354 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "搜索 用于 旧 文件 在 /tmp"
+    Register --test-no FILE-6354 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "在 /tmp 中搜索旧文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 搜索 用于 旧 文件 在 ${ROOTDIR}tmp"
+        LogText "测试：在 ${ROOTDIR}tmp 中搜索旧文件"
         # Search for files only in ${ROOTDIR}tmp, with an access time older than X days
         FIND=$(${FINDBINARY} ${ROOTDIR}tmp -xdev -type f -atime +${TMP_OLD_DAYS} 2> /dev/null | ${SEDBINARY} 's/ /!space!/g')
         if IsEmpty "${FIND}"; then
-            Display --indent 2 --text "- 检查 用于 旧 文件 在 ${ROOTDIR}tmp" --result "${STATUS_OK}" --color GREEN
-            LogText "结果： 没有 文件 发现 在 ${ROOTDIR}tmp which 是 较旧 比 3 个月"
+            Display --indent 2 --text "- 检查 ${ROOTDIR}tmp 中的旧文件" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：在 ${ROOTDIR}tmp 中找不到超过 3 个月的文件"
         else
-            Display --indent 2 --text "- 检查 用于 旧 文件 在 ${ROOTDIR}tmp" --result "${STATUS_FOUND}" --color RED
+            Display --indent 2 --text "- 检查 ${ROOTDIR}tmp 中的旧文件" --result "${STATUS_FOUND}" --color RED
             COUNT=0
             for ITEM in ${FIND}; do
                 FILE=$(echo ${ITEM} | ${SEDBINARY} 's/!space!/ /g')
-                LogText "旧 临时文件： ${FILE}"
+                LogText "旧临时文件：${FILE}"
                 COUNT=$((COUNT + 1))
             done
             LogText "结果：在 ${ROOTDIR}tmp 中发现过去 ${TMP_OLD_DAYS} 天内未修改的旧文件"
-            LogText "Advice： 检查 和 clean up unused 文件 在 ${ROOTDIR}tmp. 旧 文件 可以 fill up 一个 磁盘 或 contain"
-            LogText "private 信息 和 应 为 deleted 它 不 正在 已使用 actively. 使用 一个 工具 like lsof 到"
-            LogText "see which programs possibly 是 使用 一个 particular 文件. 一些 systems 可以 cleanup 临时"
-            LogText "目录 由 设置 一个 启动 选项."
-            ReportSuggestion "${TEST_NO}" "检查 ${COUNT} 文件 在 ${ROOTDIR}tmp which 是 较旧 比 ${TMP_OLD_DAYS} 天"
+            LogText "建议：检查并清理${ROOTDIR}tmp中未使用的文件。旧文件可能会填满磁盘或包含"
+            LogText "私人信息，如果不被积极使用，应将其删除。使用像 lsof 这样的工具"
+            LogText "查看哪些程序可能正在使用特定文件。有些系统可以临时清理"
+            LogText "通过设置启动选项来设置目录。"
+            ReportSuggestion "${TEST_NO}" "检查 ${ROOTDIR}tmp 中早于 ${TMP_OLD_DAYS} 天的 ${COUNT} 文件"
         fi
     fi
 #
@@ -418,17 +418,17 @@
     # Test        : FILE-6362
     # Description : Check for sticky bit on /tmp
     if [ -d ${ROOTDIR}tmp -a ! -L ${ROOTDIR}tmp ]; then PREQS_MET="YES"; SKIPREASON=""; else PREQS_MET="NO"; SKIPREASON="No /tmp or /tmp is symlinked"; fi
-    Register --test-no FILE-6362 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "检查 /tmp sticky bit"
+    Register --test-no FILE-6362 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "检查 /tmp 粘滞位"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Depending on OS, number of field with 'tmp' differs
         FIND=$(${LSBINARY} -ld ${ROOTDIR}tmp | ${AWKBINARY} '$1 ~ /[tT]/ { print 1 }')
         if [ "${FIND}" = "1" ]; then
-            Display --indent 2 --text "- 检查 ${ROOTDIR}tmp sticky bit" --result "${STATUS_OK}" --color GREEN
-            LogText "结果： sticky bit 发现 在 ${ROOTDIR}tmp 目录"
+            Display --indent 2 --text "- 检查${ROOTDIR}tmp粘性位" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：在 ${ROOTDIR}tmp 目录中找到粘滞位"
             AddHP 3 3
         else
-            Display --indent 2 --text "- 检查 ${ROOTDIR}tmp sticky bit" --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "为 ${ROOTDIR}tmp 设置粘滞位，防止用户删除 /tmp 中属于其他用户的文件。" "/tmp" "text：设置粘滞位"
+            Display --indent 2 --text "- 检查${ROOTDIR}tmp粘性位" --result "${STATUS_WARNING}" --color RED
+            ReportSuggestion "${TEST_NO}" "为 ${ROOTDIR}tmp 设置粘滞位，防止用户删除 /tmp 中属于其他用户的文件。" "/tmp" "text:设置粘滞位"
             AddHP 0 3
         fi
         unset FIND
@@ -441,17 +441,17 @@
     # Test        : FILE-6363
     # Description : Check for sticky bit on /var/tmp
     if [ -d ${ROOTDIR}var/tmp -a ! -L ${ROOTDIR}var/tmp ]; then PREQS_MET="YES"; SKIPREASON=""; else PREQS_MET="NO"; SKIPREASON="No /var/tmp or /var/tmp is symlinked"; fi
-    Register --test-no FILE-6363 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "检查 /var/tmp sticky bit"
+    Register --test-no FILE-6363 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "检查 /var/tmp 粘滞位"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Depending on OS, number of field with 'tmp' differs
         FIND=$(${LSBINARY} -ld ${ROOTDIR}var/tmp | ${AWKBINARY} '$1 ~ /[tT]/ { print 1 }')
         if [ "${FIND}" = "1" ]; then
-            Display --indent 2 --text "- 检查 ${ROOTDIR}var/tmp sticky bit" --result "${STATUS_OK}" --color GREEN
-            LogText "结果： sticky bit 发现 在 ${ROOTDIR}var/tmp 目录"
+            Display --indent 2 --text "- 检查 ${ROOTDIR}var/tmp 粘滞位" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：在 ${ROOTDIR}var/tmp 目录中找到粘滞位"
             AddHP 3 3
         else
-            Display --indent 2 --text "- 检查 ${ROOTDIR}var/tmp sticky bit" --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "为 ${ROOTDIR}var/tmp 设置粘滞位，防止用户删除 /var/tmp 中属于其他用户的文件。" "/var/tmp" "text：设置粘滞位"
+            Display --indent 2 --text "- 检查 ${ROOTDIR}var/tmp 粘滞位" --result "${STATUS_WARNING}" --color RED
+            ReportSuggestion "${TEST_NO}" "为 ${ROOTDIR}var/tmp 设置粘滞位，防止用户删除 /var/tmp 中属于其他用户的文件。" "/var/tmp" "text:设置粘滞位"
             AddHP 0 3
         fi
         unset FIND
@@ -472,17 +472,17 @@
 #
     # Test        : FILE-6368
     # Description : Checking Linux root file system ACL support
-    Register --test-no FILE-6368 --os Linux --weight L --network NO --root-only YES --category security --description "检查 ACL 支持 在 根 文件 系统"
+    Register --test-no FILE-6368 --os Linux --weight L --network NO --root-only YES --category security --description "检查 root 文件系统上的 ACL 支持"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
-        LogText "检查： 检查 acl 选项 在 ext[2-4] 根 文件 系统"
+        LogText "测试：检查 ext[2-4] root 文件系统上的 acl 选项"
         FIND=$(${MOUNTBINARY} | ${AWKBINARY} '{ if ($3=="/" && $5~/ext[2-4]/) { print $6 } }' | ${GREPBINARY} acl)
         if [ -n "${FIND}" ]; then
-            LogText "结果： 发现 ACL 选项"
+            LogText "结果：找到ACL选项"
             FOUND=1
         else
-            LogText "结果： mount 得分 可能 mounted 使用 defaults"
-            LogText "检查： 检查 设备 which holds 根 文件 系统"
+            LogText "结果：挂载点可能使用默认值挂载"
+            LogText "测试：检查保存 root 文件系统的设备"
             # Get device on which root file system is mounted. Use /dev/root if it exists, or
             # else check output of mount
             if [ -b ${ROOTDIR}dev/root ]; then
@@ -494,21 +494,21 @@
             fi
             # Trying to determine default mount options from EXT2/EXT3/EXT4 file systems
             if [ -n "${FIND1}" ]; then
-                LogText "结果： 发现 ${FIND1}"
-                LogText "检查： 检查 默认选项s 在 ${FIND1}"
+                LogText "结果：找到${FIND1}"
+                LogText "测试：检查 ${FIND1} 上的默认选项"
                 FIND2=$(${TUNE2FSBINARY} -l ${FIND1} 2> /dev/null | ${GREPBINARY} "^Default mount options" | ${GREPBINARY} "acl")
                 if [ -n "${FIND2}" ]; then
-                    LogText "结果： 发现 ACL 选项 在 default 挂载选项"
+                    LogText "结果：在默认挂载选项中找到 ACL 选项"
                     FOUND=1
                 else
-                    LogText "结果： 没有 ACL 选项 发现 在 default 挂载选项 列表"
+                    LogText "结果：在默认安装选项列表中找不到 ACL 选项"
                 fi
             else
-                LogText "结果： 没有 文件 系统 发现 使用 根 文件 系统"
+                LogText "结果：未找到 root 文件系统的文件系统"
             fi
         fi
 
-        LogText "检查： 检查 acl 选项 在 xfs 根 文件 系统"
+        LogText "测试：检查 xfs root 文件系统上的 acl 选项"
         FIND=$(${MOUNTBINARY} | ${AWKBINARY} '{ if ($3=="/" && $5~/xfs/) { print $6 } }' | ${GREPBINARY} -E 'no_acl|no_user_xattr')
         if [ -z "${FIND}" ]; then
             FOUND=1
@@ -516,14 +516,14 @@
         fi
 
         if [ ${FOUND} -eq 0 ]; then
-            LogText "结果： ACL 选项 NOT 已启用 在 根 文件 系统"
+            LogText "结果：在 root 文件系统上启用 ACL 选项 NOT"
             LogText "补充信息：如需进一步限制文件访问，可使用 ACL。请安装 acl 工具，并使用 acl 选项重新挂载文件系统"
             LogText "可执行 mount -o remount,acl / 为活动文件系统启用 ACL，并在 fstab 中添加 acl 选项"
-            Display --indent 2 --text "- ACL 支持 根 文件 系统" --result "${STATUS_DISABLED}" --color YELLOW
+            Display --indent 2 --text "- ACL 支持root 文件系统" --result "${STATUS_DISABLED}" --color YELLOW
             AddHP 0 1
         else
-            LogText "结果： ACL 选项 已启用 在 根 文件 系统"
-            Display --indent 2 --text "- ACL 支持 根 文件 系统" --result "${STATUS_ENABLED}" --color GREEN
+            LogText "结果：在 root 文件系统上启用 ACL 选项"
+            Display --indent 2 --text "- ACL 支持root 文件系统" --result "${STATUS_ENABLED}" --color GREEN
             AddHP 3 3
         fi
     fi
@@ -533,7 +533,7 @@
     # Test        : FILE-6372
     # Description : Check / mount options for Linux
     # Notes       :
-    Register --test-no FILE-6372 --os Linux --weight L --network NO --category security --description "检查 / 挂载选项"
+    Register --test-no FILE-6372 --os Linux --weight L --network NO --category security --description "检查/安装选项"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ -f ${ROOTDIR}etc/fstab ]; then
             FIND=$(${GREPBINARY} -w "/" ${ROOTDIR}etc/fstab | ${GREPBINARY} -v "^#" | ${CUTBINARY} -f1 -d"#" | ${AWKBINARY} '{ if ($2=="/") { print $4 }}')
@@ -542,14 +542,14 @@
             NOSUID=$(echo ${FIND} | ${AWKBINARY} '{ if ($1 ~ "nosuid") { print "YES" } else { print "NO" } }')
 
             if [ -n "${FIND}" ]; then
-                LogText "结果： mount 系统 / 是 已配置 使用 选项: ${FIND}"
+                LogText "结果：安装系统/配置了选项：${FIND}"
                 if [ "${FIND}" = "defaults" ]; then
-                    Display --indent 2 --text "- Mount 选项 的 /" --result "${STATUS_OK}" --color GREEN
+                    Display --indent 2 --text "- 安装选项 /" --result "${STATUS_OK}" --color GREEN
                 else
-                    Display --indent 2 --text "- Mount 选项 的 /" --result "${STATUS_NON_DEFAULT}" --color YELLOW
+                    Display --indent 2 --text "- 安装选项 /" --result "${STATUS_NON_DEFAULT}" --color YELLOW
                 fi
             else
-                LogText "结果： 没有 mount 得分 / 或 预期 选项 发现"
+                LogText "结果：未找到安装点/或预期选项"
             fi
         fi
     fi
@@ -579,7 +579,7 @@
     #            ---------------------------------------------------------
 
     FILESYSTEMS_TO_CHECK="/boot:nodev,noexec,nosuid /dev:noexec,nosuid /dev/shm:nosuid,nodev,noexec /home:nodev,nosuid /run:nodev,nosuid /tmp:nodev,noexec,nosuid /var:nodev,nosuid /var/log:nodev,noexec,nosuid /var/log/audit:nodev,noexec,nosuid /var/tmp:nodev,noexec,nosuid"
-    Register --test-no FILE-6374 --os Linux --weight L --network NO --category security --description "Linux 挂载选项"
+    Register --test-no FILE-6374 --os Linux --weight L --network NO --category security --description "Linux 安装选项"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ -f ${ROOTDIR}etc/fstab ]; then
             for I in ${FILESYSTEMS_TO_CHECK}; do
@@ -600,15 +600,15 @@
                 fi
                 if [ -n "${FS_FSTAB}" ]; then
                     # In awk using caret/circumflex as first character between brackets, means 'not' (instead of beginning of line)
-                    LogText "文件 系统： ${FILESYSTEM}"
-                    LogText "预期 flags： ${EXPECTED_FLAGS}"
-                    LogText "发现 flags： ${FOUND_FLAGS}"
+                    LogText "文件系统：${FILESYSTEM}"
+                    LogText "预期标志：${EXPECTED_FLAGS}"
+                    LogText "找到标志：${FOUND_FLAGS}"
                     PARTIALLY_HARDENED=0
                     FULLY_HARDENED=1
                     for FLAG in ${EXPECTED_FLAGS}; do
                         FLAG_AVAILABLE=$(echo ${FOUND_FLAGS} | ${GREPBINARY} ${FLAG})
                         if [ -z "${FLAG_AVAILABLE}" ]; then
-                            LogText "结果： 可以 不 find 挂载选项 ${FLAG} 在 文件 系统 ${FILESYSTEM}"
+                            LogText "结果：在文件系统 ${FILESYSTEM} 上找不到挂载选项 ${FLAG}"
                             FULLY_HARDENED=0
                         else
                             LogText "结果：正常，文件系统 ${FILESYSTEM} 上已设置挂载选项 ${FLAG}"
@@ -616,26 +616,26 @@
                         fi
                     done
                     if [ ${FULLY_HARDENED} -eq 1 ]; then
-                        LogText "结果： 标记 ${FILESYSTEM} 作为 fully hardened"
-                        Display --indent 2 --text "- Mount 选项 的 ${FILESYSTEM}" --result "${STATUS_HARDENED}" --color GREEN
+                        LogText "结果：将 ${FILESYSTEM} 标记为完全硬化"
+                        Display --indent 2 --text "- ${FILESYSTEM} 的安装选项" --result "${STATUS_HARDENED}" --color GREEN
                         AddHP 5 5
                     elif [ ${PARTIALLY_HARDENED} -eq 1 ]; then
-                        LogText "结果： 标记 ${FILESYSTEM} 作为 partially hardened"
-                        Display --indent 2 --text "- Mount 选项 的 ${FILESYSTEM}" --result "${STATUS_PARTIALLY_HARDENED}" --color YELLOW
+                        LogText "结果：将 ${FILESYSTEM} 标记为部分硬化"
+                        Display --indent 2 --text "- ${FILESYSTEM} 的安装选项" --result "${STATUS_PARTIALLY_HARDENED}" --color YELLOW
                         AddHP 4 5
                     else
                         if ContainsString "defaults" "${FOUND_FLAGS}"; then
-                            LogText "结果： 标记 ${FILESYSTEM} 选项 作为 default (不 hardened)"
-                            Display --indent 2 --text "- Mount 选项 的 ${FILESYSTEM}" --result "${STATUS_DEFAULT}" --color YELLOW
+                            LogText "结果：将 ${FILESYSTEM} 选项标记为默认（未强化）"
+                            Display --indent 2 --text "- ${FILESYSTEM} 的安装选项" --result "${STATUS_DEFAULT}" --color YELLOW
                             AddHP 3 5
                         else
-                            LogText "结果： 标记 ${FILESYSTEM} 选项 作为 non-default (不确定 about 加固)"
-                            Display --indent 2 --text "- Mount 选项 的 ${FILESYSTEM}" --result "${STATUS_NON_DEFAULT}" --color YELLOW
+                            LogText "结果：将 ${FILESYSTEM} 选项标记为非默认（不清楚强化）"
+                            Display --indent 2 --text "- ${FILESYSTEM} 的安装选项" --result "${STATUS_NON_DEFAULT}" --color YELLOW
                             AddHP 4 5
                         fi
                     fi
                 else
-                    LogText "结果： 文件 系统 ${FILESYSTEM} 未找到 在 ${ROOTDIR}etc/fstab"
+                    LogText "结果：在 ${ROOTDIR}etc/fstab 中找不到文件系统 ${FILESYSTEM}"
                 fi
             done
         fi
@@ -652,23 +652,23 @@
 #
     # Test        : FILE-6376
     # Description : Bind mount the /var/tmp directory to /tmp
-    Register --test-no FILE-6376 --os Linux --weight L --network NO --category security --description "确定 如果 /var/tmp 是 bound 到 /tmp"
+    Register --test-no FILE-6376 --os Linux --weight L --network NO --category security --description "确定 /var/tmp 是否绑定到 /tmp"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ -f ${ROOTDIR}etc/fstab ]; then
             FIND=$(${AWKBINARY} '{ if ($2=="/var/tmp") { print $4 } }' ${ROOTDIR}etc/fstab)
             BIND=$(echo ${FIND} | ${AWKBINARY} '{ if ($1 ~ "bind") { print "YES" } else { print "NO" } }')
             if [ -n "${FIND}" ]; then
-                LogText "结果： mount 系统 /var/tmp 是 已配置 使用 选项: ${FIND}"
+                LogText "结果：安装系统 /var/tmp 配置了选项：${FIND}"
                 if [ "${BIND}" = "YES" ]; then
-                    Display --indent 2 --text "- /var/tmp 是 bound 到 /tmp" --result "${STATUS_OK}" --color GREEN
-                    LogText "结果 ： /var/tmp 是 bind 到 /tmp"
+                    Display --indent 2 --text "- /var/tmp 绑定到 /tmp" --result "${STATUS_OK}" --color GREEN
+                    LogText "结果：/var/tmp 是 bind 到 /tmp"
                 else
-                    Display --indent 2 --text "- /var/tmp 是 不 bound 到 /tmp" --result "${STATUS_NON_DEFAULT}" --color YELLOW
-                    LogText "结果： /var/tmp 是 不 bind 到 /tmp"
+                    Display --indent 2 --text "- /var/tmp 不绑定到 /tmp" --result "${STATUS_NON_DEFAULT}" --color YELLOW
+                    LogText "结果：/var/tmp 不是 bind 到 /tmp"
                 fi
             else
-                LogText "结果： 没有 mount 得分 /var/tmp 或 预期 选项 发现"
-                if IsVerbose; then Display --indent 2 --text "- /var/tmp 是 不 bound 到 /tmp" --result "INFO" --color WHITE; fi
+                LogText "结果：未找到安装点 /var/tmp 或预期选项"
+                if IsVerbose; then Display --indent 2 --text "- /var/tmp 不绑定到 /tmp" --result "INFO" --color WHITE; fi
             fi
         fi
     fi
@@ -700,13 +700,13 @@
 #
     # Test        : FILE-6394
     # Description : Check vm.swappiness (Linux)
-    Register --test-no FILE-6394 --os Linux --weight L --network NO --category security --description "确定 level 的 swappiness."
+    Register --test-no FILE-6394 --os Linux --weight L --network NO --category security --description "确定 swappiness 的电平。"
     if [ ${SKIPTEST} -eq 0 ]; then
         SWAPLEVEL=$(${CAT_BINARY} /proc/sys/vm/swappiness)
-        LogText "检查： 检查 level 的 vm.swappiness： ${SWAPLEVEL}"
+        LogText "测试：检查vm.swappiness的级别：${SWAPLEVEL}"
         PHYSDISK=$(${LSBLKBINARY} | ${GREPBINARY} -E 'disk|SWAP' | ${GREPBINARY} -B1 SWAP | ${HEADBINARY} -n1 | ${AWKBINARY} '{print $1}')
         if [ ${SWAPLEVEL} -gt 60 ]; then
-            LogText "结果： vm.swappiness=${SWAPLEVEL} meaning 该 swapping 是 更多 frequent 比 default."
+            LogText "结果：vm.swappiness=${SWAPLEVEL} 表示交换比默认更频繁。"
             # Check if swap is on a HDD or SDD for frequent swapping
             if [ -d "/sys/block/${PHYSDISK}" ]; then
                 HDDORSDD=$(${CAT_BINARY} "/sys/block/${PHYSDISK}/queue/rotational")
@@ -715,18 +715,18 @@
                 fi
             fi
         elif [ ${SWAPLEVEL} -eq 0 ]; then
-            LogText "结果： vm.swappiness=${SWAPLEVEL} meaning swapping 是 已禁用."
+            LogText "结果：vm.swappiness=${SWAPLEVEL} 表示禁用交换。"
             ReportSuggestion "${TEST_NO}" "vm.swappiness 设置为 ${SWAPLEVEL}。可考虑至少设置为 1，以尽量减少交换但不完全禁用，从而避免物理内存耗尽时 OOM killer 过早终止进程。"
         elif [ ${SWAPLEVEL} -eq 1 ]; then
-            LogText "结果： vm.swappiness=${SWAPLEVEL} meaning 该 swapping 可以 仍然 occur but 在 very 最小."
+            LogText "结果：vm.swappiness=${SWAPLEVEL} 意味着交换仍然可以发生，但最少。"
         elif [ ${SWAPLEVEL} -eq 10 ]; then
-            LogText "结果： vm.swappiness=${SWAPLEVEL} which 是 preferred 设置 用于 数据库 servers."
+            LogText "结果：vm.swappiness=${SWAPLEVEL}，这是数据库服务器的首选设置。"
         elif [ ${SWAPLEVEL} -lt 60 ]; then
-            LogText "结果： vm.swappiness=${SWAPLEVEL} meaning 该 swapping 是 更少 frequent 比 default. 此 是 仅 recommended 用于 servers."
+            LogText "结果：vm.swappiness=${SWAPLEVEL} 表示交换频率低于默认值。仅建议服务器使用此方法。"
         else
-            LogText "结果： vm.swappiness=${SWAPLEVEL} which 是 standard level 的 swappiness 和 works well 用于 desktop systems."
+            LogText "结果：vm.swappiness=${SWAPLEVEL}，这是swappiness的标准级别，适用于桌面系统。"
         fi
-        if IsVerbose; then Display --indent 2 --text "- Swappiness： ${SWAPLEVEL}" --result "INFO" --color WHITE; fi
+        if IsVerbose; then Display --indent 2 --text "- Swappiness: ${SWAPLEVEL}" --result "INFO" --color WHITE; fi
     fi
 #
 #################################################################################
@@ -785,26 +785,26 @@
     #                       or /var/cache/locate/locatedb
     #               FreeBSD /var/db/locate.database
     if [ ! "${LOCATEBINARY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no FILE-6410 --preqs-met ${PREQS_MET} --os Linux --weight L --network NO --category security --description "检查 Locate 数据库"
+    Register --test-no FILE-6410 --preqs-met ${PREQS_MET} --os Linux --weight L --network NO --category security --description "检查定位数据库"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 检查 locate 数据库"
+        LogText "测试：检查定位数据库"
         FOUND=0
         LOCATE_DBS="${ROOTDIR}var/cache/locate/locatedb ${ROOTDIR}var/db/locate.database ${ROOTDIR}var/lib/locate/locatedb ${ROOTDIR}var/lib/locatedb ${ROOTDIR}var/lib/mlocate/mlocate.db ${ROOTDIR}var/lib/plocate/plocate.db ${ROOTDIR}var/lib/slocate/slocate.db"
         for FILE in ${LOCATE_DBS}; do
             if [ -f ${FILE} ]; then
-                LogText "结果： locate 数据库 发现 (${FILE})"
+                LogText "结果：找到数据库（${FILE}）"
                 FOUND=1
                 LOCATE_DB="${FILE}"
             else
-                LogText "结果： 文件 ${FILE} 未找到"
+                LogText "结果：未找到文件 ${FILE}"
             fi
         done
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 2 --text "- 检查 Locate 数据库" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 2 --text "- 检查定位数据库" --result "${STATUS_FOUND}" --color GREEN
             Report "locate_db=${LOCATE_DB}"
         else
-            LogText "结果： 数据库 未找到"
-            Display --indent 2 --text "- 检查 Locate 数据库" --result "${STATUS_NOT_FOUND}" --color YELLOW
+            LogText "结果：未找到数据库"
+            Display --indent 2 --text "- 检查定位数据库" --result "${STATUS_NOT_FOUND}" --color YELLOW
             ReportSuggestion "${TEST_NO}" "找不到 'locate' 所需的数据库。请运行 'updatedb' 或 'locate.updatedb' 创建该文件。"
         fi
     fi
@@ -849,10 +849,10 @@
     # Description : Disable mounting of some filesystems
     # Rationale   : Unless there is a specific reason to use a particular file system, disable it.
     # Data        : cramfs freevxfs hfs hfsplus jffs2 squashfs udf
-    Register --test-no FILE-6430 --weight L --network NO --category security --description "禁用 mounting 的 一些 filesystems"
+    Register --test-no FILE-6430 --weight L --network NO --category security --description "禁用某些文件系统的挂载"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ -n "${LSMODBINARY}" -a -f /proc/modules ]; then
-            Display --indent 2 --text "- 禁用 内核 支持 的 一些 filesystems"
+            Display --indent 2 --text "- 禁用某些文件系统的内核支持"
             LIST_FS_NOT_SUPPORTED="cramfs freevxfs hfs hfsplus jffs2 squashfs udf"
             FOUND=0
             AVAILABLE_FS=""
@@ -861,36 +861,36 @@
                 # Check if filesystem is present in modprobe output
                 FIND=$(${MODPROBEBINARY} -v -n ${FS} 2>/dev/null | ${GREPBINARY} -E "/${FS}.ko" | ${TAILBINARY} -1)
                 if [ -n "${FIND}" ]; then
-                    LogText "结果： 发现 ${FS} 支持 在 内核 (输出 = ${FIND})"
+                    LogText "结果：在内核中找到 ${FS} 支持（输出 = ${FIND}）"
                     Debug "Module ${FS} present in the kernel"
-                    LogText "检查： 检查 如果 ${FS} 是 当前"
+                    LogText "测试：检查 ${FS} 是否处于活动状态"
                     # Check if FS is present in lsmod output
                     FIND=$(${LSMODBINARY} | ${GREPBINARY} -E "^${FS}")
                     if IsEmpty "${FIND}"; then
-                        LogText "结果： 模块 ${FS} 是 当前 不 已加载 在 内核."
+                        LogText "结果：模块 ${FS} 当前未加载到内核中。"
                         AddHP 2 3
-                        if IsDebug; then Display --indent 6 --text "- 模块 ${FS} 不 已加载 (lsmod)" --result OK --color GREEN; fi
+                        if IsDebug; then Display --indent 6 --text "- 模块 ${FS} 未加载 (lsmod)" --result OK --color GREEN; fi
                     else
-                        LogText "结果： 模块 ${FS} 是 已加载 在 内核"
-                        Display --indent 4 --text "- 模块 $FS 已加载 在 内核 (lsmod)" --result "FOUND" --color WHITE
+                        LogText "结果：模块 ${FS} 被加载到内核中"
+                        Display --indent 4 --text "- 模块 $FS 加载到内核中（lsmod）" --result "FOUND" --color WHITE
                         FOUND=1
                         AVAILABLE_MODPROBE_FS="${AVAILABLE_MODPROBE_FS}${FS} "
                     fi
                 else
                     AddHP 3 3
-                    if IsDebug; then Display --indent 6 --text "- 模块 ${FS} 不 present 在 内核" --result OK --color GREEN; fi
+                    if IsDebug; then Display --indent 6 --text "- 模块 ${FS} 不存在于内核中" --result OK --color GREEN; fi
                 fi
                 
                 for SUBDIR in "${ROOTDIR}etc" "${ROOTDIR}usr/lib"; do
                     if [ -d "${SUBDIR}/modprobe.d" ]; then
-                        LogText "结果： 目录 ${SUBDIR}/modprobe.d 存在"
+                        LogText "结果：目录 ${SUBDIR}/modprobe.d 存在"
                         FIND=$(${LSBINARY} "${SUBDIR}/modprobe.d/*" 2> /dev/null)
                         if [ -n "${FIND}" ]; then
                             FIND1=$(${GREPBINARY} -E "^blacklist[[:space:]]+${FS}$" ${ROOTDIR}etc/modprobe.d/* | ${GREPBINARY} -v "#")
                             FIND2=$(${GREPBINARY} -E "^install[[:space:]]+${FS}[[:space:]]+/bin/(true|false)$" ${ROOTDIR}etc/modprobe.d/* | ${GREPBINARY} -v "#")
                             if [ -n "${FIND1}" ] || [ -n "${FIND2}" ]; then
-                                Display --indent 4 --text "- 模块 $FS 是 blacklisted" --result "OK" --color GREEN
-                                LogText "结果： 模块 ${FS} 是 blacklisted"
+                                Display --indent 4 --text "- 模块 $FS 已列入黑名单" --result "OK" --color GREEN
+                                LogText "结果：模块${FS}被列入黑名单"
                                 break
                             fi
                         fi
@@ -898,11 +898,11 @@
                 done
             done
             if [ ${FOUND} -eq 1 ]; then
-                Display --indent 4 --text "- 发现 内核模块： ${AVAILABLE_MODPROBE_FS}"
-                ReportSuggestion "${TEST_NO}" "建议禁用未使用的内核模块" "/etc/modprobe.d/blacklist.conf" "添加 安装 MODULENAME /bin/true（不含引号）"
+                Display --indent 4 --text "- 发现内核模块：${AVAILABLE_MODPROBE_FS}"
+                ReportSuggestion "${TEST_NO}" "建议禁用未使用的内核模块" "/etc/modprobe.d/blacklist.conf" "添加 install MODULENAME /bin/true（不含引号）"
             fi
         else
-            LogText "检查 已跳过 lsmod 程序 未找到 或 /proc/modules 可以 不 为 opened"
+            LogText "测试跳过 lsmod 二进制文件未找到或 /proc/modules 无法打开"
         fi
         unset AVAILABLE_FS AVAILABLE_MODPROBE_FS
     fi

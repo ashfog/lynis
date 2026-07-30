@@ -516,7 +516,7 @@
     Register --test-no TIME-3180 --preqs-met "${PREQS_MET}" --weight L --network NO --category security --description "检查 ntpctl 是否无法与 OpenNTPD 通信"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ "${OPENNTPD_COMMUNICATION}" -eq 0 ]; then
-            ReportWarning "${TEST_NO}" "发现 OpenNTPD，但 ntpctl 无法与其通信" "${NTPCTLBINARY} -s 状态" "重启 OpenNTPD"
+            ReportWarning "${TEST_NO}" "发现 OpenNTPD，但 ntpctl 无法与其通信" "${NTPCTLBINARY} -s status" "重启 OpenNTPD"
         fi
     fi
 #
@@ -534,7 +534,7 @@
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=$(${NTPCTLBINARY} -s status | ${GREPBINARY} "clock synced" )
         if [ -z "${FIND}" ]; then
-            ReportWarning "${TEST_NO}" "OpenNTPD 未同步系统时间" "${NTPCTLBINARY} -s 状态" "text：手动设置一次时间，或检查网络连接。"
+            ReportWarning "${TEST_NO}" "OpenNTPD 未同步系统时间" "${NTPCTLBINARY} -s status" "text:手动设置一次时间，或检查网络连接。"
         fi
     fi
 #
@@ -554,7 +554,7 @@
         # Format is "xx/yy peers valid, ..."
         FIND=$(${NTPCTLBINARY} -s status | ${GREPBINARY} -E -o '[0-9]+/[0-9]+' | ${CUTBINARY} -d '/' -f 1)
         if [ -z "${FIND}" ] || [ "${FIND}" -eq 0 ]; then
-            ReportWarning "${TEST_NO}" "OpenNTPD 没有可用的对等节点" "${NTPCTLBINARY} -s 状态"
+            ReportWarning "${TEST_NO}" "OpenNTPD 没有可用的对等节点" "${NTPCTLBINARY} -s status"
         fi
     fi
 

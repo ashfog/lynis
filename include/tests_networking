@@ -76,7 +76,7 @@
             else
                 LogText "结果：主机名中发现异常字符（字符：${FIND}），可能影响网络连接"
                 Display --indent 2 --text "- 主机名（允许的字符）" --result "${STATUS_WARNING}" --color RED
-                ReportWarning "${TEST_NO}" "主机名包含无效字符" "主机名" "text：请查看日志文件中的无效字符"
+                ReportWarning "${TEST_NO}" "主机名包含无效字符" "hostname" "text:请查看日志文件中的无效字符"
             fi
         fi
     fi
@@ -630,7 +630,7 @@
                     ISWHITELISTED=$(${GREPBINARY} "^if_promisc:${I}:" ${PROFILE})
                     if [ -z "${ISWHITELISTED}" ]; then
                         FOUNDPROMISC=1
-                        ReportWarning "${TEST_NO}" "发现混杂模式接口" "${I}" "text：确认是否需要此模式，或在配置文件中将接口加入白名单"
+                        ReportWarning "${TEST_NO}" "发现混杂模式接口" "${I}" "text:确认是否需要此模式，或在配置文件中将接口加入白名单"
                         LogText "说明：某些工具会将接口设为混杂模式，以捕获或记录网络流量"
                     else
                         LogText "结果：发现混杂模式接口 ${I}（已通过配置文件加入白名单）"

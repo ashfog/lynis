@@ -39,24 +39,24 @@
 #
     # Test        : PRNT-2302
     # Description : Check printcap file consistency
-    Register --test-no PRNT-2302 --os FreeBSD --weight L --network NO --category security --description "检查 用于 printcap consistency"
+    Register --test-no PRNT-2302 --os FreeBSD --weight L --network NO --category security --description "检查 printcap 的一致性"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 搜索 /usr/sbin/chkprintcap"
+        LogText "测试：搜索/usr/sbin/chkprintcap"
         if [ ! -f ${ROOTDIR}usr/sbin/chkprintcap ]; then
             Display --indent 2 --text "- 检查 chkprintcap" --result "${STATUS_NOT_FOUND}" --color WHITE
             LogText "结果：未找到 ${ROOTDIR}usr/sbin/chkprintcap，跳过检查"
         else
-            LogText "结果： ${ROOTDIR}usr/sbin/chkprintcap 发现"
+            LogText "结果：找到 ${ROOTDIR}usr/sbin/chkprintcap"
             FIND=$(${ROOTDIR}usr/sbin/chkprintcap > /dev/null ; echo $?)
             # Only an exit code of zero should come back. Use string instead of integer, due unexpected trash
             if [ "${FIND}" = "0" ]; then
-                Display --indent 2 --text "- 完整性 检查 的 printcap 文件" --result "${STATUS_OK}" --color GREEN
-                LogText "结果： chkprintcap NOT gave 任何 warnings"
+                Display --indent 2 --text "- printcap文件的完整性检查" --result "${STATUS_OK}" --color GREEN
+                LogText "结果：chkprintcap NOT 是否发出任何警告"
             else
-                Display --indent 2 --text "- 完整性 检查 的 printcap 文件" --result "${STATUS_WARNING}" --color RED
-                ReportSuggestion "${TEST_NO}" "运行 chkprintcap manually 到 检查 printcap 文件"
-                LogText "输出 从 chkprintcap： ${FIND}"
-                LogText "运行 chkprintcap 和 检查 ${ROOTDIR}etc/printcap 文件"
+                Display --indent 2 --text "- printcap文件的完整性检查" --result "${STATUS_WARNING}" --color RED
+                ReportSuggestion "${TEST_NO}" "手动运行 chkprintcap 来测试 printcap 文件"
+                LogText "chkprintcap 的输出：${FIND}"
+                LogText "运行 chkprintcap 并检查 ${ROOTDIR}etc/printcap 文件"
             fi
         fi
     fi
@@ -65,12 +65,12 @@
 #
     # Test        : PRNT-2304
     # Description : Check cupsd status
-    Register --test-no PRNT-2304 --weight L --network NO --category security --description "检查 cupsd 状态"
+    Register --test-no PRNT-2304 --weight L --network NO --category security --description "检查cupsd状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 检查 cupsd 状态"
+        LogText "测试：检查 cupsd 状态"
         if IsRunning "cupsd"; then
             Display --indent 2 --text "- 检查 cups 守护进程" --result "${STATUS_RUNNING}" --color GREEN
-            LogText "结果： cups 守护进程 运行中"
+            LogText "结果：cups 守护进程正在运行"
             CUPSD_RUNNING=1; PRINTING_DAEMON="cups"
         else
             Display --indent 2 --text "- 检查 cups 守护进程" --result "${STATUS_NOT_FOUND}" --color WHITE
@@ -85,23 +85,23 @@
     if [ ${CUPSD_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no PRNT-2306 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 CUPSd 配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 搜索 cupsd 配置文件"
+        LogText "测试：搜索cupsd配置文件"
         for DIR in ${CUPSD_CONFIG_LOCS}; do
             if [ -f ${DIR}/cupsd.conf ]; then
                 if FileIsReadable ${DIR}/cupsd.conf; then
                     CUPSD_CONFIG_FILE="${DIR}/cupsd.conf"
-                    LogText "结果： 发现 ${CUPSD_CONFIG_FILE}"
+                    LogText "结果：找到${CUPSD_CONFIG_FILE}"
                 fi
             fi
         done
         if HasData "${CUPSD_CONFIG_FILE}"; then
-            Display --indent 2 --text "- 检查 CUPS 配置文件" --result "${STATUS_OK}" --color GREEN
-            LogText "结果： 配置文件 发现 (${CUPSD_CONFIG_FILE})"
+            Display --indent 2 --text "- 检查CUPS配置文件" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：找到配置文件（${CUPSD_CONFIG_FILE}）"
             CUPSD_FOUND=1
         else
-            Display --indent 2 --text "- 检查 CUPS 配置文件" --result "${STATUS_NOT_FOUND}" --color RED
-            LogText "结果： 配置文件 未找到"
-            LogText "Development： 没有 CUPS 配置文件 发现"
+            Display --indent 2 --text "- 检查CUPS配置文件" --result "${STATUS_NOT_FOUND}" --color RED
+            LogText "结果：找不到配置文件"
+            LogText "开发：未找到 CUPS 配置文件"
         fi
     fi
 #
@@ -111,19 +111,19 @@
     # Description : Check CUPSd configuration file permissions
     # TODO        : Add function
     if [ ${CUPSD_FOUND} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PRNT-2307 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 CUPSd 配置文件 权限"
+    Register --test-no PRNT-2307 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 CUPSd 配置文件权限"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 检查 CUPS 配置文件 权限"
+        LogText "测试：检查CUPS配置文件权限"
         FIND=$(${LSBINARY} -l ${CUPSD_CONFIG_FILE} | ${CUTBINARY} -c 2-10)
-        LogText "结果： 发现 ${FIND}"
+        LogText "结果：找到${FIND}"
         case "${FIND}" in
             r[w-]-[r-][w-]---- )
-                Display --indent 4 --text "- 文件 权限" --result "${STATUS_OK}" --color GREEN
+                Display --indent 4 --text "- 文件权限" --result "${STATUS_OK}" --color GREEN
                 AddHP 1 1
                 ;;
             * )
-                Display --indent 4 --text "- 文件 权限" --result "${STATUS_WARNING}" --color RED
-                ReportSuggestion "${TEST_NO}" "Access 到 CUPS 配置 可以 为 更多 严格."
+                Display --indent 4 --text "- 文件权限" --result "${STATUS_WARNING}" --color RED
+                ReportSuggestion "${TEST_NO}" "对 CUPS 配置的访问可能会更加严格。"
                 AddHP 1 2
                 ;;
         esac
@@ -135,17 +135,17 @@
     # Description : Check CUPS daemon network configuration
     # Notes       : Listen and SSLListen can be used
     if [ ${CUPSD_FOUND} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PRNT-2308 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 CUPSd 网络 配置"
+    Register --test-no PRNT-2308 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 CUPSd 网络配置"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         PORT_FOUND=0
 
-        LogText "检查： 检查 CUPS 守护进程 listening 网络 地址"
+        LogText "测试：检查CUPS守护进程侦听网络地址"
 
         # Search for Port statement
         FIND=$(${GREPBINARY} -E "^Port 631" ${CUPSD_CONFIG_FILE})
         if [ -n "${FIND}" ]; then
-            LogText "结果： 发现 CUPS listening 在 端口 631 (大多数 很可能 所有 接口)"
+            LogText "结果：发现 CUPS 正在端口 631 上侦听（很可能是所有接口）"
             PORT_FOUND=1
         fi
 
@@ -153,43 +153,43 @@
         FIND=$(${GREPBINARY} -E "^(SSL)?Listen" ${CUPSD_CONFIG_FILE} | ${GREPBINARY} -v "/" | ${AWKBINARY} '{ print $2 }')
         COUNT=0
         for ITEM in ${FIND}; do
-            LogText "结果： 发现 网络 地址： ${ITEM}"
+            LogText "结果：找到网络地址：${ITEM}"
             COUNT=$((COUNT + 1))
             FOUND=1
         done
 
         # Check if daemon might be running on localhost
         if [ ${FOUND} -eq 0 -a ${PORT_FOUND} -eq 0 ]; then
-            LogText "结果： CUPS 不 look 到 为 listening 在 一个 网络 端口"
+            LogText "结果：CUPS 看起来没有在侦听网络端口"
         elif [ ${COUNT} -eq 1 -a ${PORT_FOUND} -eq 0 ]; then
             if [ "${FIND}" = "localhost:631" -o "${FIND}" = "127.0.0.1:631" ]; then
-                LogText "结果： CUPS 守护进程 仅 运行中 在 localhost"
+                LogText "结果：CUPS 守护进程仅在 localhost 上运行"
                 AddHP 2 2
             else
-                LogText "结果： CUPS 守护进程 运行中 在 一个 或 更多 接口 (不 limited 到 localhost)"
-                ReportSuggestion "${TEST_NO}" "检查 CUPS 配置 如果 它 really needs 到 listen 在 网络"
+                LogText "结果：CUPS 守护进程在一个或多个接口上运行（不限于 localhost）"
+                ReportSuggestion "${TEST_NO}" "检查CUPS配置是否确实需要监听网络"
                 AddHP 1 2
             fi
         else
-            LogText "结果： CUPS 守护进程 是 运行中 在 several 网络 地址"
-            ReportSuggestion "${TEST_NO}" "检查 CUPS 配置 如果 它 really needs 到 运行 在 several 网络 地址"
+            LogText "结果：CUPS 守护程序正在多个网络地址上运行"
+            ReportSuggestion "${TEST_NO}" "如果确实需要在多个网络地址上运行，请检查 CUPS 配置"
             AddHP 1 2
         fi
 
         # Checking sockets
-        LogText "检查： 检查 cups 守护进程 listening 套接字"
+        LogText "测试：检查 cups 守护进程侦听套接字"
         FIND=$(${GREPBINARY} "^Listen" ${CUPSD_CONFIG_FILE} | ${GREPBINARY} "/" | ${AWKBINARY} '{ print $2 }')
         for ITEM in ${FIND}; do
-            LogText "发现 套接字 地址： ${ITEM}"
+            LogText "找到套接字地址：${ITEM}"
             COUNT=$((COUNT + 1))
         done
 
         if [ ${COUNT} -eq 0 ]; then
             Display --indent 2 --text "- 检查 CUPS 地址/套接字" --result "${STATUS_NONE}" --color WHITE
-            LogText "结果： 没有 地址 发现 在 which CUPS 守护进程 是 listening"
+            LogText "结果：找不到 CUPS 守护程序正在侦听的地址"
         else
             Display --indent 2 --text "- 检查 CUPS 地址/套接字" --result "${STATUS_FOUND}" --color GREEN
-            LogText "结果： CUPS 守护进程 是 listening 在 网络/套接字"
+            LogText "结果：CUPS 守护进程正在侦听网络/套接字"
         fi
     fi
 #
@@ -199,14 +199,14 @@
     # Description : Check lpd status
     Register --test-no PRNT-2314 --weight L --network NO --category security --description "检查 lpd 状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 检查 lpd 状态"
+        LogText "测试：检查 lpd 状态"
         if IsRunning "lpd"; then
             Display --indent 2 --text "- 检查 lp 守护进程" --result "${STATUS_RUNNING}" --color GREEN
-            LogText "结果： lp 守护进程 运行中"
+            LogText "结果：lp 守护进程运行"
             LPD_RUNNING=1; PRINTING_DAEMON="lp"
         else
             Display --indent 2 --text "- 检查 lp 守护进程" --result "${STATUS_NOT_RUNNING}" --color WHITE
-            LogText "结果： lp 守护进程 不 运行中"
+            LogText "结果：lp 守护进程未运行"
             AddHP 4 4
         fi
     fi
@@ -217,21 +217,21 @@
     # Description : Check /etc/qconfig file
     Register --test-no PRNT-2316 --os AIX --weight L --network NO --category security --description "检查 /etc/qconfig 文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 检查 ${ROOTDIR}etc/qconfig"
+        LogText "测试：检查 ${ROOTDIR}etc/qconfig"
         QDAEMON_CONFIG_FILE="${ROOTDIR}etc/qconfig"
         FileIsReadable ${QDAEMON_CONFIG_FILE}
         if [ ${CANREAD} -eq 1 ]; then
             FIND=$(${GREPBINARY} -v "^\*" ${QDAEMON_CONFIG_FILE} | ${GREPBINARY} -E "backend|device")
             if [ -n "${FIND}" ]; then
-                LogText "结果： printers 是 defined 在 ${QDAEMON_CONFIG_FILE}"
-                Display --indent 2 --text "- 检查 /etc/qconfig 文件" --result "${STATUS_FOUND}" --color GREEN
+                LogText "结果：打印机在 ${QDAEMON_CONFIG_FILE} 中定义"
+                Display --indent 2 --text "- 检查/etc/qconfig文件" --result "${STATUS_FOUND}" --color GREEN
                 QDAEMON_CONFIG_ENABLED=1
             else
-                LogText "结果： ${QDAEMON_CONFIG_FILE} 是 为空. 没有 printers 是 defined"
-                Display --indent 2 --text "- 检查 /etc/qconfig 文件" --result EMPTY --color WHITE
+                LogText "结果：${QDAEMON_CONFIG_FILE} 为空。没有定义打印机"
+                Display --indent 2 --text "- 检查/etc/qconfig文件" --result EMPTY --color WHITE
             fi
         else
-            LogText "结果： 可以 不 读取 ${QDAEMON_CONFIG_FILE} (没有 权限)"
+            LogText "结果：无法读取${QDAEMON_CONFIG_FILE}（无权限）"
         fi
     fi
 #
@@ -239,20 +239,20 @@
 #
     # Test        : PRNT-2418
     # Description : Check qdaemon printer spooler status
-    Register --test-no PRNT-2418 --os AIX --weight L --network NO --category security --description "检查 qdaemon 打印机 spooler 状态"
+    Register --test-no PRNT-2418 --os AIX --weight L --network NO --category security --description "检查 qdaemon 打印机后台处理程序状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 检查 qdaemon 状态"
+        LogText "测试：检查 qdaemon 状态"
         if IsRunning "qdaemon"; then
-            LogText "结果： qdaemon 守护进程 运行中"
+            LogText "结果：qdaemon 守护进程正在运行"
             Display --indent 2 --text "- 检查 qdaemon 守护进程" --result "${STATUS_RUNNING}" --color GREEN
             QDAEMON_RUNNING=1; PRINTING_DAEMON="qdaemon"
         else
             if [ ${QDAEMON_CONFIG_ENABLED} -eq 1 ]; then
-                LogText "结果： qdaemon 守护进程 不 运行中"
+                LogText "结果：qdaemon 守护程序未运行"
                 Display --indent 2 --text "- 检查 qdaemon 守护进程" --result "${STATUS_NOT_RUNNING}" --color RED
-                ReportSuggestion "${TEST_NO}" "Activate print spooler 守护进程 (qdaemon) 在 order 到 进程 print 任务"
+                ReportSuggestion "${TEST_NO}" "激活打印后台处理程序守护程序 (qdaemon) 以处理打印作业"
             else
-                LogText "结果： qdaemon 守护进程 不 运行中"
+                LogText "结果：qdaemon 守护程序未运行"
                 Display --indent 2 --text "- 检查 qdaemon 守护进程" --result "${STATUS_NOT_RUNNING}" --color WHITE
             fi
         fi
@@ -262,9 +262,9 @@
 #
     # Test        : PRNT-2420
     # Description : Checking old print jobs
-    Register --test-no PRNT-2420 --os AIX --weight L --network NO --category security --description "检查 旧 print 任务"
+    Register --test-no PRNT-2420 --os AIX --weight L --network NO --category security --description "检查旧的打印作业"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查： 检查 旧 print 任务"
+        LogText "测试：检查旧的打印作业"
         DirectoryExists ${ROOTDIR}var/spool/lpd/qdir
         if [ ${DIRECTORY_FOUND} -eq 1 ]; then
             FIND=$(find ${ROOTDIR}var/spool/lpd/qdir -type f -mtime +1 2> /dev/null | ${SEDBINARY} 's/ /!space!/g')
@@ -272,16 +272,16 @@
                 COUNT=0
                 for ITEM in ${FIND}; do
                     FILE=$(echo ${ITEM} | ${SEDBINARY} 's/!space!/ /g')
-                    LogText "发现 旧 print 任务： ${FILE}"
+                    LogText "找到旧的打印作业：${FILE}"
                     COUNT=$((COUNT + 1))
                 done
-                LogText "结果： 发现 ${COUNT} 旧 print 任务 在 /var/spool/lpd/qdir"
-                Display --indent 4 --text "- 检查 旧 print 任务" --result "${STATUS_FOUND}" --color YELLOW
-                ReportSuggestion "${TEST_NO}" "检查 旧 print 任务 在 /var/spool/lpd/qdir 到 prevent 新 任务 从 正在 processed"
+                LogText "结果：在 /var/spool/lpd/qdir 中找到 ${COUNT} 旧打印作业"
+                Display --indent 4 --text "- 检查旧的打印作业" --result "${STATUS_FOUND}" --color YELLOW
+                ReportSuggestion "${TEST_NO}" "检查 /var/spool/lpd/qdir 中的旧打印作业以防止处理新作业"
                 LogText "风险：失败或失效的打印任务可能占用大量空间，并可能阻止新任务被处理"
             else
-                LogText "结果： 旧 print 任务 未找到 在 /var/spool/lpd/qdir"
-                Display --indent 4 --text "- 检查 旧 print 任务" --result "${STATUS_NONE}" --color GREEN
+                LogText "结果：在 /var/spool/lpd/qdir 中找不到旧打印作业"
+                Display --indent 4 --text "- 检查旧的打印作业" --result "${STATUS_NONE}" --color GREEN
             fi
         fi
     fi

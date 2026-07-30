@@ -197,7 +197,7 @@
             Report "file_integrity_tool[]=ossec"
             FILE_INT_TOOL="ossec-syscheck"
             FILE_INT_TOOL_FOUND=1
-            Display --indent 4 --text "- OSSEC（syscheck）" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- OSSEC（系统检查）" --result "${STATUS_FOUND}" --color GREEN
         else
             LogText "结果：syscheck（OSSEC）未处于活动状态"
             if IsVerbose; then Display --indent 4 --text "- OSSEC" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
@@ -408,7 +408,7 @@
             Report "file_integrity_tool[]=wazuh"
             FILE_INT_TOOL="wazuh-syscheck"
             FILE_INT_TOOL_FOUND=1
-            Display --indent 4 --text "- Wazuh（syscheck）" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- Wazuh（系统检查）" --result "${STATUS_FOUND}" --color GREEN
         else
             LogText "结果：syscheck（Wazuh）未处于活动状态"
             if IsVerbose; then Display --indent 4 --text "- Wazuh" --result "${STATUS_NOT_FOUND}" --color WHITE; fi

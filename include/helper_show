@@ -156,14 +156,14 @@ if [ $# -gt 0 ]; then
                     if [ -n "${ZCAT}" ]; then
                         CreateTempFile
                         CHANGELOG="${TEMP_FILE}"
-                        LogText "结果： 发现 gzipped changelog 在 ${FILEPATH}"
-                        LogText "操作： Creating 临时文件 到 store text"
+                        LogText "结果：在 ${FILEPATH} 中找到 gzip 压缩的变更日志"
+                        LogText "操作：创建临时文件来存储文本"
                         ${ZCAT} ${FILEPATH}/changelog.gz > ${CHANGELOG}
                     else
                         DisplayError "找不到用于读取压缩更新记录的 zcat 工具"
                     fi
                 fi
-                if [ -n "${CHANGELOG}" ]; then LogText "结果： 发现 changelog 文件： ${CHANGELOG}"; break; fi
+                if [ -n "${CHANGELOG}" ]; then LogText "结果：找到变更日志文件：${CHANGELOG}"; break; fi
             done
             if [ -n "${CHANGELOG}" ]; then
                 SEARCH=$(sed 's/^## //' ${CHANGELOG} | grep -E "^${PROGRAM_NAME} ${SEARCH_VERSION}")
@@ -215,7 +215,7 @@ if [ $# -gt 0 ]; then
                         "show") ${ECHOCMD} "${SHOW_HELP}" ;;
                         "update")  ${ECHOCMD} "${UPDATE_HELP}" ;;
                         "upload-only") ${ECHOCMD} "${UPLOAD_ONLY_HELP}" ;;
-                        *) DisplayError "无法识别 命令 后面的参数"
+                        *) DisplayError "无法识别 commands 后面的参数"
                     esac
                 else
                     shift
@@ -227,7 +227,7 @@ if [ $# -gt 0 ]; then
                             ${ECHOCMD} "${COMMANDS_AUDIT_SYSTEM_USAGE}\n${COMMANDS_AUDIT_SYSTEM_FUNCTION}\n"
                         ;;
                         *)
-                            DisplayError "命令 无法识别参数 '$1'"
+                            DisplayError "commands 无法识别参数 '$1'"
                         ;;
                     esac
                 fi
@@ -239,7 +239,7 @@ if [ $# -gt 0 ]; then
         "details")
             if [ -z "${LOGFILE}" ]; then DisplayError "找不到可供分析的日志文件"; fi
             if [ $# -eq 1 ]; then
-                DisplayError "此命令需要一个检查编号，例如 CORE-1000。请先完成扫描（lynis 审计 系统），再使用此命令查询。执行 'lynis show tests' 可以查看全部检查项目。"
+                DisplayError "此命令需要一个检查编号，例如 CORE-1000。请先完成扫描（lynis audit system），再使用此命令查询。执行 'lynis show tests' 可以查看全部检查项目。"
             else
                 shift
                 if [ $# -eq 1 ]; then

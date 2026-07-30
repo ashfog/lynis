@@ -165,7 +165,7 @@
                     case "${USBGUARD_RESTORE_POLICY}" in
                         "true")
                             Display --indent 6 --text "- 恢复控制器设备状态" --result "${USBGUARD_RESTORE_POLICY}" --color YELLOW
-                            LogText " 建议将 RestoreControllerDeviceState 改为 \\"false\\""
+                            LogText "  建议将 RestoreControllerDeviceState 改为 \"false\""
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Consider hardening USBGuard configuration" "RestoreControllerDeviceState (${USBGUARD_RESTORE_POLICY} --> false)"
                             AddHP 0 1
@@ -196,7 +196,7 @@
                     case "${USBGUARD_CONTROLLER_POLICY}" in
                         "allow" | "keep")
                             Display --indent 6 --text "- 守护进程启动前已连接控制器的规则" --result "${USBGUARD_CONTROLLER_POLICY}" --color YELLOW
-                            LogText " 建议将 PresentControllerPolicy 改为 \\"apply-policy\\"、\\"block\\" 或 \\"reject\\""
+                            LogText "  建议将 PresentControllerPolicy 改为 \"apply-policy\"、\"block\" 或 \"reject\""
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Consider hardening USBGuard configuration" "PresentControllerPolicy (${USBGUARD_CONTROLLER_POLICY} --> (apply-policy|block|reject)"
                             AddHP 0 1
@@ -226,7 +226,7 @@
                     case "${USBGUARD_DEVICE_POLICY}" in
                         "allow" | "keep")
                             Display --indent 6 --text "- 守护进程启动前已连接设备的规则" --result "${USBGUARD_DEVICE_POLICY}" --color YELLOW
-                            LogText " 建议将 PresentDevicePolicy 改为 \\"apply-policy\\"、\\"block\\" 或 \\"reject\\""
+                            LogText "  建议将 PresentDevicePolicy 改为 \"apply-policy\"、\"block\" 或 \"reject\""
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Consider hardening USBGuard configuration" "PresentDevicePolicy (${USBGUARD_DEVICE_POLICY} --> (apply-policy|block|reject)"
                             AddHP 0 1
@@ -256,7 +256,7 @@
                     case "${USBGUARD_INSERTED_POLICY}" in
                         "allow" | "keep")
                             Display --indent 6 --text "- 守护进程启动后插入设备的规则" --result "${USBGUARD_INSERTED_POLICY}" --color YELLOW
-                            LogText " 建议将 InsertedDevicePolicy 改为 \\"apply-policy\\"、\\"block\\" 或 \\"reject\\""
+                            LogText "  建议将 InsertedDevicePolicy 改为 \"apply-policy\"、\"block\" 或 \"reject\""
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Consider hardening USBGuard configuration" "InsertedDevicePolicy (${USBGUARD_INSERTED_POLICY} --> (apply-policy|block|reject)"
                             AddHP 0 1
@@ -286,7 +286,7 @@
                     case "${USBGUARD_DEFAULT_POLICY}" in
                         "allow")
                             Display --indent 6 --text "- RuleFile 中未列出设备的规则" --result "${USBGUARD_DEFAULT_POLICY}" --color YELLOW
-                            LogText " 建议将 ImplicitPolicyTarget 改为 \\"block\\" 或 \\"reject\\""
+                            LogText "  建议将 ImplicitPolicyTarget 改为 \"block\" 或 \"reject\""
                             # TODO: assign TEST_NO, create documentation, and enable the suggestion
                             # ReportSuggestion "${TEST_NO}" "Consider hardening USBGuard configuration" "ImplicitPolicyTarget (${USBGUARD_DEFAULT_POLICY} --> (block|reject)"
                             AddHP 0 1

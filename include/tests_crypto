@@ -269,7 +269,7 @@
     # Description : Test for presence of hardware random number generators
     Register --test-no CRYP-8004 --os Linux --weight L --network NO --root-only NO --category security --description "检查是否存在硬件随机数生成器"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查：查找 ${ROOTDIR}sys/class/misc/hw_随机/rng_当前"
+        LogText "检查：查找 ${ROOTDIR}sys/class/misc/hw_random/rng_current"
         if [ -f "${ROOTDIR}sys/class/misc/hw_random/rng_current" ]; then
             DATA=$(${HEADBINARY} -n 1 ${ROOTDIR}sys/class/misc/hw_random/rng_current | ${TRBINARY} -d '[[:cntrl:]]')
             if [ "${DATA}" != "none" ]; then
@@ -289,7 +289,7 @@
             fi
         else
             Display --indent 2 --text "- 硬件随机数生成器与 rngd" --result "${STATUS_NO}" --color RED
-            LogText "结果：找不到 ${ROOTDIR}sys/class/misc/hw_随机/rng_当前"
+            LogText "结果：找不到 ${ROOTDIR}sys/class/misc/hw_random/rng_current"
         fi
     fi
 #

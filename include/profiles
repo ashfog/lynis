@@ -30,7 +30,7 @@
 #
     for PROFILE in ${PROFILES}; do
 
-        LogText "Reading 配置文件/配置 ${PROFILE}"
+        LogText "读取配置文件/配置 ${PROFILE}"
 
         # Show deprecation message for old config entries such as 'config:' and 'apache:'
         FOUND=0
@@ -40,17 +40,17 @@
         if [ ${FOUND} -eq 1 ]; then
             Display --text " "
             Display --text "=================================================================================================="
-            DisplayWarning "你的 配置文件 contains old-style 配置 条目. See 日志 文件 用于 更多 详情 和 how 到 convert 这些 条目"
+            DisplayWarning "您的配置文件包含旧式配置条目。有关更多详细信息以及如何转换这些条目，请参阅日志文件"
             Display --indent 2 --text "* ${RED}问题${NORMAL}"
-            Display --indent 2 --text "你的 配置文件 有 一个 或 更多 行 该 是 在 一个 旧 format (键：值). They need 到 为 converted 到 新 format (键=值) 或 已禁用."
+            Display --indent 2 --text "您的个人资料中有一行或多行采用旧格式（键：值）。它们需要转换为新格式（key=value) 或禁用。"
             Display --text " "
             Display --indent 2 --text "* ${GREEN}解决方法${NORMAL}"
-            Display --indent 2 --text "使用 grep 到 see relevant matches (grep -E \\"^[a-z-]{1,}:\\" custom.prf)"
+            Display --indent 2 --text "使用grep查看相关匹配项（grep -E \\"^[a-z-]{1,}:\\" custom.prf）"
             Display --text " "
             Display --text "=================================================================================================="
             Display --text " "
             LogText "提示：配置文件 '${PROFILE}' 包含一个或多个旧格式配置项"
-            ReportWarning "GEN-0020" "你的 配置文件 contains 一个 或 更多 old-style 配置 条目"
+            ReportWarning "GEN-0020" "您的配置文件包含一个或多个旧式配置条目"
             sleep 10
         fi
 
@@ -60,7 +60,7 @@
             DisplayWarning "配置文件 '${PROFILE}' 包含异常字符，详情请查看日志文件。"
             LogText "在配置文件 '${PROFILE}' 中发现异常或可能有害的字符。请查看下方匹配结果并与配置文件对照。"
             for I in $(printf ${DATA} | od -An -ta); do
-                LogText "输出： ${I}"
+                LogText "输出：${I}"
             done
             LogText "建议：使用 '#' 注释不正确的行后重试。如果合法字符被阻止，请提交 GitHub issue"
             ExitFatal "unexpected characters in profile. Stopping execution (security measure)"
@@ -102,7 +102,7 @@
                             hipaa)    COMPLIANCE_ENABLE_HIPAA=1    ; Debug "Compliance scanning for HIPAA is enabled" ;;
                             iso27001) COMPLIANCE_ENABLE_ISO27001=1 ; Debug "Compliance scanning for ISO27001 is enabled" ;;
                             pci-dss)  COMPLIANCE_ENABLE_PCI_DSS=1  ; Debug "Compliance scanning for PCI DSS is enabled" ;;
-                            *) LogText "结果： 未知 compliance standard 已配置" ;;
+                            *) LogText "结果：配置了未知的合规性标准" ;;
                         esac
                     done
                 ;;
@@ -200,7 +200,7 @@
 
                 # Skip FreeBSD port audit
                 freebsd-skip-portaudit | freebsd_skip_portaudit)
-                    LogText "选项 设置： 跳过 FreeBSD portaudit"
+                    LogText "选项集：跳过 FreeBSD portaudit"
                     OPTION_FREEBSD_SKIP_PORTAUDIT="${VALUE}"
                 ;;
 
@@ -480,7 +480,7 @@
                 test_skip_always)
                     STRING=$(echo ${VALUE} | awk '{print toupper($0)}')
                     SKIP_TESTS="${SKIP_TESTS} ${STRING}"
-                    LogText "[deprecated 选项] 检查 到 为 已跳过： ${VALUE}"
+                    LogText "[已弃用的选项] 要跳过的测试：${VALUE}"
                     DisplayToolTip "Replace deprecated option 'test_skip_always' and replace with 'skip-test' (add to custom.prf)"
                 ;;
 
@@ -494,7 +494,7 @@
 
                 # Catch all bad options and bail out
                 *)
-                    LogText "未知 选项 ${OPTION} (使用 值: ${VALUE})"
+                    LogText "未知选项 ${OPTION}（值为：${VALUE}）"
 
                     ${ECHOCMD:-echo} ""
                     ${ECHOCMD:-echo} "${RED}Error${NORMAL}: found one or more errors in profile ${PROFILE}"
@@ -514,7 +514,7 @@
 #################################################################################
 #
     SKIP_TESTS=$(echo ${SKIP_TESTS} | sed "s/^ //")
-    if [ -n "${SKIP_TESTS}" ]; then LogText "跳过 检查： ${SKIP_TESTS}"; fi
+    if [ -n "${SKIP_TESTS}" ]; then LogText "跳过测试：${SKIP_TESTS}"; fi
 #
 #################################################################################
 #
@@ -547,13 +547,13 @@
 #################################################################################
 #
     if [ -n "${DEPRECATED_OPTION}" ]; then
-        ReportWarning "GEN-0030" "一个 或 更多 deprecated 选项 已使用 在 配置文件" "${DEPRECATED_OPTION}" "更新 你的 配置文件"
+        ReportWarning "GEN-0030" "配置文件中使用的一个或多个已弃用的选项" "${DEPRECATED_OPTION}" "更新您的个人资料"
     fi
 #
 #################################################################################
 #
 
-    Display --indent 2 --text "- 检查 profiles..." --result "DONE" --color GREEN
+    Display --indent 2 --text "- 检查个人资料..." --result "DONE" --color GREEN
 
 
 #================================================================================

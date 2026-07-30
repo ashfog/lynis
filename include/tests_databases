@@ -79,7 +79,7 @@
     # Description : Check empty MySQL root password
     # Notes       : Only perform test when MySQL is running and client is available
     if [ -n "${MYSQLCLIENTBINARY}" -a ${MYSQL_RUNNING} -eq 1 ]; then PREQS_MET="YES"; SKIPREASON=""; else PREQS_MET="NO"; SKIPREASON="未安装 MySQL 或 MySQL 未运行"; fi
-    Register --test-no DBS-1816 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "检查 MySQL 根 密码"
+    Register --test-no DBS-1816 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "检查 MySQL root 密码"
     if [ ${SKIPTEST} -eq 0 ]; then
         LogText "检查：尝试不使用密码登录本地 MySQL 服务器"
 
@@ -87,13 +87,13 @@
         # "plugin = 'mysql_native_password' AND authentication_string = ''" avoids false positives when secure plugins are used
         FIND=$(${MYSQLCLIENTBINARY} --default-auth=mysql_native_password  --no-defaults -u root --password= --silent --batch --execute="SELECT count(*) FROM mysql.user WHERE user = 'root' AND plugin = 'mysql_native_password' AND authentication_string = ''" mysql > /dev/null 2>&1; echo $?)
         if [ "${FIND}" = "0" ]; then
-           LogText "结果：登录成功，MySQL 根 账户未设置密码！"
-           ReportWarning "${TEST_NO}" "MySQL 根 账户未设置密码"
-           Display --indent 4 --text "- 正在检查 MySQL 根 空密码" --result "${STATUS_WARNING}" --color RED
+           LogText "结果：登录成功，MySQL root 账户未设置密码！"
+           ReportWarning "${TEST_NO}" "MySQL root 账户未设置密码"
+           Display --indent 4 --text "- 正在检查 MySQL root 空密码" --result "${STATUS_WARNING}" --color RED
            AddHP 0 5
         else
-            LogText "结果：登录失败，说明 MySQL 根 账户已设置密码"
-            if IsVerbose; then Display --indent 4 --text "- 检查 MySQL 根 密码" --result "${STATUS_OK}" --color GREEN; fi
+            LogText "结果：登录失败，说明 MySQL root 账户已设置密码"
+            if IsVerbose; then Display --indent 4 --text "- 检查 MySQL root 密码" --result "${STATUS_OK}" --color GREEN; fi
             AddHP 2 2
         fi
     else
@@ -388,7 +388,7 @@
                 else
                     AddHP 0 3
                     Display --indent 4 --text "- Redis（已配置 requirepass）" --result "${STATUS_NOT_FOUND}" --color YELLOW
-                    ReportSuggestion "${TEST_NO}" "为 Redis 配置 'requirepass' 设置" "${FILE}" "text：在 ${FILE} 中配置 'requirepass' 设置"
+                    ReportSuggestion "${TEST_NO}" "为 Redis 配置 'requirepass' 设置" "${FILE}" "text:在 ${FILE} 中配置 'requirepass' 设置"
                     Report "redis_requirepass=0"
                 fi
             else
@@ -414,7 +414,7 @@
                 else
                     AddHP 0 3
                     Display --indent 4 --text "- Redis（CONFIG 命令已重命名）" --result "${STATUS_NOT_FOUND}" --color YELLOW
-                    ReportSuggestion "${TEST_NO}" "为 Redis 使用 'rename-command CONFIG' 设置" "${FILE}" "text：在 ${FILE} 中配置 'rename-command CONFIG'"
+                    ReportSuggestion "${TEST_NO}" "为 Redis 使用 'rename-command CONFIG' 设置" "${FILE}" "text:在 ${FILE} 中配置 'rename-command CONFIG'"
                     Report "redis_rename_command_config=0"
                 fi
             else
@@ -440,7 +440,7 @@
                 else
                     AddHP 0 3
                     Display --indent 4 --text "- Redis（绑定到本地主机）" --result "${STATUS_NOT_FOUND}" --color YELLOW
-                    ReportSuggestion "${TEST_NO}" "使用 'bind' 设置让 Redis 实例仅监听本地主机" "${FILE}" "text：在 ${FILE} 中配置 'bind localhost'"
+                    ReportSuggestion "${TEST_NO}" "使用 'bind' 设置让 Redis 实例仅监听本地主机" "${FILE}" "text:在 ${FILE} 中配置 'bind localhost'"
                     Report "redis_bind_localhost=0"
                 fi
             else

@@ -102,16 +102,16 @@
 #
     # Test        : LOGG-2136
     # Description : Check for a running systemd-journal daemon
-    Register --test-no LOGG-2136 --weight L --network NO --category security --description "检查正在运行的 systemd 日志 守护进程"
+    Register --test-no LOGG-2136 --weight L --network NO --category security --description "检查正在运行的 systemd journal 守护进程"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查：在进程列表中搜索 systemd 日志 守护进程"
+        LogText "检查：在进程列表中搜索 systemd journal 守护进程"
         if IsRunning "systemd-journal"; then
-            Display --indent 4 --text "- 检查 systemd 日志 状态" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- 检查 systemd journal 状态" --result "${STATUS_FOUND}" --color GREEN
             SYSTEMD_JOURNAL_RUNNING=1
             Report "syslog_daemon_present=1"
             Report "syslog_daemon[]=systemd-journal"
         else
-            Display --indent 4 --text "- 检查 systemd 日志 状态" --result "${STATUS_NOT_FOUND}" --color WHITE
+            Display --indent 4 --text "- 检查 systemd journal 状态" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
 #
@@ -228,11 +228,11 @@
         LogText "检查：在进程列表中搜索 wazuh-agent 实例"
         if IsRunning "wazuh-agentd"; then
             LogText "结果：在进程列表中发现 wazuh-agent"
-            Display --indent 4 --text "- 检查 wazuh-agent 状态" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- 检查 wazuh-agent status" --result "${STATUS_FOUND}" --color GREEN
             WAZUH_AGENT_RUNNING=1
         else
             LogText "结果：进程列表中未发现 wazuh-agent"
-            Display --indent 4 --text "- 检查 wazuh-agent 守护进程 状态" --result "${STATUS_NOT_FOUND}" --color WHITE
+            Display --indent 4 --text "- 检查 wazuh-agent daemon status" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
 #
@@ -337,7 +337,7 @@
                 SOLARIS_LOGHOST="${FIND}"
                 SOLARIS_LOGHOST_FOUND=1
                 LogText "结果：名称解析成功"
-                LogText "输出： ${FIND}"
+                LogText "输出：${FIND}"
             else
                 LogText "结果：名称解析未返回结果"
             fi
@@ -345,9 +345,9 @@
 
         if [ ${SOLARIS_LOGHOST_FOUND} -eq 1 ]; then
             LogText "结果：发现 loghost 条目，可能用于发送 syslog 消息"
-            Display --indent 2 --text "- 检查 loghost 条目" --result "${STATUS_OK}" --color GREEN
+            Display --indent 2 --text "- 检查 loghost entry" --result "${STATUS_OK}" --color GREEN
         else
-            Display --indent 2 --text "- 检查 loghost 条目" --result "${STATUS_WARNING}" --color RED
+            Display --indent 2 --text "- 检查 loghost entry" --result "${STATUS_WARNING}" --color RED
             LogText "结果：未发现 loghost 条目"
             ReportWarning "${TEST_NO}" "未发现 loghost 条目"
             ReportSuggestion "${TEST_NO}" "在 /etc/inet/hosts 或其他名称服务中添加 loghost 条目"
@@ -360,16 +360,16 @@
     # Description : Check Solaris 'loghost' entry is not localhost, meaning
     #               remote logging is not configured.
     if [ ${SOLARIS_LOGHOST_FOUND} -eq 1 ] && [ -n "${SOLARIS_LOGHOST}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no LOGG-2153 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 loghost 是 localhost"
+    Register --test-no LOGG-2153 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 loghost is localhost"
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=$(echo "${SOLARIS_LOGHOST}" | ${AWKBINARY} '{ print $1 }' | ${GREPBINARY} -E "::1|127.0.0.1|127.1")
         if [ -n "${FIND}" ]; then
             SOLARIS_LOGHOST_LOCALHOST=1
             LogText "结果：loghost 条目为 localhost（默认值）"
-            Display --indent 4 --text "- 检查 loghost 条目 是 localhost" --result "${STATUS_YES}" --color YELLOW
+            Display --indent 4 --text "- 检查 loghost entry is localhost" --result "${STATUS_YES}" --color YELLOW
             ReportSuggestion "${TEST_NO}" "将 loghost 条目设置为远程位置以启用远程日志。"
         else
-            Display --indent 4 --text "- 检查 loghost 条目 是 localhost" --result "${STATUS_NO}" --color GREEN
+            Display --indent 4 --text "- 检查 loghost entry is localhost" --result "${STATUS_NO}" --color GREEN
         fi
     fi
 
@@ -473,7 +473,7 @@
             FIND=$(${EGREPBINARY} '<location>/var/log/syslog</location>' ${WAZUH_AGENT_CONF})
             if [ "${FIND}" ]; then
                 DESTINATION=$(${EGREPBINARY} -o '<address>([A-Za-z0-9\.\-\_]*)</address>' ${WAZUH_AGENT_CONF} | sed 's/<address>//' | sed 's/<\/address>//')
-                LogText "结果：发现用于远程日志的目标 ${DESTINATION} 使用 wazuh"
+                LogText "结果：发现用于远程日志的目标 ${DESTINATION} with wazuh"
                 REMOTE_LOGGING_ENABLED=1
             fi
         fi

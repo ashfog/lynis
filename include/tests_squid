@@ -178,10 +178,10 @@
     if [ ${SQUID_DAEMON_RUNNING} -eq 1 -a -n "${SQUID_DAEMON_CONFIG}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no SQD-3616 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 Squid 外部身份验证"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查：external_acl_类型 选项中的外部身份验证辅助程序"
+        LogText "检查：external_acl_type 选项中的外部身份验证辅助程序"
         FIND=$(${GREPBINARY} "^external_acl_type" ${SQUID_DAEMON_CONFIG})
         if [ -z "${FIND}" ]; then
-            LogText "未找到 external_acl_类型"
+            LogText "未找到 external_acl_type"
             Display --indent 6 --text "- 正在检查 Squid 外部身份验证方法" --result "${STATUS_NONE}" --color YELLOW
         else
             Display --indent 6 --text "- 正在检查 Squid 外部身份验证方法" --result "${STATUS_FOUND}" --color GREEN
@@ -225,10 +225,10 @@
     if [ ${SQUID_DAEMON_RUNNING} -eq 1 -a ! "${SQUID_DAEMON_CONFIG}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no SQD-3624 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 Squid 安全端口"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查：ACL Safe_端口 的 http_access 选项"
+        LogText "检查：ACL Safe_ports 的 http_access 选项"
         FIND=$(${GREPBINARY} "^http_access" ${SQUID_DAEMON_CONFIG} | ${GREPBINARY} "Safe_ports")
         if IsEmpty "${FIND}"; then
-            LogText "结果：未发现 Safe_端口"
+            LogText "结果：未发现 Safe_ports"
             Display --indent 6 --text "- 正在检查 ACL 'Safe_ports' 的 http_access 选项" --result "${STATUS_NOT_FOUND}" --color YELLOW
             ReportSuggestion "${TEST_NO}" "检查 Squid 是否已配置为仅允许访问安全端口"
         else
@@ -236,10 +236,10 @@
             FIND2=$(${GREPBINARY} "^acl Safe_ports port" ${SQUID_DAEMON_CONFIG} | ${AWKBINARY} '{ print $4 }')
             if IsEmpty "${FIND2}"; then
                 Display --indent 6 --text "- 正在检查 ACL 'Safe_ports' 端口" --result "未发现" --color YELLOW
-                ReportSuggestion "${TEST_NO}" "检查 Squid 是否已配置允许出站流量使用的端口（Safe_端口）"
+                ReportSuggestion "${TEST_NO}" "检查 Squid 是否已配置允许出站流量使用的端口（Safe_ports）"
                 AddHP 0 1
             else
-                LogText "结果：发现 Safe_端口"
+                LogText "结果：发现 Safe_ports"
                 for ITEM in ${FIND}; do
                     LogText "发现安全端口：${ITEM}"
                 done
@@ -248,14 +248,14 @@
             fi
 
             for ITEM in ${SQUID_DAEMON_UNSAFE_PORTS_LIST}; do
-                LogText "检查：Safe_端口 列表中的端口 ${ITEM}"
+                LogText "检查：Safe_ports 列表中的端口 ${ITEM}"
                 FIND2=$(${GREPBINARY} -w "^acl Safe_ports port ${ITEM}" ${SQUID_DAEMON_CONFIG})
                 if IsEmpty "${FIND2}"; then
                     Display --indent 6 --text "- 正在检查 ACL 'Safe_ports'（端口 ${ITEM}）" --result "${STATUS_NOT_FOUND}" --color GREEN
                     AddHP 1 1
                 else
                     Display --indent 6 --text "- 正在检查 ACL 'Safe_ports'（端口 ${ITEM}）" --result "${STATUS_FOUND}" --color RED
-                    ReportWarning "${TEST_NO}" "Squid 配置可能允许通过已配置的 Safe_端口 ${ITEM} 中继流量"
+                    ReportWarning "${TEST_NO}" "Squid 配置可能允许通过已配置的 Safe_port ${ITEM} 中继流量"
                     AddHP 0 1
                 fi
             done
@@ -305,14 +305,14 @@
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=$(${GREPBINARY} "^httpd_suppress_version_string " ${SQUID_DAEMON_CONFIG} | ${GREPBINARY} " on")
         if [ -z "${FIND}" ]; then
-            LogText "结果：未配置 httpd_suppress_版本_字符串 选项"
-            Display --indent 6 --text "- 正在检查选项：httpd_suppress_版本_字符串" --result "${STATUS_NOT_FOUND}" --color YELLOW
+            LogText "结果：未配置 httpd_suppress_version_string 选项"
+            Display --indent 6 --text "- 正在检查选项：httpd_suppress_version_string" --result "${STATUS_NOT_FOUND}" --color YELLOW
             AddHP 1 2
-            ReportSuggestion "${TEST_NO}" "将 Squid 的 httpd_suppress_版本_字符串 选项配置为 在，以隐藏版本信息。"
+            ReportSuggestion "${TEST_NO}" "将 Squid 的 httpd_suppress_version_string 选项配置为 on，以隐藏版本信息。"
         else
-            LogText "结果：已配置 httpd_suppress_版本_字符串 选项"
+            LogText "结果：已配置 httpd_suppress_version_string 选项"
             LogText "输出：${FIND}"
-            Display --indent 6 --text "- 正在检查选项：httpd_suppress_版本_字符串" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 6 --text "- 正在检查选项：httpd_suppress_version_string" --result "${STATUS_FOUND}" --color GREEN
             AddHP 2 2
         fi
     fi

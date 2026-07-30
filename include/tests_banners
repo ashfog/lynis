@@ -48,14 +48,14 @@
         fi
 
         if [ -f ${ROOTDIR}etc/COPYRIGHT ]; then
-            Display --indent 2 --text "- ${ROOTDIR}etc/COPYRIGHT" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 2 --text "- ${ROOTDIR}等/COPYRIGHT" --result "${STATUS_FOUND}" --color GREEN
             if [ -s ${ROOTDIR}etc/COPYRIGHT ]; then
                 LogText "结果：${ROOTDIR}etc/COPYRIGHT 存在且包含内容"
             else
                 LogText "结果：${ROOTDIR}etc/COPYRIGHT 存在但内容为空"
             fi
         else
-            Display --indent 2 --text "- ${ROOTDIR}etc/COPYRIGHT" --result "${STATUS_NOT_FOUND}" --color WHITE
+            Display --indent 2 --text "- ${ROOTDIR}等/COPYRIGHT" --result "${STATUS_NOT_FOUND}" --color WHITE
             LogText "结果：未找到 ${ROOTDIR}etc/COPYRIGHT"
         fi
     fi
@@ -71,13 +71,13 @@
             # Check for symlink
             if [ -L ${ROOTDIR}etc/issue ]; then
                 LogText "结果：文件 ${ROOTDIR}etc/issue 存在（符号链接）"
-                Display --indent 2 --text "- ${ROOTDIR}etc/issue" --result SYMLINK --color GREEN
+                Display --indent 2 --text "- ${ROOTDIR}等/问题" --result SYMLINK --color GREEN
             else
-                Display --indent 2 --text "- ${ROOTDIR}etc/issue" --result "${STATUS_FOUND}" --color GREEN
+                Display --indent 2 --text "- ${ROOTDIR}等/问题" --result "${STATUS_FOUND}" --color GREEN
             fi
         else
             LogText "结果：文件 ${ROOTDIR}etc/issue 不存在"
-            Display --indent 2 --text "- ${ROOTDIR}etc/issue" --result "${STATUS_NOT_FOUND}" --color WHITE
+            Display --indent 2 --text "- ${ROOTDIR}等/问题" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
 #
@@ -124,14 +124,14 @@
             # Check for symlink
             if [ -L ${ROOTDIR}etc/issue.net ]; then
                 LogText "结果：文件 ${ROOTDIR}etc/issue.net 存在（符号链接）"
-                Display --indent 2 --text "- ${ROOTDIR}etc/issue.net" --result SYMLINK --color GREEN
+                Display --indent 2 --text "- ${ROOTDIR}等/issue.net" --result SYMLINK --color GREEN
             else
                 LogText "结果：文件 ${ROOTDIR}etc/issue.net 存在"
-                Display --indent 2 --text "- ${ROOTDIR}etc/issue.net" --result "${STATUS_FOUND}" --color GREEN
+                Display --indent 2 --text "- ${ROOTDIR}等/issue.net" --result "${STATUS_FOUND}" --color GREEN
             fi
         else
             LogText "结果：文件 ${ROOTDIR}etc/issue.net 不存在"
-            Display --indent 2 --text "- ${ROOTDIR}etc/issue.net" --result "${STATUS_NOT_FOUND}" --color WHITE
+            Display --indent 2 --text "- ${ROOTDIR}等/issue.net" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
 #

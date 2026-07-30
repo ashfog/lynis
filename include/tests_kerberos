@@ -8,7 +8,7 @@ InsertSection "${SECTION_KERBEROS}"
 
     # Test        : KRB-1000
     # Description : Check that Kerberos principals have passwords that expire
-    Register --test-no KRB-1000 --weight L --network NO --description "检查 用于 Kerberos KDC 工具"
+    Register --test-no KRB-1000 --weight L --network NO --description "检查 Kerberos KDC 工具"
     if [ -n "${KADMINLOCALBINARY}" ] && [ -n "${KDB5UTILBINARY}" ]
     then
         PREQS_MET="YES"
@@ -23,14 +23,14 @@ InsertSection "${SECTION_KERBEROS}"
         PREQS_MET="NO"
     fi
     if [ "${PREQS_MET}" = "YES" ]; then
-        Display --indent 2 --text "- 检查 用于 Kerberos KDC 和 principals" --result "${STATUS_FOUND}" --color GREEN
+        Display --indent 2 --text "- 检查 Kerberos KDC 和主体" --result "${STATUS_FOUND}" --color GREEN
     else
-        Display --indent 2 --text "- 检查 用于 Kerberos KDC 和 principals" --result "${STATUS_NOT_FOUND}" --color WHITE
+        Display --indent 2 --text "- 检查 Kerberos KDC 和主体" --result "${STATUS_NOT_FOUND}" --color WHITE
     fi
 
     # Test        : KRB-1010
     # Description : Check that Kerberos principals have passwords that expire
-    Register --test-no KRB-1010 --preqs-met ${PREQS_MET} --weight L --network NO --description "检查 该 Kerberos principals 有 passwords 该 expire"
+    Register --test-no KRB-1010 --preqs-met ${PREQS_MET} --weight L --network NO --description "检查 Kerberos 主体的密码是否过期"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         for I in ${PRINCS}
@@ -38,15 +38,15 @@ InsertSection "${SECTION_KERBEROS}"
             FIND="$(${KADMINLOCALBINARY} getprinc "${I}" | ${GREPBINARY} '^Password expiration date:')"
             if [ "${FIND}" = "Password expiration date: [never]" ]
             then
-                LogText "结果： Kerberos principal ${I} 有 一个 密码/键 该 never expires"
+                LogText "结果：Kerberos 主体 ${I} 具有永不过期的密码/密钥"
                 FOUND=1
             fi
         done
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 4 --text "- Principals 没有 expiring 密码" --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "Make sure 所有 你的 Kerberos principals 有 expiring passwords"
+            Display --indent 4 --text "- 没有过期密码的委托人" --result "${STATUS_WARNING}" --color RED
+            ReportSuggestion "${TEST_NO}" "确保您的所有 Kerberos 主体的密码都已过期"
         else
-            Display --indent 4 --text "- Principals 没有 expiring 密码" --result "${STATUS_OK}" --color GREEN
+            Display --indent 4 --text "- 没有过期密码的委托人" --result "${STATUS_OK}" --color GREEN
         fi
     fi
 #
@@ -55,7 +55,7 @@ InsertSection "${SECTION_KERBEROS}"
 
     # Test        : KRB-1020
     # Description : Check last password change for Kerberos principals
-    Register --test-no KRB-1020 --preqs-met ${PREQS_MET} --weight L --network NO --description "检查 最后 密码 更改 用于 Kerberos principals"
+    Register --test-no KRB-1020 --preqs-met ${PREQS_MET} --weight L --network NO --description "检查 Kerberos 主体的上次密码更改"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         for I in ${PRINCS}
@@ -63,22 +63,22 @@ InsertSection "${SECTION_KERBEROS}"
             FIND="$(${KADMINLOCALBINARY} getprinc "${I}" | ${SEDBINARY} -n '/^Last password change:\s\+/s/^Last password change:\s\+//p')"
             if [ "${FIND}" = "[never]" ]
             then
-                LogText "结果： Kerberos principal ${I} 有 一个 密码/键 该 有 never 已 changed"
+                LogText "结果：Kerberos 主体 ${I} 的密码/密钥从未更改过"
                 FOUND=1
             else
                 J="$(date -d "${FIND}" +%s)"
                 if [ ${J} -lt $((NOW - 60 * 60 * 24 * 365)) ]
                 then
-                    LogText "结果： Kerberos principal ${I} 有 有 一个 密码/键 更改 over 一个 年 ago"
+                    LogText "结果：Kerberos 主体 ${I} 已在一年多前更改过密码/密钥"
                     FOUND=1
                 fi
             fi
         done
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 4 --text "- Principals 使用 late 密码 更改" --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "Enforce frequent 密码/键 更改 用于 你的 Kerberos principals"
+            Display --indent 4 --text "- 密码更改较晚的校长" --result "${STATUS_WARNING}" --color RED
+            ReportSuggestion "${TEST_NO}" "强制频繁更改 Kerberos 主体的密码/密钥"
         else
-            Display --indent 4 --text "- Principals 使用 late 密码 更改" --result "${STATUS_OK}" --color GREEN
+            Display --indent 4 --text "- 密码更改较晚的校长" --result "${STATUS_OK}" --color GREEN
         fi
     fi
 
@@ -88,7 +88,7 @@ InsertSection "${SECTION_KERBEROS}"
 
     # Test        : KRB-1030
     # Description : Check that Kerberos principals have a policy associated to them
-    Register --test-no KRB5-1030 --preqs-met ${PREQS_MET} --weight L --network NO --description "检查 该 Kerberos principals 有 一个 策略 associated 到 them"
+    Register --test-no KRB5-1030 --preqs-met ${PREQS_MET} --weight L --network NO --description "检查 Kerberos 主体是否有与其关联的策略"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         for I in ${PRINCS}
@@ -96,15 +96,15 @@ InsertSection "${SECTION_KERBEROS}"
             FIND="$(${KADMINLOCALBINARY} getprinc "${I}" | ${GREPBINARY} '^Policy:')"
             if [ "${FIND}" = "Policy: [none]" ]
             then
-                LogText "结果： Kerberos principal ${I} 不 有 一个 策略 associated 到 它"
+                LogText "结果：Kerberos 主体 ${I} 没有与其关联的策略"
                 FOUND=1
             fi
         done
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 4 --text "- Principals 没有 associated 策略" --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "Make sure 所有 你的 Kerberos principals 有 一个 策略 associated 到 them"
+            Display --indent 4 --text "- 没有相关政策的校长" --result "${STATUS_WARNING}" --color RED
+            ReportSuggestion "${TEST_NO}" "确保您的所有 Kerberos 主体都有与其关联的策略"
         else
-            Display --indent 4 --text "- Principals 没有 associated 策略" --result "${STATUS_OK}" --color GREEN
+            Display --indent 4 --text "- 没有相关政策的校长" --result "${STATUS_OK}" --color GREEN
         fi
     fi
 
@@ -114,7 +114,7 @@ InsertSection "${SECTION_KERBEROS}"
 
     # Test        : KRB-1040
     # Description : Check various attributes for Kerberos principals
-    Register --test-no KRB5-1040 --preqs-met ${PREQS_MET} --weight L --network NO --description "检查 various attributes 用于 Kerberos principals"
+    Register --test-no KRB5-1040 --preqs-met ${PREQS_MET} --weight L --network NO --description "检查 Kerberos 主体的各种属性"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         for I in ${PRINCS}
@@ -127,30 +127,30 @@ InsertSection "${SECTION_KERBEROS}"
             then
                 if ! ContainsString "\bLOCKDOWN_KEYS\b" "${J}"
                 then
-                    LogText "结果： Sensitive Kerberos principal ${I} 不 有 lockdown_键 attribute"
+                    LogText "结果：敏感 Kerberos 主体 ${I} 不具有lockdown_keys 属性"
                     FOUND=1
                 fi
             elif ContainsString "/admin@" "${I}"
             then
                 if ! ContainsString "\bDISALLOW_TGT_BASED\b" "${J}"
                 then
-                    LogText "结果： Kerberos admin principal ${I} 不 有 disallow_tgt_based attribute"
+                    LogText "结果：Kerberos 管理主体 ${I} 不具有 disallow_tgt_based 属性"
                     FOUND=1
                 fi
             elif ContainsString "^[^/$]+@" "${I}"
             then
                 if ! ContainsString "\bREQUIRES_PRE_AUTH\b.+\bDISALLOW_SVR\b" "${J}"
                 then
-                    LogText "结果： Regular Kerberos 用户 principal ${I} 不 有 requires_pre_auth 和/或 disallow_svr attribute"
+                    LogText "结果：常规 Kerberos 用户主体 ${I} 不具有 require_pre_auth 和/或 disallow_svr 属性"
                     FOUND=1
                 fi
             fi
         done
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 4 --text "- 检查 principals 用于 various attributes" --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "Harden 你的 Kerberos principals 使用 appropriate attributes"
+            Display --indent 4 --text "- 检查主体的各种属性" --result "${STATUS_WARNING}" --color RED
+            ReportSuggestion "${TEST_NO}" "使用适当的属性强化您的 Kerberos 主体"
         else
-            Display --indent 4 --text "- 检查 principals 用于 various attributes" --result "${STATUS_OK}" --color GREEN
+            Display --indent 4 --text "- 检查主体的各种属性" --result "${STATUS_OK}" --color GREEN
         fi
     fi
 
@@ -160,20 +160,20 @@ InsertSection "${SECTION_KERBEROS}"
 
     # Test        : KRB-1050
     # Description : Check for weak crypto
-    Register --test-no KRB-1050 --preqs-met ${PREQS_MET} --weight L --network NO --description "检查 用于 较弱 crypto"
+    Register --test-no KRB-1050 --preqs-met ${PREQS_MET} --weight L --network NO --description "检查弱加密"
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=$(${KDB5UTILBINARY} tabdump keyinfo | ${AWKBINARY} '$4 ~ /(des|arcfour|cbc|sha1)/{print$1,$4}')
         if [ -n "${FIND}" ]; then
             while read I J
             do
-                LogText "结果： Kerberos principal ${I} 有 一个 键 使用 较弱 cryptographic algorithm ${J}"
+                LogText "结果：Kerberos 主体 ${I} 拥有弱加密算法 ${J} 的密钥"
             done << EOF
 ${FIND}
 EOF
-            Display --indent 4 --text "- Principals 使用 较弱 crypto" --result "${STATUS_WARNING}" --color RED
+            Display --indent 4 --text "- 加密货币较弱的委托人" --result "${STATUS_WARNING}" --color RED
             ReportSuggestion "${TEST_NO}" "从主体中移除弱加密密钥（des|arcfour|cbc|sha1）"
         else
-            Display --indent 4 --text "- Principals 使用 较弱 crypto" --result "${STATUS_OK}" --color GREEN
+            Display --indent 4 --text "- 加密货币较弱的委托人" --result "${STATUS_OK}" --color GREEN
         fi
     fi
 

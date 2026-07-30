@@ -46,10 +46,10 @@
 #
     # Test        : TOOL-5002
     # Description : Check if automation tools are found
-    Register --test-no TOOL-5002 --weight L --network NO --category security --description "检查 用于 automation 工具"
+    Register --test-no TOOL-5002 --weight L --network NO --category security --description "检查自动化工具"
     if [ ${SKIPTEST} -eq 0 ]; then
 
-        Display --indent 2 --text "- 检查 自动化工具"
+        Display --indent 2 --text "- 检查自动化工具"
 
         # Ansible
         FOUND=0
@@ -62,37 +62,37 @@
         fi
 
         if [ ${FOUND} -eq 1 ]; then
-            LogText "结果： 发现 一个 可能 trace 的 Ansible"
+            LogText "结果：发现了可能的Ansible痕迹"
             AUTOMATION_TOOL_FOUND=1
             ANSIBLE_ARTIFACT_FOUND=1
             Report "automation_tool_running[]=ansible"
-            Display --indent 4 --text "- Ansible artifact" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- Ansible神器" --result "${STATUS_FOUND}" --color GREEN
         fi
 
         # Cfengine
         if [ -n "${CFAGENTBINARY}" ]; then
-            LogText "结果： CFEngine (cfagent) 是 已安装 (${CFAGENTBINARY})"
+            LogText "结果：CFEngine (cfagent) 已安装 (${CFAGENTBINARY})"
             AUTOMATION_TOOL_FOUND=1
             CFENGINE_AGENT_FOUND=1
             Report "automation_tool_running[]=cf-agent"
-            Display --indent 4 --text "- Cfengine (cfagent)" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- Cfengine（cfagent）" --result "${STATUS_FOUND}" --color GREEN
         fi
         OTHER_CFENGINE_LOCATIONS="/var/cfengine/bin /var/rudder/cfengine-community/bin"
         for I in ${OTHER_CFENGINE_LOCATIONS}; do
             if [ -d ${I} ]; then
                 if [ -f ${I}/cf-agent ]; then
-                    LogText "结果： 发现 CFEngine agent (cf-agent) 在 ${I}"
+                    LogText "结果：在 ${I} 中找到 CFEngine 代理（cf-agent）"
                     AUTOMATION_TOOL_FOUND=1
                     CFENGINE_AGENT_FOUND=1
                     Report "automation_tool_running[]=cf-agent"
-                    Display --indent 4 --text "- CFEngine (cf-agent)" --result "${STATUS_FOUND}" --color GREEN
+                    Display --indent 4 --text "- CFEngine（cf-代理）" --result "${STATUS_FOUND}" --color GREEN
                 fi
                 if IsRunning "cf-server"; then
-                    LogText "结果： 发现 CFEngine 服务器"
+                    LogText "结果：找到CFEngine服务器"
                     AUTOMATION_TOOL_FOUND=1
                     CFENGINE_SERVER_RUNNING=1
                     Report "automation_tool_running[]=cf-server"
-                    Display --indent 4 --text "- CFEngine (cf-server)" --result "${STATUS_FOUND}" --color GREEN
+                    Display --indent 4 --text "- CFEngine（cf 服务器）" --result "${STATUS_FOUND}" --color GREEN
                 fi
             fi
         done
@@ -105,16 +105,16 @@
                     CHEFCLIENTBINARY="${I}/chef-client"
                     AUTOMATION_TOOL_FOUND=1
                     Report "automation_tool_running[]=chef-client"
-                    Display --indent 4 --text "- Chef 客户端 (chef-client)" --result "${STATUS_FOUND}" --color GREEN
-                    LogText "结果： 发现 chef-client (chef 客户端 守护进程) 在 ${I}"
+                    Display --indent 4 --text "- 客户经理（客户经理）" --result "${STATUS_FOUND}" --color GREEN
+                    LogText "结果：在${I}中找到chef-client（厨师客户端守护进程）"
                 fi
                 if [ -f ${I}/erchef ]; then
                     CHEFSERVERBINARY="${I}/erchef"
-                    LogText "结果： Chef 服务器 (erchef) 是 已安装 (${CHEFSERVERBINARY})"
+                    LogText "结果：Chef 服务器 (erchef) 已安装 (${CHEFSERVERBINARY})"
                     AUTOMATION_TOOL_FOUND=1
                     Report "automation_tool_running[]=chef-server"
-                    Display --indent 4 --text "- Chef 服务器 (erchef)" --result "${STATUS_FOUND}" --color GREEN
-                    LogText "结果： 发现 erchef (chef 服务器 守护进程) 在 ${I}"
+                    Display --indent 4 --text "- 厨师服务员（erchef）" --result "${STATUS_FOUND}" --color GREEN
+                    LogText "结果：在 ${I} 中找到 erchef（chef 服务器守护进程）"
                 fi
             fi
         done
@@ -129,51 +129,51 @@
         fi
 
         if [ -n "${PUPPETBINARY}" ]; then
-            LogText "结果： Puppet 是 已安装 (${PUPPETBINARY})"
+            LogText "结果：Puppet 已安装 (${PUPPETBINARY})"
             AUTOMATION_TOOL_FOUND=1
             Report "automation_tool_running[]=puppet-agent"
-            Display --indent 4 --text "- Puppet (agent)" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- Puppet（代理）" --result "${STATUS_FOUND}" --color GREEN
         fi
 
         if IsRunning --full "puppet master"; then
-            LogText "结果： 发现 puppet master"
+            LogText "结果：找到puppet主控"
             AUTOMATION_TOOL_FOUND=1
             PUPPET_MASTER_RUNNING=1
             Report "automation_tool_running[]=puppet-master"
-            Display --indent 4 --text "- Puppet (master)" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- Puppet（主）" --result "${STATUS_FOUND}" --color GREEN
         fi
 
         # SaltStack
         if [ -n "${SALTMINIONBINARY}" ]; then
-            Display --indent 4 --text "- SaltStack minion" --result "${STATUS_FOUND}" --color GREEN
-            LogText "结果： SaltStack (salt-minion) 是 已安装 (${SALTMINIONBINARY})"
+            Display --indent 4 --text "- SaltStack 仆从" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：SaltStack（salt-minion）已安装（${SALTMINIONBINARY}）"
             AUTOMATION_TOOL_FOUND=1
             Report "automation_tool_installed[]=saltstack-minion"
 
             if IsRunning "salt-minion" --user "root salt"; then
-                Display --indent 6 --text "- Minion 进程" --result "${STATUS_RUNNING}" --color GREEN
-                LogText "结果： 发现 SaltStack (master)"
+                Display --indent 6 --text "- 小黄人进程" --result "${STATUS_RUNNING}" --color GREEN
+                LogText "结果：找到SaltStack（主）"
                 SALT_MINION_RUNNING=1
                 Report "automation_tool_running[]=saltstack-minion"
             else
-                Display --indent 6 --text "- Minion 进程" --result "${STATUS_NOT_RUNNING}" --color YELLOW
+                Display --indent 6 --text "- 小黄人进程" --result "${STATUS_NOT_RUNNING}" --color YELLOW
             fi
 
         fi
 
         if [ -n "${SALTMASTERBINARY}" ]; then
-            Display --indent 4 --text "- SaltStack master (salt-master)" --result "${STATUS_FOUND}" --color GREEN
-            LogText "结果： SaltStack (salt-master) 是 已安装 (${SALTMASTERBINARY})"
+            Display --indent 4 --text "- SaltStack大师（盐大师）" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：SaltStack（salt-master）已安装（${SALTMASTERBINARY}）"
             AUTOMATION_TOOL_FOUND=1
             Report "automation_tool_installed[]=saltstack-master"
 
             if IsRunning "salt-master" --user "root salt"; then
-                Display --indent 6 --text "- Master 进程" --result "${STATUS_RUNNING}" --color GREEN
-                LogText "结果： 发现 SaltStack (master)"
+                Display --indent 6 --text "- 主流程" --result "${STATUS_RUNNING}" --color GREEN
+                LogText "结果：找到SaltStack（主）"
                 SALT_MASTER_RUNNING=1
                 Report "automation_tool_running[]=saltstack-master"
             else
-                Display --indent 6 --text "- Master 进程" --result "${STATUS_NOT_RUNNING}" --color YELLOW
+                Display --indent 6 --text "- 主流程" --result "${STATUS_NOT_RUNNING}" --color YELLOW
             fi
         fi
 
@@ -181,7 +181,7 @@
             Display --indent 2 --text "- Automation tooling" --result "${STATUS_FOUND}" --color GREEN
         else
             Display --indent 2 --text "- Automation tooling" --result "${STATUS_NOT_FOUND}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "确定 如果 automation 工具 是 present 用于 系统 management"
+            ReportSuggestion "${TEST_NO}" "确定是否存在用于系统管理的自动化工具"
         fi
     fi
 #
@@ -193,22 +193,22 @@
 #
     # Test        : TOOL-5102
     # Description : Check for Fail2ban
-    Register --test-no TOOL-5102 --weight L --network NO --category security --description "检查 用于 presence 的 Fail2ban"
+    Register --test-no TOOL-5102 --weight L --network NO --category security --description "检查是否存在 Fail2ban"
     if [ ${SKIPTEST} -eq 0 ]; then
 
         # Fail2ban presence
         if [ -n "${FAIL2BANBINARY}" ]; then
             FAIL2BAN_FOUND=1
             IDS_IPS_TOOL_FOUND=1
-            LogText "结果： Fail2ban 是 已安装 (${FAIL2BANBINARY})"
+            LogText "结果：Fail2ban 已安装 (${FAIL2BANBINARY})"
             Report "ids_ips_tooling[]=fail2ban"
-            Display --indent 2 --text "- 检查 presence 的 Fail2ban" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 2 --text "- 检查 Fail2ban 是否存在" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "结果： Fail2ban 不 present (fail2ban-server 未找到)"
+            LogText "结果：Fail2ban 不存在（fail2ban-服务器未找到）"
         fi
 
         # Fail2ban configuration
-        LogText "检查 Fail2ban 配置文件"
+        LogText "检查Fail2ban配置文件"
         if [ -f /etc/fail2ban/jail.local ]; then
             FAIL2BAN_CONFIG="/etc/fail2ban/jail.local"
         elif [ -f /etc/fail2ban/jail.conf ]; then
@@ -230,7 +230,7 @@
     # Test        : TOOL-5104
     # Description : Check for Fail2ban enabled tests
     if [ ${PERFORM_FAIL2BAN_TESTS} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no TOOL-5104 --weight L --network NO --preqs-met ${PREQS_MET} --category security --description "已启用 检查 在 Fail2ban"
+    Register --test-no TOOL-5104 --weight L --network NO --preqs-met ${PREQS_MET} --category security --description "在 Fail2ban 中启用测试"
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=$(${FAIL2BANCLIENT} -d | ${TRBINARY} -d '[]' | ${TRBINARY} -d "'" | ${AWKBINARY} -F, '{ if ($1=="add") { print $2 }}' | ${TRBINARY} -d ' ')
         if [ -n "${FIND}" ]; then
@@ -238,14 +238,14 @@
                 LogText "结果：服务 '${F2BSERVICE}' 已启用"
                 Report "fail2ban_enabled_service[]=${F2BSERVICE}"
             done
-            LogText "结果： 发现 在 least 一个 已启用 jail"
-            Display --indent 4 --text "- 检查 Fail2ban jails" --result "${STATUS_ENABLED}" --color GREEN
+            LogText "结果：找到至少一个启用的监狱"
+            Display --indent 4 --text "- 检查 Fail2ban 监狱" --result "${STATUS_ENABLED}" --color GREEN
             AddHP 3 3
         else
-            LogText "结果： Fail2ban 已安装 but completely 已禁用"
-            Display --indent 4 --text "- 检查 Fail2ban jails" --result "${STATUS_DISABLED}" --color RED
+            LogText "结果：Fail2ban已安装但完全禁用"
+            Display --indent 4 --text "- 检查 Fail2ban 监狱" --result "${STATUS_DISABLED}" --color RED
             AddHP 0 5
-            ReportWarning "${TEST_NO}" "所有 jails 在 Fail2ban 是 已禁用" "${FAIL2BAN_CONFIG}"
+            ReportWarning "${TEST_NO}" "Fail2ban 中的所有监狱均已禁用" "${FAIL2BAN_CONFIG}"
         fi
     fi
 #
@@ -329,16 +329,16 @@
 #
     # Test        : TOOL-5120
     # Description : Check for Snort
-    Register --test-no TOOL-5120 --weight L --network NO --category security --description "检查 用于 presence 的 Snort"
+    Register --test-no TOOL-5120 --weight L --network NO --category security --description "检查 Snort 是否存在"
     if [ ${SKIPTEST} -eq 0 ]; then
 
         # Snort presence
         if [ -n "${SNORTBINARY}" ]; then
             SNORT_FOUND=1
             IDS_IPS_TOOL_FOUND=1
-            LogText "结果： Snort 是 已安装 (${SNORTBINARY})"
+            LogText "结果：Snort 已安装 (${SNORTBINARY})"
             Report "ids_ips_tooling[]=snort"
-            Display --indent 2 --text "- 检查 presence 的 Snort" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 2 --text "- 检查 Snort 是否存在" --result "${STATUS_FOUND}" --color GREEN
         fi
 
         if IsRunning "snort"; then
@@ -346,7 +346,7 @@
             SNORT_RUNNING=1
             SNORT_LOG=$(${PSBINARY} | ${AWKBINARY} -F-.. '/snort/ {print $4}' | ${HEADBINARY} -1)
         else
-            LogText "结果： Snort 不 present (Snort 不 运行中)"
+            LogText "结果：Snort 不存在（Snort 未运行）"
         fi
     fi
 #
@@ -354,7 +354,7 @@
 #
     # Test        : TOOL-5122
     # Description : Check for Snort configuration
-    Register --test-no TOOL-5122 --weight L --network NO --category security --description "检查 Snort 配置文件"
+    Register --test-no TOOL-5122 --weight L --network NO --category security --description "检查Snort配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
 
         # Continue if tooling is available and snort is running
@@ -362,7 +362,7 @@
             if [ ${SNORT_FOUND} -eq 1 ] && [ ${SNORT_RUNNING} -eq 1 ]; then
                 SNORT_CONFIG=$(${PSBINARY} | ${AWKBINARY} -F-.. '/snort/ {print $3}' | ${HEADBINARY} -1)
                 if HasData "${SNORT_CONFIG}"; then
-                    LogText "结果： 发现 Snort 配置文件： ${SNORT_CONFIG}"
+                    LogText "结果：找到Snort配置文件：${SNORT_CONFIG}"
                     Report "snort_config=${SNORT_CONFIG}"
                 fi
                 SNORT=$(which snort 2> /dev/null)
@@ -374,26 +374,26 @@
 #
     # Test        : TOOL-5130
     # Description : Check for Suricata
-    Register --test-no TOOL-5130 --weight L --network NO --category security --description "检查 用于 当前 Suricata 守护进程"
+    Register --test-no TOOL-5130 --weight L --network NO --category security --description "检查是否有活动的 Suricata 守护进程"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Suricata presence
         if [ -n "${SURICATABINARY}" ]; then
             Report "ids_ips_tooling[]=suricata"
-            LogText "结果： Suricata 是 已安装 (${SURICATABINARY})"
+            LogText "结果：Suricata 已安装 (${SURICATABINARY})"
             # Suricata status
             # Suricata sets its process name to Suricata-Main on Linux, but this might differ on other platforms,
             # so fall back to checking the full commandline instead if the first test fails
             if IsRunning "Suricata-Main" || IsRunning --full "${SURICATABINARY} "; then
                 # Only satisfy test TOOL-5190 if Suricata is actually running
                 IDS_IPS_TOOL_FOUND=1
-                LogText "结果： Suricata 守护进程 是 当前"
+                LogText "结果：Suricata 守护进程处于活动状态"
                 Display --indent 2 --text "- 检查 Suricata 状态" --result "${STATUS_RUNNING}" --color GREEN
             else
-                LogText "结果： Suricata 守护进程 不 当前"
+                LogText "结果：Suricata 守护进程未激活"
                 Display --indent 2 --text "- 检查 Suricata 状态" --result "${STATUS_NOT_RUNNING}" --color YELLOW
             fi
         else
-            LogText "结果： Suricata 不 已安装 (suricata 未找到)"
+            LogText "结果：Suricata 未安装（suricata 未找到）"
         fi
     fi
 #
@@ -401,17 +401,17 @@
 #
     # Test        : TOOL-5126
     # Description : Check for OSSEC
-    Register --test-no TOOL-5126 --weight L --network NO --category security --description "检查 用于 当前 OSSEC 守护进程"
+    Register --test-no TOOL-5126 --weight L --network NO --category security --description "检查活动的 OSSEC 守护进程"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Server side
         if IsRunning "ossec-analysisd"; then
             IDS_IPS_TOOL_FOUND=1
             Report "ids_ips_tooling[]=ossec"
             Report "ids_ips_tooling[]=ossec-analysisd"
-            LogText "结果： OSSEC 分析 守护进程 是 当前"
-            Display --indent 2 --text "- 检查 presence 的 OSSEC (分析)" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：OSSEC 分析守护进程处于活动状态"
+            Display --indent 2 --text "- 检查 OSSEC 的存在（分析）" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "结果： OSSEC 分析 守护进程 不 当前"
+            LogText "结果：OSSEC 分析守护进程未激活"
         fi
 
         # Client side
@@ -419,10 +419,10 @@
             IDS_IPS_TOOL_FOUND=1
             Report "ids_ips_tooling[]=ossec"
             Report "ids_ips_tooling[]=ossec-agentd"
-            LogText "结果： OSSEC agent 守护进程 是 当前"
-            Display --indent 2 --text "- 检查 presence 的 OSSEC (agent)" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：OSSEC 代理守护程序处于活动状态"
+            Display --indent 2 --text "- 检查 OSSEC（代理）是否存在" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "结果： OSSEC agent 守护进程 不 当前"
+            LogText "结果：OSSEC 代理守护程序未激活"
         fi
     fi
 #
@@ -430,17 +430,17 @@
 #
     # Test        : TOOL-5128
     # Description : Check for Wazuh daemon
-    Register --test-no TOOL-5128 --weight L --network NO --category security --description "检查 用于 当前 Wazuh 守护进程"
+    Register --test-no TOOL-5128 --weight L --network NO --category security --description "检查活动的 Wazuh 守护进程"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Server side
         if IsRunning "wazuh-analysisd"; then
             IDS_IPS_TOOL_FOUND=1
             Report "ids_ips_tooling[]=wazuh"
             Report "ids_ips_tooling[]=wazuh-analysisd"
-            LogText "结果： Wazuh 分析 守护进程 是 当前"
-            Display --indent 2 --text "- 检查 presence 的 Wazuh (分析)" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：Wazuh 分析守护进程处于活动状态"
+            Display --indent 2 --text "- 检查 Wazuh 的存在（分析）" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "结果： Wazuh 分析 守护进程 不 当前"
+            LogText "结果：Wazuh 分析守护进程未激活"
         fi
 
         # Client side
@@ -448,10 +448,10 @@
             IDS_IPS_TOOL_FOUND=1
             Report "ids_ips_tooling[]=wazuh"
             Report "ids_ips_tooling[]=wazuh-agentd"
-            LogText "结果： Wazuh agent 守护进程 是 当前"
-            Display --indent 2 --text "- 检查 presence 的 Wazuh (agent)" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：Wazuh agent 守护进程处于活动状态"
+            Display --indent 2 --text "- 检查 Wazuh（代理）是否存在" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "结果： Wazuh agent 守护进程 不 当前"
+            LogText "结果：Wazuh agent 守护进程未激活"
         fi
     fi
 #
@@ -459,14 +459,14 @@
 #
     # Test        : TOOL-5190
     # Description : Check for an IDS/IPS tool
-    Register --test-no TOOL-5190 --weight L --network NO --category security --description "检查 presence 的 入侵检测系统/入侵防御工具"
+    Register --test-no TOOL-5190 --weight L --network NO --category security --description "检查 IDS/IPS 工具是否存在"
     if [ ${SKIPTEST} -eq 0 ]; then
 
         if [ ${IDS_IPS_TOOL_FOUND} -eq 1 ]; then
-            Display --indent 2 --text "- 检查 用于 入侵检测系统/入侵防御工具ing" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 2 --text "- 检查 IDS/IPS 工具" --result "${STATUS_FOUND}" --color GREEN
             AddHP 2 2
         else
-            Display --indent 2 --text "- 检查 用于 入侵检测系统/入侵防御工具ing" --result "${STATUS_NONE}" --color YELLOW
+            Display --indent 2 --text "- 检查 IDS/IPS 工具" --result "${STATUS_NONE}" --color YELLOW
             #ReportSuggestion "${TEST_NO}" "Install and configure automated intrusion detection/prevention tools"
             AddHP 0 2
         fi

@@ -157,7 +157,7 @@
                         FindCronJob ${I}
                         for FILE in ${sCRONJOBS}; do
                             LogText "在 ${ROOTDIR}var/spool/cron 中发现 Cron 任务：${I}（${FILE}）"
-                            LogText "cronjob[]=${I}"
+                            LogText "定时任务[]=${I}"
                         done
                     fi
                 done
@@ -201,12 +201,12 @@
         LogText "检查：atd 状态"
         FIND=$(${PSBINARY} ax | ${GREPBINARY} "/atd" | ${GREPBINARY} -v "grep")
         if [ -n "${FIND}" ]; then
-            LogText "结果：在 守护进程处于活动状态"
+            LogText "结果：at 守护进程处于活动状态"
             Display --indent 2 --text "- 正在检查 atd 状态" --result "${STATUS_RUNNING}" --color GREEN
             ATD_RUNNING=1
             Report "scheduler[]=atd"
         else
-            LogText "结果：在 守护进程未运行"
+            LogText "结果：at 守护进程未运行"
             if IsVerbose; then Display --indent 2 --text "- 正在检查 atd 状态" --result "${STATUS_NOT_RUNNING}" --color WHITE; fi
         fi
     fi
@@ -220,7 +220,7 @@
     #               except the listed ones can schedule jobs. If both can't be
     #               found, only root can schedule jobs.
     if [ ${ATD_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no SCHD-7720 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查允许使用 在 的用户"
+    Register --test-no SCHD-7720 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查允许使用 at 的用户"
     if [ ${SKIPTEST} -eq 0 ]; then
         AT_UNKNOWN=0
         case ${OS} in
@@ -229,20 +229,20 @@
             Linux)            AT_ALLOW="${ROOTDIR}etc/at.allow";           AT_DENY="${ROOTDIR}etc/at.deny"            ;;
             OpenBSD)          AT_ALLOW="${ROOTDIR}var/cron/at.allow";      AT_DENY="${ROOTDIR}var/cron/at.deny"       ;;
             SunOS)            AT_ALLOW="${ROOTDIR}etc/cron.d/at.allow";    AT_DENY="${ROOTDIR}etc/cron.d/at.deny"     ;;
-            *)                AT_UNKNOWN=1; LogText "已跳过检查：无法确定此系统的 在 用户配置文件"            ;;
+            *)                AT_UNKNOWN=1; LogText "已跳过检查：无法确定此系统的 at 用户配置文件"            ;;
         esac
         if [ ${AT_UNKNOWN} -eq 0 ]; then
             LogText "检查：文件 ${AT_ALLOW}"
             if [ -f ${AT_ALLOW} ]; then
                 FileIsReadable ${AT_ALLOW}
                 if [ ${CANREAD} -eq 1 ]; then
-                    LogText "结果：文件 ${AT_ALLOW} 存在，仅文件中列出的用户可以安排 在 任务"
+                    LogText "结果：文件 ${AT_ALLOW} 存在，仅文件中列出的用户可以安排 at 任务"
                     FIND=$(${SORTBINARY} ${AT_ALLOW})
                     if IsEmpty "${FIND}"; then
-                        LogText "结果：文件为空，没有用户被允许安排 在 任务"
+                        LogText "结果：文件为空，没有用户被允许安排 at 任务"
                     else
                         for ITEM in ${FIND}; do
-                           LogText "允许使用 在 的用户：${ITEM}"
+                           LogText "允许使用 at 的用户：${ITEM}"
                         done
                     fi
                 else
@@ -254,13 +254,13 @@
                 if [ -f ${AT_DENY} ]; then
                     FileIsReadable ${AT_DENY}
                     if [ ${CANREAD} -eq 1 ]; then
-                        LogText "结果：文件 ${AT_DENY} 存在，只有未列出的用户可以安排 在 任务"
+                        LogText "结果：文件 ${AT_DENY} 存在，只有未列出的用户可以安排 at 任务"
                         FIND=$(${SORTBINARY} ${AT_DENY})
                         if [ -z "${FIND}" ]; then
-                            LogText "结果：文件为空，没有用户被禁止安排 在 任务"
+                            LogText "结果：文件为空，没有用户被禁止安排 at 任务"
                         else
                             for ITEM in ${FIND}; do
-                                LogText "禁止使用 在 的用户：${ITEM}"
+                                LogText "禁止使用 at 的用户：${ITEM}"
                             done
                         fi
                     else
@@ -268,13 +268,13 @@
                     fi
                 else
                     LogText "结果：${AT_ALLOW} 和 ${AT_DENY} 均不存在"
-                    LogText "说明：只有 根 用户可以安排 在 任务"
+                    LogText "说明：只有 root 用户可以安排 at 任务"
                     AddHP 1 1
                 fi
             fi
-            Display --indent 4 --text "- 正在检查 在 用户" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 4 --text "- 正在检查 at 用户" --result "${STATUS_DONE}" --color GREEN
         else
-            Display --indent 4 --text "- 正在检查 在 用户" --result "${STATUS_SKIPPED}" --color YELLOW
+            Display --indent 4 --text "- 正在检查 at 用户" --result "${STATUS_SKIPPED}" --color YELLOW
         fi
     fi
 #
@@ -283,20 +283,20 @@
     # Test        : SCHD-7724
     # Description : Check scheduled at jobs
     if [ ${ATD_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no SCHD-7724 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查已安排的 在 任务"
+    Register --test-no SCHD-7724 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查已安排的 at 任务"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查：已安排的 在 任务"
+        LogText "检查：已安排的 at 任务"
         FIND=$(atq | ${GREPBINARY} -v "no files in queue" | ${AWKBINARY} '{gsub("\t"," ");print}' | ${SEDBINARY} 's/ /!space!/g')
         if HasData "${FIND}"; then
-            LogText "结果：发现一个或多个 在 任务"
+            LogText "结果：发现一个或多个 at 任务"
             for ITEM in ${FIND}; do
                 VALUE=$(echo ${ITEM} | ${SEDBINARY} 's/!space!/ /g')
-                LogText "发现 在 任务：${VALUE}"
+                LogText "发现 at 任务：${VALUE}"
             done
-            Display --indent 4 --text "- 正在检查 在 任务" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- 正在检查 at 任务" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "结果：没有待执行的 在 任务"
-            Display --indent 4 --text "- 正在检查 在 任务" --result "${STATUS_NONE}" --color GREEN
+            LogText "结果：没有待执行的 at 任务"
+            Display --indent 4 --text "- 正在检查 at 任务" --result "${STATUS_NONE}" --color GREEN
         fi
     fi
 #

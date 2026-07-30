@@ -54,13 +54,13 @@
                 Report "user_with_uid_zero[]=${USER}"
                 if [ "${USER}" = "toor" ]; then
                     LogText "BSD 说明：系统默认安装了用户 'toor'。除非为其设置密码并用于"
-                    LogText "日常操作或紧急情况，否则通常无需保留，例如 根 用户的 Shell 配置异常。"
+                    LogText "日常操作或紧急情况，否则通常无需保留，例如 root 用户的 Shell 配置异常。"
                     ReportSuggestion "${TEST_NO}" "如未使用，请通过 vipw 删除 'toor' 用户。"
                 fi
             done
         else
             Display --indent 2 --text "- 管理员账户" --result "${STATUS_OK}" --color GREEN
-            LogText "结果：除 根 外未发现其他 UID 为 0 的账户。"
+            LogText "结果：除 root 外未发现其他 UID 为 0 的账户。"
         fi
     fi
 #
@@ -124,7 +124,7 @@
     # Description : Check /etc/group and shadow group files
     # Notes       : Run grpck to test group files (most likely /etc/group and shadow group files)
     if [ -n "${GRPCKBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no AUTH-9216 --preqs-met ${PREQS_MET} --weight L --network NO --root-only YES --category security --description "检查 组 和 shadow 组 文件"
+    Register --test-no AUTH-9216 --preqs-met ${PREQS_MET} --weight L --network NO --root-only YES --category security --description "检查 group 和 shadow group 文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         LogText "检查：分析 grpck 输出"
 
@@ -225,7 +225,7 @@
     if [ -f ${ROOTDIR}etc/group ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no AUTH-9226 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查组名唯一性"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查：查找 ${ROOTDIR}etc/组 中重复的组名"
+        LogText "检查：查找 ${ROOTDIR}etc/group 中重复的组名"
         FIND=$(${GREPBINARY} -v '^#' ${ROOTDIR}etc/group | ${GREPBINARY} -v '^$' | ${AWKBINARY} -F: '{ print $1 }' | ${SORTBINARY} | uniq -d)
         if [ -z "${FIND}" ]; then
             Display --indent 2 --text "- 组名唯一性" --result "${STATUS_OK}" --color GREEN
@@ -238,7 +238,7 @@
                 Report "auth_groups_nonunique[]=${I}"
                 LogText "重复组：${I}"
             done
-            ReportSuggestion "${TEST_NO}" "检查 ${ROOTDIR}etc/组 文件并修正所有不一致"
+            ReportSuggestion "${TEST_NO}" "检查 ${ROOTDIR}etc/group 文件并修正所有不一致"
         fi
     fi
 #
@@ -409,7 +409,7 @@
     #               Arch Linux / CentOS / Ubuntu: 1000+
     Register --test-no AUTH-9234 --weight L --network NO --category security --description "查询用户账户"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查：从密码数据库（例如 /etc/passwd）读取系统用户，包括 根"
+        LogText "检查：从密码数据库（例如 /etc/passwd）读取系统用户，包括 root"
         FIND=""
 
         case ${OS} in
@@ -971,7 +971,7 @@
         FIND=$(${GREPBINARY} "^PASS_MIN_DAYS" ${ROOTDIR}etc/login.defs | ${AWKBINARY} '{ if ($1=="PASS_MIN_DAYS") { print $2 } }')
         if [ -z "${FIND}" -o "${FIND}" = "0" ]; then
             LogText "结果：未配置密码最短使用期限"
-            Display --indent 2 --text "- 检查用户密码有效期 (最小)" --result "${STATUS_DISABLED}" --color YELLOW
+            Display --indent 2 --text "- 检查用户密码有效期 (minimum)" --result "${STATUS_DISABLED}" --color YELLOW
             ReportSuggestion "${TEST_NO}" "在 /etc/login.defs 中配置密码最短使用期限"
             AddHP 0 1
         else
@@ -1074,8 +1074,8 @@
         # Check if file exists
         LogText "检查：搜索 /tcb/files/auth/system/default"
         if [ -f ${ROOTDIR}tcb/files/auth/system/default ]; then
-            LogText "结果：文件 ${ROOTDIR}tcb/文件/auth/系统/default 存在"
-            LogText "检查：确认是否存在 ：d_启动_authenticate@："
+            LogText "结果：文件 ${ROOTDIR}tcb/files/auth/system/default 存在"
+            LogText "检查：确认是否存在 :d_boot_authenticate@:"
             FIND=$(${GREPBINARY} "^:d_boot_authenticate@" /tcb/files/auth/system/default)
             if [ -z "${FIND}" ]; then
                 LogText "结果：未设置该选项，启动时需要密码"
@@ -1088,7 +1088,7 @@
                 AddHP 0 1
             fi
         else
-            LogText "结果：文件 ${ROOTDIR}tcb/文件/auth/系统/default 不存在"
+            LogText "结果：文件 ${ROOTDIR}tcb/files/auth/system/default 不存在"
         fi
     fi
 #
@@ -1253,21 +1253,21 @@
 
             if [ ${FOUND_UMASK} -eq 1 ]; then
                 if [ ${WEAK_UMASK} -eq 0 ]; then
-                    Display --indent 4 --text "- umask (/etc/profile 和 /etc/profile.d)" --result "${STATUS_OK}" --color GREEN
+                    Display --indent 4 --text "- umask（/etc/profile 和 /etc/profile.d）" --result "${STATUS_OK}" --color GREEN
                     AddHP 2 2
                 elif [ ${GOOD_UMASK} -eq 1 -a ${WEAK_UMASK} -eq 1 ]; then
-                    Display --indent 4 --text "- umask (/etc/profile 和 /etc/profile.d)" --result "${STATUS_SUGGESTION}" --color YELLOW
+                    Display --indent 4 --text "- umask（/etc/profile 和 /etc/profile.d）" --result "${STATUS_SUGGESTION}" --color YELLOW
                     ReportSuggestion "${TEST_NO}" "发现部分 umask 可以设置得更严格（例如 027）"
                     AddHP 1 2
                 else
-                    Display --indent 4 --text "- umask (/etc/profile 和 /etc/profile.d)" --result "${STATUS_SUGGESTION}" --color YELLOW
+                    Display --indent 4 --text "- umask（/etc/profile 和 /etc/profile.d）" --result "${STATUS_SUGGESTION}" --color YELLOW
                     ReportSuggestion "${TEST_NO}" "可以将 /etc/profile 或 /etc/profile.d/custom.sh 中的默认 umask 设置得更严格（例如 027）"
                     AddHP 0 2
                 fi
               else
                 # Some operating systems don't have a default umask defined in /etc/profile (Debian)
                 LogText "结果：未发现 umask，请确认这是否符合预期"
-                Display --indent 4 --text "- umask (/etc/profile)" --result "${STATUS_NOT_FOUND}" --color YELLOW
+                Display --indent 4 --text "- 面罩 (/etc/profile)" --result "${STATUS_NOT_FOUND}" --color YELLOW
             fi
         fi
 
@@ -1292,16 +1292,16 @@
             FIND=$(${GREPBINARY} "^UMASK" /etc/login.defs | ${AWKBINARY} '{ print $2 }')
             if [ "${FIND}" = "" ]; then
                 LogText "结果：未配置 umask 值，通常会使用默认值 022"
-                Display --indent 4 --text "- umask (/etc/login.defs)" --result "${STATUS_SUGGESTION}" --color YELLOW
+                Display --indent 4 --text "- 面罩 (/etc/login.defs)" --result "${STATUS_SUGGESTION}" --color YELLOW
                 ReportSuggestion "${TEST_NO}" "未在 /etc/login.defs 中找到默认 umask；通常默认为 022，可以改为更严格的 027"
                 AddHP 1 2
             elif [ "${FIND}" = "077" -o "${FIND}" = "027" -o "${FIND}" = "0077" -o "${FIND}" = "0027" ]; then
                 LogText "结果：umask 为 ${FIND}，设置正常"
-                Display --indent 4 --text "- umask (/etc/login.defs)" --result "${STATUS_OK}" --color GREEN
+                Display --indent 4 --text "- 面罩 (/etc/login.defs)" --result "${STATUS_OK}" --color GREEN
                 AddHP 2 2
             else
                 LogText "结果：发现 umask ${FIND}，可以进一步收紧"
-                Display --indent 4 --text "- umask (/etc/login.defs)" --result "${STATUS_SUGGESTION}" --color YELLOW
+                Display --indent 4 --text "- 面罩 (/etc/login.defs)" --result "${STATUS_SUGGESTION}" --color YELLOW
                 ReportSuggestion "${TEST_NO}" "可以将 /etc/login.defs 中的默认 umask 设置得更严格，例如 027"
                 AddHP 0 2
             fi
@@ -1317,14 +1317,14 @@
             FIND=$(${GREPBINARY} "^umask" /etc/init.d/functions | ${AWKBINARY} '{ print $2 }')
             if [ "${FIND}" = "" ]; then
                 LogText "结果：未配置 umask"
-                Display --indent 4 --text "- umask (/etc/init.d/functions)" --result "${STATUS_NONE}" --color WHITE
+                Display --indent 4 --text "- 面罩 (/etc/init.d/functions)" --result "${STATUS_NONE}" --color WHITE
             elif [ "${FIND}" = "077" -o "${FIND}" = "027" -o "${FIND}" = "0077" -o "${FIND}" = "0027" ]; then
                 LogText "结果：umask 为 ${FIND}，设置正常"
-                Display --indent 4 --text "- umask (/etc/init.d/functions)" --result "${STATUS_OK}" --color GREEN
+                Display --indent 4 --text "- 面罩 (/etc/init.d/functions)" --result "${STATUS_OK}" --color GREEN
                 AddHP 2 2
             else
                 LogText "结果：发现 umask ${FIND}，可以进一步收紧"
-                Display --indent 4 --text "- umask (/etc/init.d/functions)" --result "${STATUS_SUGGESTION}" --color YELLOW
+                Display --indent 4 --text "- 面罩 (/etc/init.d/functions)" --result "${STATUS_SUGGESTION}" --color YELLOW
                 AddHP 0 2
             fi
         else
@@ -1344,11 +1344,11 @@
                 AddHP 1 2
             elif [ "${FIND}" = "077" -o "${FIND}" = "027" -o "${FIND}" = "0077" -o "${FIND}" = "0027" ]; then
                 LogText "结果：umask 为 ${FIND}，设置正常"
-                Display --indent 4 --text "- umask (/etc/init.d/rc)" --result "${STATUS_OK}" --color GREEN
+                Display --indent 4 --text "- 面罩 (/etc/init.d/rc)" --result "${STATUS_OK}" --color GREEN
                 AddHP 2 2
             else
                 LogText "结果：发现 umask ${FIND}，可以进一步收紧"
-                Display --indent 4 --text "- umask (/etc/init.d/rc)" --result "${STATUS_SUGGESTION}" --color YELLOW
+                Display --indent 4 --text "- 面罩 (/etc/init.d/rc)" --result "${STATUS_SUGGESTION}" --color YELLOW
                 ReportSuggestion "${TEST_NO}" "可以将 /etc/init.d/rc 中的默认 umask 设置得更严格，例如 027"
                 AddHP 0 2
             fi
@@ -1381,14 +1381,14 @@
             fi
             if [ ${FOUND} -eq 1 ]; then
                 if [ ${WEAK_UMASK} -eq 0 ]; then
-                    Display --indent 4 --text "- umask (/etc/login.conf)" --result "${STATUS_OK}" --color GREEN
+                    Display --indent 4 --text "- 面罩 (/etc/login.conf)" --result "${STATUS_OK}" --color GREEN
                 else
-                    Display --indent 4 --text "- umask (/etc/login.conf)" --result "${STATUS_WEAK}" --color YELLOW
+                    Display --indent 4 --text "- 面罩 (/etc/login.conf)" --result "${STATUS_WEAK}" --color YELLOW
                     ReportSuggestion "${TEST_NO}" "可以将 /etc/login.conf 中的 umask 设置得更严格，例如 027"
                 fi
             else
                 LogText "结果：未在 /etc/login.conf 中发现 umask 配置，这不符合预期"
-                Display --indent 4 --text "- umask (/etc/login.conf)" --result "${STATUS_NONE}" --color YELLOW
+                Display --indent 4 --text "- 面罩 (/etc/login.conf)" --result "${STATUS_NONE}" --color YELLOW
             fi
         fi
 
@@ -1407,11 +1407,11 @@
                     AddHP 1 2
                 elif [ "${FIND2}" = "077" -o "${FIND2}" = "027" ]; then
                     LogText "结果：umask 为 ${FIND2}，设置正常"
-                    Display --indent 4 --text "- umask (/etc/init.d/rcS)" --result "${STATUS_OK}" --color GREEN
+                    Display --indent 4 --text "- 面罩 (/etc/init.d/rcS)" --result "${STATUS_OK}" --color GREEN
                     AddHP 2 2
                 else
                     LogText "结果：发现 umask ${FIND2}，可以进一步收紧"
-                    Display --indent 4 --text "- umask (/etc/init.d/rcS)" --result "${STATUS_SUGGESTION}" --color YELLOW
+                    Display --indent 4 --text "- 面罩 (/etc/init.d/rcS)" --result "${STATUS_SUGGESTION}" --color YELLOW
                     ReportSuggestion "${TEST_NO}" "可以将 /etc/init.d/rcS 中的默认 umask 设置得更严格，例如 027"
                     AddHP 0 2
                 fi
@@ -1434,7 +1434,7 @@
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         if [ -f ${ROOTDIR}etc/security/policy.conf ]; then
-            LogText "结果：发现 ${ROOTDIR}etc/安全/policy.conf"
+            LogText "结果：发现 ${ROOTDIR}etc/security/policy.conf"
             FIND=$(${GREPBINARY} "^LOCK_AFTER_RETRIES" /etc/security/policy.conf)
             if [ ! "${FIND}" = "" ]; then
                 FOUND=1
@@ -1446,7 +1446,7 @@
                 AddHP 1 2
             fi
         else
-            LogText "结果：${ROOTDIR}etc/安全/policy.conf 不存在"
+            LogText "结果：${ROOTDIR}etc/security/policy.conf 不存在"
         fi
         # If policy.conf does not exist, we most likely deal with a Solaris version below 10
         # and we proceed with checking the softer option RETRIES in /etc/default/login
@@ -1537,12 +1537,12 @@
             FOUND_FAILLOCKDIR=0
             if [ -d "${ROOTDIR}var/run/faillock" ]; then
                 FOUND_FAILLOCKDIR=1
-                LogText "结果：发现 ${ROOTDIR}var/运行/faillock 目录"
+                LogText "结果：发现 ${ROOTDIR}var/run/faillock 目录"
             elif [ -s "${ROOTDIR}var/log/tallylog" ]; then
                 FOUND_TALLYLOG=1
-                LogText "结果：发现 ${ROOTDIR}var/日志/tallylog，且文件大小大于 0"
+                LogText "结果：发现 ${ROOTDIR}var/log/tallylog，且文件大小大于 0"
             else
-                LogText "结果：未找到 ${ROOTDIR}var/运行/faillock 目录或 ${ROOTDIR}var/日志/tallylog 文件，或者文件大小为 0"
+                LogText "结果：未找到 ${ROOTDIR}var/run/faillock 目录或 ${ROOTDIR}var/log/tallylog 文件，或者文件大小为 0"
             fi
             # Determine if pam_faillock is available
             for D in $(GetReportData --key "pam_module\\\[\\\]"); do
@@ -1583,7 +1583,7 @@
                 AUTH_FAILED_LOGINS_LOGGED=1
                 Report "auth_failed_logins_tooling[]=/etc/login.defs"
                 LogText "结果：FAILLOG_ENAB 设置为 'yes'"
-                LogText "结论：失败的登录尝试记录在 ${ROOTDIR}var/日志/faillog"
+                LogText "结论：失败的登录尝试记录在 ${ROOTDIR}var/log/faillog"
                 Display --indent 2 --text "- 记录失败的登录尝试" --result "${STATUS_ENABLED}" --color GREEN
             else
                 LogText "结果：失败的登录尝试可能未被记录"

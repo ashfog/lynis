@@ -224,7 +224,7 @@
                     if [ -n "${FIND}" ]; then
                         LogText "结果：发现已启用的不安全服务：${SERVICE}"
                         XINETD_INSECURE_SERVICE_FOUND=1
-                        ReportSuggestion "${TEST_NO}" "禁用或移除 xinetd 配置中的不安全服务" "${SERVICE}" "text：详情请查看日志文件"
+                        ReportSuggestion "${TEST_NO}" "禁用或移除 xinetd 配置中的不安全服务" "${SERVICE}" "text:详情请查看日志文件"
                         Report "insecure_service[]=${SERVICE}"
                     fi
                 fi

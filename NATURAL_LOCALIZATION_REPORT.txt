@@ -1,0 +1,286 @@
+# Natural localization report
+# API translation failures: 0
+# Remaining visible prose candidates: 281
+
+## Remaining candidates
+lynis:99: \n致命错误：找不到 include 目录\n请确认从完整解压后的目录运行 ${PROGRAM_NAME}，或检查安装是否正确。
+lynis:314: \n${WHITE}[ ${PROGRAM_NAME} ${PROGRAM_VERSION} ]${NORMAL}\n\n####################################################################################\n ${PROGRAM_LICENSE}${PROGRAM_LICENSE}\n\n ${PROGRAM_COPYRIGHT}\n ${PROGRAM_EXTRAINFO}\n##################################################################################\n\n
+lynis:746: 由于配置文件选项设置而跳过升级测试 (skip_upgrade_test)
+lynis:805: ${CYAN}${PROGRAM_NAME} ${TEXT_UPDATE_AVAILABLE}${NORMAL}
+lynis:1064: 测试：检查tests_custom文件
+lynis:1067: 结果：在包含目录中找到tests_custom文件
+lynis:1148: 致命错误：找不到 upload_data 脚本
+lynis:1152: ${PROGRAM_NAME} ${PROGRAM_VERSION}
+include/binaries:140: 找到已知的二进制文件：as（编译器）-${BINARY}
+include/binaries:176: 找到已知的二进制文件：find（搜索工具）-${BINARY}
+include/binaries:181: 找到已知的二进制文件：gradm（Grsecurity Administration Utility）-${BINARY}
+include/binaries:248: 找到已知的二进制文件：pkg_info（软件包信息）-${BINARY}
+include/binaries:263: 找到已知的二进制文件：rootsh（shell 包装器）- ${BINARY}
+include/binaries:270: 找到已知的二进制文件：service（系统服务）-${BINARY}
+include/data_upload:150: 建议：将数据复制到其他服务器并使用新版 cURL 上传，或使用 Lynis Collector。
+include/data_upload:174: 示例：${WHITE}$0 configure settings upload-options=-k${NORMAL}
+include/data_upload:216: - Lynis 或 Lynis Collector 版本过旧，请升级到最新版本
+include/functions:275: 结果：未安装 dig、drill 或 host，跳过更新检查
+include/functions:398: ${PURPLE}[DEBUG]${NORMAL} $1
+include/functions:555: ${TEXT}${RESULTPART}
+include/functions:1451: [+] ${SECTION}$1${NORMAL}
+include/functions:1470: [+] ${MAGENTA}$1${NORMAL}
+include/functions:2337: 警告：在 nginx 配置中的 error_log 之后未找到文件名
+include/functions:3759: 使用已弃用的函数 (wait_for_keypress)
+include/helper_audit_dockerfile:66: 使用了 latest 标签。明确指定操作系统镜像及版本，更有利于获得可重复的构建结果。
+include/helper_configure:87: ${SETTING}=${VALUE}
+include/helper_show:218: 无法识别 commands 后面的参数
+include/helper_show:230: commands 无法识别参数 '$1'
+include/helper_show:242: 此命令需要一个检查编号，例如 CORE-1000。请先完成扫描（lynis audit system），再使用此命令查询。执行 'lynis show tests' 可以查看全部检查项目。
+include/helper_system_remote_scan:59: %s\n\n
+include/helper_system_remote_scan:63: %s\n\n
+include/helper_system_remote_scan:68: %s\n\n
+include/helper_system_remote_scan:72: %s\n\n
+include/helper_system_remote_scan:75: %s\n
+include/helper_system_remote_scan:76: %s\n\n
+include/helper_system_remote_scan:79: %s\n\n
+include/helper_update:65: == ${WHITE}${PROGRAM_NAME}${NORMAL} ==
+include/parameters:69: 示例：$0 audit system remote 192.168.1.100
+include/parameters:452: 请使用：lynis audit system [选项]
+include/parameters:459: 请使用：lynis update info
+include/parameters:466: 请使用：lynis show options
+include/report:126: ${WHITE}----------------------------${NORMAL}
+include/report:140: ${RED}！${NORMAL} ${SHOWWARNING}
+include/report:159: ${WHITE}----------------------------${NORMAL}
+include/report:174: ${YELLOW}*${NORMAL} ${SHOWSUGGESTION}
+include/report:201: ${WHITE}----------------------------${NORMAL}
+include/report:202: ${WHITE}-${NORMAL} 查看某项检查的详细信息（lynis show details 检查编号）
+include/report:203: ${WHITE}-${NORMAL} 查看日志中的全部细节（less ${LOGFILE}）
+include/report:265: ${GEN_CURRENT_VERSION} : ${WHITE}${PROGRAM_AC}${NORMAL} ${GEN_LATEST_VERSION} : ${WHITE}${PROGRAM_LV}${NORMAL}
+include/report:287: ${RED}${NOTE_EXCEPTIONS_FOUND}${NORMAL}
+include/report:288: ${WHITE}${NOTE_EXCEPTIONS_FOUND_DETAILED}!${NORMAL}
+include/report:290: ${CYAN}${GEN_WHAT_TO_DO}:${NORMAL}
+include/report:291: ${TEXT_YOU_CAN_HELP_LOGFILE} (${LOGFILE})。
+include/report:303: ${CYAN}${GEN_WHAT_TO_DO}:${NORMAL}
+include/report:314: ${PURPLE}${NOTE_SKIPPED_TESTS_NON_PRIVILEGED}:${NORMAL}
+include/report:337: ${WHITE}${PROGRAM_NAME}${NORMAL} ${PROGRAM_VERSION}
+include/report:343: ${WHITE}${PROGRAM_EXTRAINFO}${NORMAL}
+include/tests_accounting:85: 结果：${ROOTDIR}var/log/account/pacct 可用
+include/tests_accounting:89: 结果：${ROOTDIR}var/log/pacct 可用
+include/tests_accounting:93: 结果：没有可用的进程记账信息 (${ROOTDIR}var/account/pacct, ${ROOTDIR}var/log/account/pacct nor ${ROOTDIR}var/log/pacct exist)
+include/tests_accounting:328: 检查 ${ROOTDIR}etc/system 中的 BSM 审计
+include/tests_accounting:330: 检查：确认 ${ROOTDIR}etc/system 中是否启用了 BSM
+include/tests_accounting:334: 结果：${ROOTDIR}etc/system 中已启用 BSM
+include/tests_accounting:335: - 检查 Solaris BSM（${ROOTDIR}etc/system）
+include/tests_accounting:337: - 检查 Solaris BSM（${ROOTDIR}etc/system）
+include/tests_accounting:340: 结果：${ROOTDIR}etc/system 不存在
+include/tests_accounting:352: 检查：确认 c2audit 模块是否处于活动状态
+include/tests_accounting:356: 结果：在 modinfo 输出中发现 c2audit
+include/tests_accounting:359: 结果：在 modinfo 输出中未发现 c2audit
+include/tests_accounting:374: 检查：在 ${ROOTDIR}etc/security/audit_control 中检查事件日志位置
+include/tests_accounting:376: 结果：发现文件 ${ROOTDIR}etc/security/audit_control
+include/tests_accounting:395: 结果：找不到 ${ROOTDIR}etc/security/audit_control
+include/tests_authentication:57: 日常操作或紧急情况，否则通常无需保留，例如 root 用户的 Shell 配置异常。
+include/tests_authentication:127: 检查 group 和 shadow group 文件
+include/tests_authentication:159: 检查无密码账户的登录 Shell
+include/tests_authentication:162: 检查：检查登录 Shell
+include/tests_authentication:167: - 登录 Shell
+include/tests_authentication:169: - 登录 Shell
+include/tests_authentication:175: 结果：该行未发现 Shell
+include/tests_authentication:177: 结果：发现可能存在风险的 Shell ${SHELL}
+include/tests_authentication:179: 结果：Shell ${SHELL} 存在
+include/tests_authentication:182: 结果：Shell ${SHELL} 不存在
+include/tests_authentication:183: 确认该账户是否仍有必要保留，因为 Shell ${SHELL} 不存在
+include/tests_authentication:188: 无密码账户使用了可能存在风险的 Shell
+include/tests_authentication:192: - 登录 Shell
+include/tests_authentication:228: 检查：查找 ${ROOTDIR}etc/group 中重复的组名
+include/tests_authentication:241: 检查 ${ROOTDIR}etc/group 文件并修正所有不一致
+include/tests_authentication:974: - 检查用户密码有效期 (minimum)
+include/tests_authentication:1077: 结果：文件 ${ROOTDIR}tcb/files/auth/system/default 存在
+include/tests_authentication:1078: 检查：确认是否存在 :d_boot_authenticate@:
+include/tests_authentication:1091: 结果：文件 ${ROOTDIR}tcb/files/auth/system/default 不存在
+include/tests_authentication:1437: 结果：发现 ${ROOTDIR}etc/security/policy.conf
+include/tests_authentication:1449: 结果：${ROOTDIR}etc/security/policy.conf 不存在
+include/tests_authentication:1540: 结果：发现 ${ROOTDIR}var/run/faillock 目录
+include/tests_authentication:1543: 结果：发现 ${ROOTDIR}var/log/tallylog，且文件大小大于 0
+include/tests_authentication:1545: 结果：未找到 ${ROOTDIR}var/run/faillock 目录或 ${ROOTDIR}var/log/tallylog 文件，或者文件大小为 0
+include/tests_authentication:1586: 结论：失败的登录尝试记录在 ${ROOTDIR}var/log/faillog
+include/tests_banners:39: - ${ROOTDIR}COPYRIGHT
+include/tests_banners:46: - ${ROOTDIR}COPYRIGHT
+include/tests_boot_services:401: 结果：在 ${ROOTDIR}boot 中发现 boot1、boot2 和 loader 文件
+include/tests_boot_services:418: 结果：在 ${ROOTDIR}boot 中发现 boot1、boot2 和 loader 文件
+include/tests_boot_services:566: - 检查 boot 选项
+include/tests_boot_services:570: - 检查 boot 选项
+include/tests_boot_services:571: 正常，boot 选项已启用。
+include/tests_boot_services:602: 搜索启动时运行的服务（service）
+include/tests_boot_services:611: 发现服务（service/rc.conf）：${ITEM}
+include/tests_boot_services:615: - 检查启动服务（service/rc.conf）
+include/tests_boot_services:682: 搜索正在运行的服务（仅 systemctl service 单元）
+include/tests_boot_services:697: 搜索已启用的服务（仅 systemctl service 单元）
+include/tests_boot_services:961: 结果：文件 ${ROOTDIR}usr/lib/systemd/system/rescue.service 不存在
+include/tests_boot_services:983: 提示：运行 rcctl ls all | grep -E '^(pf|check_quotas|library_aslr)$' 查看所有守护进程
+include/tests_boot_services:998: 提示：运行 rcctl ls all | grep -E '^(pf|check_quotas|library_aslr)$' 查看所有守护进程
+include/tests_boot_services:1088: 运行 systemd-analyze security
+include/tests_boot_services:1090: 检查：运行 systemd-analyze security
+include/tests_containers:106: 结果：docker version 返回非零退出码，已停止后续 Docker 检查
+include/tests_containers:144: 结果：docker info 显示 ${DOCKER_CONTAINERS_TOTAL} 个容器
+include/tests_crypto:272: 检查：查找 ${ROOTDIR}sys/class/misc/hw_random/rng_current
+include/tests_crypto:292: 结果：找不到 ${ROOTDIR}sys/class/misc/hw_random/rng_current
+include/tests_custom.template:88: OS: Linux
+include/tests_custom.template:93: OS: *BSD
+include/tests_file_integrity:234: - lfd（CSF）
+include/tests_filesystems:327: 结果：所有交换分区都有正确的选项（sw 或 swap）
+include/tests_filesystems:729: - Swappiness: ${SWAPLEVEL}
+include/tests_firewalls:446: 检查：Little Snitch Daemon 进程
+include/tests_firewalls:448: - 正在检查 Little Snitch Daemon
+include/tests_firewalls:460: - 正在检查 Hands Off! Daemon
+include/tests_firewalls:472: - 正在检查 LuLu Daemon
+include/tests_homedirs:126: 检查可疑的 Shell 历史记录文件
+include/tests_homedirs:136: - 正在检查 Shell 历史记录文件
+include/tests_homedirs:139: - 正在检查 Shell 历史记录文件
+include/tests_homedirs:143: 发现文件类型不正确的 Shell 历史记录文件
+include/tests_homedirs:147: - 正在检查 Shell 历史记录文件
+include/tests_kerberos:130: 结果：敏感 Kerberos 主体 ${I} 不具有lockdown_keys 属性
+include/tests_kernel:76: Result: 发现默认运行级别 '${FIND}'
+include/tests_kernel:78: RUNLEVEL ${FIND}
+include/tests_kernel:123: 结果：发现No eXecute
+include/tests_kernel:135: 尽可能使用启用 PAE 的内核以获得本机 No eXecute/eXecute Disable 支持
+include/tests_kernel:331: [ ${WHITE}SKIPPED${NORMAL} ]
+include/tests_kernel:395: 结果：由于 /etc/kernel-img.conf 项 do_symlinks = No，${ROOTDIR}vmlinuz 缺失
+include/tests_kernel:500: 测试：检查存在 ${ROOTDIR}etc/profile
+include/tests_kernel:502: 检查：确认 ${ROOTDIR}etc/profile 或 ${ROOTDIR}etc/profile.d/*.sh 中是否存在 'ulimit -c 0'
+include/tests_kernel:507: 结果：${ROOTDIR}etc/profile 或 ${ROOTDIR}etc/profile.d/*.sh 中的 'ulimit -c 0' 已禁用核心转储
+include/tests_kernel:508: - 在etc/profile中配置
+include/tests_kernel:511: 结果：${ROOTDIR}etc/profile 或 ${ROOTDIR}etc/profile.d/*.sh 中未禁用核心转储，未找到 'ulimit -c 0' 设置
+include/tests_kernel:512: - ${ROOTDIR}etc/profile 中的配置
+include/tests_kernel:515: 结果：${ROOTDIR}etc/profile 或 ${ROOTDIR}etc/profile.d/*.sh 中启用了核心转储，'ulimit -c' 配置值高于 0
+include/tests_kernel:516: - ${ROOTDIR}etc/profile 中的配置
+include/tests_kernel:519: 结果：错误——检查 ${ROOTDIR}etc/profile 和 ${ROOTDIR}etc/profile.d/*.sh 配置文件时得到异常结果，请在 GitHub 报告！
+include/tests_kernel:520: - ${ROOTDIR}etc/profile 中的配置
+include/tests_kernel:526: 测试：检查存在 ${DIR}etc/security/limits.conf
+include/tests_kernel:528: 结果：文件 ${DIR}etc/security/limits.conf 存在
+include/tests_kernel:529: 检查：确认 ${DIR}etc/security/limits.conf 和 ${LIMITS_DIRECTORY}/* 中是否禁用了核心转储
+include/tests_kernel:549: - ${DIR}etc/security/limits.conf 中的 'hard' 配置
+include/tests_kernel:551: - ${DIR}etc/security/limits.conf 中的 'soft' 配置
+include/tests_kernel:553: - ${DIR}etc/security/limits.conf 中的 'soft' 配置（隐式）
+include/tests_kernel:558: - ${DIR}etc/security/limits.conf 中的 'hard' 配置
+include/tests_kernel:559: - ${DIR}etc/security/limits.conf 中的 'soft' 配置
+include/tests_kernel:564: - ${DIR}etc/security/limits.conf 中的 'hard' 配置
+include/tests_kernel:565: - ${DIR}etc/security/limits.conf 中的 'soft' 配置
+include/tests_kernel:569: - ${DIR}etc/security/limits.conf 中的 'hard' 配置
+include/tests_kernel:570: - ${DIR}etc/security/limits.conf 中的 'soft' 配置
+include/tests_kernel:574: - ${DIR}etc/security/limits.conf 中的 'hard' 配置
+include/tests_kernel:575: - ${DIR}etc/security/limits.conf 中的 'soft' 配置
+include/tests_kernel:576: 如非必要，建议在 ${DIR}etc/security/limits.conf 中明确禁用核心转储
+include/tests_kernel:580: 结果：文件 ${DIR}etc/security/limits.conf 不存在，跳过该文件的检查
+include/tests_logging:231: - 检查 wazuh-agent status
+include/tests_logging:235: - 检查 wazuh-agent daemon status
+include/tests_logging:348: - 检查 loghost entry
+include/tests_logging:350: - 检查 loghost entry
+include/tests_logging:363: 检查 loghost is localhost
+include/tests_logging:369: - 检查 loghost entry is localhost
+include/tests_logging:372: - 检查 loghost entry is localhost
+include/tests_logging:476: 结果：发现用于远程日志的目标 ${DESTINATION} with wazuh
+include/tests_mail_messaging:328: 结果：SMTP 横幅中发现操作系统或 mail_name，或者 mail_name 包含 'Postfix'。
+include/tests_mail_messaging:330: 建议您从 postfix 配置中隐藏 mail_name（选项：smtpd_banner）。使用 postconf -e or 更改您的 main.cf 文件 (${POSTFIX_CONFIGFILE})
+include/tests_malware:52: 检查 McAfee VirusScan for Command Line
+include/tests_malware:54: 检查：McAfee VirusScan for Command Line 是否存在
+include/tests_malware:56: - ${GEN_CHECKING} McAfee VirusScan for Command Line（已弃用）
+include/tests_malware:59: 结果：McAfee Antivirus for Linux 已于 2023 年 10 月 1 日停止支持，不再接收更新。请改用其他防病毒软件。
+include/tests_malware:70: - ${GEN_CHECKING} chkrootkit
+include/tests_malware:89: - ${GEN_CHECKING} Rootkit Hunter
+include/tests_malware:108: - ${GEN_CHECKING} LMD（Linux Malware Detect）
+include/tests_malware:166: - ${GEN_CHECKING} falcon-sensor
+include/tests_malware:177: - ${GEN_CHECKING} CylancePROTECT
+include/tests_malware:186: 检查：esets_daemon 或 oaeventd 进程（ESET）
+include/tests_malware:238: - ${GEN_CHECKING} SentinelOne
+include/tests_malware:257: - ${GEN_CHECKING} Sophos
+include/tests_malware:293: - ${GEN_CHECKING} Synology Antivirus Essential
+include/tests_malware:325: - ${GEN_CHECKING} Wazuh Agent
+include/tests_nameservices:97: 在 /etc/resolv.conf 中发现多条 search 配置，可能存在配置错误
+include/tests_nameservices:453: 在配置文件中找到master=yes
+include/tests_nameservices:463: 在配置文件中找到slave=yes
+include/tests_nameservices:524: 测试：检查${ROOTDIR}etc/sysconfig/network
+include/tests_nameservices:526: 结果：文件 ${ROOTDIR}etc/sysconfig/network 存在
+include/tests_nameservices:536: 结果：文件 ${ROOTDIR}etc/sysconfig/network 不存在
+include/tests_nameservices:572: 测试：检查 ${ROOTDIR}etc/hosts 中的重复行
+include/tests_nameservices:581: 删除 ${ROOTDIR}etc/hosts 中的重复行
+include/tests_nameservices:596: 结果：在 ${ROOTDIR}etc/hosts 中找到 ${HOSTNAME} 的条目
+include/tests_nameservices:599: 结果：在 ${ROOTDIR}etc/hosts 中找不到 ${HOSTNAME} 的条目
+include/tests_nameservices:616: 测试：检查 ${ROOTDIR}etc/hosts 中未本地映射的服务器主机名
+include/tests_php:285: 结果：${I}：找不到disabled_functions
+include/tests_php:287: 结果：${I}：找到disabled_functions
+include/tests_php:303: 建议评估或禁用的函数： chown, diskfreespace, disk_free_space, disk_total_space, dl, exec, escapeshellarg, escapeshellcmd, fileinode, highlight_file, max_execution_time, passthru, pclose, phpinfo, popen, proc_close, proc_open, proc_get_status, proc_nice, proc_open, proc_terminate, set_time_limit, shell_exec, show_source, system)
+include/tests_php:346: 结果：未找到 'register_globals'，它很可能处于禁用状态（0、no 或 off），这是当前默认且较安全的值。
+include/tests_php:385: 结果：发现 'expose_php' 处于禁用状态（0、no 或 off）
+include/tests_php:407: 结果：发现 'enable_dl' 处于禁用状态（未配置、0、no 或 off）
+include/tests_php:429: 结果：发现 'allow_url_fopen' 处于禁用状态（0、no 或 off）
+include/tests_php:452: 结果：发现 'allow_url_include' 处于禁用状态（0、no 或 off）
+include/tests_ports_packages:47: 检查：运行 apk info -v 获取软件包列表
+include/tests_ports_packages:94: 查询 FreeBSD/NetBSD pkg_info
+include/tests_ports_packages:97: - 检查 pkg_info
+include/tests_ports_packages:98: 结果：发现 pkg_info
+include/tests_ports_packages:100: 检查：查询 pkg_info 获取软件包列表
+include/tests_ports_packages:101: - 使用 pkg_info 查询已安装的软件包
+include/tests_ports_packages:449: 查询 macOS ports
+include/tests_ports_packages:453: - 使用 port 搜索软件包
+include/tests_ports_packages:456: 结果：发现 port 工具
+include/tests_ports_packages:457: 检查：查询 port 获取软件包列表
+include/tests_ports_packages:458: - 使用 port 查询已安装的软件包
+include/tests_ports_packages:475: 使用 port 查询可用升级
+include/tests_ports_packages:478: 检查：查询 ports 的可用升级
+include/tests_ports_packages:488: - 检查 ports 更新
+include/tests_ports_packages:491: - 检查 ports 更新
+include/tests_ports_packages:619: 发现一个或多个存在漏洞的软件包。请运行：dnf upgrade
+include/tests_ports_packages:733: 使用 portmaster 查询 port 升级
+include/tests_ports_packages:765: 结果：pkg_admin audit 检查结果正常
+include/tests_ports_packages:766: - 使用 pkg_admin audit 检查漏洞软件包
+include/tests_ports_packages:769: - 使用 pkg_admin audit 检查漏洞软件包
+include/tests_ports_packages:770: 结果：pkg_admin audit 发现一个或多个已安装软件包存在漏洞。
+include/tests_ports_packages:786: - 未安装 pkg_admin audit
+include/tests_ports_packages:787: 结果：未安装 pkg_admin audit，跳过此漏洞检查。
+include/tests_ports_packages:939: 检查 YUM security 软件包
+include/tests_ports_packages:950: 结果：发现 yum 内置的 security 支持
+include/tests_ports_packages:1001: 尽可能安装 yum-plugin-security，以便更容易维护安全更新（yum install yum-plugin-security）
+include/tests_ports_packages:1099: - 检查 sources.list 中的安全仓库 or directory
+include/tests_ports_packages:1192: 结果：apt-get 在 -security 渠道中发现存在漏洞的软件包
+include/tests_ports_packages:1203: 使用 apt-get update、apt-get upgrade、apt-get dist-upgrade 和/或 unattended-upgrades 更新系统
+include/tests_ports_packages:1210: - 检查存在漏洞的软件包 (apt-get only)
+include/tests_ports_packages:1256: 说明：运行 glsa-check -t all 查看识别出的 GLSA。
+include/tests_ports_packages:1324: 检查：使用 apk version -l 查询可升级的软件包
+include/tests_ports_packages:1395: 结果：rpm -q kernel 输出中未发现内核软件包，情况异常
+include/tests_shells:72: 检查可用且有效的 Shell
+include/tests_shells:77: 检查：从 ${ROOTDIR}etc/shells 读取可用 Shell
+include/tests_shells:80: - 正在检查 ${ROOTDIR}etc/shells 中的 Shell
+include/tests_shells:86: 发现已安装的 Shell：${I}
+include/tests_shells:89: Shell ${I} 未安装，可能是占位项或不存在的 Shell。
+include/tests_shells:92: 结果：共发现 ${CSSHELLS_ALL} 个 Shell（有效 Shell：${CSSHELLS} 个）。
+include/tests_shells:108: 检查：搜索 Shell 会话超时工具或设置
+include/tests_shells:134: 结果：在 ${ROOTDIR}etc/profile 中发现已配置的 TMOUT 值
+include/tests_shells:136: 结果：在 ${ROOTDIR}etc/profile 中发现多个 TMOUT 值
+include/tests_shells:140: 结果：在 ${ROOTDIR}etc/profile 中未找到 TMOUT 设置
+include/tests_shells:152: 结果：在 ${ROOTDIR}etc/profile 中发现只读设置（readonly 或 typeset -r）
+include/tests_shells:155: 结果：在 ${ROOTDIR}etc/profile 中未发现只读设置（readonly 或 typeset -r）
+include/tests_shells:159: 结果：在 ${ROOTDIR}etc/profile 中未找到 export、readonly 或 typeset -r
+include/tests_shells:162: 结果：本系统没有 ${ROOTDIR}etc/profile 文件，已跳过该项检查
+include/tests_shells:198: 结果：在 ${ROOTDIR}etc/profile 中发现只读设置（readonly 或 typeset -r）
+include/tests_shells:201: 结果：在 ${ROOTDIR}etc/profile 中未发现只读设置（readonly 或 typeset -r）
+include/tests_shells:205: 结果：在 ${ROOTDIR}etc/profile 中未找到 export、readonly 或 typeset -r
+include/tests_shells:233: 检查 Shell 配置中的 umask 值
+include/tests_squid:181: 检查：external_acl_type 选项中的外部身份验证辅助程序
+include/tests_squid:184: 未找到 external_acl_type
+include/tests_squid:258: Squid 配置可能允许通过已配置的 Safe_port ${ITEM} 中继流量
+include/tests_squid:311: 将 Squid 的 httpd_suppress_version_string 选项配置为 on，以隐藏版本信息。
+include/tests_storage_nfs:41: rpcinfo: ${I}
+include/tests_tooling:78: - Cfengine（cfagent）
+include/tests_webservers:242: ${STATUS_FOUND} (${COUNT})
+include/tests_webservers:275: mod_reqtimeout/mod_qos
+include/tests_webservers:278: mod_reqtimeout/mod_qos
+include/tests_webservers:293: ModSecurity：Web应用程序防火墙
+include/tests_webservers:296: ModSecurity：Web应用程序防火墙
+include/tests_webservers:298: 安装 Apache modsecurity 以保护 Web 服务器免受 Web 应用程序攻击
+include/tests_webservers:429: 结果：未找到 nginx include 语句
+include/tests_webservers:431: ${COUNT} FOUND
+include/tests_webservers:541: - 缺少日志文件（access_log）
+include/tests_webservers:543: - 缺少日志文件（access_log）
+include/tests_webservers:573: - 缺少日志文件（error_log）
+include/tests_webservers:575: - 缺少日志文件（error_log）
+include/tests_webservers:579: 检查您的 nginx error_log 语句
+include/tests_webservers:595: - error_log 的调试模式
+include/tests_webservers:599: - error_log 的调试模式
+include/tests_webservers:604: 检查您的 nginx error_log 语句并禁用调试模式
