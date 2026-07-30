@@ -1,0 +1,12 @@
+# Command drift
+# Count: 9
+
+lynis:572: arg2 current='主机名 -s' original='hostname -s'
+include/tests_filesystems:902: arg3 current='添加 安装 MODULENAME /bin/true（不含引号）' original='添加 install MODULENAME /bin/true（不含引号）'
+include/tests_kernel:398: arg2 current='/vmlinuz 或 /boot/vmlinuz' original='/vmlinuz or /boot/vmlinuz'
+include/tests_mail_messaging:344: arg2 current='禁用_vrfy_命令=没有' original='disable_vrfy_command=no'
+include/tests_networking:79: arg2 current='主机名' original='hostname'
+include/tests_ports_packages:834: arg2 current='pkg 审计' original='pkg audit'
+include/tests_time:519: arg2 current='${NTPCTLBINARY} -s 状态' original='${NTPCTLBINARY} -s status'
+include/tests_time:537: arg2 current='${NTPCTLBINARY} -s 状态' original='${NTPCTLBINARY} -s status'
+include/tests_time:557: arg2 current='${NTPCTLBINARY} -s 状态' original='${NTPCTLBINARY} -s status'
