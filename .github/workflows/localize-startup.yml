@@ -1,0 +1,141 @@
+name: One-time startup localization
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - .github/workflows/localize-startup.yml
+
+permissions:
+  contents: write
+
+jobs:
+  localize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Translate startup menu and safety prompts
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('lynis')
+          text = path.read_text(encoding='utf-8')
+          original = text
+
+          replacements = [
+              ('${PROGRAM_NAME} comes with ABSOLUTELY NO WARRANTY. This is free software, and you are\n  welcome to redistribute it under the terms of the GNU General Public License.\n  See the LICENSE file for details about using this software.',
+               '${PROGRAM_NAME} 不提供任何形式的担保。本软件为自由软件，\n  你可以根据 GNU 通用公共许可证的条款重新发布。\n  有关本软件的使用详情，请参阅 LICENSE 文件。'),
+              ('Enterprise support available (compliance, plugins, interface and tools)', '提供企业支持（合规、插件、界面和工具）'),
+              ('The called binary has the set-user-id bit - As this is unusual, execution will be stopped.', '当前脚本设置了 set-user-id 位，此情况并不常见，程序将停止运行。'),
+              ("Fatal error: can't find include directory", '致命错误：找不到 include 目录'),
+              ('Make sure to execute ${PROGRAM_NAME} from untarred directory or check your installation.', '请确认从完整解压后的目录运行 ${PROGRAM_NAME}，或检查安装是否正确。'),
+              ('Could not find user ID with id command. Want to help improve Lynis? Raise a ticket at ${PROGRAM_SOURCE}', '无法通过 id 命令获取用户 ID。如需协助改进 Lynis，请在 ${PROGRAM_SOURCE} 提交问题'),
+              ('[!] Change file permissions of ${INCLUDEDIR}/${FILE} to 640.', '[!] 请将 ${INCLUDEDIR}/${FILE} 的文件权限修改为 640。'),
+              ('    Command: chmod 640 ${INCLUDEDIR}/${FILE}', '    命令：chmod 640 ${INCLUDEDIR}/${FILE}'),
+              ("[!] Change ownership of ${INCLUDEDIR}/${ISSUE_FILE} to 'root' or similar (found: ${ISSUE_OWNER} with UID ${ISSUE_OWNERID}).", "[!] 请将 ${INCLUDEDIR}/${ISSUE_FILE} 的所有者修改为 'root' 或类似的特权账户（当前：${ISSUE_OWNER}，UID ${ISSUE_OWNERID}）。"),
+              ('    Command:\n      # chown 0:0 ${INCLUDEDIR}/${ISSUE_FILE}', '    命令：\n      # chown 0:0 ${INCLUDEDIR}/${ISSUE_FILE}'),
+              ('[X] Security check failed', '[X] 安全检查失败'),
+              ('Why do I see this error?', '为什么会看到此错误？'),
+              ('This is a protection mechanism to prevent the root user from executing user created files. The files may be altered, or including malicious pieces of script.', '这是一个保护机制，用于防止 root 用户执行普通用户创建的文件。这些文件可能已被修改，或包含恶意脚本片段。'),
+              ('What can I do?', '我应该怎么处理？'),
+              ('Option 1) Check if a trusted user created the files (e.g. due to using Git, Homebrew or similar).', '选项 1）确认这些文件是否由可信用户创建（例如通过 Git、Homebrew 或类似工具生成）。'),
+              ('If you trust these files, you can decide to continue this run by pressing ENTER.', '如果你信任这些文件，可以按 ENTER 继续本次运行。'),
+              ('Option 2) Change permissions of the related files.', '选项 2）修改相关文件的权限。'),
+              ('Option 2) Change ownership of the related files (or full directory).', '选项 2）修改相关文件或整个目录的所有者。'),
+              ('Commands (full directory):', '命令（整个目录）：'),
+              ('[ Press ENTER to continue, or CTRL+C to cancel ]', '[ 按 ENTER 继续，或按 CTRL+C 取消 ]'),
+              ('Incorrect ownership or permissions of language file', '语言文件的所有者或权限不正确'),
+              ('Could not find languages directory', '找不到语言目录'),
+              ('Log file is symlinked, which can introduce the risk of a symlink attack.', '日志文件是符号链接，可能带来符号链接攻击风险。'),
+              ('Report file is symlinked, which can introduce the risk of a symlink attack.', '报告文件是符号链接，可能带来符号链接攻击风险。'),
+              ('BETA VERSION', '测试版本'),
+              ('Thank you for testing a beta release. Make sure to read\n  all available documentation before proceeding and/or\n  requesting support. Due the nature of beta releases, it\n  is possible new features give unexpected warnings.', '感谢测试此版本。继续操作或请求支持前，请先阅读\n  所有可用文档。由于测试版本仍在开发中，部分新功能\n  可能产生意外警告。'),
+              ('[Not Specified]', '[未指定]'),
+              ('${WARNING}Warning${NORMAL}: ${WHITE}PID file exists, probably another Lynis process is running.${NORMAL}', '${WARNING}警告${NORMAL}：${WHITE}PID 文件已存在，可能有另一个 Lynis 进程正在运行。${NORMAL}'),
+              ('If you are unsure if another Lynis process is running currently, you are advised\nto stop the current process and check the process list first. If you cancelled\na previous instance (by using CTRL+C), you can ignore this message.\n\nYou are advised to check for temporary files after program completion.', '如果不确定当前是否有其他 Lynis 进程正在运行，建议先停止本次运行并检查进程列表。\n如果上一次运行是通过 CTRL+C 取消的，可以忽略此提示。\n\n程序完成后，建议检查是否遗留临时文件。'),
+              ('${YELLOW}Note: ${WHITE}Cancelling the program can leave temporary files behind${NORMAL}', '${YELLOW}注意：${WHITE}取消程序可能会留下临时文件${NORMAL}'),
+              ('Quitting, to prevent multiple cron jobs running at the same time', '正在退出，以防止多个 cron 任务同时运行'),
+              ('Found symlinked PID file (${PIDFILE}), quitting', '发现符号链接形式的 PID 文件（${PIDFILE}），正在退出'),
+              ('${GREEN}Usage:${NORMAL} lynis ${CYAN}command ${GRAY}[options]${NORMAL}', '${GREEN}用法：${NORMAL} lynis ${CYAN}命令 ${GRAY}[选项]${NORMAL}'),
+              ('${WHITE}Command:${NORMAL}', '${WHITE}命令：${NORMAL}'),
+              ('Perform local security scan', '执行本地安全扫描'),
+              ('Remote security scan', '执行远程安全扫描'),
+              ('Analyze Dockerfile', '分析 Dockerfile'),
+              ('Show all commands', '显示所有命令'),
+              ('Show ${PROGRAM_NAME} version', '显示 ${PROGRAM_NAME} 版本'),
+              ('Show help', '显示帮助'),
+              ('Show update details', '显示更新详情'),
+              ('${WHITE}Options:${NORMAL}', '${WHITE}选项：${NORMAL}'),
+              ('${WHITE}Alternative system audit modes${NORMAL}', '${WHITE}其他系统审计模式${NORMAL}'),
+              ('Perform forensics on a running or mounted system', '对正在运行或已挂载的系统执行取证检查'),
+              ('Non-privileged, show points of interest for pentesting', '以非特权模式显示渗透测试关注项'),
+              ('${WHITE}Layout options${NORMAL}', '${WHITE}显示选项${NORMAL}'),
+              ("Don't use colors in output", '输出中不使用颜色'),
+              ('No output', '不输出内容'),
+              ('Optimize color display for light backgrounds', '针对浅色背景优化颜色显示'),
+              ('Optimize colour display for light backgrounds', '针对浅色背景优化颜色显示'),
+              ('${WHITE}Misc options${NORMAL}', '${WHITE}其他选项${NORMAL}'),
+              ('Debug logging to screen', '在屏幕上显示调试日志'),
+              ("Don't create a log file", '不创建日志文件'),
+              ('Scan the system with the given profile file', '使用指定的配置文件扫描系统'),
+              ('View man page', '查看 man 手册'),
+              ('Show more details on screen', '在屏幕上显示更多详情'),
+              ('Display version number and quit', '显示版本号并退出'),
+              ('Wait between a set of tests', '在各项检查之间等待'),
+              ('Threshold for slow test warning in seconds (default 10)', '慢速检查警告阈值，单位为秒（默认 10）'),
+              ('${WHITE}Enterprise options${NORMAL}', '${WHITE}企业功能选项${NORMAL}'),
+              ('Define path of available plugins', '指定可用插件的路径'),
+              ('Upload data to central node', '将数据上传到中心节点'),
+              ("More options available. Run '$0 show options', or use the man page.", "还有更多选项。请运行 '$0 show options'，或查看 man 手册。"),
+              ('${RED}Error${NORMAL}: ${WHITE}Invalid option', '${RED}错误${NORMAL}：${WHITE}无效选项'),
+              ('${RED}No command provided.${WHITE} Exiting..${NORMAL}', '${RED}未提供命令。${WHITE} 正在退出……${NORMAL}'),
+              ('${PURPLE}NON-PRIVILEGED SCAN MODE${WHITE}', '${PURPLE}非特权扫描模式${WHITE}'),
+              ('${YELLOW}NOTES:${NORMAL}', '${YELLOW}注意事项：${NORMAL}'),
+              ('Some tests will be skipped (as they require root permissions)', '部分检查将被跳过（因为需要 root 权限）'),
+              ('Some tests might fail silently or give different results', '部分检查可能静默失败或产生不同结果'),
+              ('${RED}WARNING:${NORMAL}', '${RED}警告：${NORMAL}'),
+              ('No suggestions or warnings will be displayed in report (due to missing log file)', '由于缺少日志文件，报告中不会显示建议或警告'),
+              ('- Detecting OS... ', '- 正在检测操作系统…… '),
+              ('${WARNING}Fatal error${NORMAL}: problem while writing to log file. Check location and permissions.', '${WARNING}致命错误${NORMAL}：写入日志文件时出现问题，请检查路径和权限。'),
+          ]
+
+          required = [
+              '[X] Security check failed',
+              '${GREEN}Usage:${NORMAL} lynis ${CYAN}command ${GRAY}[options]${NORMAL}',
+              '${PROGRAM_NAME} comes with ABSOLUTELY NO WARRANTY.',
+          ]
+          for marker in required:
+              if marker not in original:
+                  raise SystemExit(f'missing required source marker: {marker}')
+
+          changed = 0
+          for old, new in replacements:
+              if old in text:
+                  text = text.replace(old, new)
+                  changed += 1
+
+          if changed < 45:
+              raise SystemExit(f'too few replacements applied: {changed}')
+
+          path.write_text(text, encoding='utf-8')
+          print(f'applied {changed} startup translations')
+          PY
+
+          sh -n lynis
+
+      - name: Commit localized entry script and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/localize-startup.yml
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add lynis .github/workflows/localize-startup.yml
+          git commit -m "i18n: translate startup menu and safety prompts"
+          git push origin HEAD:master
