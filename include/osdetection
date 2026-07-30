@@ -75,7 +75,7 @@
                     14 | 14.[0-9]*) OS_FULLNAME="macOS Sonoma (${OS_VERSION})" ;;
                     15 | 15.[0-9]*) OS_FULLNAME="macOS Sequoia (${OS_VERSION})" ;;
                     26 | 26.[0-9]*) OS_FULLNAME="macOS Tahoe (${OS_VERSION})" ;;
-                    *) echo "Unknown macOS version. Do you know what version it is? Create an issue at ${PROGRAM_SOURCE}" ;;
+                    *) echo "未知的 macOS 版本。你知道这是哪个版本吗？请在 ${PROGRAM_SOURCE} 提交问题" ;;
                 esac
             else
                 # Fall back to a fairly safe name
@@ -120,7 +120,7 @@
             # TrueOS
             if [ -f /etc/defaults/trueos ]; then
                 OS_NAME="TrueOS"
-                LogText "Result: found TrueOS file, system is completely based on FreeBSD though. Only adjusting OS name."
+                LogText "结果：发现 TrueOS 标识文件；该系统完全基于 FreeBSD，仅调整操作系统名称。"
             fi
         ;;
 
@@ -903,9 +903,9 @@
 
         # Unknown or unsupported systems
         *)
-            echo "[ ${WARNING}WARNING${NORMAL} ]"
-            echo "${WARNING}Error${NORMAL}: ${WHITE}Unknown OS found. No support available yet for this OS or platform...${NORMAL}"
-            echo "Please consult the README/documentation for more information."
+            echo "[ ${WARNING}警告${NORMAL} ]"
+            echo "${WARNING}错误${NORMAL}：${WHITE}检测到未知操作系统，目前尚不支持此操作系统或平台……${NORMAL}"
+            echo "请查阅 README 或文档了解更多信息。"
             exit 1
         ;;
 
@@ -956,9 +956,9 @@
             ShowSymlinkPath /bin/ps
             if [ "${SYMLINK}" = "/bin/busybox" ]; then
                 SHELL_IS_BUSYBOX=1
-                LogText "Result: The device is using Busybox."
+                LogText "结果：该设备正在使用 BusyBox。"
             else
-                LogText "Result: The device is NOT using Busybox."
+                LogText "结果：该设备未使用 BusyBox。"
             fi
         fi
     fi

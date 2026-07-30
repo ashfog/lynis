@@ -39,44 +39,44 @@
     # Notes       : FQDN: max 253 characters
     #             : component: a-z, 0-9, hyphen, not start with hyphen, max 63 characters
     #               dots allowed as separator
-    Register --test-no NETW-2400 --weight L --network YES --category basics --description "Hostname length and value check"
+    Register --test-no NETW-2400 --weight L --network YES --category basics --description "检查主机名长度和值"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Test first the fully qualified domain name
         if [ ${#FQDN} -gt 253 ]; then
             # Too long
-            LogText "Result: FQDN is more than 253 characters"
-            Display --indent 2 --text "- Hostname (FQDN length)" --result "${STATUS_WARNING}" --color RED
-            ReportWarning "${TEST_NO}" "Hostname is too long (more than 253 characters)"
+            LogText "结果：FQDN 超过 253 个字符"
+            Display --indent 2 --text "- 主机名（FQDN 长度）" --result "${STATUS_WARNING}" --color RED
+            ReportWarning "${TEST_NO}" "主机名过长（超过 253 个字符）"
         elif [ ${#FQDN} -eq 0 ]; then
             # FQDN not defined
-            LogText "Result: FQDN is not defined"
-            if IsVerbose; then Display --indent 2 --text "- Hostname (FQDN length)" --result "${STATUS_UNKNOWN}" --color YELLOW; fi
+            LogText "结果：未定义 FQDN"
+            if IsVerbose; then Display --indent 2 --text "- 主机名（FQDN 长度）" --result "${STATUS_UNKNOWN}" --color YELLOW; fi
         else
             # Fine
-            LogText "Result: FQDN is defined and not longer than 253 characters (${#FQDN} characters)"
-            if IsVerbose; then Display --indent 2 --text "- Hostname (FQDN length)" --result "${STATUS_OK}" --color GREEN; fi
+            LogText "结果：FQDN 已定义，且不超过 253 个字符（当前 ${#FQDN} 个字符）"
+            if IsVerbose; then Display --indent 2 --text "- 主机名（FQDN 长度）" --result "${STATUS_OK}" --color GREEN; fi
         fi
         # Now test short hostname
         if [ ${#HOSTNAME} -eq 0 ]; then
-            if IsVerbose; then Display --indent 2 --text "- Hostname (FQDN length)" --result "${STATUS_NONE}" --color RED; fi
-            LogText "Result: hostname is not defined"
+            if IsVerbose; then Display --indent 2 --text "- 主机名（FQDN 长度）" --result "${STATUS_NONE}" --color RED; fi
+            LogText "结果：未定义主机名"
         else
             # Test length
             if [ ${#HOSTNAME} -gt 63 ]; then
-                LogText "Result: hostname is more than 63 characters"
-                Display --indent 2 --text "- Hostname (length)" --result "${STATUS_WARNING}" --color RED
+                LogText "结果：主机名超过 63 个字符"
+                Display --indent 2 --text "- 主机名（长度）" --result "${STATUS_WARNING}" --color RED
             else
-                LogText "Result: hostnamed is defined and not longer than 63 characters"
+                LogText "结果：主机名已定义，且不超过 63 个字符"
             fi
             # Test valid characters (normally a dot should not be in the name, but we can't be 100% sure we have short name)
             FIND=$(echo "${HOSTNAME}" | ${TRBINARY} -d '[:alnum:]\.\-')
             if [ -z "${FIND}" ]; then
-                LogText "Result: good, no unexpected characters discovered in hostname"
-                if IsVerbose; then Display --indent 2 --text "- Hostname (allowed characters)" --result "${STATUS_OK}" --color GREEN; fi
+                LogText "结果：正常，主机名中未发现异常字符"
+                if IsVerbose; then Display --indent 2 --text "- 主机名（允许的字符）" --result "${STATUS_OK}" --color GREEN; fi
             else
-                LogText "Result: unexpected characters discovered in hostname (characters: ${FIND}), which may impact network connectivity"
-                Display --indent 2 --text "- Hostname (allowed characters)" --result "${STATUS_WARNING}" --color RED
-                ReportWarning "${TEST_NO}" "Hostname contains invalid characters" "hostname" "text:See log file for invalid characters"
+                LogText "结果：主机名中发现异常字符（字符：${FIND}），可能影响网络连接"
+                Display --indent 2 --text "- 主机名（允许的字符）" --result "${STATUS_WARNING}" --color RED
+                ReportWarning "${TEST_NO}" "主机名包含无效字符" "hostname" "text:请查看日志文件中的无效字符"
             fi
         fi
     fi
@@ -85,7 +85,7 @@
 #
     # Test        : NETW-2600
     # Description : Gather IPv6 configuration
-    Register --test-no NETW-2600 --os "Linux" --weight L --network YES --category security --description "Checking IPv6 configuration"
+    Register --test-no NETW-2600 --os "Linux" --weight L --network YES --category security --description "检查 IPv6 配置"
     if [ ${SKIPTEST} -eq 0 ]; then
         IPV6_CONFIGURED=0
         IPV6_ACCEPT_RA=255
@@ -134,23 +134,23 @@
             IPV6_MODE="disabled"
         fi
 
-        LogText "Result: IPV6 mode is ${IPV6_MODE}"
+        LogText "结果：IPv6 模式为 ${IPV6_MODE}"
         if [ ${IPV6_CONFIGURED} -eq 1 ]; then
-            Display --indent 2 --text "- Checking IPv6 configuration" --result "${STATUS_ENABLED}" --color WHITE
+            Display --indent 2 --text "- 检查 IPv6 配置" --result "${STATUS_ENABLED}" --color WHITE
             STATUS=$(echo ${IPV6_MODE} | ${TRBINARY} '[:lower:]' '[:upper:]')
-            Display --indent 6 --text "Configuration method" --result "${STATUS}" --color WHITE
+            Display --indent 6 --text "配置方式" --result "${STATUS}" --color WHITE
             if [ ${IPV6_ONLY} -eq 1 ]; then STATUS="${STATUS_YES}"; else STATUS="${STATUS_NO}"; fi
-            LogText "Result: IPv6 only configuration: ${STATUS}"
-            Display --indent 6 --text "IPv6 only" --result "${STATUS}" --color WHITE
+            LogText "结果：仅 IPv6 配置：${STATUS}"
+            Display --indent 6 --text "仅 IPv6" --result "${STATUS}" --color WHITE
         else
-            Display --indent 2 --text "- Checking IPv6 configuration" --result "${STATUS_DISABLED}" --color WHITE
+            Display --indent 2 --text "- 检查 IPv6 配置" --result "${STATUS_DISABLED}" --color WHITE
         fi
         # Configuration errors
         if [ ${IPV6_MISCONFIGURED_MTU} -eq 1 ]; then
             IPV6_MISCONFIGURED=1
-            LogText "Result: MTU of IPv6 interfaces should be 1280 or higher"
-            Display --indent 6 --text "Error: MTU is too low" --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "Check your MTU configuration of IPv6 interfaces"
+            LogText "结果：IPv6 接口的 MTU 应为 1280 或更高"
+            Display --indent 6 --text "错误：MTU 过低" --result "${STATUS_WARNING}" --color RED
+            ReportSuggestion "${TEST_NO}" "检查 IPv6 接口的 MTU 配置"
         fi
 
         # Possible improvements:
@@ -165,18 +165,18 @@
 #
     # Test        : NETW-2704
     # Description : Basic nameserver configuration tests (connectivity)
-    Register --test-no NETW-2704 --weight L --network YES --category security --description "Basic nameserver configuration tests"
+    Register --test-no NETW-2704 --weight L --network YES --category security --description "基本名称服务器配置检查"
     if [ ${SKIPTEST} -eq 0 ]; then
-        Display --indent 2 --text "- Checking configured nameservers"
-        LogText "Test: Checking /etc/resolv.conf file"
+        Display --indent 2 --text "- 检查已配置的名称服务器"
+        LogText "检查：检查 /etc/resolv.conf 文件"
         if [ -f /etc/resolv.conf ]; then
-            LogText "Result: Found /etc/resolv.conf file"
+            LogText "结果：发现 /etc/resolv.conf 文件"
             FIND=$(${GREPBINARY} '^nameserver' /etc/resolv.conf | ${TRBINARY} -d '\t' | ${SEDBINARY} 's/nameserver*//g' | uniq | ${CUTBINARY} -d# -f1)
             if [ -n "${FIND}" ]; then
-                Display --indent 4 --text "- Testing nameservers"
-                LogText "Test: Querying nameservers"
+                Display --indent 4 --text "- 测试名称服务器"
+                LogText "检查：查询名称服务器"
                 for I in ${FIND}; do
-                    LogText "Found nameserver: ${I}"
+                    LogText "发现名称服务器：${I}"
                     Report "nameserver[]=${I}"
                     # Check if a local resolver is available (like DNSMasq)
                     if [ "${I}" = "::1" -o "${I}" = "127.0.0.1" -o "${I}" = "127.0.0.53" -o "${I}" = "127.0.1.1" -o "${I}" = "0.0.0.0" ]; then
@@ -187,20 +187,20 @@
                         # 0=good, other=bad
                         DNSRESPONSE=$(${DIGBINARY} +noall +time=3 +retry=0 @${I} ${FQDN} > /dev/null ; echo $?)
                         if [ "${DNSRESPONSE}" = "0" ]; then
-                            Display --indent 8 --text "Nameserver: ${I}" --result "${STATUS_OK}" --color GREEN
-                            LogText "Nameserver ${I} seems to respond to queries from this host."
+                            Display --indent 8 --text "名称服务器：${I}" --result "${STATUS_OK}" --color GREEN
+                            LogText "名称服务器 ${I} 能够响应此主机的查询。"
                             # Count responsive nameservers
                             NUMBERACTIVENS=$((NUMBERACTIVENS + 1))
                         else
-                            Display --indent 8 --text "Nameserver: ${I}" --result "NO RESPONSE" --color RED
-                            LogText "Result: nameserver ${I} does NOT respond"
-                            LogText "Exit-code from dig: ${DNSRESPONSE}"
-                            ReportSuggestion "${TEST_NO}" "Check connection to this nameserver and make sure no outbound DNS queries are blocked (port 53 UDP and TCP)."
-                            ReportWarning "${TEST_NO}" "Nameserver ${I} does not respond"
+                            Display --indent 8 --text "名称服务器：${I}" --result "无响应" --color RED
+                            LogText "结果：名称服务器 ${I} 未响应"
+                            LogText "dig 退出码：${DNSRESPONSE}"
+                            ReportSuggestion "${TEST_NO}" "检查与该名称服务器的连接，并确认出站 DNS 查询未被阻止（UDP 和 TCP 端口 53）。"
+                            ReportWarning "${TEST_NO}" "名称服务器 ${I} 未响应"
                         fi
                     else
-                        LogText "Result: Nameserver test for ${I} skipped, 'dig' not installed"
-                        Display --indent 6 --text "Nameserver: ${I}" --result "${STATUS_SKIPPED}" --color YELLOW
+                        LogText "结果：未安装 dig，跳过名称服务器 ${I} 的测试"
+                        Display --indent 6 --text "名称服务器：${I}" --result "${STATUS_SKIPPED}" --color YELLOW
                     fi
                 done
             fi
@@ -212,28 +212,28 @@
     # Test        : NETW-2705
     # Description : Basic nameserver configuration tests (connectivity)
     if [ ${LOCAL_DNSRESOLVER_FOUND} -eq 0 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NETW-2705 --preqs-met ${PREQS_MET} --weight L --network YES --category security --description "Check availability two nameservers"
+    Register --test-no NETW-2705 --preqs-met ${PREQS_MET} --weight L --network YES --category security --description "检查是否有两个可用的名称服务器"
     if [ ${SKIPTEST} -eq 0 ]; then
         SKIP=0
         if [ -n "${DIGBINARY}" ]; then
             if [ ${NUMBERACTIVENS} -lt 2 ]; then
-                Display --indent 4 --text "- Minimal of 2 responsive nameservers" --result "${STATUS_WARNING}" --color RED
-                LogText "Result: less than 2 responsive nameservers found"
-                ReportWarning "${TEST_NO}" "Couldn't find 2 responsive nameservers"
-                LogText "Note: Non responsive nameservers can give problems for your system(s). Like the lack of recursive lookups, bad connectivity to update servers etc."
-                ReportSuggestion "${TEST_NO}" "Check your resolv.conf file and fill in a backup nameserver if possible"
+                Display --indent 4 --text "- 至少两个可响应的名称服务器" --result "${STATUS_WARNING}" --color RED
+                LogText "结果：发现的可响应名称服务器少于两个"
+                ReportWarning "${TEST_NO}" "未找到两个可响应的名称服务器"
+                LogText "说明：无响应的名称服务器可能导致系统出现问题，例如无法递归查询、无法连接更新服务器等。"
+                ReportSuggestion "${TEST_NO}" "检查 resolv.conf 文件，并在可能的情况下添加备用名称服务器"
                 AddHP 1 2
             else
-                Display --indent 4 --text "- Minimal of 2 responsive nameservers" --result "${STATUS_OK}" --color GREEN
-                LogText "Result: found at least 2 responsive nameservers"
+                Display --indent 4 --text "- 至少两个可响应的名称服务器" --result "${STATUS_OK}" --color GREEN
+                LogText "结果：至少发现两个可响应的名称服务器"
                 AddHP 3 3
             fi
         else
-            Display --indent 4 --text "- Minimal of 2 responsive nameservers" --result "${STATUS_SKIPPED}" --color YELLOW
-            LogText "Result: dig not installed, test can't be fully performed"
+            Display --indent 4 --text "- 至少两个可响应的名称服务器" --result "${STATUS_SKIPPED}" --color YELLOW
+            LogText "结果：未安装 dig，无法完整执行检查"
         fi
     else
-        LogText "Result: Test most likely skipped due having local resolver in /etc/resolv.conf"
+        LogText "结果：/etc/resolv.conf 中配置了本地解析器，因此可能跳过此检查"
     fi
 #
 #################################################################################
@@ -257,17 +257,17 @@
         SKIP=0
         DNSSEC_STATUS=$(${RESOLVE_CMD} ${RESOLVE_CMD_PARAM} 2> /dev/null | ${AWKBINARY} -F ":" '/DNSSEC supported/ { print $2 }' | ${TRBINARY} -d ' ')
         if [ "${DNSSEC_STATUS}" = "yes" ]; then
-            Display --indent 4 --text "- DNSSEC supported (systemd-resolved)" --result "${STATUS_YES}" --color GREEN
-            LogText "Result: DNSSEC supported by systemd-resolved and upstream DNS servers"
+            Display --indent 4 --text "- DNSSEC 支持（systemd-resolved）" --result "${STATUS_YES}" --color GREEN
+            LogText "结果：systemd-resolved 和上游 DNS 服务器支持 DNSSEC"
         elif [ "${DNSSEC_STATUS}" = "no" ]; then
-            Display --indent 4 --text "- DNSSEC supported (systemd-resolved)" --result "${STATUS_NO}" --color YELLOW
-            LogText "Result: DNSSEC not supported by systemd-resolved or upstream DNS servers"
+            Display --indent 4 --text "- DNSSEC 支持（systemd-resolved）" --result "${STATUS_NO}" --color YELLOW
+            LogText "结果：systemd-resolved 或上游 DNS 服务器不支持 DNSSEC"
         else
-            Display --indent 4 --text "- DNSSEC supported (systemd-resolved)" --result "${STATUS_UNKNOWN}" --color RED
-            LogText "Result: command '${RESOLVE_CMD} ${RESOLVE_CMD_PARAM}' returned an error. Please run command manually to check for details."
+            Display --indent 4 --text "- DNSSEC 支持（systemd-resolved）" --result "${STATUS_UNKNOWN}" --color RED
+            LogText "结果：命令 '${RESOLVE_CMD} ${RESOLVE_CMD_PARAM}' 返回错误，请手动运行命令查看详情。"
         fi
     else
-        LogText "Result: Test most likely skipped due to not having resolvectl"
+        LogText "结果：未找到 resolvectl，因此可能跳过此检查"
     fi
 #
 #################################################################################
@@ -276,19 +276,19 @@
     # Description : Find default gateway (route)
     # More info   : BSD: ^default   Linux: 0.0.0.0
     if [ -n "${NETSTATBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NETW-3001 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Find default gateway (route)"
+    Register --test-no NETW-3001 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "查找默认网关（路由）"
     if [ $SKIPTEST -eq 0 ]; then
-        LogText "Test: Searching default gateway(s)"
+        LogText "检查：搜索默认网关"
         FIND=$(${NETSTATBINARY} -rn | ${GREPBINARY} -E "^0.0.0.0|default" | ${TRBINARY} -s ' ' | ${CUTBINARY} -d ' ' -f2)
         if [ -n "${FIND}" ]; then
             for I in ${FIND}; do
-                LogText "Result: Found default gateway ${I}"
+                LogText "结果：发现默认网关 ${I}"
                 Report "default_gateway[]=${I}"
             done
-            Display --indent 2 --text "- Checking default gateway" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 2 --text "- 检查默认网关" --result "${STATUS_DONE}" --color GREEN
         else
-            LogText "Result: No default gateway found"
-            Display --indent 2 --text "- Checking default gateway" --result "NONE FOUND" --color WHITE
+            LogText "结果：未找到默认网关"
+            Display --indent 2 --text "- 检查默认网关" --result "未找到" --color WHITE
         fi
     fi
 #
@@ -296,7 +296,7 @@
 #
     # Test        : NETW-3004
     # Description : Find available network interfaces
-    Register --test-no NETW-3004 --weight L --network NO --category security --description "Search for available network interfaces"
+    Register --test-no NETW-3004 --weight L --network NO --category security --description "搜索可用的网络接口"
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=""
         case ${OS} in
@@ -318,17 +318,17 @@
             ;;
             *)
                 # Having a system currently unsupported? Share your details to determine network interfaces
-                ReportException "${TEST_NO}:1" "No support for this OS (${OS}) to find available network interfaces"
+                ReportException "${TEST_NO}:1" "此操作系统（${OS}）暂不支持查找可用网络接口"
             ;;
         esac
         if HasData "${FIND}"; then
             for ITEM in ${FIND}; do
                 NETWORK_INTERFACES="${NETWORK_INTERFACES}|${ITEM}"
-                LogText "Found network interface: ${ITEM}"
+                LogText "发现网络接口：${ITEM}"
                 Report "network_interface[]=${ITEM}"
             done
         else
-            ReportException "${TEST_NO}:1" "No interfaces found on this system (OS=${OS})"
+            ReportException "${TEST_NO}:1" "此系统上未发现网络接口（OS=${OS}）"
         fi
     fi
 #
@@ -336,7 +336,7 @@
 #
     # Test        : NETW-3006
     # Description : Get network MAC addresses
-    Register --test-no NETW-3006 --weight L --network NO --category security --description "Get network MAC addresses"
+    Register --test-no NETW-3006 --weight L --network NO --category security --description "获取网络 MAC 地址"
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=""
         case ${OS} in
@@ -355,10 +355,10 @@
                     fi
                 else
                     if [ -n "${IPBINARY}" ]; then
-                        LogText "Test: Using ip binary to gather hardware addresses"
+                        LogText "检查：使用 ip 命令收集硬件地址"
                         FIND=$(${IPBINARY} link 2> /dev/null | ${GREPBINARY} "link/ether" | ${AWKBINARY} '{ print $2 }')
                     else
-                        ReportException "${TEST_NO}:2" "Missing ifconfig or ip command to collect hardware address (MAC)"
+                        ReportException "${TEST_NO}:2" "缺少 ifconfig 或 ip 命令，无法收集硬件地址（MAC）"
                     fi
                 fi
                 ;;
@@ -376,11 +376,11 @@
                 ;;
             *)
                 # Having a system currently unsupported? Share your details to determine MAC information
-                ReportException "${TEST_NO}:1" "No support for this OS (${OS}) to find MAC information"
+                ReportException "${TEST_NO}:1" "此操作系统（${OS}）暂不支持获取 MAC 信息"
                 ;;
         esac
         for ITEM in ${FIND}; do
-            LogText "Found MAC address: ${ITEM}"
+            LogText "发现 MAC 地址：${ITEM}"
             Report "network_mac_address[]=${ITEM}"
         done
     fi
@@ -389,7 +389,7 @@
 #
     # Test        : NETW-3008
     # Description : Get network IPv4/6 addresses
-    Register --test-no NETW-3008 --weight L --network NO --category security --description "Get network IP addresses"
+    Register --test-no NETW-3008 --weight L --network NO --category security --description "获取网络 IP 地址"
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=""; FIND2=""
         case ${OS} in
@@ -408,11 +408,11 @@
                     FIND2=$(${IFCONFIGBINARY} -a 2> /dev/null | ${AWKBINARY} '{ if ($1=="inet6" && $2=="addr:") { print $3 } else { if ($1=="inet6" && $3=="prefixlen") { print $2 } } }')
                 else
                     if [ -n "${IPBINARY}" ]; then
-                        LogText "Test: Using ip binary to gather IP addresses"
+                        LogText "检查：使用 ip 命令收集 IP 地址"
                         FIND=$(${IPBINARY} addr 2> /dev/null | ${AWKBINARY} '{ if ($1=="inet") { print $2 }}' | ${SEDBINARY} 's/\/.*//')
                         FIND2=$(${IPBINARY} addr 2> /dev/null | ${AWKBINARY} '{ if ($1=="inet6") { print $2 }}' | ${SEDBINARY} 's/\/.*//')
                     else
-                        ReportException "${TEST_NO}:2" "Missing ifconfig or ip command to collect hardware address (MAC)"
+                        ReportException "${TEST_NO}:2" "缺少 ifconfig 或 ip 命令，无法收集硬件地址（MAC）"
                     fi
                 fi
                 ;;
@@ -429,19 +429,19 @@
                 FIND2=$(${IFCONFIGBINARY} -a 2> /dev/null | ${AWKBINARY} '{ if ($1=="inet6") print $2 }')
                 ;;
             *)
-                LogText "Result: no support yet for this OS (${OS}) to find IP address information. You can help improving this test by submitting your details."
-                ReportException "${TEST_NO}:1" "IP address information test not implemented for this operating system"
+                LogText "结果：此操作系统（${OS}）暂不支持获取 IP 地址信息；你可以提交系统信息以帮助改进此检查。"
+                ReportException "${TEST_NO}:1" "尚未为此操作系统实现 IP 地址信息检查"
                 ;;
         esac
 
         # IPv4
         for ITEM in ${FIND}; do
-            LogText "Found IPv4 address: ${ITEM}"
+            LogText "发现 IPv4 地址：${ITEM}"
             Report "network_ipv4_address[]=${ITEM}"
         done
         # IPv6
         for ITEM in ${FIND2}; do
-            LogText "Found IPv6 address: ${ITEM}"
+            LogText "发现 IPv6 地址：${ITEM}"
             Report "network_ipv6_address[]=${ITEM}"
         done
     fi
@@ -450,7 +450,7 @@
 #
     # Test        : NETW-3012
     # Description : Check listening ports
-    Register --test-no NETW-3012 --weight L --network NO --category security --description "Check listening ports"
+    Register --test-no NETW-3012 --weight L --network NO --category security --description "检查监听端口"
     if [ ${SKIPTEST} -eq 0 ]; then
         DATA=""
         FIND=""; FIND2=""
@@ -467,22 +467,22 @@
             ;;
             Linux)
                 if [ -n "${SSBINARY}" ]; then
-                    LogText "Test: Retrieving ss information to find listening ports"
+                    LogText "检查：使用 ss 获取监听端口信息"
                     DATA=$(${SSBINARY} --query=udp,tcp -plnt | ${AWKBINARY} '{ if ($1!="Netid") { print "raw,ss,v1|"$1"|"$5"|"$7"|" }}' | ${SEDBINARY} 's/pid=[0-9]\{1,\},fd=[0-9]\{1,\}//g' | ${SEDBINARY} 's/users://' | ${SEDBINARY} 's/,)//g' | ${TRBINARY} -d '()"')
                 elif [ -n "${NETSTATBINARY}" ]; then
-                    LogText "Test: Retrieving netstat information to find listening ports"
+                    LogText "检查：使用 netstat 获取监听端口信息"
                     # UDP
                     FIND=$(${NETSTATBINARY} -nlp 2> /dev/null | ${GREPBINARY} "^udp" | ${AWKBINARY} '{ print $4"|"$1"|"$6"|" }' | ${SEDBINARY} 's:|[0-9]*/:|:')
                     # TCP
                     FIND2=$(${NETSTATBINARY} -nlp 2> /dev/null  | ${GREPBINARY} "^tcp" | ${AWKBINARY} '{ if($6=="LISTEN") { print $4"|"$1"|"$7"|" }}' | ${SEDBINARY} 's:|[0-9]*/:|:')
                 else
-                    ReportException "${TEST_NO}:1" "netstat and ss binary missing to gather listening ports"
+                    ReportException "${TEST_NO}:1" "缺少 netstat 和 ss 命令，无法收集监听端口"
                 fi
             ;;
 
             macOS)
                 if [ -n "${LSOFBINARY}" ]; then
-                    LogText "Test: Retrieving lsof information to find listening ports"
+                    LogText "检查：使用 lsof 获取监听端口信息"
                     # UDP and TCP combined
                     FIND=$(${LSOFBINARY}${LSOF_EXTRA_OPTIONS} -i -P | ${AWKBINARY} '{ print $9"|"$8"|"$1"|" }' | ${SEDBINARY} 's/\(.*\)\-\>.*\(\|.*\)/\1\2/' | ${SEDBINARY} 's/\*/'$IP'/' | ${SORTBINARY} -u | ${GREPBINARY} -v "NAME")
                 else
@@ -493,7 +493,7 @@
             ;;
             NetBSD)
                 if [ -n "${SOCKSTATBINARY}" ]; then
-                    LogText "Test: Retrieving sockstat information to find listening ports"
+                    LogText "检查：使用 sockstat 获取监听端口信息"
                     FIND=$(${SOCKSTATBINARY} 2> /dev/null | ${AWKBINARY} '{ if ($7 ~ /\*.\*/) print $5"|"$6"|"$2"|" }' | ${SORTBINARY} -u)
                 else
                     FIND=""
@@ -502,27 +502,27 @@
             ;;
             OpenBSD)
                 if [ -n "${NETSTATBINARY}" ]; then
-                    LogText "Test: Retrieving netstat information to find listening ports"
+                    LogText "检查：使用 netstat 获取监听端口信息"
                     # UDP
                     FIND=$(${NETSTATBINARY} -an 2> /dev/null | ${GREPBINARY} "^udp" | ${AWKBINARY} '{ print $4"|"$1"||" }')
                     # TCP
                     FIND2=$(${NETSTATBINARY} -an 2> /dev/null  | ${GREPBINARY} "^tcp" | ${AWKBINARY} '{ if($6=="LISTEN") { print $4"|"$1"||" }}')
                 else
-                    ReportException "${TEST_NO}:3" "netstat missing to gather listening ports"
+                    ReportException "${TEST_NO}:3" "缺少 netstat 命令，无法收集监听端口"
                 fi
             ;;
             Solaris)
                 if [ -n "${NETSTATBINARY}" ]; then
-                    LogText "Test: Retrieving netstat information to find listening ports"
+                    LogText "检查：使用 netstat 获取监听端口信息"
                     FIND=$(${NETSTATBINARY} -an -P udp | ${AWKBINARY} '{ if($7=="LISTEN") { print $1"|udp|LISTEN|" }}')
                     FIND2=$(${NETSTATBINARY} -an -P tcp | ${AWKBINARY} '{ if($7=="LISTEN") { print $1"|tcp|LISTEN|" }}')
                 else
-                    ReportException "${TEST_NO}:4" "netstat missing to gather listening ports"
+                    ReportException "${TEST_NO}:4" "缺少 netstat 命令，无法收集监听端口"
                 fi
             ;;
             *)
                 # Got this exception? Provide your details and output of netstat or any other tool to determine this information.
-                ReportException "${TEST_NO}:2" "Unclear what method to use, to determine listening port information"
+                ReportException "${TEST_NO}:2" "无法确定应使用哪种方法获取监听端口信息"
             ;;
         esac
 
@@ -536,7 +536,7 @@
         if [ -n "${FIND}" ]; then
             for ITEM in ${FIND}; do
                 COUNT=$((COUNT + 1))
-                LogText "Found listening info: ${ITEM}"
+                LogText "发现监听信息：${ITEM}"
                 Report "network_listen_port[]=${ITEM}"
             done
         fi
@@ -544,14 +544,14 @@
         if [ -n "${FIND2}" ]; then
             for ITEM in ${FIND2}; do
                 COUNT=$((COUNT + 1))
-                LogText "Found listening info: ${ITEM}"
+                LogText "发现监听信息：${ITEM}"
                 Report "network_listen_port[]=${ITEM}"
             done
         fi
         if [ -z "${DATA}" -a -z "${FIND}" ]; then
-            Display --indent 2 --text "- Getting listening ports (TCP/UDP)" --result "${STATUS_SKIPPED}" --color YELLOW
+            Display --indent 2 --text "- 获取监听端口（TCP/UDP）" --result "${STATUS_SKIPPED}" --color YELLOW
         else
-            Display --indent 2 --text "- Getting listening ports (TCP/UDP)" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 2 --text "- 获取监听端口（TCP/UDP）" --result "${STATUS_DONE}" --color GREEN
         fi
     fi
 #
@@ -561,12 +561,12 @@
     # Description : Checking promiscuous interfaces (BSD)
     # Note        : FreeBSD and others
     if [ "${OS}" = "DragonFly" -o "${OS}" = "FreeBSD" -o "${OS}" = "NetBSD" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NETW-3014 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Checking promiscuous interfaces (BSD)"
+    Register --test-no NETW-3014 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查混杂模式接口（BSD）"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking promiscuous interfaces (FreeBSD)"
+        LogText "检查：检查混杂模式接口（FreeBSD）"
         FIND=$(${IFCONFIGBINARY} 2> /dev/null | ${GREPBINARY} PROMISC | ${CUTBINARY} -d ':' -f1)
         if HasData "${FIND}"; then
-            LogText "Result: Promiscuous interfaces: ${FIND}"
+            LogText "结果：混杂模式接口：${FIND}"
             for ITEM in ${FIND}; do
                 WHITELISTED=0
                 for PROFILE in ${PROFILES}; do
@@ -574,26 +574,26 @@
                     ISWHITELISTED=$(${GREPBINARY} "^if_promisc:${ITEM}:" ${PROFILE})
                     if HasData "${ISWHITELISTED}"; then
                         WHITELISTED=1
-                        LogText "Result: this interface was whitelisted in profile (${PROFILE})"
+                        LogText "结果：此接口已在配置文件中加入白名单（${PROFILE}）"
                     fi
                 done
                 # Check if this interface was whitelisted
                 if [ ${WHITELISTED} -eq 0 ]; then
                     FOUNDPROMISC=1
-                    ReportWarning "${TEST_NO}" "Found promiscuous interface (${ITEM})"
-                    LogText "Note: some tools put an interface into promiscuous mode, to capture/log network traffic"
+                    ReportWarning "${TEST_NO}" "发现混杂模式接口（${ITEM}）"
+                    LogText "说明：某些工具会将接口设为混杂模式，以捕获或记录网络流量"
                 else
-                    LogText "Result: Found promiscuous interface ${ITEM} (*whitelisted via profile*)"
+                    LogText "结果：发现混杂模式接口 ${ITEM}（已通过配置文件加入白名单）"
                 fi
             done
         fi
 
         # Show result
         if [ ${FOUNDPROMISC} -eq 0 ]; then
-            Display --indent 2 --text "- Checking promiscuous interfaces" --result "${STATUS_OK}" --color GREEN
-            LogText "Result: No promiscuous interfaces found"
+            Display --indent 2 --text "- 检查混杂模式接口" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：未发现混杂模式接口"
         else
-            Display --indent 2 --text "- Checking promiscuous interfaces" --result "${STATUS_WARNING}" --color RED
+            Display --indent 2 --text "- 检查混杂模式接口" --result "${STATUS_WARNING}" --color RED
         fi
     fi
 #
@@ -601,22 +601,22 @@
 #
     # Test        : NETW-3015
     # Description : Checking promiscuous interfaces (Linux)
-    Register --test-no NETW-3015 --os Linux --weight L --network NO --category security --description "Checking promiscuous interfaces (Linux)"
+    Register --test-no NETW-3015 --os Linux --weight L --network NO --category security --description "检查混杂模式接口（Linux）"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUNDPROMISC=99
         NETWORK=""
         USE_IP_INSTEAD_IFCONFIG=0
 
         if [ -n "${IPBINARY}" ]; then
-            LogText "Test: Using ip binary to retrieve network interfaces"
+            LogText "检查：使用 ip 命令获取网络接口"
             NETWORK=$(${IPBINARY} -o link 2> /dev/null | ${GREPBINARY} "^[0-9]" | ${AWKBINARY} '{print $2 }' | ${TRBINARY} -d ':')
             USE_IP_INSTEAD_IFCONFIG=1
         elif [ -n "${IFCONFIGBINARY}" ]; then
-            LogText "Test: Using ifconfig binary to retrieve network interfaces"
+            LogText "检查：使用 ifconfig 命令获取网络接口"
             NETWORK=$(${IFCONFIGBINARY} 2> /dev/null | ${GREPBINARY} Link | ${TRBINARY} -s ' ' | ${CUTBINARY} -d ' ' -f1)
         fi
 
-        LogText "Test: Checking all interfaces to discover any with promiscuous mode enabled"
+        LogText "检查：检查所有接口是否启用了混杂模式"
         if [ -n "${NETWORK}" ]; then
             FOUNDPROMISC=0
             for I in ${NETWORK}; do
@@ -626,29 +626,29 @@
                     FIND=$(${IFCONFIGBINARY} ${I} 2> /dev/null | ${GREPBINARY} PROMISC)
                 fi
                 if [ -n "${FIND}" ]; then
-                    LogText "Result: Promiscuous interface: ${I}"
+                    LogText "结果：混杂模式接口：${I}"
                     ISWHITELISTED=$(${GREPBINARY} "^if_promisc:${I}:" ${PROFILE})
                     if [ -z "${ISWHITELISTED}" ]; then
                         FOUNDPROMISC=1
-                        ReportWarning "${TEST_NO}" "Found promiscuous interface" "${I}" "text:Determine if this mode is required or whitelist interface in profile"
-                        LogText "Note: some tools put an interface into promiscuous mode, to capture/log network traffic"
+                        ReportWarning "${TEST_NO}" "发现混杂模式接口" "${I}" "text:确认是否需要此模式，或在配置文件中将接口加入白名单"
+                        LogText "说明：某些工具会将接口设为混杂模式，以捕获或记录网络流量"
                     else
-                        LogText "Result: Found promiscuous interface ${I} (*whitelisted via profile*)"
+                        LogText "Result: 发现混杂模式接口 ${I} (*whitelisted via profile*)"
                     fi
                 fi
             done
         else
-            LogText "Result: no network interfaces discovered, so nothing tested"
+            LogText "结果：未发现网络接口，因此未执行检查"
         fi
 
         # Show result
         if [ ${FOUNDPROMISC} -eq 0 ]; then
-            Display --indent 2 --text "- Checking promiscuous interfaces" --result "${STATUS_OK}" --color GREEN
-            LogText "Result: No promiscuous interfaces found"
+            Display --indent 2 --text "- 检查混杂模式接口" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：未发现混杂模式接口"
         elif [ ${FOUNDPROMISC} -eq 1 ]; then
-            Display --indent 2 --text "- Checking promiscuous interfaces" --result "${STATUS_WARNING}" --color RED
+            Display --indent 2 --text "- 检查混杂模式接口" --result "${STATUS_WARNING}" --color RED
         else
-            Display --indent 2 --text "- Checking promiscuous interfaces" --result "${STATUS_UNKNOWN}" --color YELLOW
+            Display --indent 2 --text "- 检查混杂模式接口" --result "${STATUS_UNKNOWN}" --color YELLOW
         fi
     fi
 #
@@ -666,18 +666,18 @@
     # Type        : Performance
     # Notes       : It is common to see a healthy web server seeing to have several thousands of TCP connections in WAIT state
     if [ ! "${NETSTATBINARY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NETW-3028 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Checking connections in WAIT state"
+    Register --test-no NETW-3028 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 WAIT 状态的连接"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Using netstat for check for connections in WAIT state"
+        LogText "检查：使用 netstat 检查 WAIT 状态的连接"
         FIND=$(${NETSTATBINARY} -an | ${GREPBINARY} WAIT | ${WCBINARY} -l | ${AWKBINARY} '{ print $1 }')
         if IsEmpty "${OPTIONS_CONN_MAX_WAIT_STATE}"; then OPTIONS_CONN_MAX_WAIT_STATE="5000"; fi
-        LogText "Result: currently ${FIND} connections are in a waiting state (max configured: ${OPTIONS_CONN_MAX_WAIT_STATE})."
+        LogText "结果：当前有 ${FIND} 个连接处于等待状态（配置的最大值：${OPTIONS_CONN_MAX_WAIT_STATE}）。"
         if [ ${FIND} -gt ${OPTIONS_CONN_MAX_WAIT_STATE} ]; then
-            Display --indent 2 --text "- Checking waiting connections" --result "${STATUS_WARNING}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Determine why system has many connections in WAIT state (${FIND})"
+            Display --indent 2 --text "- 检查等待状态的连接" --result "${STATUS_WARNING}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "确定系统为何存在大量 WAIT 状态连接（${FIND}）"
         else
-            Display --indent 2 --text "- Checking waiting connections" --result "${STATUS_OK}" --color GREEN
-            LogText "Result: ${FIND} connections are in WAIT state"
+            Display --indent 2 --text "- 检查等待状态的连接" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：有 ${FIND} 个连接处于 WAIT 状态"
         fi
     fi
 #
@@ -685,13 +685,13 @@
 #
     # Test        : NETW-3030
     # Description : Checking for DHCP client
-    Register --test-no NETW-3030 --weight L --network NO --category security --description "Checking DHCP client status"
+    Register --test-no NETW-3030 --weight L --network NO --category security --description "检查 DHCP 客户端状态"
     if [ ${SKIPTEST} -eq 0 ]; then
         if IsRunning "dhclient" || IsRunning "dhcpcd" || IsRunning "udhcpc"; then
-            Display --indent 2 --text "- Checking status DHCP client" --result "${STATUS_RUNNING}" --color WHITE
+            Display --indent 2 --text "- 检查 DHCP 客户端状态" --result "${STATUS_RUNNING}" --color WHITE
             DHCP_CLIENT_RUNNING=1
         else
-            Display --indent 2 --text "- Checking status DHCP client" --result "${STATUS_NOT_ACTIVE}" --color WHITE
+            Display --indent 2 --text "- 检查 DHCP 客户端状态" --result "${STATUS_NOT_ACTIVE}" --color WHITE
         fi
     fi
 #
@@ -699,7 +699,7 @@
 #
     # Test        : NETW-3032
     # Description : Checking for ARP spoofing and related monitoring software
-    Register --test-no NETW-3032 --os Linux --weight L --network NO --category security --description "Checking for ARP monitoring software"
+    Register --test-no NETW-3032 --os Linux --weight L --network NO --category security --description "检查 ARP 监控软件"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
 
@@ -721,9 +721,9 @@
         fi
 
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 2 --text "- Checking for ARP monitoring software" --result "${STATUS_RUNNING}" --color GREEN
+            Display --indent 2 --text "- 检查 ARP 监控软件" --result "${STATUS_RUNNING}" --color GREEN
         else
-            Display --indent 2 --text "- Checking for ARP monitoring software" --result "${STATUS_NOT_FOUND}" --color YELLOW
+            Display --indent 2 --text "- 检查 ARP 监控软件" --result "${STATUS_NOT_FOUND}" --color YELLOW
             #ReportSuggestion "${TEST_NO}" "Consider running ARP monitoring software (addrwatch,arpwatch,arpon)"
         fi
     fi
@@ -734,24 +734,24 @@
     # Description : Determine available network protocols
     # Notes       : See all available supported modules: ls -d /lib/modules/$(uname -r )/kernel/net
     #               To see active/enabled protocols: ls -d /proc/sys/net
-    Register --test-no NETW-3200 --weight L --network YES --category security --description "Determine available network protocols"
+    Register --test-no NETW-3200 --weight L --network YES --category security --description "确定可用的网络协议"
     if [ ${SKIPTEST} -eq 0 ]; then
         TESTED=0
         FOUND_UNCOMMON_PROTOCOL_ENABLED=0
         case ${OS} in
             Linux)
                 TESTED=1
-                LogText "Test: checking the status of some network protocols that typically are not used"
+                LogText "检查：检查一些通常不使用的网络协议状态"
                 UNCOMMON_PROTOCOLS="dccp sctp rds tipc"
                 for P in ${UNCOMMON_PROTOCOLS}; do
-                    LogText "Test: now checking module '${P}'"
+                    LogText "检查：正在检查模块 '${P}'"
                     if ! SkipAtomicTest "${TEST_NO}:${P}"; then
                         UNCOMMON_PROTOCOL_DISABLED=0
                         # First check modprobe.conf
                         if [ -f ${ROOTDIR}etc/modprobe.conf ]; then
                             DATA=$(${GREPBINARY} -E "^install[[:space:]]+${P}[[:space:]]+/bin/(true|false)$" ${ROOTDIR}etc/modprobe.conf)
                             if [ -n "${DATA}" ]; then
-                                LogText "Result: found ${P} module disabled via modprobe.conf"
+                                LogText "结果：发现 ${P} 模块已通过 modprobe.conf 禁用"
                                 UNCOMMON_PROTOCOL_DISABLED=1
                             fi
                         fi
@@ -762,13 +762,13 @@
                             if [ -n "${DATA}" ]; then
                                 UNCOMMON_PROTOCOL_DISABLED=1
                                 for F in ${DATA}; do
-                                    LogText "Result: found ${P} module disabled via ${F}"
+                                    LogText "结果：发现 ${P} 模块已通过 ${F} 禁用"
                                 done
                             fi
                         fi
 
                         if [ ${UNCOMMON_PROTOCOL_DISABLED} -eq 0 ]; then
-                            ReportSuggestion "${TEST_NO}" "Determine if protocol '${P}' is really needed on this system"
+                            ReportSuggestion "${TEST_NO}" "确认此系统是否确实需要协议 '${P}'"
                             Report "uncommon_network_protocol_enabled=${P}"
                             FOUND_UNCOMMON_PROTOCOL_ENABLED=1
                         fi
@@ -777,15 +777,15 @@
 
             ;;
             *)
-                LogText "This test has no routine yet for this operating system."
+                LogText "此操作系统尚无对应的检查方法。"
                 Debug "No routine implemented yet for this operating system to check for available network protocols"
             ;;
         esac
         if [ ${TESTED} -eq 1 ]; then
             if [ ${FOUND_UNCOMMON_PROTOCOL_ENABLED} -eq 1 ]; then
-                Display --indent 2 --text "- Uncommon network protocols" --result "${FOUND}" --color YELLOW
+                Display --indent 2 --text "- 非常用网络协议" --result "${FOUND}" --color YELLOW
             else
-                Display --indent 2 --text "- Uncommon network protocols" --result "${STATUS_NOT_FOUND}" --color GREEN
+                Display --indent 2 --text "- 非常用网络协议" --result "${STATUS_NOT_FOUND}" --color GREEN
             fi
         fi
         unset DATA F FOUND TESTED UNCOMMON_PROTOCOLS
