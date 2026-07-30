@@ -1,0 +1,165 @@
+name: One-time boot services localization
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/localize-boot-services.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  localize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Translate boot loaders and service checks
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('include/tests_boot_services')
+          text = path.read_text(encoding='utf-8')
+          original = text
+
+          replacements = [
+              ('Check for AIX boot device', '检查 AIX 启动设备'),
+              ('Test: Query bootinfo for AIX boot device', '检查：通过 bootinfo 查询 AIX 启动设备'),
+              ('Result: found boot device ${FIND}', '结果：发现启动设备 ${FIND}'),
+              ('- Checking boot device (bootinfo)', '- 检查启动设备（bootinfo）'),
+              ('Result: no data received from bootinfo, most likely boot device not found', '结果：bootinfo 未返回数据，可能未找到启动设备'),
+              ('Determine service manager', '确定服务管理器'),
+              ('Result: cmdline found = ${OUTPUT}', '结果：发现命令行 = ${OUTPUT}'),
+              ('Result: file on disk = ${FILENAME}', '结果：磁盘上的文件 = ${FILENAME}'),
+              ('Result: cmdline of PID 1 is not a file', '结果：PID 1 的命令行不是文件路径'),
+              ('Found: ${SHORTNAME}', '发现：${SHORTNAME}'),
+              ('Found ${SHORTNAME}. Unclear what service manager this is', '发现 ${SHORTNAME}，无法确定其服务管理器类型'),
+              ('Unknown service manager', '未知服务管理器'),
+              ('Result: /proc/1/cmdline seems to be empty', '结果：/proc/1/cmdline 似乎为空'),
+              ('No data found in /proc/1/cmdline', '/proc/1/cmdline 中未发现数据'),
+              ('Result: unknown service manager', '结果：未知服务管理器'),
+              ('Result: service manager found = ${SERVICE_MANAGER}', '结果：发现服务管理器 = ${SERVICE_MANAGER}'),
+              ('- Service Manager', '- 服务管理器'),
+              ('Check EFI boot file on Mac OS X/macOS', '检查 Mac OS X/macOS 的 EFI 启动文件'),
+              ('Result: found macOS/Mac OS X boot.efi file', '结果：发现 macOS/Mac OS X boot.efi 文件'),
+              ('Check Syslinux as bootloader', '检查 Syslinux 启动加载器'),
+              ('Result: found Syslinux', '结果：发现 Syslinux'),
+              ('Check rEFInd as bootloader', '检查 rEFInd 启动加载器'),
+              ('Result: found rEFInd', '结果：发现 rEFInd'),
+              ('Check if system is booted in UEFI mode', '检查系统是否以 UEFI 模式启动'),
+              ('Test: checking if UEFI is used', '检查：确认是否使用 UEFI'),
+              ('Result: system booted in UEFI mode', '结果：系统以 UEFI 模式启动'),
+              ("Result: UEFI not used, can't find /sys/firmware/efi directory", '结果：未使用 UEFI，找不到 /sys/firmware/efi 目录'),
+              ('Test: determine if Secure Boot is used', '检查：确定是否使用 Secure Boot'),
+              ('Test: checking file ${FILE}', '检查：检查文件 ${FILE}'),
+              ('Result: found SecureBoot file with enabled status', '结果：发现已启用状态的 SecureBoot 文件'),
+              ('Result: system not booted with Secure Boot (status 0 in file ${FILE})', '结果：系统未通过 Secure Boot 启动（文件 ${FILE} 中状态为 0）'),
+              ('Result: system not booted with Secure Boot (no SecureBoot file found)', '结果：系统未通过 Secure Boot 启动（未找到 SecureBoot 文件）'),
+              ('Result: no test implemented yet to test for UEFI on this platform', '结果：尚未为此平台实现 UEFI 检查'),
+              ('- Checking UEFI boot', '- 检查 UEFI 启动'),
+              ('- Checking Secure Boot', '- 检查 Secure Boot'),
+              ('Check for systemd-boot bootloader presence', '检查 systemd-boot 启动加载器'),
+              ('- Checking systemd-boot presence', '- 检查 systemd-boot'),
+              ('Result: found systemd-boot', '结果：发现 systemd-boot'),
+              ('Check for GRUB boot loader presence', '检查 GRUB 启动加载器'),
+              ('Test: Checking for presence GRUB conf file (/boot/grub/grub.conf or /boot/grub/menu.lst)', '检查：查找 GRUB 配置文件（/boot/grub/grub.conf 或 /boot/grub/menu.lst）'),
+              ('- Checking presence GRUB', '- 检查 GRUB'),
+              ('- Checking presence GRUB2', '- 检查 GRUB2'),
+              ('Result: found GRUB2 configuration file (${GRUBCONFFILE})', '结果：发现 GRUB2 配置文件（${GRUBCONFFILE}）'),
+              ('Result: found empty /boot, however with GRUB2 binary installed. Best guess is that GRUB2 is actually installed, but /boot not mounted', '结果：/boot 为空，但已安装 GRUB2 可执行文件；可能已安装 GRUB2，只是 /boot 尚未挂载'),
+              ('POSSIBLE MATCH', '可能匹配'),
+              ('Result: no GRUB configuration file found.', '结果：未找到 GRUB 配置文件。'),
+              ('Check for GRUB boot password', '检查 GRUB 启动密码'),
+              ('Found file ${FILE}, proceeding with tests.', '发现文件 ${FILE}，继续执行检查。'),
+              ('Result: did not find hashed password line in this file', '结果：此文件中未找到密码哈希配置行'),
+              ("Result: Can not read '${FILE}' (no permission?)", "结果：无法读取 '${FILE}'（权限不足？）"),
+              ("Result: File '${FILE}' does not exist", "结果：文件 '${FILE}' 不存在"),
+              ('- Checking for password protection', '- 检查密码保护'),
+              ('Result: GRUB has password protection.', '结果：GRUB 已配置密码保护。'),
+              ("Result: Didn't find hashed password line in GRUB configuration", '结果：GRUB 配置中未找到密码哈希配置行'),
+              ('Set a password on GRUB boot loader to prevent altering boot configuration (e.g. boot in single user mode without password)', '为 GRUB 启动加载器设置密码，防止启动配置被修改（例如无需密码进入单用户模式）'),
+              ('Check for FreeBSD boot loader presence', '检查 FreeBSD 启动加载器'),
+              ('Result: found boot1, boot2 and loader files in ${ROOTDIR}boot', '结果：在 ${ROOTDIR}boot 中发现 boot1、boot2 和 loader 文件'),
+              ('- Checking presence FreeBSD loader', '- 检查 FreeBSD 启动加载器'),
+              ('Result: Not all expected files found in ${ROOTDIR}boot', '结果：${ROOTDIR}boot 中未找到全部预期文件'),
+              ('Check for DragonFly boot loader presence', '检查 DragonFly 启动加载器'),
+              ('- Checking presence DragonFly loader', '- 检查 DragonFly 启动加载器'),
+              ('Check for NetBSD boot loader presence', '检查 NetBSD 启动加载器'),
+              ('Result: found NetBSD secondary bootstrap', '结果：发现 NetBSD 第二阶段启动程序'),
+              ('- Checking presence NetBSD loader', '- 检查 NetBSD 启动加载器'),
+              ('Result: NetBSD secondary bootstrap not found', '结果：未找到 NetBSD 第二阶段启动程序'),
+              ('No boot loader found on NetBSD', 'NetBSD 上未找到启动加载器'),
+              ('Check for LILO boot loader presence', '检查 LILO 启动加载器'),
+              ('Test: checking for presence LILO configuration file', '检查：查找 LILO 配置文件'),
+              ('- Checking presence LILO', '- 检查 LILO'),
+              ('Checking password option LILO', '检查 LILO 密码选项'),
+              ('- Password option presence ', '- 密码选项 '),
+              ('Result: no password set for LILO. Bootloader is unprotected to dropping to single user mode or unauthorized access to devices/data.', '结果：LILO 未设置密码，可能被用于进入单用户模式或未经授权访问设备和数据。'),
+              ("Add a password to LILO, by adding a line to the lilo.conf file, above the first line saying 'image=<name>': password=<password>", "为 LILO 添加密码：在 lilo.conf 中第一个 'image=<name>' 行之前添加 password=<password>"),
+              ('No password set on LILO bootloader', 'LILO 启动加载器未设置密码'),
+              ("No password set on LILO bootloader. Add a password to LILO, by adding a line to the lilo.conf file, above the first line saying 'image=<name>': password=<password>", "LILO 启动加载器未设置密码。请在 lilo.conf 中第一个 'image=<name>' 行之前添加 password=<password>"),
+              ('Result: no password set for LILO, with unknown machine role', '结果：LILO 未设置密码，且计算机角色未知'),
+              ('Result: LILO password option set', '结果：已设置 LILO 密码选项'),
+              ('Result: can not read ${LILOCONFFILE} (no permission)', '结果：无法读取 ${LILOCONFFILE}（权限不足）'),
+              ('Result: LILO configuration file not found', '结果：未找到 LILO 配置文件'),
+              ('Check for ELILO boot loader presence', '检查 ELILO 启动加载器'),
+              ('- Checking boot loader ELILO', '- 检查 ELILO 启动加载器'),
+              ('Result: found ELILO boot loader', '结果：发现 ELILO 启动加载器'),
+              ('Check SPARC Improved boot loader (SILO)', '检查 SPARC Improved 启动加载器（SILO）'),
+              ('Result: Found SILO configuration file (/etc/silo.conf)', '结果：发现 SILO 配置文件（/etc/silo.conf）'),
+              ('- Checking boot loader SILO', '- 检查 SILO 启动加载器'),
+              ('Result: no SILO configuration file found.', '结果：未找到 SILO 配置文件。'),
+              ('Check for YABOOT boot loader configuration file', '检查 YABOOT 启动加载器配置文件'),
+              ('Test: Check for /etc/yaboot.conf', '检查：查找 /etc/yaboot.conf'),
+              ('Result: Found YABOOT configuration file (/etc/yaboot.conf)', '结果：发现 YABOOT 配置文件（/etc/yaboot.conf）'),
+              ('- Checking boot loader YABOOT', '- 检查 YABOOT 启动加载器'),
+              ('Result: no YABOOT configuration file found.', '结果：未找到 YABOOT 配置文件。'),
+              ('Check for OpenBSD boot loader presence', '检查 OpenBSD 启动加载器'),
+              ('- Checking boot option', '- 检查 boot 选项'),
+              ('System can be booted into single user mode without password', '系统可以在无需密码的情况下进入单用户模式'),
+              ('Ok, boot option is enabled.', '正常，boot 选项已启用。'),
+              ('Result: no ${ROOTDIR}etc/boot.conf found. When using the default boot loader, physical', '结果：未找到 ${ROOTDIR}etc/boot.conf。使用默认启动加载器时，具有物理'),
+              ('access to the server can be used to possibly enter single user mode.', '访问权限的人员可能进入单用户模式。'),
+              ("Add 'boot' to the ${ROOTDIR}etc/boot.conf file to disable the default 5 seconds waiting time.", "在 ${ROOTDIR}etc/boot.conf 中添加 'boot'，禁用默认的 5 秒等待时间。"),
+              ('Result: found OpenBSD boot loader', '结果：发现 OpenBSD 启动加载器'),
+              ('- Boot loader', '- 启动加载器'),
+              ('NONE FOUND', '未找到'),
+          ]
+
+          changed = 0
+          for old, new in replacements:
+              if old in text:
+                  text = text.replace(old, new)
+                  changed += 1
+
+          required = [
+              '检查系统是否以 UEFI 模式启动',
+              '检查 GRUB 启动加载器',
+              '检查 LILO 启动加载器',
+          ]
+          if changed < 75:
+              raise SystemExit(f'too few replacements applied: {changed}')
+          for marker in required:
+              if marker not in text:
+                  raise SystemExit(f'missing translated marker: {marker}')
+
+          path.write_text(text, encoding='utf-8')
+          print(f'applied {changed} boot loader translations')
+          PY
+
+          sh -n include/tests_boot_services
+
+      - name: Commit translated file and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/localize-boot-services.yml
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add include/tests_boot_services .github/workflows/localize-boot-services.yml
+          git commit -m "i18n: translate boot loader and UEFI checks"
+          git push origin HEAD:master
