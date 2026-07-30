@@ -141,3 +141,5 @@ jobs:
           git add -A
           git commit -m 'i18n: complete Chinese localization of user output'
           git push origin HEAD:master
+
+# retriggered through a pull request merge
