@@ -64,21 +64,21 @@ elif [ "$1" = "info" ]; then
 
         echo ""; echo "== ${WHITE}${PROGRAM_NAME}${NORMAL} =="
         echo ""
-        echo "  当前版本          : ${PROGRAM_VERSION}"
-        echo -n "  更新状态          : "
+        echo " 当前版本 : ${PROGRAM_VERSION}"
+        echo -n " 更新状态 : "
         if [ ${PROGRAM_LV} -eq 0 ]; then
             echo "${RED}无法确定${NORMAL}";
         elif [ ${PROGRAM_LV} -gt ${PROGRAM_AC} ]; then
             echo "${YELLOW}需要更新${NORMAL}";
-            echo "  已安装版本        : ${PROGRAM_AC}"
-            echo "  最新版本          : ${PROGRAM_LV}"
+            echo " 已安装版本 : ${PROGRAM_AC}"
+            echo " 最新版本 : ${PROGRAM_LV}"
         else
             echo "${GREEN}已是最新版${NORMAL}"
         fi
-        echo "  发布日期          : ${PROGRAM_RELEASE_DATE}"
-        echo "  项目主页          : ${PROGRAM_WEBSITE}"
-        echo "  源代码            : ${PROGRAM_SOURCE}"
-        echo "  最新软件包        : ${PROGRAM_PACKAGE}"
+        echo " 发布日期 : ${PROGRAM_RELEASE_DATE}"
+        echo " 项目主页 : ${PROGRAM_WEBSITE}"
+        echo " 源代码 : ${PROGRAM_SOURCE}"
+        echo " 最新软件包 : ${PROGRAM_PACKAGE}"
         echo ""; echo ""
         echo "${PROGRAM_COPYRIGHT}"
         echo ""

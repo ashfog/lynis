@@ -971,7 +971,7 @@
         FIND=$(${GREPBINARY} "^PASS_MIN_DAYS" ${ROOTDIR}etc/login.defs | ${AWKBINARY} '{ if ($1=="PASS_MIN_DAYS") { print $2 } }')
         if [ -z "${FIND}" -o "${FIND}" = "0" ]; then
             LogText "结果：未配置密码最短使用期限"
-            Display --indent 2 --text "- 检查用户密码有效期 (minimum)" --result "${STATUS_DISABLED}" --color YELLOW
+            Display --indent 2 --text "- 检查用户密码最短有效期" --result "${STATUS_DISABLED}" --color YELLOW
             ReportSuggestion "${TEST_NO}" "在 /etc/login.defs 中配置密码最短使用期限"
             AddHP 0 1
         else

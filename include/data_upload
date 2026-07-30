@@ -229,8 +229,8 @@
             Output "${WHITE}已找到 hostid：${HOSTID}${NORMAL}"
             # Try to connect
             Output "正在上传数据……"
-            LogText "执行的命令：${CURLBINARY}${CURL_OPTIONS} -s -S --data-urlencode \"data@${REPORTFILE}\" --data-urlencode \"licensekey@${LICENSE_KEY_FILE}\" --data-urlencode \"hostid=${HOSTID}\" ${UPLOAD_URL}"
-            LogText "提示：可尝试执行 ${CURLBINARY}${CURL_OPTIONS} --data-urlencode \"data@${REPORTFILE}\" --data-urlencode \"licensekey@${LICENSE_KEY_FILE}\" --data-urlencode \"hostid=${HOSTID}\" ${UPLOAD_URL}"
+            LogText "执行的命令：${CURLBINARY}${CURL_OPTIONS} -s -S --data-urlencode \\"data@${REPORTFILE}\\" --data-urlencode \\"licensekey@${LICENSE_KEY_FILE}\\" --data-urlencode \\"hostid=${HOSTID}\\" ${UPLOAD_URL}"
+            LogText "提示：可尝试执行 ${CURLBINARY}${CURL_OPTIONS} --data-urlencode \\"data@${REPORTFILE}\\" --data-urlencode \\"licensekey@${LICENSE_KEY_FILE}\\" --data-urlencode \\"hostid=${HOSTID}\\" ${UPLOAD_URL}"
             LogText "提示：仅重试上传时，请执行：lynis upload-only"
             UPLOAD=$(${CURLBINARY}${CURL_OPTIONS} -s -S --data-urlencode "data@${REPORTFILE}" --data-urlencode "licensekey@${LICENSE_KEY_FILE}" --data-urlencode "hostid=${HOSTID}" --data-urlencode "hostid2=${HOSTID2}" ${UPLOAD_URL} 2> /dev/null)
             EXITCODE=$?

@@ -290,10 +290,10 @@
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check modules, module
         if CheckItem "apache_module" "/mod_security(2|3).so" ; then
-            Display --indent 10 --text "ModSecurity：Web应用程序防火墙" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 10 --text "ModSecurity：Web 应用程序防火墙" --result "${STATUS_FOUND}" --color GREEN
             AddHP 3 3
         else
-            Display --indent 10 --text "ModSecurity：Web应用程序防火墙" --result "${STATUS_NOT_FOUND}" --color WHITE
+            Display --indent 10 --text "ModSecurity：Web 应用程序防火墙" --result "${STATUS_NOT_FOUND}" --color WHITE
             AddHP 2 3
             ReportSuggestion "${TEST_NO}" "安装 Apache modsecurity 以保护 Web 服务器免受 Web 应用程序攻击"
         fi
@@ -319,17 +319,17 @@
                 TRACEENABLE=$( ${GREPBINARY} -i -E '^TraceEnable' ${APACHE_CONFFILE} | ${AWKBINARY} '{print $2}' )
                 if [ ! ${TRACEENABLE} ]; then
                     LogText "结果：在 ${APACHE_CONFFILE} 中找不到 TraceEnable 设置"
-                    Display --indent 4 --text "  ${APACHE_CONFFILE}" --result "${STATUS_NOT_FOUND}" --color WHITE
+                    Display --indent 4 --text " ${APACHE_CONFFILE}" --result "${STATUS_NOT_FOUND}" --color WHITE
                 else
                     TRACEENABLED_SETTING=$( echo ${TRACEENABLE} | tr 'A-Z' 'a-z' )
                     if [ "x${TRACEENABLED_SETTING}" = 'xoff' ]; then
                         LogText "结果：在 ${APACHE_CONFFILE} 中发现 TraceEnable 设置为 'off'"
                         Report "Apache setting: 'TraceEnable Off' in ${APACHE_CONFFILE}"
-                        Display --indent 4 --text "  ${APACHE_CONFFILE}" --result "${STATUS_FOUND}" --color GREEN
+                        Display --indent 4 --text " ${APACHE_CONFFILE}" --result "${STATUS_FOUND}" --color GREEN
                     else
                         LogText "结果：发现 TraceEnable 设置为 '"${TRACEENABLE}"' in ${APACHE_CONFFILE}"
                         Report "Apache setting: 'TraceEnable "${TRACEENABLE}"' in ${APACHE_CONFFILE}"
-                        Display --indent 4 --text "  ${APACHE_CONFFILE}" --result "${STATUS_SUGGESTION}" --color YELLOW
+                        Display --indent 4 --text " ${APACHE_CONFFILE}" --result "${STATUS_SUGGESTION}" --color YELLOW
                         ReportSuggestion "${TEST_NO}" "建议在 ${APACHE_CONFFILE} 中设置 'TraceEnable Off'" "仅在测试和诊断时将 TraceEnable 设置为 'On' 或 'extended'。"
                     fi
                 fi
@@ -428,7 +428,7 @@
         if [ ${COUNT} -eq 0 ]; then
             LogText "结果：未找到 nginx include 语句"
         else
-            Display --indent 6 --text "- 找到 nginx 包括" --result "${COUNT} FOUND" --color GREEN
+            Display --indent 6 --text "- 找到 nginx 包括" --result "已发现 ${COUNT} 项" --color GREEN
         fi
     fi
 #
@@ -576,7 +576,7 @@
         fi
         # Report suggestion
         if [ ${NGINX_LOG_SUGGESTION} -eq 1 ]; then
-            ReportSuggestion "${TEST_NO}" "检查您的 nginx error_log 语句"
+            ReportSuggestion "${TEST_NO}" "检查 nginx 的 error_log 配置"
         fi
     fi
 #
@@ -601,7 +601,7 @@
         fi
         # Report suggestion
         if [ ${NGINX_LOG_SUGGESTION} -eq 1 ]; then
-            ReportSuggestion "${TEST_NO}" "检查您的 nginx error_log 语句并禁用调试模式"
+            ReportSuggestion "${TEST_NO}" "检查 nginx 的 error_log 配置并禁用调试模式"
         fi
     fi
 #

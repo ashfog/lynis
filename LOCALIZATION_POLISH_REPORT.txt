@@ -1,0 +1,11 @@
+# Remaining mixed visible prose
+# Count: 8
+
+include/binaries:131: 找到已知的二进制文件：aa-status（apparmor 组件）- ${BINARY}
+include/data_upload:234: 提示：仅重试上传时，请执行：lynis upload-only
+include/helper_audit_dockerfile:66: 使用了 latest 标签。明确指定操作系统镜像及版本，更有利于获得可重复的构建结果。
+include/tests_mac_frameworks:36: 结果：未找到 aa-status 二进制文件，AppArmor 未安装
+include/tests_mac_frameworks:40: 结果：发现 aa-status 程序，已安装 AppArmor
+include/tests_mac_frameworks:108: 检查 aa-status 的输出
+include/tests_mac_frameworks:108: text:运行aa-status
+include/tests_mac_frameworks:111: 结果：没有可用的 aa-status 二进制文件

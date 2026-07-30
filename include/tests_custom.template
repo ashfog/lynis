@@ -85,12 +85,12 @@
             # Only match one value
             "Linux")
                 LogText "找到 Linux"
-                Display --indent 2 --text "OS: Linux" --result "${STATUS_OK}" --color GREEN
+                Display --indent 2 --text "操作系统：Linux" --result "${STATUS_OK}" --color GREEN
             ;;
             # Matching several platforms
             "FreeBSD" | "NetBSD" | "OpenBSD")
                 LogText "找到了一个基于BSD的操作系统"
-                Display --indent 2 --text "OS: *BSD" --result "${STATUS_OK}" --color GREEN
+                Display --indent 2 --text "操作系统：*BSD" --result "${STATUS_OK}" --color GREEN
             ;;
             # Catch-all for other values
             *)

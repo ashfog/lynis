@@ -191,11 +191,11 @@
 
     # Now if there is an issue with permissions, show it to the user and let them decide how to continue.
     if [ ${ISSUE} -eq 1 ]; then
-        printf "\n[X] 安全检查失败\n\n    为什么会看到此错误？\n    -------------------------------\n    这是一个保护机制，用于防止 root 用户执行普通用户创建的文件。这些文件可能已被修改，或包含恶意脚本片段。\n\n    我应该怎么处理？\n    ---------------------\n    选项 1）确认这些文件是否由可信用户创建（例如通过 Git、Homebrew 或类似工具生成）。\n              如果你信任这些文件，可以按 ENTER 继续本次运行。\n"
+        printf "\n[X] 安全检查失败\n\n 为什么会看到此错误？\n -------------------------------\n 这是一个保护机制，用于防止 root 用户执行普通用户创建的文件。这些文件可能已被修改，或包含恶意脚本片段。\n\n 我应该怎么处理？\n ---------------------\n 选项 1）确认这些文件是否由可信用户创建（例如通过 Git、Homebrew 或类似工具生成）。\n 如果你信任这些文件，可以按 ENTER 继续本次运行。\n"
         if [ "${ISSUE_TYPE}" = "perms" ]; then
-            printf "\n    选项 2）修改相关文件的权限。\n\n       命令（整个目录）：\n         # chmod 640 include/*\n         # ./lynis audit system"
+            printf "\n 选项 2）修改相关文件的权限。\n\n 命令（整个目录）：\n # chmod 640 include/*\n # ./lynis audit system"
         elif [ "${ISSUE_TYPE}" = "owner" ]; then
-            printf "\n    选项 2）修改相关文件或整个目录的所有者。\n\n       命令（整个目录）：\n         # cd ..\n         # chown -R 0:0 lynis\n         # cd lynis\n         # ./lynis audit system"
+            printf "\n 选项 2）修改相关文件或整个目录的所有者。\n\n 命令（整个目录）：\n # cd ..\n # chown -R 0:0 lynis\n # cd lynis\n # ./lynis audit system"
         fi
         printf "\n\n[ 按 ENTER 继续，或按 CTRL+C 取消 ]"
         IGNORE_FILE_PERMISSION_ISSUES=1
@@ -464,10 +464,10 @@ ${YELLOW}注意：${WHITE}取消程序可能会留下临时文件${NORMAL}
 "
 
         if [ ${WRONGOPTION} -eq 1 ]; then
-            echo "  ${RED}错误${NORMAL}：${WHITE}无效选项 '${WRONGOPTION_value}'${NORMAL}"
+            echo " ${RED}错误${NORMAL}：${WHITE}无效选项 '${WRONGOPTION_value}'${NORMAL}"
         else
             if [ ${VIEWHELP} -eq 0 ]; then
-                echo "  ${RED}未提供命令。${WHITE} 正在退出……${NORMAL}"
+                echo " ${RED}未提供命令。${WHITE} 正在退出……${NORMAL}"
                 echo ""
             fi
         fi
@@ -668,7 +668,7 @@ ${NORMAL}
 #
     if [ ${QUIET} -eq 0 -a ${SHOW_PROGRAM_DETAILS} -eq 1 ]; then
         echo ""
-        echo "  ---------------------------------------------------"
+        echo " ---------------------------------------------------"
         echo "程序版本：${PROGRAM_VERSION}"
         echo "操作系统：${OS}"
         echo "操作系统名称：${OS_NAME}"
@@ -688,19 +688,19 @@ ${NORMAL}
         echo "内核版本：${OS_KERNELVERSION}"
         echo "硬件平台：${HARDWARE}"
         echo "主机名：${HOSTNAME}"
-        echo "  ---------------------------------------------------"
+        echo " ---------------------------------------------------"
         echo "型材：${PROFILES}"
         echo "日志文件：${LOGFILE}"
         echo "报告文件：${REPORTFILE}"
         echo "报告版本：${REPORT_version}"
         echo "插件目录：${PLUGINDIR}"
-        echo "  ---------------------------------------------------"
+        echo " ---------------------------------------------------"
         echo "审核员：${AUDITORNAME}"
         echo "语言：${LANGUAGE}"
         echo "测试类别：${TEST_CATEGORY_TO_CHECK}"
         echo "测试组：${TEST_GROUP_TO_CHECK}"
         if [ ! "${ROOTDIR}" = "/" ]; then echo "Root目录（自定义）：${ROOTDIR}"; fi
-        echo "  ---------------------------------------------------"
+        echo " ---------------------------------------------------"
     fi
 
     LogText "程序版本：${PROGRAM_VERSION}"
@@ -801,21 +801,21 @@ ${NORMAL}
     if [ ${QUIET} -eq 0 ]; then
         if [ ${UPDATE_AVAILABLE} -eq 1 ]; then
             echo ""
-            echo "      ==============================================================================="
+            echo " ==============================================================================="
             echo "${CYAN}${PROGRAM_NAME} ${TEXT_UPDATE_AVAILABLE}${NORMAL}"
-            echo "      ==============================================================================="
+            echo " ==============================================================================="
             echo ""
             if [ ${PROGRAM_LV} -gt 0 ]; then
                 echo "当前版本：${YELLOW}${PROGRAM_AC}${NORMAL} 最新版本：${GREEN}${PROGRAM_LV}${NORMAL}"
                 echo ""
             fi
             echo "${WHITE}请更新至最新版本。${NORMAL}"
-            echo "        新版本包含更多功能、错误修复和检查项目。${NORMAL}"
+            echo " 新版本包含更多功能、错误修复和检查项目。${NORMAL}"
         elif [ ${OLD_RELEASE} -eq 1 ]; then
             echo ""
-            echo "      ==============================================================================="
+            echo " ==============================================================================="
             echo "${CYAN}${PROGRAM_NAME} 可能已过时${NORMAL}"
-            echo "      ==============================================================================="
+            echo " ==============================================================================="
             echo ""
             echo "${YELLOW}当前版本已超过 6 个月 ${NORMAL}"
             echo "此版本可能是 ${WHITE}请检查是否有更新的版本可用。${NORMAL}"
@@ -826,11 +826,11 @@ ${NORMAL}
             echo ""
             echo "下载地点："
             echo ""
-            echo "        Packages (DEB/RPM) -  https://packages.cisofy.com/"
-            echo "        Website (TAR)      -  https://cisofy.com/downloads/"
-            echo "        GitHub             -  https://github.com/CISOfy/lynis"
+            echo " Packages (DEB/RPM) - https://packages.cisofy.com/"
+            echo " Website (TAR) - https://cisofy.com/downloads/"
+            echo " GitHub - https://github.com/CISOfy/lynis"
             echo ""
-            echo "      ==============================================================================="
+            echo " ==============================================================================="
             echo ""
             sleep 5
         fi
@@ -1061,10 +1061,10 @@ ${NORMAL}
     if [ ${RUN_TESTS} -eq 1 ]; then
 
         InsertSection "${SECTION_CUSTOM_TESTS}"
-        LogText "测试：检查tests_custom文件"
+        LogText "检查：检查 tests_custom 文件"
         # Custom tests
         if [ -f ${INCLUDEDIR}/tests_custom ]; then
-            LogText "结果：在包含目录中找到tests_custom文件"
+            LogText "结果：在 include 目录中找到 tests_custom 文件"
             if SafePerms ${INCLUDEDIR}/tests_custom; then
                 Display --indent 2 --text "- 开始自定义测试..."
                 LogText "结果：文件权限正常，正在运行自定义检查"

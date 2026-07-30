@@ -55,28 +55,28 @@
 
     LYNIS_TARBALL="lynis-remote.tar.gz"
     echo ""
-    echo  "  ${BLUE}* ${WHITE}第 1 步${NORMAL}：${CYAN}创建压缩包${NORMAL}"
-    printf "%s\n\n" "    mkdir -p ./files && cd .. && tar czf ./lynis/files/${LYNIS_TARBALL} --exclude=files/${LYNIS_TARBALL} ./lynis && cd lynis"
+    echo  " ${BLUE}* ${WHITE}第 1 步${NORMAL}：${CYAN}创建压缩包${NORMAL}"
+    printf "%s\n\n" " mkdir -p ./files && cd .. && tar czf ./lynis/files/${LYNIS_TARBALL} --exclude=files/${LYNIS_TARBALL} ./lynis && cd lynis"
 
-    echo "  ${BLUE}* ${WHITE}第 2 步${NORMAL}：${CYAN}将压缩包复制到目标 ${REMOTE_TARGET}${NORMAL}"
+    echo " ${BLUE}* ${WHITE}第 2 步${NORMAL}：${CYAN}将压缩包复制到目标 ${REMOTE_TARGET}${NORMAL}"
     LYNIS_TARBALL="./files/lynis-remote.tar.gz"
-    printf "%s\n\n" "    scp -q ${LYNIS_TARBALL} ${REMOTE_TARGET}:~/tmp-lynis-remote.tgz"
+    printf "%s\n\n" " scp -q ${LYNIS_TARBALL} ${REMOTE_TARGET}:~/tmp-lynis-remote.tgz"
     #if [ $? -gt 0 ]; then echo "Could not copy tarball to target"; ExitFatal; fi
 
-    echo "  ${BLUE}* ${WHITE}第 3 步${NORMAL}：${CYAN}执行审计命令${NORMAL}"
+    echo " ${BLUE}* ${WHITE}第 3 步${NORMAL}：${CYAN}执行审计命令${NORMAL}"
 
-    printf "%s\n\n" "    ssh ${REMOTE_TARGET} \"mkdir -p ~/tmp-lynis && cd ~/tmp-lynis && tar xzf ../tmp-lynis-remote.tgz && rm ../tmp-lynis-remote.tgz && cd lynis && ${REMOTE_COMMAND}\""
+    printf "%s\n\n" " ssh ${REMOTE_TARGET} \\"mkdir -p ~/tmp-lynis && cd ~/tmp-lynis && tar xzf ../tmp-lynis-remote.tgz && rm ../tmp-lynis-remote.tgz && cd lynis && ${REMOTE_COMMAND}\\""
     #if [ $? -gt 1 ]; then echo "Could not perform remote audit"; ExitFatal; fi
 
-    echo "  ${BLUE}* ${WHITE}第 4 步${NORMAL}：${CYAN}清理远程工作目录${NORMAL}"
-    printf "%s\n\n" "    ssh ${REMOTE_TARGET} \"rm -rf ~/tmp-lynis\""
+    echo " ${BLUE}* ${WHITE}第 4 步${NORMAL}：${CYAN}清理远程工作目录${NORMAL}"
+    printf "%s\n\n" " ssh ${REMOTE_TARGET} \\"rm -rf ~/tmp-lynis\\""
 
-    echo "  ${BLUE}* ${WHITE}第 5 步${NORMAL}：${CYAN}取回日志和报告${NORMAL}"
-    printf "%s\n" "    scp -q ${REMOTE_TARGET}:/tmp/lynis.log ./files/${REMOTE_TARGET}-lynis.log"
-    printf "%s\n\n" "    scp -q ${REMOTE_TARGET}:/tmp/lynis-report.dat ./files/${REMOTE_TARGET}-lynis-report.dat"
+    echo " ${BLUE}* ${WHITE}第 5 步${NORMAL}：${CYAN}取回日志和报告${NORMAL}"
+    printf "%s\n" " scp -q ${REMOTE_TARGET}:/tmp/lynis.log ./files/${REMOTE_TARGET}-lynis.log"
+    printf "%s\n\n" " scp -q ${REMOTE_TARGET}:/tmp/lynis-report.dat ./files/${REMOTE_TARGET}-lynis-report.dat"
 
-    echo "  ${BLUE}* ${WHITE}第 6 步${NORMAL}：${CYAN}清理临时文件（使用普通用户时）${NORMAL}"
-    printf "%s\n\n" "    ssh ${REMOTE_TARGET} \"rm /tmp/lynis.log /tmp/lynis-report.dat\""
+    echo " ${BLUE}* ${WHITE}第 6 步${NORMAL}：${CYAN}清理临时文件（使用普通用户时）${NORMAL}"
+    printf "%s\n\n" " ssh ${REMOTE_TARGET} \\"rm /tmp/lynis.log /tmp/lynis-report.dat\\""
 
     # No more Lynis output
     QUIET=1

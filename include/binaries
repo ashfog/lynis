@@ -156,7 +156,7 @@
                             comm)                   COMMBINARY="${BINARY}";            LogText "找到已知的二进制文件：comm（文件比较）-${BINARY}" ;;
                             cryptsetup)             CRYPTSETUPBINARY="${BINARY}";      LogText "找到已知的二进制文件：cryptsetup（块设备加密）- ${BINARY}" ;;
                             csum)                   CSUMBINARY="${BINARY}";            LogText "找到已知的二进制文件：csum（AIX 上的哈希工具）- ${BINARY}" ;;
-                            curl)                   CURLBINARY="${BINARY}";            CURLVERSION=$(${BINARY} --version | grep "^curl" | awk '{ if ($1=="curl") { print $2 }}'); LogText "  发现已知程序：curl（浏览器、下载工具）- ${BINARY}" ;;
+                            curl)                   CURLBINARY="${BINARY}";            CURLVERSION=$(${BINARY} --version | grep "^curl" | awk '{ if ($1=="curl") { print $2 }}'); LogText " 发现已知程序：curl（浏览器、下载工具）- ${BINARY}" ;;
                             cut)                    CUTBINARY="${BINARY}";             LogText "找到已知的二进制文件：cut（文本流编辑器）-${BINARY}" ;;
                             debsecan)               DEBSECANBINARY="${BINARY}";        LogText "发现已知的二进制文件：debsecan（程序包漏洞检查）- ${BINARY}" ;;
                             debsums)                DEBSUMSBINARY="${BINARY}";         LogText "发现已知的二进制文件：debsums（包完整性检查）- ${BINARY}" ;;
@@ -178,7 +178,7 @@
                             gcc)                    GCCBINARY="${BINARY}";             COMPILER_INSTALLED=1;  LogText "找到已知的二进制文件：gcc（编译器）-${BINARY}" ;;
                             getcap)                 GETCAPBINARY="${BINARY}";          LogText "找到已知的二进制文件：getcap（内核功能）-${BINARY}" ;;
                             getent)                 GETENT_BINARY="${BINARY}";         LogText "找到已知的二进制文件：getent（名称服务切换库的查询工具）-${BINARY}" ;;
-                            gradm)                  GRADMBINARY=${BINARY};             LogText "找到已知的二进制文件：gradm（Grsecurity Administration Utility）-${BINARY}" ;;
+                            gradm)                  GRADMBINARY=${BINARY};             LogText "找到已知的二进制文件：gradm（Grsecurity 管理工具）-${BINARY}" ;;
                             grep)                   GREPBINARY=${BINARY};              LogText "找到已知的二进制文件：grep（文本搜索）-${BINARY}" ;;
                             grpck)                  GRPCKBINARY="${BINARY}";           LogText "找到已知的二进制文件：grpck（一致性检查器）- ${BINARY}" ;;
                             grub2-install)          GRUB2INSTALLBINARY=${BINARY};      LogText "找到已知的二进制文件：grub2-install（引导加载程序的安装程序）-${BINARY}" ;;
@@ -218,10 +218,10 @@
                             lsvg)                   LSVGBINARY=${BINARY};              LogText "找到已知的二进制文件：lsvg（卷管理器）-${BINARY}" ;;
                             lvdisplay)              LVDISPLAYBINARY="${BINARY}";       LogText "找到已知的二进制文件：lvdisplay（LVM工具）-${BINARY}" ;;
                             lynx)                   LYNXBINARY="${BINARY}";            LYNXVERSION=$(${BINARY} -version | grep "^Lynx Version" | cut -d ' ' -f3); LogText "发现已知程序：lynx（浏览器）- ${BINARY}（版本 ${LYNXVERSION}）" ;;
-                            maldet)                 LMDBINARY="${BINARY}";             MALWARE_SCANNER_INSTALLED=1;           LogText "  发现已知程序：maldet（Linux Malware Detect 恶意软件扫描器）- ${BINARY}" ;;
+                            maldet)                 LMDBINARY="${BINARY}";             MALWARE_SCANNER_INSTALLED=1;           LogText " 发现已知程序：maldet（Linux Malware Detect 恶意软件扫描器）- ${BINARY}" ;;
                             md5)                    MD5BINARY="${BINARY}";             LogText "找到已知的二进制文件：md5（哈希工具）-${BINARY}" ;;
                             md5sum)                 MD5BINARY="${BINARY}";             LogText "找到已知的二进制文件：md5sum（哈希工具）-${BINARY}" ;;
-                            mdatp)                  MDATPBINARY="${BINARY}";           MALWARE_SCANNER_INSTALLED=1;           LogText "  发现已知程序：mdatp（Microsoft Defender ATP 恶意软件扫描器）- ${BINARY}" ;;
+                            mdatp)                  MDATPBINARY="${BINARY}";           MALWARE_SCANNER_INSTALLED=1;           LogText " 发现已知程序：mdatp（Microsoft Defender ATP 恶意软件扫描器）- ${BINARY}" ;;
                             modprobe)               MODPROBEBINARY="${BINARY}";        LogText "找到已知的二进制文件：modprobe (kernel 模块）- ${BINARY}" ;;
                             mount)                  MOUNTBINARY="${BINARY}";           LogText "找到已知的二进制文件：mount（磁盘实用程序）-${BINARY}" ;;
                             mtree)                  MTREEBINARY="${BINARY}";           LogText "找到已知的二进制文件：mtree（映射目录树）-${BINARY}" ;;

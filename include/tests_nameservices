@@ -450,7 +450,7 @@
         LogText "测试：检查 PowerDNS 主站状态"
         FIND=$(${GREPBINARY} "^master=yes" ${POWERDNS_AUTH_CONFIG_LOCATION})
         if [ -n "${FIND}" ]; then
-            LogText "在配置文件中找到master=yes"
+            LogText "在配置文件中找到 master=yes"
             Display --indent 4 --text "- PowerDNS 权威大师：YES"
             POWERDNS_AUTH_MASTER=1
         else
@@ -460,7 +460,7 @@
         LogText "测试：检查 PowerDNS 从站状态"
         FIND=$(${GREPBINARY} "^slave=yes" ${POWERDNS_AUTH_CONFIG_LOCATION})
         if [ -n "${FIND}" ]; then
-            LogText "在配置文件中找到slave=yes"
+            LogText "在配置文件中找到 slave=yes"
             Display --indent 4 --text "- PowerDNS 权威从机：YES"
             POWERDNS_AUTH_SLAVE=1
         else

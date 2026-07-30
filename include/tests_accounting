@@ -90,7 +90,7 @@
             AddHP 3 3
         else
             Display --indent 2 --text "- 检查进程记账信息" --result "${STATUS_NOT_FOUND}" --color YELLOW
-            LogText "结果：没有可用的进程记账信息 (${ROOTDIR}var/account/pacct, ${ROOTDIR}var/log/account/pacct nor ${ROOTDIR}var/log/pacct exist)"
+            LogText "结果：没有可用的进程记账信息（${ROOTDIR}var/account/pacct、${ROOTDIR}var/log/account/pacct 和 ${ROOTDIR}var/log/pacct 均不存在）"
             LogText "说明：进程记账数据可能存储在其他位置"
             ReportSuggestion "${TEST_NO}" "启用进程记账"
             AddHP 2 3

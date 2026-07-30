@@ -75,10 +75,10 @@
                                         if [ ! "$1" = "" ]; then EXTRA_PARAMS=" $@"; fi
                                         REMOTE_COMMAND="./lynis audit system"
                                         echo ""
-                                        echo "  远程扫描操作方法："
-                                        echo "  =================="
-                                        echo "  目标：${REMOTE_TARGET}"
-                                        echo "  命令：${REMOTE_COMMAND}"
+                                        echo " 远程扫描操作方法："
+                                        echo " =================="
+                                        echo " 目标：${REMOTE_TARGET}"
+                                        echo " 命令：${REMOTE_COMMAND}"
                                         HELPER="system_remote_scan"
                                         HELPER_PARAMS="$@"
                                         CHECK_BINARIES=0
@@ -225,7 +225,7 @@
                     done
                     BIN_PATHS="${DIRS}"
                 else
-                    echo "请提供一个或多个目录，例如：\"/mnt/cert/bin /mnt/cert/sbin\""
+                    echo "请提供一个或多个目录，例如：\\"/mnt/cert/bin /mnt/cert/sbin\\""
                     exit 1
                 fi
             ;;

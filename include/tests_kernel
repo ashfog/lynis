@@ -73,9 +73,9 @@
                     LogText "检查：在 Debian 系统上使用 who -r 检查运行级别"
                     FIND=$(who -r | ${AWKBINARY} '{ if ($1=="run-level") { print $2 } }')
                     if HasData "${FIND}"; then
-                        LogText "Result: 发现默认运行级别 '${FIND}'"
+                        LogText "结果：发现默认运行级别 '${FIND}'"
                         Report "linux_default_runlevel=${FIND}"
-                        Display --indent 2 --text "- 检查默认运行级别" --result "RUNLEVEL ${FIND}" --color GREEN
+                        Display --indent 2 --text "- 检查默认运行级别" --result "运行级别 ${FIND}" --color GREEN
                     else
                         LogText "结果：无法通过 who -r 确定默认运行级别"
                         Display --indent 2 --text "- 检查默认运行级别" --result "${STATUS_UNKNOWN}" --color YELLOW
@@ -120,7 +120,7 @@
                 else
                     if HasData "${FIND_NX}" && IsEmpty "${FIND_PAE}"; then
                         Report "cpu_nx=1"
-                        LogText "结果：发现No eXecute"
+                        LogText "结果：发现不可执行（NX）支持"
                         CPU_NX=1
                         FOUND=1
                     else
@@ -132,7 +132,7 @@
                 Display --indent 4 --text "CPU 支持：支持 PAE 和/或 NoeXecute" --result "${STATUS_FOUND}" --color GREEN
             else
                 Display --indent 4 --text "CPU 支持： 不支持 PAE 或 NoeXecute" --result "${STATUS_NONE}" --color YELLOW
-                ReportSuggestion "${TEST_NO}" "尽可能使用启用 PAE 的内核以获得本机 No eXecute/eXecute Disable 支持"
+                ReportSuggestion "${TEST_NO}" "尽可能使用启用 PAE 的内核，以获得原生的不可执行（NX）/执行禁用支持"
             fi
         else
             Display --indent 4 --text "CPU 支持：无 /proc/cpuinfo" --result "${STATUS_SKIPPED}" --color YELLOW
@@ -328,7 +328,7 @@
                 LogText "结果：执行 kldstat 时出现问题"
             fi
         else
-            echo "[ ${WHITE}SKIPPED${NORMAL} ]"
+            echo "[ ${WHITE}已跳过${NORMAL} ]"
             LogText "结果：没有结果，找不到 /sbin/kldstat"
         fi
     fi
@@ -497,7 +497,7 @@
             fi
         fi
         # Profile option
-        LogText "测试：检查存在 ${ROOTDIR}etc/profile"
+        LogText "检查：确认 ${ROOTDIR}etc/profile 是否存在"
         if [ -f "${ROOTDIR}etc/profile" ]; then
             LogText "检查：确认 ${ROOTDIR}etc/profile 或 ${ROOTDIR}etc/profile.d/*.sh 中是否存在 'ulimit -c 0'"
             # use tail -1 in the following commands to get the last entry, which is the one that counts (in case of profile.d/ probably counts)
@@ -523,7 +523,7 @@
 
         # Limits options
         for DIR in "/" "/usr/"; do
-            LogText "测试：检查存在 ${DIR}etc/security/limits.conf"
+            LogText "检查：确认 ${DIR}etc/security/limits.conf 是否存在"
             if [ -f "${DIR}etc/security/limits.conf" ]; then
                 LogText "结果：文件 ${DIR}etc/security/limits.conf 存在"
                 LogText "检查：确认 ${DIR}etc/security/limits.conf 和 ${LIMITS_DIRECTORY}/* 中是否禁用了核心转储"

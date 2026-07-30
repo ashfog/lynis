@@ -1096,7 +1096,7 @@ EOF
                 LogText "结果：发现安全软件仓库"
                 AddHP 3 3
             else
-                Display --indent 2 --text "- 检查 sources.list 中的安全仓库 or directory" --result "${STATUS_WARNING}" --color RED
+                Display --indent 2 --text "- 检查 sources.list 或目录中的安全仓库" --result "${STATUS_WARNING}" --color RED
                 ReportWarning "${TEST_NO}" "在 /etc/apt/sources.list 或 sources.list.d 目录中未找到安全仓库"
                 AddHP 0 3
             fi
@@ -1207,7 +1207,7 @@ EOF
                 LogText "结果：未发现存在漏洞的软件包"
             fi
         else
-            Display --indent 2 --text "- 检查存在漏洞的软件包 (apt-get only)" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 2 --text "- 检查存在漏洞的软件包（仅 apt-get）" --result "${STATUS_DONE}" --color GREEN
             LogText "结果：检查未完整执行（缺少 apt-check 输出）"
         fi
     fi

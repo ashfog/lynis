@@ -327,7 +327,7 @@
             Display --indent 6 --text "- Postfix 横幅" --result "${STATUS_WARNING}" --color RED
             LogText "结果：SMTP 横幅中发现操作系统或 mail_name，或者 mail_name 包含 'Postfix'。"
             ReportWarning "${TEST_NO}" "在SMTP横幅（OS或软件名称）中发现一些信息泄露"
-            ReportSuggestion "${TEST_NO}" "建议您从 postfix 配置中隐藏 mail_name（选项：smtpd_banner）。使用 postconf -e or 更改您的 main.cf 文件 (${POSTFIX_CONFIGFILE})"
+            ReportSuggestion "${TEST_NO}" "建议在 Postfix 配置中隐藏 mail_name（选项：smtpd_banner）。可以使用 postconf -e，或修改 main.cf 文件（${POSTFIX_CONFIGFILE}）"
         else
             if IsVerbose; then Display --indent 6 --text "- Postfix 横幅" --result "${STATUS_OK}" --color GREEN; fi
         fi

@@ -282,9 +282,9 @@
             LogText "测试：检查文件 ${I} 中的 PHP 功能强化禁用_functions 或 suhosin.executor.func.blacklist"
             FIND=$(${GREPBINARY} "^disable_functions.*=" ${I})
             if [ -z "${FIND}" ]; then
-                LogText "结果：${I}：找不到disabled_functions"
+                LogText "结果：${I}：未找到 disabled_functions"
             else
-                LogText "结果：${I}：找到disabled_functions"
+                LogText "结果：${I}：找到 disabled_functions"
                 FOUND=1
             fi
 
