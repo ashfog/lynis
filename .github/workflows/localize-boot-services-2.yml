@@ -1,0 +1,172 @@
+name: One-time boot service manager localization
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/localize-boot-services-2.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  localize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Translate boot services and startup security checks
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('include/tests_boot_services')
+          text = path.read_text(encoding='utf-8')
+
+          replacements = [
+              ('Check for FreeBSD boot services', '检查 FreeBSD 启动服务'),
+              ('Searching for services at startup (service)', '搜索启动时运行的服务（service）'),
+              ('Searching for services at startup (rc.conf)', '搜索启动时运行的服务（rc.conf）'),
+              ('Found service (service/rc.conf): ${ITEM}', '发现服务（service/rc.conf）：${ITEM}'),
+              ('- Checking services at startup (service/rc.conf)', '- 检查启动服务（service/rc.conf）'),
+              ('Result: found ${COUNT} services/options set', '结果：发现 ${COUNT} 个已配置的服务/选项'),
+              ('Found ${COUNT} services/options to run at startup', '发现 ${COUNT} 个将在启动时运行的服务/选项'),
+              ('Check for Solaris boot daemons', '检查 Solaris 启动守护进程'),
+              ('Result: Using svcs binary to check for daemons', '结果：使用 svcs 检查守护进程'),
+              ('SysV style services may be incorrectly counted as running.', 'SysV 风格服务可能被误计为正在运行。'),
+              ('Found running daemon: ${ITEM}', '发现正在运行的守护进程：${ITEM}'),
+              ('- Check running daemons (svcs)', '- 检查正在运行的守护进程（svcs）'),
+              ('Result: found ${COUNT} running daemons', '结果：发现 ${COUNT} 个正在运行的守护进程'),
+              ('Result: Found ${COUNT} running daemons', '结果：发现 ${COUNT} 个正在运行的守护进程'),
+              ('Searching for enabled daemons (svcs)', '搜索已启用的守护进程（svcs）'),
+              ('Found enabled daemon at boot: ${ITEM}', '发现启动时启用的守护进程：${ITEM}'),
+              ('Note: Run svcs -a see all services', '提示：运行 svcs -a 查看所有服务'),
+              ('- Check enabled daemons at boot (svcs)', '- 检查启动时启用的守护进程（svcs）'),
+              ('Result: found ${COUNT} enabled daemons at boot', '结果：发现 ${COUNT} 个启动时启用的守护进程'),
+              ('Result: Found ${COUNT} enabled daemons at boot', '结果：发现 ${COUNT} 个启动时启用的守护进程'),
+              ('Check for Linux boot and running services', '检查 Linux 启动服务与正在运行的服务'),
+              ('Test: checking presence systemctl binary', '检查：确认 systemctl 是否存在'),
+              ('Result: systemctl binary found, trying that to discover information', '结果：发现 systemctl，使用它收集服务信息'),
+              ('Searching for running services (systemctl services only)', '搜索正在运行的服务（仅 systemctl service 单元）'),
+              ('Found running service: ${ITEM}', '发现正在运行的服务：${ITEM}'),
+              ('Hint: Run systemctl --full --type=service to see all services', '提示：运行 systemctl --full --type=service 查看所有服务'),
+              ('- Check running services (systemctl)', '- 检查正在运行的服务（systemctl）'),
+              ('Result: found ${COUNT} running services', '结果：发现 ${COUNT} 个正在运行的服务'),
+              ('Result: Found ${COUNT} running services', '结果：发现 ${COUNT} 个正在运行的服务'),
+              ('Searching for enabled services (systemctl services only)', '搜索已启用的服务（仅 systemctl service 单元）'),
+              ('Found enabled service at boot: ${ITEM}', '发现启动时启用的服务：${ITEM}'),
+              ('Hint: Run systemctl list-unit-files --type=service to see all services', '提示：运行 systemctl list-unit-files --type=service 查看所有服务'),
+              ('- Check enabled services at boot (systemctl)', '- 检查启动时启用的服务（systemctl）'),
+              ('Result: found ${COUNT} enabled services', '结果：发现 ${COUNT} 个已启用的服务'),
+              ('Result: Found ${COUNT} enabled services', '结果：发现 ${COUNT} 个已启用的服务'),
+              ('Result: systemctl binary not found, checking chkconfig binary', '结果：未找到 systemctl，继续检查 chkconfig'),
+              ('Result: chkconfig binary found, trying that to discover information', '结果：发现 chkconfig，使用它收集服务信息'),
+              ('Searching for services at startup (chkconfig, runlevel 3 and 5)', '搜索启动服务（chkconfig，运行级别 3 和 5）'),
+              ('Found service (at boot, runlevel 3 or 5): ${ITEM}', '发现启动服务（运行级别 3 或 5）：${ITEM}'),
+              ('Hint: Run chkconfig --list to see all services and disable unneeded services', '提示：运行 chkconfig --list 查看所有服务并禁用不需要的服务'),
+              ('- Check services at startup (chkconfig)', '- 检查启动服务（chkconfig）'),
+              ('Result: found ${COUNT} services', '结果：发现 ${COUNT} 个服务'),
+              ('Result: Found ${COUNT} services at startup', '结果：发现 ${COUNT} 个启动服务'),
+              ('Result: both systemctl and chkconfig not found. Skipping this test', '结果：未找到 systemctl 和 chkconfig，跳过此检查'),
+              ('Check for Linux boot services (Debian style)', '检查 Linux 启动服务（Debian 风格）'),
+              ('Result: found runlevel ${sRUNLEVEL}', '结果：发现运行级别 ${sRUNLEVEL}'),
+              ('Result: performing find in /etc/rc2.d as runlevel 2 is found', '结果：检测到运行级别 2，搜索 /etc/rc2.d'),
+              ('Found service (at boot, runlevel 2): ${SERVICE}', '发现启动服务（运行级别 2）：${SERVICE}'),
+              ('- Check services at startup (rc2.d)', '- 检查启动服务（rc2.d）'),
+              ('Determine runlevel and services at startup', '确定运行级别和启动服务'),
+              ('Result: skipping further actions', '结果：跳过后续操作'),
+              ('Check permissions for boot files/scripts', '检查启动文件和脚本权限'),
+              ('Result: checking ${ROOTDIR}etc/init.d scripts for writable bit', '结果：检查 ${ROOTDIR}etc/init.d 脚本的可写权限'),
+              ('Test: checking if directory ${DIR} exists', '检查：确认目录 ${DIR} 是否存在'),
+              ('Result: directory ${DIR} found', '结果：发现目录 ${DIR}'),
+              ('Test: checking for available files in directory', '检查：搜索目录中的文件'),
+              ('Result: found files in directory, checking permissions now', '结果：目录中发现文件，开始检查权限'),
+              ('Test: checking permissions of file ${FILE}', '检查：检查文件 ${FILE} 的权限'),
+              ('Result: warning, file ${FILE} is world writable', '结果：警告，文件 ${FILE} 可被所有用户写入'),
+              ('Result: good, file ${FILE} not world writable', '结果：正常，文件 ${FILE} 不可被所有用户写入'),
+              ('Result: found no files in directory.', '结果：目录中未发现文件。'),
+              ('Result: directory ${DIR} not found. Skipping..', '结果：未找到目录 ${DIR}，跳过。'),
+              ('Test: Checking ${ROOTDIR}etc/rc${NO}.d scripts for writable bit', '检查：检查 ${ROOTDIR}etc/rc${NO}.d 脚本的可写权限'),
+              ('Result: warning, file ${I} is world writable', '结果：警告，文件 ${I} 可被所有用户写入'),
+              ('Result: good, file ${I} not world writable', '结果：正常，文件 ${I} 不可被所有用户写入'),
+              ('Result: found the path behind this symlink (${CHECKFILE} --> ${I})', '结果：发现符号链接指向的路径（${CHECKFILE} --> ${I}）'),
+              ('Test: Checking ${CHECKFILE} file for writable bit', '检查：检查文件 ${CHECKFILE} 的可写权限'),
+              ('Found writable startup script ${CHECKFILE}', '发现可写的启动脚本 ${CHECKFILE}'),
+              ('Result: warning, file ${CHECKFILE} is world writable', '结果：警告，文件 ${CHECKFILE} 可被所有用户写入'),
+              ('Result: good, file ${CHECKFILE} not world writable', '结果：正常，文件 ${CHECKFILE} 不可被所有用户写入'),
+              ('- Check startup files (permissions)', '- 检查启动文件权限'),
+              ('Found world writable startup scripts', '发现可被所有用户写入的启动脚本'),
+              ('Result: found one or more scripts which are possibly writable by other users', '结果：发现一个或多个可能被其他用户写入的脚本'),
+              ('Check uptime of system', '检查系统运行时间'),
+              ('- Checking uptime', '- 检查运行时间'),
+              ('No uptime test available for this operating system (/proc/uptime missing)', '此操作系统没有可用的运行时间检查（缺少 /proc/uptime）'),
+              ('Boot time: ${TIME_BOOT}', '启动时间：${TIME_BOOT}'),
+              ('Current time: ${TIME_NOW}', '当前时间：${TIME_NOW}'),
+              ('Most likely kern.boottime empty, unable to determine uptime', 'kern.boottime 可能为空，无法确定运行时间'),
+              ('No uptime test available for this operating system (sysctl missing)', '此操作系统没有可用的运行时间检查（缺少 sysctl）'),
+              ('No uptime test available for this operating system (kstat missing)', '此操作系统没有可用的运行时间检查（缺少 kstat）'),
+              ('No uptime test available yet for this operating system', '尚未为此操作系统提供运行时间检查'),
+              ('Uptime (in seconds): ${UPTIME_IN_SECS}', '运行时间（秒）：${UPTIME_IN_SECS}'),
+              ('Uptime (in days): ${UPTIME_IN_DAYS}', '运行时间（天）：${UPTIME_IN_DAYS}'),
+              ('Result: no uptime information available', '结果：没有可用的运行时间信息'),
+              ('Check single user mode for systemd', '检查 systemd 单用户模式保护'),
+              ('Test: Searching /usr/lib/systemd/system/rescue.service', '检查：查找 /usr/lib/systemd/system/rescue.service'),
+              ('Result: file /usr/lib/systemd/system/rescue.service', '结果：发现 /usr/lib/systemd/system/rescue.service 文件'),
+              ('Test: checking presence sulogin for single user mode', '检查：确认单用户模式是否使用 sulogin'),
+              ('Result: found sulogin, so single user is protected', '结果：发现 sulogin，单用户模式已受保护'),
+              ('Result: did not find sulogin in rescue.service', '结果：rescue.service 中未找到 sulogin'),
+              ('- Checking sulogin in rescue.service', '- 检查 rescue.service 中的 sulogin'),
+              ('Protect rescue.service by using sulogin', '使用 sulogin 保护 rescue.service'),
+              ('Result: file ${ROOTDIR}usr/lib/systemd/system/rescue.service does not exist', '结果：文件 ${ROOTDIR}usr/lib/systemd/system/rescue.service 不存在'),
+              ('Check for OpenBSD boot daemons', '检查 OpenBSD 启动守护进程'),
+              ('Result: rcctl binary found, trying that to discover information', '结果：发现 rcctl，使用它收集守护进程信息'),
+              ('Searching for running daemons (rcctl)', '搜索正在运行的守护进程（rcctl）'),
+              ("Note: Run rcctl ls all | grep -E '^(pf|check_quotas|library_aslr)$' to see all daemons", "提示：运行 rcctl ls all | grep -E '^(pf|check_quotas|library_aslr)$' 查看所有守护进程"),
+              ('- Check running daemons (rcctl)', '- 检查正在运行的守护进程（rcctl）'),
+              ('Searching for enabled daemons (rcctl)', '搜索已启用的守护进程（rcctl）'),
+              ("Note: Run rcctl ls all | grep -E  '^(pf|check_quotas|library_aslr)$' to see all daemons", "提示：运行 rcctl ls all | grep -E  '^(pf|check_quotas|library_aslr)$' 查看所有守护进程"),
+              ('- Check enabled daemons at boot (rcctl)', '- 检查启动时启用的守护进程（rcctl）'),
+              ('Result: found the path behind this symlink (${CHECKFILE} --> ${FILE})', '结果：发现符号链接指向的路径（${CHECKFILE} --> ${FILE}）'),
+              ('Result: warning, file ${CHECKFILE} is world writable', '结果：警告，文件 ${CHECKFILE} 可被所有用户写入'),
+              ('Result: good, file ${CHECKFILE} not world writable', '结果：正常，文件 ${CHECKFILE} 不可被所有用户写入'),
+              ('systemd-analyze not available', 'systemd-analyze 不可用'),
+              ('systemd-analyze too old (v${SYSTEMD_VERSION}), need at least v240', 'systemd-analyze 版本过旧（v${SYSTEMD_VERSION}），至少需要 v240'),
+              ('Run systemd-analyze security', '运行 systemd-analyze security'),
+              ("- Running 'systemd-analyze security'", "- 运行 'systemd-analyze security'"),
+              ('Unit name (exposure value) and predicate', '单元名称（暴露值）和安全等级'),
+              ('- ${UNIT} (value=${EXPOSURE})', '- ${UNIT}（值=${EXPOSURE}）'),
+              ("Result: ${UNIT} has exposure value ${EXPOSURE} with predicate '${STATUS}'", "结果：${UNIT} 的暴露值为 ${EXPOSURE}，安全等级为 '${STATUS}'"),
+              ('Consider hardening system services', '考虑加强系统服务的安全配置'),
+              ("Run '${SYSTEMDANALYZEBINARY} security SERVICE' for each service", "对每个服务运行 '${SYSTEMDANALYZEBINARY} security SERVICE'"),
+          ]
+
+          changed = 0
+          for old, new in replacements:
+              if old in text:
+                  text = text.replace(old, new)
+                  changed += 1
+
+          if changed < 85:
+              raise SystemExit(f'too few replacements applied: {changed}')
+          for marker in ['检查 Linux 启动服务与正在运行的服务', '检查系统运行时间', '运行 systemd-analyze security']:
+              if marker not in text:
+                  raise SystemExit(f'missing translated marker: {marker}')
+
+          path.write_text(text, encoding='utf-8')
+          print(f'applied {changed} service translations')
+          PY
+
+          sh -n include/tests_boot_services
+
+      - name: Commit translated file and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/localize-boot-services-2.yml
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add include/tests_boot_services .github/workflows/localize-boot-services-2.yml
+          git commit -m "i18n: translate boot services and systemd checks"
+          git push origin HEAD:master
