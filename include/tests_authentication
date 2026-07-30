@@ -1183,69 +1183,69 @@
     # Notes:        This test should be moved later to shells section
     # /etc/login.defs
     # pam_umask
-    Register --test-no AUTH-9328 --weight L --network NO --category security --description "Default umask values"
+    Register --test-no AUTH-9328 --weight L --network NO --category security --description "默认 umask 值"
     if [ ${SKIPTEST} -eq 0 ]; then
-        Display --indent 2 --text "- Determining default umask"
+        Display --indent 2 --text "- 确定默认 umask"
         GOOD_UMASK=0
         WEAK_UMASK=0
 
         # /etc/profile.d
-        LogText "Test: Checking ${ROOTDIR}etc/profile.d directory"
+        LogText "检查：检查 ${ROOTDIR}etc/profile.d 目录"
         if [ -d ${ROOTDIR}etc/profile.d ]; then
             FOUND=0
             FIND=$(ls ${ROOTDIR}etc/profile.d/* 2> /dev/null)
             if [ -n "${FIND}" ]; then
-                LogText "Result: found /etc/profile.d, with one or more files in it"
+                LogText "结果：发现 /etc/profile.d，且其中包含一个或多个文件"
                 for FILE in ${FIND}; do
                     HAS_MASK=$(${GREPBINARY} umask ${FILE} 2> /dev/null | ${SEDBINARY} 's/^[ \t]*//' | ${GREPBINARY} -v "^#" | ${AWKBINARY} '{ print $2 }')
                     for MASK in ${HAS_MASK}; do
                         if [ "${MASK}" = "077" -o "${MASK}" = "027" -o "${MASK}" = "0077" -o "${MASK}" = "0027" ]; then
-                            LogText "Result: found a strong umask '${MASK}' set in ${FILE}"
+                            LogText "结果：文件 ${FILE} 设置了较严格的 umask '${MASK}'"
                             GOOD_UMASK=1
                         else
-                            LogText "Result: found a weak umask '${MASK}' set in ${FILE}"
+                            LogText "结果：文件 ${FILE} 设置了较宽松的 umask '${MASK}'"
                             WEAK_UMASK=1
                         fi
                     done
                 done
             else
-                LogText "Result: found /etc/profile.d, but it does not contain any files"
+                LogText "结果：发现 /etc/profile.d，但其中没有文件"
             fi
         else
-            LogText "Result: /etc/profile.d not found"
+            LogText "结果：未找到 /etc/profile.d"
         fi
 
         # Test /etc/profile (only if we didn't find a good umask in profile.d)
-        LogText "Test: Checking /etc/profile"
+        LogText "检查：检查 /etc/profile"
         if [ -f /etc/profile -a ${GOOD_UMASK} -eq 0 ]; then
-            LogText "Result: file /etc/profile exists"
-            LogText "Test: Checking umask value in /etc/profile"
+            LogText "结果：文件 /etc/profile 存在"
+            LogText "检查：检查 /etc/profile 中的 umask 值"
             FIND=$(${GREPBINARY} "umask" /etc/profile | ${SEDBINARY} 's/^[ \t]*//' | ${GREPBINARY} -v "^#" | ${AWKBINARY} '{ print $2 }')
             FIND2=$(${GREPBINARY} "umask" /etc/profile | ${SEDBINARY} 's/^[ \t]*//' | ${GREPBINARY} -v "^#" | ${AWKBINARY} '{ print $2 }' | wc -l)
             FOUND_UMASK=0
             if [ "${FIND2}" = "0" ]; then
-                LogText "Result: did not find umask in /etc/profile"
+                LogText "结果：未在 /etc/profile 中发现 umask"
             elif [ "${FIND2}" = "1" ]; then
-                LogText "Result: found umask (prefixed with spaces)"
+                LogText "结果：发现带前导空格的 umask 配置"
                 FOUND_UMASK=1
                 if [ ! "${FIND}" = "077" -a ! "${FIND}" = "027" -a ! "${FIND}" = "0077" -a ! "${FIND}" = "0027" ]; then
-                    LogText "Result: found umask ${FIND}, which could be more strict"
+                    LogText "结果：发现 umask ${FIND}，可以设置得更严格"
                     WEAK_UMASK=1
                 else
-                    LogText "Result: found umask ${FIND}, which is fine"
+                    LogText "结果：发现 umask ${FIND}，设置正常"
                     GOOD_UMASK=1
                 fi
               # Found more than 1 umask value in profile
             else
-                LogText "Result: found multiple umask values configured in /etc/profile"
+                LogText "结果：/etc/profile 中配置了多个 umask 值"
                 FOUND_UMASK=1
                 for I in ${FIND}; do
                     if [ ! "${I}" = "077" -a ! "${I}" = "027" -a ! "${I}" = "0077" -a ! "${I}" = "0027" ]; then
-                        LogText "Result: umask ${I} could be more strict"
+                        LogText "结果：umask ${I} 可以设置得更严格"
                         WEAK_UMASK=1
                         AddHP 1 2
                     else
-                        LogText "Result: Found umask ${I}, which is fine"
+                        LogText "结果：发现 umask ${I}，设置正常"
                         AddHP 2 2
                     fi
                 done
@@ -1257,116 +1257,116 @@
                     AddHP 2 2
                 elif [ ${GOOD_UMASK} -eq 1 -a ${WEAK_UMASK} -eq 1 ]; then
                     Display --indent 4 --text "- umask (/etc/profile and /etc/profile.d)" --result "${STATUS_SUGGESTION}" --color YELLOW
-                    ReportSuggestion "${TEST_NO}" "Some umasks found could be more strict (e.g. 027)"
+                    ReportSuggestion "${TEST_NO}" "发现部分 umask 可以设置得更严格（例如 027）"
                     AddHP 1 2
                 else
                     Display --indent 4 --text "- umask (/etc/profile and /etc/profile.d)" --result "${STATUS_SUGGESTION}" --color YELLOW
-                    ReportSuggestion "${TEST_NO}" "Default umask in /etc/profile or /etc/profile.d/custom.sh could be more strict (e.g. 027)"
+                    ReportSuggestion "${TEST_NO}" "可以将 /etc/profile 或 /etc/profile.d/custom.sh 中的默认 umask 设置得更严格（例如 027）"
                     AddHP 0 2
                 fi
               else
                 # Some operating systems don't have a default umask defined in /etc/profile (Debian)
-                LogText "Result: found no umask. Please check if this is correct"
+                LogText "结果：未发现 umask，请确认这是否符合预期"
                 Display --indent 4 --text "- umask (/etc/profile)" --result "${STATUS_NOT_FOUND}" --color YELLOW
             fi
         fi
 
         # /etc/passwd
-        LogText "Test: Checking umask entries in /etc/passwd (pam_umask)"
+        LogText "检查：检查 /etc/passwd 中的 umask 条目（pam_umask）"
         if [ -f /etc/passwd ]; then
-            LogText "Result: file /etc/passwd exists"
-            LogText "Test: Checking umask value in /etc/passwd"
+            LogText "结果：文件 /etc/passwd 存在"
+            LogText "检查：检查 /etc/passwd 中的 umask 值"
             FIND=$(${GREPBINARY} "umask=" /etc/passwd)
             if [ "${FIND}" = "" ]; then
                 ReportManual "AUTH-9328:03"
             fi
           else
-            LogText "Result: file /etc/passwd does not exist"
+            LogText "结果：文件 /etc/passwd 不存在"
         fi
 
         # /etc/login.defs
-        LogText "Test: Checking /etc/login.defs"
+        LogText "检查：检查 /etc/login.defs"
         if [ -f /etc/login.defs ]; then
-            LogText "Result: file /etc/login.defs exists"
-            LogText "Test: Checking umask value in /etc/login.defs"
+            LogText "结果：文件 /etc/login.defs 存在"
+            LogText "检查：检查 /etc/login.defs 中的 umask 值"
             FIND=$(${GREPBINARY} "^UMASK" /etc/login.defs | ${AWKBINARY} '{ print $2 }')
             if [ "${FIND}" = "" ]; then
-                LogText "Result: umask value is not configured (most likely it will have the default 022 value)"
+                LogText "结果：未配置 umask 值，通常会使用默认值 022"
                 Display --indent 4 --text "- umask (/etc/login.defs)" --result "${STATUS_SUGGESTION}" --color YELLOW
-                ReportSuggestion "${TEST_NO}" "Default umask in /etc/login.defs could not be found and defaults usually to 022, which could be more strict like 027"
+                ReportSuggestion "${TEST_NO}" "未在 /etc/login.defs 中找到默认 umask；通常默认为 022，可以改为更严格的 027"
                 AddHP 1 2
             elif [ "${FIND}" = "077" -o "${FIND}" = "027" -o "${FIND}" = "0077" -o "${FIND}" = "0027" ]; then
-                LogText "Result: umask is ${FIND}, which is fine"
+                LogText "结果：umask 为 ${FIND}，设置正常"
                 Display --indent 4 --text "- umask (/etc/login.defs)" --result "${STATUS_OK}" --color GREEN
                 AddHP 2 2
             else
-                LogText "Result: found umask ${FIND}, which could be improved"
+                LogText "结果：发现 umask ${FIND}，可以进一步收紧"
                 Display --indent 4 --text "- umask (/etc/login.defs)" --result "${STATUS_SUGGESTION}" --color YELLOW
-                ReportSuggestion "${TEST_NO}" "Default umask in /etc/login.defs could be more strict like 027"
+                ReportSuggestion "${TEST_NO}" "可以将 /etc/login.defs 中的默认 umask 设置得更严格，例如 027"
                 AddHP 0 2
             fi
         else
-            LogText "Result: file /etc/login.defs does not exist"
+            LogText "结果：文件 /etc/login.defs 不存在"
         fi
 
         # Red Hat /etc/init.d/functions
-        LogText "Test: Checking /etc/init.d/functions"
+        LogText "检查：检查 /etc/init.d/functions"
         if [ -f /etc/init.d/functions ]; then
-            LogText "Result: file /etc/init.d/functions exists"
-            LogText "Test: Checking umask value in /etc/init.d/functions"
+            LogText "结果：文件 /etc/init.d/functions 存在"
+            LogText "检查：检查 /etc/init.d/functions 中的 umask 值"
             FIND=$(${GREPBINARY} "^umask" /etc/init.d/functions | ${AWKBINARY} '{ print $2 }')
             if [ "${FIND}" = "" ]; then
-                LogText "Result: umask is not configured"
+                LogText "结果：未配置 umask"
                 Display --indent 4 --text "- umask (/etc/init.d/functions)" --result "${STATUS_NONE}" --color WHITE
             elif [ "${FIND}" = "077" -o "${FIND}" = "027" -o "${FIND}" = "0077" -o "${FIND}" = "0027" ]; then
-                LogText "Result: umask is ${FIND}, which is fine"
+                LogText "结果：umask 为 ${FIND}，设置正常"
                 Display --indent 4 --text "- umask (/etc/init.d/functions)" --result "${STATUS_OK}" --color GREEN
                 AddHP 2 2
             else
-                LogText "Result: found umask ${FIND}, which could be improved"
+                LogText "结果：发现 umask ${FIND}，可以进一步收紧"
                 Display --indent 4 --text "- umask (/etc/init.d/functions)" --result "${STATUS_SUGGESTION}" --color YELLOW
                 AddHP 0 2
             fi
         else
-            LogText "Result: file /etc/init.d/functions does not exist"
+            LogText "结果：文件 /etc/init.d/functions 不存在"
         fi
 
         # /etc/init.d/rc
-        LogText "Test: Checking /etc/init.d/rc"
+        LogText "检查：检查 /etc/init.d/rc"
         if [ -f /etc/init.d/rc ]; then
-            LogText "Result: file /etc/init.d/rc exists"
-            LogText "Test: Checking UMASK value in /etc/init.d/rc"
+            LogText "结果：文件 /etc/init.d/rc 存在"
+            LogText "检查：检查 /etc/init.d/rc 中的 UMASK 值"
             FIND=$(${GREPBINARY} -i "^UMASK" /etc/init.d/rc | ${AWKBINARY} '{ print $2 }')
             if [ "${FIND}" = "" ]; then
-                LogText "Result: UMASK value is not configured (most likely it will have the default 022 value)"
-                Display --indent 4 --text "- Checking umask (/etc/init.d/rc)" --result "${STATUS_SUGGESTION}" --color YELLOW
-                ReportSuggestion "${TEST_NO}" "Default umask in /etc/init.d/rc could not be found and defaults usually to 022, which could be more strict like 027"
+                LogText "结果：未配置 UMASK 值，通常会使用默认值 022"
+                Display --indent 4 --text "- 检查 umask（/etc/init.d/rc）" --result "${STATUS_SUGGESTION}" --color YELLOW
+                ReportSuggestion "${TEST_NO}" "未在 /etc/init.d/rc 中找到默认 umask；通常默认为 022，可以改为更严格的 027"
                 AddHP 1 2
             elif [ "${FIND}" = "077" -o "${FIND}" = "027" -o "${FIND}" = "0077" -o "${FIND}" = "0027" ]; then
-                LogText "Result: umask is ${FIND}, which is fine"
+                LogText "结果：umask 为 ${FIND}，设置正常"
                 Display --indent 4 --text "- umask (/etc/init.d/rc)" --result "${STATUS_OK}" --color GREEN
                 AddHP 2 2
             else
-                LogText "Result: found umask ${FIND}, which could be improved"
+                LogText "结果：发现 umask ${FIND}，可以进一步收紧"
                 Display --indent 4 --text "- umask (/etc/init.d/rc)" --result "${STATUS_SUGGESTION}" --color YELLOW
-                ReportSuggestion "${TEST_NO}" "Default umask in /etc/init.d/rc could be more strict like 027"
+                ReportSuggestion "${TEST_NO}" "可以将 /etc/init.d/rc 中的默认 umask 设置得更严格，例如 027"
                 AddHP 0 2
             fi
           else
-            LogText "Result: file /etc/init.d/rc does not exist"
+            LogText "结果：文件 /etc/init.d/rc 不存在"
         fi
 
         # FreeBSD
         if [ -f /etc/login.conf ]; then
             FOUND=0
             WEAK_UMASK=0
-            LogText "Result: file /etc/login.conf exists"
+            LogText "结果：文件 /etc/login.conf 存在"
             FIND=$(${GREPBINARY} "umask" /etc/login.conf | ${SEDBINARY} 's/#.*//' | ${SEDBINARY} -E 's/^[[:cntrl:]]//' | ${GREPBINARY} -v '^$' | ${AWKBINARY} -F: '{ print $2}' | ${AWKBINARY} -F= '{ if ($1=="umask") { print $2 }}')
             if [ ! "${FIND}" = "" ]; then
                 for UMASK_VALUE in ${FIND}; do
                     case ${UMASK_VALUE} in
                         027|0027|077|0077)
-                            LogText "Result: found umask value ${UMASK_VALUE}, which is fine"
+                            LogText "结果：发现 umask 值 ${UMASK_VALUE}，设置正常"
                             AddHP 2 2
                             FOUND=1
                         ;;
@@ -1374,7 +1374,7 @@
                             AddHP 0 2
                             FOUND=1
                             WEAK_UMASK=1
-                            LogText "Result: found umask value ${UMASK_VALUE}, which can be more strict"
+                            LogText "结果：发现 umask 值 ${UMASK_VALUE}，可以设置得更严格"
                         ;;
                     esac
                 done
@@ -1384,44 +1384,44 @@
                     Display --indent 4 --text "- umask (/etc/login.conf)" --result "${STATUS_OK}" --color GREEN
                 else
                     Display --indent 4 --text "- umask (/etc/login.conf)" --result "${STATUS_WEAK}" --color YELLOW
-                    ReportSuggestion "${TEST_NO}" "Umask in /etc/login.conf could be more strict like 027"
+                    ReportSuggestion "${TEST_NO}" "可以将 /etc/login.conf 中的 umask 设置得更严格，例如 027"
                 fi
             else
-                LogText "Result: no umask setting found in /etc/login.conf, which is unexpected"
+                LogText "结果：未在 /etc/login.conf 中发现 umask 配置，这不符合预期"
                 Display --indent 4 --text "- umask (/etc/login.conf)" --result "${STATUS_NONE}" --color YELLOW
             fi
         fi
 
         # /etc/init.d/rcS
-        LogText "Test: Checking /etc/init.d/rcS"
+        LogText "检查：检查 /etc/init.d/rcS"
         if [ -f /etc/init.d/rcS ]; then
-            LogText "Result: file /etc/init.d/rcS exists"
-            LogText "Test: Checking if script runs another script."
+            LogText "结果：文件 /etc/init.d/rcS 存在"
+            LogText "检查：确认脚本是否会执行另一个脚本。"
             FIND=$(${GREPBINARY} -i "^exec " /etc/init.d/rcS | ${AWKBINARY} '{ print $2 }')
             if [ "${FIND}" = "" ]; then
                 FIND2=$(${GREPBINARY} -i "^UMASK" /etc/init.d/rcS | ${AWKBINARY} '{ print $2 }')
                 if [ "${FIND2}" = "" ]; then
-                    LogText "Result: UMASK value is not configured (most likely it will have the default 022 value)"
-                    Display --indent 4 --text "- Checking umask (/etc/init.d/rcS)" --result "${STATUS_SUGGESTION}" --color YELLOW
-                    ReportSuggestion "${TEST_NO}" "Default umask in /etc/init.d/rcS could not be found and defaults usually to 022, which could be more strict like 027"
+                    LogText "结果：未配置 UMASK 值，通常会使用默认值 022"
+                    Display --indent 4 --text "- 检查 umask（/etc/init.d/rcS）" --result "${STATUS_SUGGESTION}" --color YELLOW
+                    ReportSuggestion "${TEST_NO}" "未在 /etc/init.d/rcS 中找到默认 umask；通常默认为 022，可以改为更严格的 027"
                     AddHP 1 2
                 elif [ "${FIND2}" = "077" -o "${FIND2}" = "027" ]; then
-                    LogText "Result: umask is ${FIND2}, which is fine"
+                    LogText "结果：umask 为 ${FIND2}，设置正常"
                     Display --indent 4 --text "- umask (/etc/init.d/rcS)" --result "${STATUS_OK}" --color GREEN
                     AddHP 2 2
                 else
-                    LogText "Result: found umask ${FIND2}, which could be improved"
+                    LogText "结果：发现 umask ${FIND2}，可以进一步收紧"
                     Display --indent 4 --text "- umask (/etc/init.d/rcS)" --result "${STATUS_SUGGESTION}" --color YELLOW
-                    ReportSuggestion "${TEST_NO}" "Default umask in /etc/init.d/rcS could be more strict like 027"
+                    ReportSuggestion "${TEST_NO}" "可以将 /etc/init.d/rcS 中的默认 umask 设置得更严格，例如 027"
                     AddHP 0 2
                 fi
             else
                 # Improve check
-                LogText "Result: exec line present in file, setting of umask not needed in this script"
+                LogText "结果：文件中存在 exec 行，此脚本无需单独设置 umask"
                 LogText "输出：${FIND}"
             fi
           else
-            LogText "Result: file /etc/init.d/rcS does not exist"
+            LogText "结果：文件 /etc/init.d/rcS 不存在"
         fi
 
     fi
@@ -1429,67 +1429,67 @@
 #################################################################################
 #
     # Test        : AUTH-9340
-    # Description : Solaris account locking
-    Register --test-no AUTH-9340 --os Solaris --weight L --network NO --category security --description "Solaris account locking"
+    # Description : Solaris 账户锁定
+    Register --test-no AUTH-9340 --os Solaris --weight L --network NO --category security --description "Solaris 账户锁定"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         if [ -f ${ROOTDIR}etc/security/policy.conf ]; then
-            LogText "Result: found ${ROOTDIR}etc/security/policy.conf"
+            LogText "结果：发现 ${ROOTDIR}etc/security/policy.conf"
             FIND=$(${GREPBINARY} "^LOCK_AFTER_RETRIES" /etc/security/policy.conf)
             if [ ! "${FIND}" = "" ]; then
                 FOUND=1
-                LogText "Result: account locking option set"
+                LogText "结果：已设置账户锁定选项"
                 LogText "输出：${FIND}"
                 AddHP 2 2
             else
-                LogText "Result: option LOCK_AFTER_RETRIES not set"
+                LogText "结果：未设置 LOCK_AFTER_RETRIES 选项"
                 AddHP 1 2
             fi
         else
-            LogText "Result: ${ROOTDIR}etc/security/policy.conf does not exist"
+            LogText "结果：${ROOTDIR}etc/security/policy.conf 不存在"
         fi
         # If policy.conf does not exist, we most likely deal with a Solaris version below 10
         # and we proceed with checking the softer option RETRIES in /etc/default/login
         # which does not lock account, but discourages brute force password attacks.
         if [ ${FOUND} -eq 0 ]; then
-            LogText "Test: checking ${ROOTDIR}etc/default/login"
+            LogText "检查：检查 ${ROOTDIR}etc/default/login"
             if [ -f ${ROOTDIR}etc/default/login ]; then
-                LogText "Result: file ${ROOTDIR}etc/default/login exists"
+                LogText "结果：文件 ${ROOTDIR}etc/default/login 存在"
                 FIND=$(${GREPBINARY} "^RETRIES" ${ROOTDIR}etc/default/login)
                 if [ -n "${FIND}" ]; then
                     FOUND=1
-                    LogText "Result: retries option configured"
+                    LogText "结果：已配置重试次数选项"
                     LogText "输出：${FIND}"
                     AddHP 2 2
                 else
-                    LogText "Result: retries option not configured"
+                    LogText "结果：未配置重试次数选项"
                     AddHP 1 2
                 fi
             else
-                LogText "Result: file ${ROOTDIR}etc/default/login does not exist"
+                LogText "结果：文件 ${ROOTDIR}etc/default/login 不存在"
             fi
         fi
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 2 --text "- Checking account locking" --result "${STATUS_ENABLED}" --color GREEN
+            Display --indent 2 --text "- 检查账户锁定" --result "${STATUS_ENABLED}" --color GREEN
         else
-            Display --indent 2 --text "- Checking account locking" --result "${STATUS_NOT_ENABLED}" --color YELLOW
+            Display --indent 2 --text "- 检查账户锁定" --result "${STATUS_NOT_ENABLED}" --color YELLOW
         fi
     fi
 #
 #################################################################################
 #
     # Test        : AUTH-9402
-    # Description : Query LDAP authentication support
-    Register --test-no AUTH-9402 --weight L --network NO --category security --description "Query LDAP authentication support"
+    # Description : 查询 LDAP 身份验证支持
+    Register --test-no AUTH-9402 --weight L --network NO --category security --description "查询 LDAP 身份验证支持"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ -f ${ROOTDIR}etc/nsswitch.conf ]; then
             FIND=$(${GREPBINARY} -E "^passwd" ${ROOTDIR}etc/nsswitch.conf | ${GREPBINARY} "ldap")
             if [ "${FIND}" = "" ]; then
-                LogText "Result: LDAP authentication not enabled"
-                Display --indent 2 --text "- LDAP authentication support" --result "${STATUS_NOT_ENABLED}" --color WHITE
+                LogText "结果：未启用 LDAP 身份验证"
+                Display --indent 2 --text "- LDAP 身份验证支持" --result "${STATUS_NOT_ENABLED}" --color WHITE
             else
-                LogText "Result: LDAP authentication enabled"
-                Display --indent 2 --text "- LDAP authentication support" --result "${STATUS_ENABLED}" --color GREEN
+                LogText "结果：已启用 LDAP 身份验证"
+                Display --indent 2 --text "- LDAP 身份验证支持" --result "${STATUS_ENABLED}" --color GREEN
                 LDAP_AUTH_ENABLED=1
             fi
         else
@@ -1502,23 +1502,23 @@
     # Test        : AUTH-9406
     # Description : Check LDAP servers in client configuration
     if [ ${LDAP_AUTH_ENABLED} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no AUTH-9406 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Query LDAP servers in client configuration"
+    Register --test-no AUTH-9406 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "查询客户端配置中的 LDAP 服务器"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: checking ldap.conf options"
+        LogText "检查：检查 ldap.conf 选项"
         for FILE in ${LDAP_CONF_LOCATIONS}; do
-            LogText "Test: checking ${FILE}"
+            LogText "检查：检查 ${FILE}"
             if [ -f ${FILE} ]; then
                 LogText "结果：文件 ${FILE} 存在, LDAP being used"
                 LDAP_CLIENT_CONFIG_FILE="${FILE}"
-                LogText "Test: checking LDAP servers in file ${FILE}"
+                LogText "检查：检查文件 ${FILE} 中的 LDAP 服务器"
                 FIND=$(${GREPBINARY} -E "^host " ${FILE} | ${AWKBINARY} '{ print $2 }')
                 for SERVER in ${FIND}; do
-                    Display --indent 6 --text "LDAP server: ${SERVER}"
-                    LogText "Result: found LDAP server ${SERVER}"
+                    Display --indent 6 --text "LDAP 服务器：${SERVER}"
+                    LogText "结果：发现 LDAP 服务器 ${SERVER}"
                     Report "ldap_server[]=${SERVER}"
                 done
             else
-                LogText "Result: ${FILE} does NOT exist"
+                LogText "结果：${FILE} 不存在"
             fi
         done
         unset FILE FIND SERVER
@@ -1527,8 +1527,8 @@
 #################################################################################
 #
     # Test        : AUTH-9408
-    # Description : Logging of failed login attempts
-    Register --test-no AUTH-9408 --weight L --network NO --category security --description "Logging of failed login attempts"
+    # Description : 记录失败的登录尝试
+    Register --test-no AUTH-9408 --weight L --network NO --category security --description "记录失败的登录尝试"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ -f "${ROOTDIR}etc/pam.conf" -o -d "${ROOTDIR}etc/pam.d" ]; then
             FOUND_PAM_TALLY2=0
@@ -1537,17 +1537,17 @@
             FOUND_FAILLOCKDIR=0
             if [ -d "${ROOTDIR}var/run/faillock" ]; then
                 FOUND_FAILLOCKDIR=1
-                LogText "Result: found ${ROOTDIR}var/run/faillock directory"
+                LogText "结果：发现 ${ROOTDIR}var/run/faillock 目录"
             elif [ -s "${ROOTDIR}var/log/tallylog" ]; then
                 FOUND_TALLYLOG=1
-                LogText "Result: found ${ROOTDIR}var/log/tallylog with a size bigger than zero"
+                LogText "结果：发现 ${ROOTDIR}var/log/tallylog，且文件大小大于 0"
             else
-                LogText "Result: did not find ${ROOTDIR}var/run/faillock directory or ${ROOTDIR}var/log/tallylog file on disk or its file size is zero bytes"
+                LogText "结果：未找到 ${ROOTDIR}var/run/faillock 目录或 ${ROOTDIR}var/log/tallylog 文件，或者文件大小为 0"
             fi
             # Determine if pam_faillock is available
             for D in $(GetReportData --key "pam_module\\\[\\\]"); do
                 if ContainsString "pam_faillock" "${D}"; then
-                    LogText "Result: found pam_faillock module on disk"
+                    LogText "结果：磁盘上发现 pam_faillock 模块"
                     FOUND_PAM_FAILLOCK=1
                 fi
             done
@@ -1555,39 +1555,39 @@
                 # Determine if pam_tally2 is available
                 for D in $(GetReportData --key "pam_module\\\[\\\]"); do
                     if ContainsString "pam_tally2" "${D}"; then
-                        LogText "Result: found pam_tally2 module on disk"
+                        LogText "结果：磁盘上发现 pam_tally2 模块"
                         FOUND_PAM_TALLY2=1
                     fi
                 done
             fi
             if [ ${FOUND_PAM_FAILLOCK} -eq 1 -a ${FOUND_FAILLOCKDIR} -eq 1 ]; then
-                LogText "Outcome: authentication failures are logged using pam_faillock"
+                LogText "结论：使用 pam_faillock 记录身份验证失败"
                 AUTH_FAILED_LOGINS_LOGGED=1
                 Report "auth_failed_logins_tooling[]=pam_faillock"
             elif [ ${FOUND_PAM_TALLY2} -eq 1 -a ${FOUND_TALLYLOG} -eq 1 ]; then
-                LogText "Outcome: authentication failures are logged using pam_tally2"
+                LogText "结论：使用 pam_tally2 记录身份验证失败"
                 AUTH_FAILED_LOGINS_LOGGED=1
                 Report "auth_failed_logins_tooling[]=pam_tally2"
             else
-                LogText "Outcome: it looks like pam_faillock or pam_tally2 is not configured to log failed login attempts"
+                LogText "结论：pam_faillock 或 pam_tally2 似乎未配置为记录失败的登录尝试"
             fi
 
             unset FOUND_PAM_TALLY2 FOUND_TALLYLOG FOUND_PAM_FAILLOCK FOUND_FAILLOCKDIR
         fi
         # Also check /etc/logins.defs, although its usage decreased over the years
         if [ -f ${ROOTDIR}etc/login.defs ]; then
-            LogText "Test: Checking FAILLOG_ENAB option in ${ROOTDIR}etc/login.defs "
+            LogText "检查：检查 ${ROOTDIR}etc/login.defs 中的 FAILLOG_ENAB 选项 "
             FIND=$(${GREPBINARY} "^FAILLOG_ENAB" ${ROOTDIR}etc/login.defs | ${AWKBINARY} '{ if ($1=="FAILLOG_ENAB") { print $2 } }')
             # Search for enabled status (yes), otherwise consider it to be disabled (e.g. empty, or other value)
             if [ "${FIND}" = "yes" ]; then
                 AUTH_FAILED_LOGINS_LOGGED=1
                 Report "auth_failed_logins_tooling[]=/etc/login.defs"
-                LogText "Result: FAILLOG_ENAB is set to 'yes'"
-                LogText "Outcome: failed login attempts are logged in ${ROOTDIR}var/log/faillog"
-                Display --indent 2 --text "- Logging failed login attempts" --result "${STATUS_ENABLED}" --color GREEN
+                LogText "结果：FAILLOG_ENAB 设置为 'yes'"
+                LogText "结论：失败的登录尝试记录在 ${ROOTDIR}var/log/faillog"
+                Display --indent 2 --text "- 记录失败的登录尝试" --result "${STATUS_ENABLED}" --color GREEN
             else
-                LogText "Result: failed login attempts may not logged"
-                Display --indent 2 --text "- Logging failed login attempts" --result "${STATUS_DISABLED}" --color YELLOW
+                LogText "结果：失败的登录尝试可能未被记录"
+                Display --indent 2 --text "- 记录失败的登录尝试" --result "${STATUS_DISABLED}" --color YELLOW
             fi
         fi
 
@@ -1604,23 +1604,23 @@
     # Test        : AUTH-9409
     # Description : Check for doas file
     DOAS_FILE=""
-    Register --test-no AUTH-9409 --os OpenBSD --weight L --network NO --category security --description "Checking /etc/doas.conf file"
+    Register --test-no AUTH-9409 --os OpenBSD --weight L --network NO --category security --description "检查 /etc/doas.conf 文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
-        LogText "Test: checking presence /etc/doas.conf"
+        LogText "检查：确认 /etc/doas.conf 是否存在"
         if [ -f /etc/doas.conf ]; then
         DOAS_FILE=/etc/doas.conf
             FOUND=1
-            LogText "Result: file /etc/doas.conf found"
+            LogText "结果：发现 /etc/doas.conf 文件"
         else
-            LogText "Result: file /etc/doas.conf not found"
+            LogText "结果：未找到 /etc/doas.conf 文件"
         fi
         if [ ${FOUND} -eq 1 ]; then
-            LogText "Result: /etc/doas.conf file found"
-            Display --indent 2 --text "- doas file" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：发现 /etc/doas.conf 文件"
+            Display --indent 2 --text "- doas 文件" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: doas file NOT found"
-            Display --indent 2 --text "- doas file" --result "${STATUS_NOT_FOUND}" --color YELLOW
+            LogText "结果：未找到 doas 文件"
+            Display --indent 2 --text "- doas 文件" --result "${STATUS_NOT_FOUND}" --color YELLOW
         fi
     fi
 #
@@ -1629,19 +1629,19 @@
     # Test        : AUTH-9410
     # Description : Check for doas file permissions
     if [ -n "${DOAS_FILE}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no AUTH-9410 --os OpenBSD --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check /etc/doas.conf file permissions"
+    Register --test-no AUTH-9410 --os OpenBSD --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 /etc/doas.conf 文件权限"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: checking /etc/doas.conf permissions"
+        LogText "检查：检查 /etc/doas.conf 权限"
         FIND=$(ls -l ${DOAS_FILE} | ${CUTBINARY} -c 2-10)
-        LogText "Result: Found /etc/doas.conf file permissions: ${FIND}"
+        LogText "结果：/etc/doas.conf 文件权限为 ${FIND}"
         case "${FIND}" in
             r[w-]-[r-][w-]---- )
-                LogText "Result: file /etc/doas.conf has correct permissions"
-                Display --indent 4 --text "- Check doas file permissions" --result "${STATUS_OK}" --color GREEN
+                LogText "结果：/etc/doas.conf 文件权限正确"
+                Display --indent 4 --text "- 检查 doas 文件权限" --result "${STATUS_OK}" --color GREEN
                 ;;
             * )
-                LogText "Result: file has possibly unsafe file permissions"
-                Display --indent 4 --text "- Check doas file permissions" --result "${STATUS_WARNING}" --color RED
+                LogText "结果：文件权限可能不安全"
+                Display --indent 4 --text "- 检查 doas 文件权限" --result "${STATUS_WARNING}" --color RED
                 ;;
         esac
     fi
