@@ -1,0 +1,46 @@
+name: One-time visible English summary
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/summarize-visible-english.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+      - name: Summarize report by file
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from collections import Counter
+          from pathlib import Path
+          lines = Path('VISIBLE_ENGLISH_REPORT.txt').read_text(encoding='utf-8').splitlines()
+          counts = Counter()
+          for line in lines:
+              if not line or line.startswith('#'):
+                  continue
+              path = line.split(':', 1)[0]
+              counts[path] += 1
+          out = ['# Visible English candidate counts by file', '']
+          for path, count in sorted(counts.items(), key=lambda x: (-x[1], x[0])):
+              out.append(f'{count:4d} {path}')
+          out.append('')
+          Path('VISIBLE_ENGLISH_SUMMARY.txt').write_text('\n'.join(out), encoding='utf-8')
+          PY
+      - name: Commit summary and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/summarize-visible-english.yml
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add VISIBLE_ENGLISH_SUMMARY.txt .github/workflows/summarize-visible-english.yml
+          git commit -m "chore: summarize remaining visible English"
+          git push origin HEAD:master
