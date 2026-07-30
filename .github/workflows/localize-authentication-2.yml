@@ -1,0 +1,186 @@
+name: One-time authentication localization batch 2
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/localize-authentication-2.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  localize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Translate PAM, password aging, and single-user checks
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('include/tests_authentication')
+          text = path.read_text(encoding='utf-8')
+          original = text
+          replacements = [
+              ('Checking presence password strength testing tools (PAM)', '检查 PAM 密码强度检测工具'),
+              ('Searching PAM password testing modules (cracklib, passwdqc, pwquality)', '搜索 PAM 密码检测模块（cracklib、passwdqc、pwquality）'),
+              ('Result: found pam_cracklib.so (crack library PAM) in ${I}', '结果：在 ${I} 中发现 pam_cracklib.so（PAM cracklib 模块）'),
+              ('Result: found pam_passwdqc.so (passwd quality control PAM) in ${I}', '结果：在 ${I} 中发现 pam_passwdqc.so（PAM 密码质量控制模块）'),
+              ('Result: found pam_pwquality.so (password quality control PAM) in ${I}', '结果：在 ${I} 中发现 pam_pwquality.so（PAM 密码质量控制模块）'),
+              ('Result: pam_cracklib.so found', '结果：发现 pam_cracklib.so'),
+              ('Result: pam_cracklib.so NOT found (crack library PAM)', '结果：未发现 pam_cracklib.so（PAM cracklib 模块）'),
+              ('Result: pam_passwdqc.so found', '结果：发现 pam_passwdqc.so'),
+              ('Result: pam_passwdqc.so NOT found (passwd quality control PAM)', '结果：未发现 pam_passwdqc.so（PAM 密码质量控制模块）'),
+              ('Result: pam_pwquality.so found', '结果：发现 pam_pwquality.so'),
+              ('Result: pam_pwquality.so NOT found (pwquality control PAM)', '结果：未发现 pam_pwquality.so（PAM 密码质量控制模块）'),
+              ('- PAM password strength tools', '- PAM 密码强度工具'),
+              ('Result: no PAM modules for password strength testing found', '结果：未发现用于密码强度检测的 PAM 模块'),
+              ('Install a PAM module for password strength testing like pam_cracklib or pam_passwdqc or libpam-passwdqc', '安装用于密码强度检测的 PAM 模块，例如 pam_cracklib、pam_passwdqc 或 libpam-passwdqc'),
+              ('Result: found at least one PAM module for password strength testing', '结果：至少发现一个用于密码强度检测的 PAM 模块'),
+              ('Checking presence pam.conf', '检查 pam.conf 是否存在'),
+              ('Test: Checking file /etc/pam.conf', '检查：检查 /etc/pam.conf 文件'),
+              ('Result: file ${ROOTDIR}etc/pam.conf exists', '结果：文件 ${ROOTDIR}etc/pam.conf 存在'),
+              ('- PAM configuration files (pam.conf)', '- PAM 配置文件（pam.conf）'),
+              ('Test: searching PAM configuration files', '检查：搜索 PAM 配置文件'),
+              ('Result: File has no configuration options defined (empty, or only filled with comments and empty lines)', '结果：文件未定义配置选项（为空，或仅包含注释和空行）'),
+              ('Result: found one or more configuration lines', '结果：发现一行或多行配置'),
+              ('Found line: ${LINE}', '发现配置行：${LINE}'),
+              ('Result: file /etc/pam.conf could not be found', '结果：未找到 /etc/pam.conf 文件'),
+              ('- PAM configuration file (pam.conf)', '- PAM 配置文件（pam.conf）'),
+              ('Checking presence pam.d files', '检查 pam.d 文件是否存在'),
+              ('Test: Checking directory ${ROOTDIR}etc/pam.d', '检查：检查目录 ${ROOTDIR}etc/pam.d'),
+              ('Result: directory /etc/pam.d exists', '结果：目录 /etc/pam.d 存在'),
+              ('- PAM configuration files (pam.d)', '- PAM 配置文件（pam.d）'),
+              ('Found file: ${FILE}', '发现文件：${FILE}'),
+              ('Result: directory /etc/pam.d could not be found', '结果：未找到目录 /etc/pam.d'),
+              ('Test: Searching pam modules', '检查：搜索 PAM 模块'),
+              ('Test: Checking ${DIR}', '检查：检查 ${DIR}'),
+              ('Result: directory ${DIR} exists', '结果：目录 ${DIR} 存在'),
+              ('Result: directory ${DIR} could not be found or is a symlink to another directory', '结果：目录 ${DIR} 不存在，或是指向其他目录的符号链接'),
+              ('- PAM modules', '- PAM 模块'),
+              ('Result: no PAM modules found', '结果：未发现 PAM 模块'),
+              ('Determine LDAP support in PAM files', '检查 PAM 文件中的 LDAP 支持'),
+              ('Test: checking presence ${FILE}', '检查：确认 ${FILE} 是否存在'),
+              ('Result: file ${FILE} exists', '结果：文件 ${FILE} 存在'),
+              ('Test: checking presence LDAP module', '检查：确认 LDAP 模块是否存在'),
+              ('Result: LDAP module present', '结果：LDAP 模块存在'),
+              ('Output: ${FIND}', '输出：${FIND}'),
+              ('Result: LDAP module not found', '结果：未找到 LDAP 模块'),
+              ('Result: file ${FILE} not found, skipping test', '结果：未找到文件 ${FILE}，跳过检查'),
+              ('- LDAP module in PAM', '- PAM 中的 LDAP 模块'),
+              ('Result: skipping test for this Linux version', '结果：此 Linux 版本不执行该检查'),
+              ('Checking password protected account without expire date', '检查没有过期日期的密码保护账户'),
+              ('Test: Checking Linux version and password expire date status', '检查：检查 Linux 版本和密码过期日期状态'),
+              ('Result: all accounts seem to have an expire date', '结果：所有账户似乎都设置了过期日期'),
+              ('- Accounts without expire date', '- 未设置过期日期的账户'),
+              ('Result: found one or more accounts without expire date set', '结果：发现一个或多个未设置过期日期的账户'),
+              ('Account without expire date: ${I}', '未设置过期日期的账户：${I}'),
+              ('When possible set expire dates for all password protected accounts', '尽可能为所有密码保护账户设置过期日期'),
+              ('Checking accounts without password', '检查无密码账户'),
+              ('Test: Checking passwordless accounts', '检查：检查无密码账户'),
+              ('Result: all accounts seem to have a password', '结果：所有账户似乎都设置了密码'),
+              ('- Accounts without password', '- 无密码账户'),
+              ('Result: found one or more accounts without password', '结果：发现一个或多个无密码账户'),
+              ('Account without password: ${I}', '无密码账户：${I}'),
+              ('Found accounts without password', '发现无密码账户'),
+              ('Check locked user accounts in /etc/passwd', '检查 /etc/passwd 中被锁定的用户账户'),
+              ('Test: Checking locked accounts', '检查：检查被锁定的账户'),
+              ('Result: all accounts seem to be unlocked', '结果：所有账户似乎均未锁定'),
+              ('- Locked accounts', '- 被锁定的账户'),
+              ('Result: found one or more locked accounts', '结果：发现一个或多个被锁定的账户'),
+              ('Locked account: ${account}', '被锁定的账户：${account}'),
+              ('Look at the locked accounts and consider removing them', '检查被锁定的账户，并考虑删除不再需要的账户'),
+              ('Checking user password aging', '检查用户密码有效期'),
+              ('Test: Checking PASS_MIN_DAYS option in ${ROOTDIR}etc/login.defs', '检查：${ROOTDIR}etc/login.defs 中的 PASS_MIN_DAYS 选项'),
+              ('Result: password minimum age is not configured', '结果：未配置密码最短使用期限'),
+              ('- Checking user password aging (minimum)', '- 检查用户密码有效期（最小值）'),
+              ('Configure minimum password age in /etc/login.defs', '在 /etc/login.defs 中配置密码最短使用期限'),
+              ('Result: password needs to be at least ${FIND} days old', '结果：密码至少需要使用 ${FIND} 天'),
+              ('- User password aging (minimum)', '- 用户密码有效期（最小值）'),
+              ('Test: Checking PASS_MAX_DAYS option in ${ROOTDIR}etc/login.defs ', '检查：${ROOTDIR}etc/login.defs 中的 PASS_MAX_DAYS 选项 '),
+              ('Result: password aging limits are not configured', '结果：未配置密码有效期限制'),
+              ('- User password aging (maximum)', '- 用户密码有效期（最大值）'),
+              ('Configure maximum password age in /etc/login.defs', '在 /etc/login.defs 中配置密码最长使用期限'),
+              ('Result: max password age is ${FIND} days', '结果：密码最长使用期限为 ${FIND} 天'),
+              ('Checking for expired passwords', '检查已过期密码'),
+              ('Data: Days since epoch is ${DAYS_SINCE_EPOCH}', '数据：自 Unix 纪元以来的天数为 ${DAYS_SINCE_EPOCH}'),
+              ('Test: collecting accounts which have an expired password (last day changed + maximum change time)', '检查：收集密码已过期的账户（最后修改日期加最长有效期）'),
+              ('Result: password of user ${ACCOUNT} has been expired', '结果：用户 ${ACCOUNT} 的密码已过期'),
+              ('- Checking expired passwords', '- 检查已过期密码'),
+              ('Delete accounts which are no longer used', '删除不再使用的账户'),
+              ('Result: good, no passwords have been expired', '结果：良好，未发现已过期密码'),
+              ('Check single user login configuration', '检查单用户模式登录配置'),
+              ('Result: file ${ROOTDIR}etc/default/sulogin exists', '结果：文件 ${ROOTDIR}etc/default/sulogin 存在'),
+              ('Test: checking presence PASSREQ=NO', '检查：确认是否存在 PASSREQ=NO'),
+              ('Result: option not present or configured to request a password at single user mode login', '结果：该选项不存在，或已配置为单用户模式登录时要求密码'),
+              ('- Checking Solaris /etc/default/sulogin file', '- 检查 Solaris /etc/default/sulogin 文件'),
+              ('Result: option present, no password needed at single user mode login', '结果：该选项存在，单用户模式登录无需密码'),
+              ('No password needed for single user mode login', '单用户模式登录无需密码'),
+              ('Result: file /etc/default/sulogin does not exist', '结果：文件 /etc/default/sulogin 不存在'),
+              ('Check single boot authentication', '检查单用户启动身份验证'),
+              ('Test: Searching /tcb/files/auth/system/default', '检查：搜索 /tcb/files/auth/system/default'),
+              ('Result: file ${ROOTDIR}tcb/files/auth/system/default exists', '结果：文件 ${ROOTDIR}tcb/files/auth/system/default 存在'),
+              ('Test: checking presence :d_boot_authenticate@:', '检查：确认是否存在 :d_boot_authenticate@:'),
+              ('Result: option not set, password is needed at boot', '结果：未设置该选项，启动时需要密码'),
+              ('- Checking HP-UX boot authentication', '- 检查 HP-UX 启动身份验证'),
+              ('Set password for system boot', '为系统启动设置密码'),
+              ('Result: file ${ROOTDIR}tcb/files/auth/system/default does not exist', '结果：文件 ${ROOTDIR}tcb/files/auth/system/default 不存在'),
+              ('Test: Searching ${ROOTDIR}etc/inittab', '检查：搜索 ${ROOTDIR}etc/inittab'),
+              ('Result: file ${ROOTDIR}etc/inittab exists', '结果：文件 ${ROOTDIR}etc/inittab 存在'),
+              ('Test: checking presence sulogin for single user mode', '检查：确认单用户模式是否使用 sulogin'),
+              ('Result: found sulogin, so single user is protected', '结果：发现 sulogin，单用户模式受到保护'),
+              ('Result: file ${ROOTDIR}etc/inittab does not exist', '结果：文件 ${ROOTDIR}etc/inittab 不存在'),
+              ('Test: Searching ${ROOTDIR}etc/sysconfig/init', '检查：搜索 ${ROOTDIR}etc/sysconfig/init'),
+              ('Result: file ${ROOTDIR}etc/sysconfig/init exists', '结果：文件 ${ROOTDIR}etc/sysconfig/init 存在'),
+              ('Result: file ${ROOTDIR}etc/sysconfig/init does not exist', '结果：文件 ${ROOTDIR}etc/sysconfig/init 不存在'),
+              ('Test: going to check several systemd targets now', '检查：开始检查多个 systemd 目标'),
+              ('Test: checking if target ${I} is available (${FILE})', '检查：确认目标 ${I} 是否可用（${FILE}）'),
+              ('Result: found target ${I}', '结果：发现目标 ${I}'),
+              ('Result: did not find sulogin specified, possible risk of getting into single user mode without authentication', '结果：未发现 sulogin 配置，可能存在未经身份验证进入单用户模式的风险'),
+              ('Result: sulogin was found, which is a good measure to protect single user mode', '结果：发现 sulogin，可有效保护单用户模式'),
+              ('Result: target ${I} not found', '结果：未找到目标 ${I}'),
+              ('Result: option not set, no password needed at single user mode boot', '结果：未设置该选项，单用户模式启动无需密码'),
+              ('- Checking Linux single user mode authentication', '- 检查 Linux 单用户模式身份验证'),
+              ('No password set for single mode', '单用户模式未设置密码'),
+              ('Set password for single user mode to minimize physical access attack surface', '为单用户模式设置密码，以降低物理访问攻击面'),
+              ('Result: option set, password is needed at single user mode boot', '结果：已设置该选项，单用户模式启动需要密码'),
+              ('Result: no tests performed', '结果：未执行任何检查'),
+          ]
+
+          required = [
+              'Checking presence password strength testing tools (PAM)',
+              'Checking user password aging',
+              'Check single user login configuration',
+          ]
+          for marker in required:
+              if marker not in original:
+                  raise SystemExit(f'missing source marker: {marker}')
+
+          applied = 0
+          for old, new in replacements:
+              if old in text:
+                  text = text.replace(old, new)
+                  applied += 1
+          if applied < 105:
+              raise SystemExit(f'too few replacements applied: {applied}')
+
+          path.write_text(text, encoding='utf-8')
+          print(f'applied {applied} authentication translations')
+          PY
+
+          sh -n include/tests_authentication
+
+      - name: Commit translations and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/localize-authentication-2.yml
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add include/tests_authentication .github/workflows/localize-authentication-2.yml
+          git commit -m "i18n: translate PAM and password policy checks"
+          git push origin HEAD:master
