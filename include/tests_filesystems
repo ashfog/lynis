@@ -39,7 +39,7 @@
         Display --indent 2 --text "- 检查安装点"
         SEPARATED_FILESYTEMS="/home /tmp /var"
         for I in ${SEPARATED_FILESYTEMS}; do
-            LogText "测试：检查${I}是单独挂载还是挂载在/文件系统上"
+            LogText "检查：检查${I}是单独挂载还是挂载在/文件系统上"
             if [ -L ${I} ]; then
                 ShowSymlinkPath ${I}
                 LogText "结果：${I} 是符号链接。需要手动检查以确定确切的文件系统选项"
@@ -77,7 +77,7 @@
     if [ ! "${VGDISPLAYBINARY}" = "" -o ! "${LSVGBINARY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no FILE-6311 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 LVM 卷组"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查 LVM 卷组"
+        LogText "检查：检查 LVM 卷组"
         case ${OS} in
             AIX)
                  FIND=$(${LSVGBINARY} -o)
@@ -110,7 +110,7 @@
     if [ ${LVM_VG_USED} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no FILE-6312 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 LVM 卷"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查 LVM 卷"
+        LogText "检查：检查 LVM 卷"
         case ${OS} in
             AIX)
                  ACTIVE_VG_LIST=$(${LSVGBINARY} -o)
@@ -150,7 +150,7 @@
     # Description : Checking Linux EXT2, EXT3, EXT4 file systems
     Register --test-no FILE-6323 --os Linux --weight L --network NO --category security --description "检查 EXT 文件系统"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查 Linux EXT 文件系统"
+        LogText "检查：检查 Linux EXT 文件系统"
         FIND=$(${MOUNTBINARY} -t ext2,ext3,ext4 | ${AWKBINARY} '{ print $3","$5 }')
         if [ -n "${FIND}" ]; then
             LogText "结果：找到一个或多个 EXT 文件系统"
@@ -171,7 +171,7 @@
     # Description : Checking Linux XFS file systems
     Register --test-no FILE-6324 --os Linux --weight L --network NO --category security --description "检查 XFS 文件系统"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查 Linux XFS 文件系统"
+        LogText "检查：检查 Linux XFS 文件系统"
         FIND=$(${MOUNTBINARY} -t xfs | ${AWKBINARY} '{ print $3","$5 }')
         if [ -n "${FIND}" ]; then
             LogText "结果：找到一个或多个 XFS 文件系统"
@@ -193,7 +193,7 @@
     if [ -f /etc/fstab ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no FILE-6329 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 FFS/UFS 文件系统"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：查询 /etc/fstab 以获得可用的 FFS/UFS 挂载点"
+        LogText "检查：查询 /etc/fstab 以获得可用的 FFS/UFS 挂载点"
         FIND=$(${AWKBINARY} '{ if ($3 == "ufs" || $3 == "ffs" ) { print $1":"$2":"$3":"$4":" }}' /etc/fstab)
         if [ -z "${FIND}" ]; then
             if IsVerbose; then Display --indent 2 --text "- 查询FFS/UFS挂载点（fstab）" --result "${STATUS_NONE}" --color WHITE; fi
@@ -215,7 +215,7 @@
     # Note        : mount -p does not work under Linux
     Register --test-no FILE-6330 --os FreeBSD --weight L --network NO --category security --description "检查 ZFS 文件系统"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：发现可用的 ZFS 安装点"
+        LogText "检查：发现可用的 ZFS 安装点"
         FIND=$(${MOUNTBINARY} -p | ${AWKBINARY} '{ if ($3 == "zfs") { print $1":"$2":"$3":"$4":" }}')
         if [ -z "${FIND}" ]; then
             Display --indent 2 --text "- 查询ZFS挂载点（挂载-p）" --result "${STATUS_NONE}" --color WHITE
@@ -236,7 +236,7 @@
     # Description : Query all HAMMER PFS mounts from /etc/fstab
     Register --test-no FILE-6439 --os DragonFly --weight L --network NO --category security --description "检查 HAMMER PFS 安装座"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：查询 /etc/fstab 以获得可用的 HAMMER PFS 挂载点"
+        LogText "检查：查询 /etc/fstab 以获得可用的 HAMMER PFS 挂载点"
         FIND=$(${MOUNTBINARY} -p | ${AWKBINARY} '{ if ($3 == "null") { print $1":"$2":"$3":"$4":" }}')
         if [ -z "${FIND}" ]; then
             Display --indent 2 --text "- 查询HAMMER PFS挂载点（挂载-p）" --result "${STATUS_NONE}" --color WHITE
@@ -259,7 +259,7 @@
     Register --test-no FILE-6332 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查交换分区"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
-        LogText "测试：从 /etc/fstab 文件查询交换分区"
+        LogText "检查：从 /etc/fstab 文件查询交换分区"
         # Check if third field contains 'swap'
         FIND=$(${AWKBINARY} '{ if ($2=="swap" || $3=="swap") { print $1 }}' /etc/fstab | ${GREPBINARY} -v "^#")
         for I in ${FIND}; do
@@ -320,7 +320,7 @@
     Register --test-no FILE-6336 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查交换安装选项"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Swap partitions should be mounted with 'sw' or 'swap'
-        LogText "测试：检查交换分区的安装选项是否正确"
+        LogText "检查：检查交换分区的安装选项是否正确"
         FIND=$(${AWKBINARY} '{ if ($3=="swap" && ($4!~/sw/ && $4!="defaults")) { print $1 }}' /etc/fstab)
         if [ -z "${FIND}" ]; then
             Display --indent 2 --text "- 测试交换分区" --result "${STATUS_OK}" --color GREEN
@@ -360,7 +360,7 @@
     if [ ${SKIPTEST} -eq 0 ]; then
         # Proc should be mounted with 'hidepid=2' or 'hidepid=1' at least
         # https://www.kernel.org/doc/html/latest/filesystems/proc.html#chapter-4-configuring-procfs
-        LogText "测试：检查 proc mount 的挂载选项是否正确"
+        LogText "检查：检查 proc mount 的挂载选项是否正确"
         FIND=$(${MOUNTBINARY} | ${GREPBINARY} -E "${ROOTDIR}proc " | ${GREPBINARY} -E -o "hidepid=([0-9]|[a-z][a-z]*)")
         if [ "${FIND}" = "hidepid=4" -o "${FIND}" = "hidepid=ptraceable" ]; then  # https://lwn.net/Articles/817137/
             Display --indent 2 --text "- 测试 /proc 安装座 (hidepid)" --result "${STATUS_OK}" --color GREEN
@@ -390,7 +390,7 @@
     if [ -d ${ROOTDIR}tmp ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no FILE-6354 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "在 /tmp 中搜索旧文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：在 ${ROOTDIR}tmp 中搜索旧文件"
+        LogText "检查：在 ${ROOTDIR}tmp 中搜索旧文件"
         # Search for files only in ${ROOTDIR}tmp, with an access time older than X days
         FIND=$(${FINDBINARY} ${ROOTDIR}tmp -xdev -type f -atime +${TMP_OLD_DAYS} 2> /dev/null | ${SEDBINARY} 's/ /!space!/g')
         if IsEmpty "${FIND}"; then
@@ -475,14 +475,14 @@
     Register --test-no FILE-6368 --os Linux --weight L --network NO --root-only YES --category security --description "检查 root 文件系统上的 ACL 支持"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
-        LogText "测试：检查 ext[2-4] root 文件系统上的 acl 选项"
+        LogText "检查：检查 ext[2-4] root 文件系统上的 acl 选项"
         FIND=$(${MOUNTBINARY} | ${AWKBINARY} '{ if ($3=="/" && $5~/ext[2-4]/) { print $6 } }' | ${GREPBINARY} acl)
         if [ -n "${FIND}" ]; then
             LogText "结果：找到ACL选项"
             FOUND=1
         else
             LogText "结果：挂载点可能使用默认值挂载"
-            LogText "测试：检查保存 root 文件系统的设备"
+            LogText "检查：检查保存 root 文件系统的设备"
             # Get device on which root file system is mounted. Use /dev/root if it exists, or
             # else check output of mount
             if [ -b ${ROOTDIR}dev/root ]; then
@@ -495,7 +495,7 @@
             # Trying to determine default mount options from EXT2/EXT3/EXT4 file systems
             if [ -n "${FIND1}" ]; then
                 LogText "结果：找到${FIND1}"
-                LogText "测试：检查 ${FIND1} 上的默认选项"
+                LogText "检查：检查 ${FIND1} 上的默认选项"
                 FIND2=$(${TUNE2FSBINARY} -l ${FIND1} 2> /dev/null | ${GREPBINARY} "^Default mount options" | ${GREPBINARY} "acl")
                 if [ -n "${FIND2}" ]; then
                     LogText "结果：在默认挂载选项中找到 ACL 选项"
@@ -508,7 +508,7 @@
             fi
         fi
 
-        LogText "测试：检查 xfs root 文件系统上的 acl 选项"
+        LogText "检查：检查 xfs root 文件系统上的 acl 选项"
         FIND=$(${MOUNTBINARY} | ${AWKBINARY} '{ if ($3=="/" && $5~/xfs/) { print $6 } }' | ${GREPBINARY} -E 'no_acl|no_user_xattr')
         if [ -z "${FIND}" ]; then
             FOUND=1
@@ -703,7 +703,7 @@
     Register --test-no FILE-6394 --os Linux --weight L --network NO --category security --description "确定 swappiness 的电平。"
     if [ ${SKIPTEST} -eq 0 ]; then
         SWAPLEVEL=$(${CAT_BINARY} /proc/sys/vm/swappiness)
-        LogText "测试：检查vm.swappiness的级别：${SWAPLEVEL}"
+        LogText "检查：检查vm.swappiness的级别：${SWAPLEVEL}"
         PHYSDISK=$(${LSBLKBINARY} | ${GREPBINARY} -E 'disk|SWAP' | ${GREPBINARY} -B1 SWAP | ${HEADBINARY} -n1 | ${AWKBINARY} '{print $1}')
         if [ ${SWAPLEVEL} -gt 60 ]; then
             LogText "结果：vm.swappiness=${SWAPLEVEL} 表示交换比默认更频繁。"
@@ -787,7 +787,7 @@
     if [ ! "${LOCATEBINARY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no FILE-6410 --preqs-met ${PREQS_MET} --os Linux --weight L --network NO --category security --description "检查定位数据库"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查定位数据库"
+        LogText "检查：检查定位数据库"
         FOUND=0
         LOCATE_DBS="${ROOTDIR}var/cache/locate/locatedb ${ROOTDIR}var/db/locate.database ${ROOTDIR}var/lib/locate/locatedb ${ROOTDIR}var/lib/locatedb ${ROOTDIR}var/lib/mlocate/mlocate.db ${ROOTDIR}var/lib/plocate/plocate.db ${ROOTDIR}var/lib/slocate/slocate.db"
         for FILE in ${LOCATE_DBS}; do
@@ -863,7 +863,7 @@
                 if [ -n "${FIND}" ]; then
                     LogText "结果：在内核中找到 ${FS} 支持（输出 = ${FIND}）"
                     Debug "Module ${FS} present in the kernel"
-                    LogText "测试：检查 ${FS} 是否处于活动状态"
+                    LogText "检查：检查 ${FS} 是否处于活动状态"
                     # Check if FS is present in lsmod output
                     FIND=$(${LSMODBINARY} | ${GREPBINARY} -E "^${FS}")
                     if IsEmpty "${FIND}"; then
@@ -902,7 +902,7 @@
                 ReportSuggestion "${TEST_NO}" "建议禁用未使用的内核模块" "/etc/modprobe.d/blacklist.conf" "添加 install MODULENAME /bin/true（不含引号）"
             fi
         else
-            LogText "测试跳过 lsmod 二进制文件未找到或 /proc/modules 无法打开"
+            LogText "已跳过检查：未找到 lsmod 程序或无法打开 /proc/modules"
         fi
         unset AVAILABLE_FS AVAILABLE_MODPROBE_FS
     fi

@@ -63,7 +63,7 @@
         if IsEmpty "${HTTPDBINARY}"; then
             Display --indent 2 --text "- 检查Apache" --result "${STATUS_NOT_FOUND}" --color WHITE
         else
-            LogText "测试：扫描 Apache 二进制文件"
+            LogText "检查：扫描 Apache 二进制文件"
             IS_APACHE=$(${HTTPDBINARY} -v 2> /dev/null | ${GREPBINARY} -E '[aA]pache')
             if IsEmpty "${IS_APACHE}"; then
                 LogText "结果：${HTTPDBINARY} 不是 Apache"
@@ -222,7 +222,7 @@
     if [ ${APACHE_INSTALLED} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no HTTP-6632 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "确定所有可用的 Apache 模块"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：搜索可用的 Apache 模块"
+        LogText "检查：搜索可用的 Apache 模块"
         COUNT=0
         for DIR in ${APACHE_MODULES_LOCS}; do
             DirectoryExists ${DIR}
@@ -344,7 +344,7 @@
     # Description : Search for nginx process
     Register --test-no HTTP-6702 --weight L --network NO --category security --description "检查nginx进程"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：搜索正在运行的nginx进程"
+        LogText "检查：搜索正在运行的nginx进程"
         if IsRunning "nginx"; then
             LogText "结果：发现正在运行 nginx 进程"
             Display --indent 2 --text "- 检查nginx" --result "${STATUS_FOUND}" --color GREEN
@@ -363,7 +363,7 @@
     if [ ${NGINX_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no HTTP-6704 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查nginx配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：搜索nginx配置文件"
+        LogText "检查：搜索nginx配置文件"
         for DIR in ${NGINX_CONF_LOCS}; do
             if [ -f ${DIR}/nginx.conf ]; then
                 NGINX_CONF_LOCATION="${DIR}/nginx.conf"
@@ -440,7 +440,7 @@
     if [ ${NGINX_RUNNING} -eq 1 -a -n "${NGINX_CONF_FILES}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no HTTP-6708 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查发现的 nginx 配置设置"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：开始解析所有发现的 nginx 选项"
+        LogText "检查：开始解析所有发现的 nginx 选项"
         Display --indent 4 --text "- 解析配置选项"
         for FILE in ${NGINX_CONF_FILES}; do
             FILENAME=$(echo ${FILE} | ${AWKBINARY} -F/ '{print $NF}')
@@ -612,9 +612,9 @@
     if [ ${NGINX_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no HTTP-6720 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查Nginx日志文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查具有日志文件定义的文件目录"
+        LogText "检查：检查具有日志文件定义的文件目录"
         for DIR in ${NGINX_CONF_LOCS}; do
-            LogText "测试：检查${DIR}"
+            LogText "检查：检查${DIR}"
             if [ -d ${DIR} ]; then
                 LogText "结果：目录 ${DIR} 存在，将作为搜索路径"
                 FIND=$(find ${DIR} -type f -exec ${GREPBINARY} access_log \{\} \; | ${GREPBINARY} -v "#" | ${AWKBINARY} '{ if($1=="access_log") { print $2 } }' | ${SEDBINARY} 's/;$//g' | ${SORTBINARY} -u)

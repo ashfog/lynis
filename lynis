@@ -739,7 +739,7 @@ ${NORMAL}
 #
 #################################################################################
 #
-    LogText "测试：检查程序更新..."
+    LogText "检查：检查程序更新..."
     UPDATE_AVAILABLE=0
 
     if [ ${SKIP_UPGRADE_TEST} -eq 1 ]; then
@@ -1033,7 +1033,7 @@ ${NORMAL}
                            kernel_hardening hardening"
         else
             INCLUDE_TESTS="${TEST_GROUP_TO_CHECK}"
-            LogText "信息：仅执行来自组的测试：${TEST_GROUP_TO_CHECK}"
+            LogText "信息：仅执行来自组的检查：${TEST_GROUP_TO_CHECK}"
         fi
 
         # Include available tests
@@ -1130,7 +1130,7 @@ ${NORMAL}
     if [ -f ${INCLUDEDIR}/tool_tips ]; then SafePerms ${INCLUDEDIR}/tool_tips; . ${INCLUDEDIR}/tool_tips; fi
 
     LogText "================================================================================"
-    LogText "执行的测试：${CTESTS_PERFORMED}"
+    LogText "执行的检查：${CTESTS_PERFORMED}"
     LogText "总测试数：${TOTAL_TESTS}"
     LogText "活动插件：${N_PLUGIN_ENABLED}"
     LogText "插件总数：${N_PLUGIN}"

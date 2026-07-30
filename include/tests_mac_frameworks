@@ -33,7 +33,7 @@
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ -z "${AASTATUSBINARY}" ]; then
             APPARMORFOUND=0
-            LogText "结果：未找到 aa-status 二进制文件，AppArmor 未安装"
+            LogText "结果：未找到 aa-status 程序，AppArmor 未安装"
             Display --indent 2 --text "- 检查存在 AppArmor" --result "${STATUS_NOT_FOUND}" --color WHITE
         else
             APPARMORFOUND=1
@@ -105,10 +105,10 @@
             else
                 LogText "结果：无法找到或读取 ${FILE}"
                 Display --indent 4 --text "- 检查AppArmor状态" --result "${STATUS_UNKNOWN}" --color YELLOW
-                ReportSuggestion "${TEST_NO}" "检查 aa-status 的输出" "${FILE}" "text:运行aa-status"
+                ReportSuggestion "${TEST_NO}" "检查 aa-status 的输出" "${FILE}" "text:运行 aa-status"
             fi
         else
-            LogText "结果：没有可用的 aa-status 二进制文件"
+            LogText "结果：没有可用的 aa-status 程序"
         fi
     fi
 #
@@ -118,7 +118,7 @@
     # Description : Check SELINUX for installation
     Register --test-no MACF-6232 --weight L --network NO --category security --description "检查 SELINUX 是否存在"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查是否有 sestatus 二进制文件"
+        LogText "检查：检查是否有 sestatus 二进制文件"
         if [ -n "${SESTATUSBINARY}" ]; then
             LogText "结果：找到 sestatus 二进制文件 (${SESTATUSBINARY})"
             Display --indent 2 --text "- 检查存在 SELinux" --result "${STATUS_FOUND}" --color GREEN
@@ -184,7 +184,7 @@
     # Description : Check if the tomoyo-init binary is available on the system
     Register --test-no MACF-6240 --weight L --network NO --category security --description "检查 TOMOYO Linux 是否存在"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查是否有 tomoyo-init 二进制文件"
+        LogText "检查：检查是否有 tomoyo-init 二进制文件"
         if [ -z "${TOMOYOINITBINARY}" ]; then
             TOMOYOFOUND=0
             LogText "结果：未找到 tomoyo-init 二进制文件"

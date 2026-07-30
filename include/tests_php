@@ -228,11 +228,11 @@
     # Description : Check php.ini presence
     Register --test-no PHP-2211 --weight L --network NO --category security --description "检查 php.ini 是否存在"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查是否存在 php.ini"
+        LogText "检查：检查是否存在 php.ini"
         PHPINIFILE=""
         PHPINI_ALLFILES=""
         for FILE in ${PHPINILOCS}; do
-            LogText "测试：检查存在 ${FILE}"
+            LogText "检查：检查存在 ${FILE}"
             if [ -f ${FILE} ]; then
                 PHPINIFILE="${FILE}"
                 LogText "结果：找到 php.ini 文件 (${PHPINIFILE})"
@@ -279,7 +279,7 @@
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         for I in ${PHPINI_ALLFILES}; do
-            LogText "测试：检查文件 ${I} 中的 PHP 功能强化禁用_functions 或 suhosin.executor.func.blacklist"
+            LogText "检查：检查文件 ${I} 中的 PHP 功能强化禁用_functions 或 suhosin.executor.func.blacklist"
             FIND=$(${GREPBINARY} "^disable_functions.*=" ${I})
             if [ -z "${FIND}" ]; then
                 LogText "结果：${I}：未找到 disabled_functions"
@@ -333,7 +333,7 @@
     fi
     Register --test-no PHP-2368 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 PHP register_globals 选项"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查 PHP register_globals 选项"
+        LogText "检查：检查 PHP register_globals 选项"
         FIND=$(${GREPBINARY} -E -i 'register_globals.*(on|yes|1)' ${PHPINIFILE} | ${GREPBINARY} -v '^;')
         if [ -n "${FIND}" ]; then
             Display --indent 4 --text "- 检查 register_globals 选项" --result "${STATUS_WARNING}" --color RED
@@ -366,7 +366,7 @@
                     continue
                     ;;
             esac
-            LogText "测试：检查文件${FILE}"
+            LogText "检查：检查文件${FILE}"
             FIND=$(${GREPBINARY} -E -i 'expose_php.*(on|yes|1)' ${FILE} | ${GREPBINARY} -v '^;')
             if HasData "${FIND}"; then
                 LogText "结果：在 expose_php 设置上找到可能的匹配项"
@@ -395,7 +395,7 @@
     if [ -n "${PHPINIFILE}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no PHP-2374 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 PHP enable_dl 选项"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查 PHP enable_dl 选项"
+        LogText "检查：检查 PHP enable_dl 选项"
         FIND=$(${GREPBINARY} -E -i 'enable_dl.*(on|yes|1)' ${PHPINIFILE} | ${GREPBINARY} -v '^;')
         if [ -n "${FIND}" ]; then
             Display --indent 4 --text "- 检查 enable_dl 选项" --result "${STATUS_ON}" --color YELLOW
@@ -417,7 +417,7 @@
     if [ -n "${PHPINIFILE}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no PHP-2376 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 PHP allow_url_fopen 选项"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查 PHP allow_url_fopen 选项"
+        LogText "检查：检查 PHP allow_url_fopen 选项"
         FIND=$(${GREPBINARY} -E -i 'allow_url_fopen.*(off|no|0)' ${PHPINIFILE} | ${GREPBINARY} -v '^;')
         if [ -z "${FIND}" ]; then
             Display --indent 4 --text "- 检查 allow_url_fopen 选项" --result "${STATUS_ON}" --color YELLOW
@@ -440,7 +440,7 @@
     if [ -n "${PHPINIFILE}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no PHP-2378 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 PHP allow_url_include 选项"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查 PHP allow_url_include 选项"
+        LogText "检查：检查 PHP allow_url_include 选项"
         FIND=$(${GREPBINARY} -E -i 'allow_url_include.*(off|no|0)' ${PHPINIFILE} | ${GREPBINARY} -v '^;')
         if [ -z "${FIND}" ]; then
             Display --indent 4 --text "- 检查 allow_url_include 选项" --result "${STATUS_ON}" --color YELLOW
@@ -547,7 +547,7 @@
                     continue
                     ;;
             esac
-            LogText "测试：检查文件${FILE}"
+            LogText "检查：检查文件${FILE}"
             FIND=$(${GREPBINARY} -E -i "^listen = [0-9]{1,5}$" ${FILE})
             if HasData "${FIND}"; then
                 LogText "结果：发现只监听一个端口号"

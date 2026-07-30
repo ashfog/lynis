@@ -120,7 +120,7 @@
         # Set variable to zero, to indicate that we have no problems found (yet)
         FOUNDPROBLEM=0
         DIR="/my/path"
-        LogText "测试：我们将检查是否可以找到特定目录（${DIR}）"
+        LogText "检查：我们将检查是否可以找到特定目录（${DIR}）"
         # Check if a directory exists
         if DirectoryExists ${DIR}; then
             LogText "结果：日志条目以便于调试或附加信息"

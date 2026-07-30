@@ -39,7 +39,7 @@
     Register --test-no KRNL-5622 --os Linux --weight L --network NO --category security --description "确定 Linux 默认运行级别"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Checking if we can find the systemd default target
-        LogText "测试：检查 systemd default.target"
+        LogText "检查：检查 systemd default.target"
         if [ $( [ ! -z ${SYSTEMCTLBINARY} ] && ${SYSTEMCTLBINARY} get-default) ]; then
             FIND=$(${SYSTEMCTLBINARY} get-default)
             FIND2=$(${ECHOCMD} ${FIND} | ${EGREPBINARY} "runlevel5|graphical")
@@ -54,10 +54,10 @@
             fi
         else
             LogText "结果：未找到 systemd，尝试检查 inittab"
-            LogText "测试：检查 ${ROOTDIR}etc/inittab"
+            LogText "检查：检查 ${ROOTDIR}etc/inittab"
             if [ -f ${ROOTDIR}etc/inittab ]; then
                 LogText "结果：找到文件 ${ROOTDIR}etc/inittab"
-                LogText "测试：检查默认 Linux 运行级别"
+                LogText "检查：检查默认 Linux 运行级别"
                 FIND=$(${AWKBINARY} -F: '/^id/ { print $2; }' ${ROOTDIR}etc/inittab | head -n 1)
                 if IsEmpty "${FIND}"; then
                     Display --indent 2 --text "- 检查默认运行级别" --result "${STATUS_UNKNOWN}" --color YELLOW
@@ -94,10 +94,10 @@
     Register --test-no KRNL-5677 --platform "x86_64 amd64" --os "Linux NetBSD" --weight L --network NO --category security --description "检查 CPU 选项和支持"
     if [ ${SKIPTEST} -eq 0 ]; then
         Display --indent 2 --text "- 检查 CPU 支持 (NX/PAE)"
-        LogText "测试：检查/proc/cpuinfo"
+        LogText "检查：检查/proc/cpuinfo"
         if [ -f /proc/cpuinfo ]; then
             LogText "结果：找到/proc/cpuinfo"
-            LogText "测试：检查 CPU 选项 (XD/NX/PAE)"
+            LogText "检查：检查 CPU 选项 (XD/NX/PAE)"
             FIND_PAE_NX=$(${GREPBINARY} " pae " /proc/cpuinfo | ${GREPBINARY} " nx ")
             FIND_PAE=$(${GREPBINARY} " pae " /proc/cpuinfo)
             FIND_NX=$(${GREPBINARY} " nx " /proc/cpuinfo)
@@ -171,7 +171,7 @@
     Register --test-no KRNL-5723 --os Linux --weight L --network NO --category security --description "确定 Linux 内核是否是单片内核"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ -n "${LSMODBINARY}" -a -f /proc/modules ]; then
-            LogText "测试：检查内核是整体的还是模块化的"
+            LogText "检查：检查内核是整体的还是模块化的"
             # Checking if any modules are loaded
             FIND=$(${LSMODBINARY} | ${GREPBINARY} -v "^Module" | wc -l | ${TRBINARY} -s ' ' | ${TRBINARY} -d ' ')
             Display --indent 2 --text "- 检查内核类型" --result "${STATUS_DONE}" --color GREEN
@@ -257,7 +257,7 @@
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ ${LINUXCONFIGFILE_ZIPPED} -eq 1 ]; then GREPTOOL="${ZGREPBINARY}"; else GREPTOOL="${GREPBINARY}"; fi
         if [ -n "${GREPTOOL}" ]; then
-            LogText "测试：检查默认的 I/O 内核调度程序"
+            LogText "检查：检查默认的 I/O 内核调度程序"
             LINUX_KERNEL_IOSCHED=$(${GREPTOOL} "CONFIG_DEFAULT_IOSCHED" ${LINUXCONFIGFILE} | ${AWKBINARY} -F= '{ print $2 }' | ${SEDBINARY} s/\"//g)
             if [ -n "${LINUX_KERNEL_IOSCHED}" ]; then
                 LogText "结果：发现 I/O 调度器 '${LINUX_KERNEL_IOSCHED}'"
@@ -279,9 +279,9 @@
     Register --test-no KRNL-5745 --os FreeBSD --weight L --network NO --category security --description "检查 FreeBSD 加载的内核模块"
     if [ ${SKIPTEST} -eq 0 ]; then
         Display --indent 2 --text "- 检查活动内核模块"
-        LogText "测试：活动内核模块 (KLD)"
+        LogText "检查：活动内核模块 (KLD)"
         LogText "说明：查看所有活动的内核模块（包括内核）"
-        LogText "测试：检查模块"
+        LogText "检查：检查模块"
         if [ -f /sbin/kldstat ]; then
             FIND=$(kldstat | ${GREPBINARY} -v 'Name' | ${TRBINARY} -s ' ' | ${CUTBINARY} -d ' ' -f6)
             if [ $? -eq 0 ]; then
@@ -309,9 +309,9 @@
     Register --test-no KRNL-5831 --os DragonFly --weight L --network NO --category security --description "检查 DragonFly 加载的内核模块"
     if [ ${SKIPTEST} -eq 0 ]; then
         Display --indent 2 --text "- 检查活动内核模块"
-        LogText "测试：活动内核模块 (KLD)"
+        LogText "检查：活动内核模块 (KLD)"
         LogText "说明：查看所有活动的内核模块（包括内核）"
-        LogText "测试：检查模块"
+        LogText "检查：检查模块"
         if [ -x /sbin/kldstat ]; then
             FIND=$(/sbin/kldstat | ${GREPBINARY} -v 'Name' | ${TRBINARY} -s ' ' | ${CUTBINARY} -d ' ' -f6)
             if [ $? -eq 0 ]; then
@@ -339,7 +339,7 @@
     # Description : Checking Solaris load modules
     Register --test-no KRNL-5770 --os Solaris --weight L --network NO --category security --description "检查活动的内核模块"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：搜索加载的内核模块"
+        LogText "检查：搜索加载的内核模块"
         FIND=$(/usr/sbin/modinfo -c -w | ${GREPBINARY} -v "UNLOADED" | ${GREPBINARY} LOADED | ${AWKBINARY} '{ print $3 }' | sort)
         if HasData "${FIND}"; then
             for ITEM in ${FIND}; do
@@ -369,7 +369,7 @@
         LogText "检查：搜索 apt-cache，以确定是否有更新的内核"
         if [ -x ${ROOTDIR}usr/bin/apt-cache ]; then
             LogText "结果：找到${ROOTDIR}usr/bin/apt-cache"
-            LogText "测试：检查 ${ROOTDIR}vmlinuz 或 ${ROOTDIR}boot/vmlinuz 是否存在"
+            LogText "检查：检查 ${ROOTDIR}vmlinuz 或 ${ROOTDIR}boot/vmlinuz 是否存在"
             if [ -f ${ROOTDIR}vmlinuz -o -f ${ROOTDIR}boot/vmlinuz ]; then
                 HAS_VMLINUZ=1
                 if [ -f ${ROOTDIR}vmlinuz ]; then
@@ -378,10 +378,10 @@
                     FINDVMLINUZ="${ROOTDIR}boot/vmlinuz"
                 fi
                 LogText "结果：找到${FINDVMLINUZ}"
-                LogText "测试：检查 ${FINDVMLINUZ} 的读取链接位置"
+                LogText "检查：检查 ${FINDVMLINUZ} 的读取链接位置"
                 FINDKERNFILE=$(readlink -f ${FINDVMLINUZ})
                 LogText "输出：readlink报告的文件${FINDKERNFILE}"
-                LogText "测试：使用 dpkg -S 的输出检查相关包"
+                LogText "检查：使用 dpkg -S 的输出检查相关包"
                 FINDKERNEL=$(dpkg -S ${FINDKERNFILE} 2> /dev/null | ${AWKBINARY} -F : '{print $1}')
                 LogText "输出： dpkg -S 报告包 ${FINDKERNEL}"
             elif [ -e ${ROOTDIR}dev/grsec ]; then
@@ -402,7 +402,7 @@
                 LogText "结果：无法检查内核更新状态，因为内核未知"
             else
                 LogText "结果：发现内核 '${FINDKERNEL}'，将用于后续检查"
-                LogText "测试：使用 apt-cache policy 确定是否有可用更新"
+                LogText "检查：使用 apt-cache policy 确定是否有可用更新"
                 FINDINSTALLED=$(apt-cache policy ${FINDKERNEL} | ${GREPBINARY} -E 'Installed' | ${CUTBINARY} -d ':' -f2 | ${TRBINARY} -d ' ')
                 FINDCANDIDATE=$(apt-cache policy ${FINDKERNEL} | ${GREPBINARY} -E 'Candidate' | ${CUTBINARY} -d ':' -f2 | ${TRBINARY} -d ' ')
                 LogText "安装的内核：${FINDINSTALLED}"
@@ -445,7 +445,7 @@
     Register --test-no KRNL-5820 --os Linux --weight L --network NO --category security --description "检查核心转储配置"
     if [ ${SKIPTEST} -eq 0 ]; then
         Display --indent 2 --text "- 检查核心转储配置"
-        LogText "测试：检查 systemd 是否存在"
+        LogText "检查：检查 systemd 是否存在"
         # systemd option
         if [ $HAS_SYSTEMD -eq 1 ]; then
             LogText "结果：systemd 出现在该系统上"
@@ -582,7 +582,7 @@
         done
 
         # Sysctl option
-        LogText "测试：检查 fs.suid_dumpable 的 sysctl 值"
+        LogText "检查：检查 fs.suid_dumpable 的 sysctl 值"
         FIND=$(${SYSCTLBINARY} fs.suid_dumpable 2> /dev/null | ${AWKBINARY} '{ if ($1=="fs.suid_dumpable") { print $3 } }')
         if [ -z "${FIND}" ]; then
             LogText "结果：未找到 sysctl 键 fs.suid_dumpable"
@@ -616,7 +616,7 @@
         REBOOT_NEEDED=2
         for FILE in "${ROOTDIR}var/run/reboot-required.pkgs" "${ROOTDIR}var/run/needs_restarting"
         do
-            LogText "测试：检查存在 ${FILE}"
+            LogText "检查：检查存在 ${FILE}"
             if [ -f ${FILE} ]; then
                 LogText "结果：文件 ${FILE} 存在"
                 FIND=$(${WCBINARY} -l < ${FILE})
@@ -709,7 +709,7 @@
 
                     # If we did not find the version yet, see if we can extract it from the magic data that 'file' returns
                     if [ -z "${VERSION_ON_DISK}" ]; then
-                        LogText "测试：检查磁盘上的内核版本"
+                        LogText "检查：检查磁盘上的内核版本"
                         NEXTLINE=0
                         VERSION_ON_DISK=""
                         for I in $(file ${FOUND_VMLINUZ}); do

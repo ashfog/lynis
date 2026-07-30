@@ -226,7 +226,7 @@
             # Don't search in /dev/null, it's too empty there
             if [ ! "${REPORTFILE}" = "/dev/null" ]; then
                 # Check if we can find the main type (with or without brackets)
-                LogText "测试：在早期发现的结果中搜索字符串 $2"
+                LogText "检查：在早期发现的结果中搜索字符串 $2"
                 FIND=$(grep -E "^$1(\[\])?=" ${REPORTFILE} | grep -E "$2")
                 if HasData "${FIND}"; then
                     RETVAL=0
@@ -373,7 +373,7 @@
     DirectoryExists() {
         if [ $# -eq 0 ]; then ExitFatal "Missing parameter when calling DirectoryExists function"; fi
         DIRECTORY_FOUND=0
-        LogText "测试：检查目录 $1 是否存在"
+        LogText "检查：检查目录 $1 是否存在"
         if [ -d $1 ]; then
             LogText "结果：目录 $1 存在"
             DIRECTORY_FOUND=1
@@ -765,7 +765,7 @@
     FileExists() {
         if [ $# -eq 0 ]; then ExitFatal "Missing parameter when calling FileExists function"; fi
         FILE_FOUND=0
-        LogText "测试：检查文件 $1 是否存在"
+        LogText "检查：检查文件 $1 是否存在"
         if [ -f $1 ]; then
             LogText "结果：文件 $1 存在"
             FILE_FOUND=1
@@ -814,7 +814,7 @@
     FileIsEmpty() {
         if [ $# -eq 0 ]; then ExitFatal "Missing parameter when calling FileIsEmpty function"; fi
         EMPTY=0
-        LogText "测试：检查文件 $1 是否为空"
+        LogText "检查：检查文件 $1 是否为空"
         if [ ! -s "$1" ]; then
             LogText "结果：文件 $1 为空"
             EMPTY=1
@@ -840,7 +840,7 @@
         CANREAD=0
         RETVAL=1
         escaped_file=$(echo ${sFILE} | sed 's/\*/\\*/; s/?/\\?/')
-        LogText "测试：检查是否可以访问${sFILE}（转义：${escaped_file}）"
+        LogText "检查：检查是否可以访问${sFILE}（转义：${escaped_file}）"
 
         # Check for symlink
         if [ -L "${escaped_file}" ]; then
@@ -1340,7 +1340,7 @@
                 CHECK_PERMISSION=$(echo "${CHECK_PERMISSION}" | ${AWKBINARY} '{printf "%03d",$1}')
 
                 # First try stat command
-                LogText "测试：检查文件 ${CHECKFILE} 的权限是否设置为 ${CHECK_PERMISSION} (${CHECKPERMISSION_FULL}) 或更严格"
+                LogText "检查：检查文件 ${CHECKFILE} 的权限是否设置为 ${CHECK_PERMISSION} (${CHECKPERMISSION_FULL}) 或更严格"
                 if [ -n "${STATBINARY}" ]; then
                     case ${OS} in
                         *BSD | "macOS")
@@ -1452,7 +1452,7 @@
             echo "------------------------------------"
         fi
         LogTextBreak
-        LogText "操作：执行类别测试：$1"
+        LogText "操作：执行类别检查：$1"
     }
 
 
@@ -1755,7 +1755,7 @@
     ################################################################################
 
     IsVirtualMachine() {
-        LogText "测试：判断该系统是否为虚拟机"
+        LogText "检查：判断该系统是否为虚拟机"
         # 0 = no, 1 = yes, 2 = unknown
         ISVIRTUALMACHINE=2; VMTYPE="unknown"; VMFULLTYPE="Unknown"
         SHORT=""
@@ -1799,7 +1799,7 @@
         # systemd
         if [ -z "${SHORT}" ]; then
             if [ -x /usr/bin/systemd-detect-virt ]; then
-                LogText "测试：尝试用 systemd-detect-virt 猜测虚拟化技术"
+                LogText "检查：尝试用 systemd-detect-virt 猜测虚拟化技术"
                 FIND=$(/usr/bin/systemd-detect-virt)
                 if [ -n "${FIND}" ]; then
                     LogText "结果：找到${FIND}"
@@ -1816,7 +1816,7 @@
         # Values: VMware
         if [ -z "${SHORT}" ]; then
             if [ -x /usr/bin/lscpu ]; then
-                LogText "测试：尝试用 lscpu 猜测虚拟化"
+                LogText "检查：尝试用 lscpu 猜测虚拟化"
                 FIND=$(lscpu | grep -i "^Hypervisor Vendor" | awk -F: '{ print $2 }' | sed 's/ //g')
                 if [ -n "${FIND}" ]; then
                     LogText "结果：找到${FIND}"
@@ -1837,7 +1837,7 @@
             # Try to find dmidecode in case we did not check binaries (e.g. lynis show environment)
             if [ ${CHECK_BINARIES} -eq 0 ]; then DMIDECODEBINARY=$(command -v dmidecode 2> /dev/null); fi
             if [ -n "${DMIDECODEBINARY}" -a -x "${DMIDECODEBINARY}" -a ${PRIVILEGED} -eq 1 ]; then
-                LogText "测试：尝试用 dmidecode 猜测虚拟化"
+                LogText "检查：尝试用 dmidecode 猜测虚拟化"
                 FIND=$(${DMIDECODEBINARY} -s system-product-name | awk '{ print $1 }')
                 if [ -n "${FIND}" ]; then
                     LogText "结果：找到${FIND}"
@@ -1858,7 +1858,7 @@
 
         # Try common guest processes
         if [ -z "${SHORT}" ]; then
-            LogText "测试：尝试通过运行进程来猜测虚拟机类型"
+            LogText "检查：尝试通过运行进程来猜测虚拟机类型"
 
             # VMware
             if IsRunning vmware-guestd; then SHORT="vmware"
@@ -1876,7 +1876,7 @@
 
         # Amazon EC2
         if [ -z "${SHORT}" ]; then
-            LogText "测试：检查亚马逊的特定文件"
+            LogText "检查：检查亚马逊的特定文件"
             if [ -f /etc/ec2_version -a -s /etc/ec2_version ]; then
                 SHORT="amazon-ec2"
             else
@@ -1888,7 +1888,7 @@
 
         # sysctl values
         if [ -z "${SHORT}" ]; then
-            LogText "测试：尝试通过 sysctl 键猜测虚拟机类型"
+            LogText "检查：尝试通过 sysctl 键猜测虚拟机类型"
 
             # FreeBSD: hw.hv_vendor (remains empty for VirtualBox)
             # NetBSD: machdep.dmi.system-product
@@ -1905,7 +1905,7 @@
         if [ -z "${SHORT}" ]; then
             if [ ${PRIVILEGED} -eq 1 ]; then
                 if [ -x /usr/bin/lshw ]; then
-                    LogText "测试：尝试用 lshw 猜测虚拟化"
+                    LogText "检查：尝试用 lshw 猜测虚拟化"
                     FIND=$(lshw -quiet -class system 2> /dev/null | awk '{ if ($1=="product:") { print $2 }}')
                     if HasData "${FIND}"; then
                         LogText "结果：找到${FIND}"
@@ -2490,7 +2490,7 @@
             return 255
         else
             if [ $# -eq 2 ] && [ $1 = "TCP" -o $1 = "UDP" ]; then
-                LogText "测试：查找监听 $1:$2 的服务"
+                LogText "检查：查找监听 $1:$2 的服务"
                 if [ $1 = "TCP" ]; then FIND=$(${LSOFBINARY}${LSOF_EXTRA_OPTIONS} -i${1} -s${1}:LISTEN -P -n | grep ":${2} "); else FIND=$(${LSOFBINARY}${LSOF_EXTRA_OPTIONS} -i${1} -P -n | grep ":${2} "); fi
                 if [ ! "${FIND}" = "" ]; then
                     LogText "结果：发现服务正在端口 $2 ($1) 上侦听"
@@ -3014,7 +3014,7 @@
         if [ $# -ge 4 ]; then SOLUTION="$4"; else SOLUTION="-"; fi
         if [ $# -ge 5 ]; then echo "函数 ReportSuggestion 的参数过多"; ExitFatal; fi
         Report "suggestion[]=${TEST}|${MESSAGE}|${DETAILS}|${SOLUTION}|"
-        LogText "建议：${MESSAGE} [测试：${TEST}] [详细信息：${DETAILS}] [解决方案：${SOLUTION}]"
+        LogText "建议：${MESSAGE} [检查：${TEST}] [详细信息：${DETAILS}] [解决方案：${SOLUTION}]"
     }
 
 
@@ -3053,7 +3053,7 @@
             if [ $# -ge 5 ]; then echo "函数 ReportWarning 的参数过多"; ExitFatal; fi
         fi
         Report "warning[]=${TEST}|${MESSAGE}|${DETAILS}|${SOLUTION}|"
-        LogText "警告：${MESSAGE} [测试：${TEST}] [详细信息：${DETAILS}] [解决方案：${SOLUTION}]"
+        LogText "警告：${MESSAGE} [检查：${TEST}] [详细信息：${DETAILS}] [解决方案：${SOLUTION}]"
     }
 
 
@@ -3280,7 +3280,7 @@
             # Don't search in /dev/null, it's too empty there
             if [ -f ${FILE} ]; then
                 # Check if we can find the main type (with or without brackets)
-                LogText "测试：在文件 ${FILE} 中搜索字符串 ${STRING}"
+                LogText "检查：在文件 ${FILE} 中搜索字符串 ${STRING}"
                 FIND=$(grep -E "${STRING}" ${FILE})
                 if [ -n "${FIND}" ]; then
                     LogText "结果：发现搜索字符串 '${STRING}'"
@@ -3541,7 +3541,7 @@
     Status() {
         echo ""
         echo "Date / time : $(date "+%Y-%m-%d %H:%M:%S")"
-        echo "主动测试：${TEST_NO:-NONE}"
+        echo "主动检查：${TEST_NO:-NONE}"
         echo ""
     }
 

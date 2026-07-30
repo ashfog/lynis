@@ -41,7 +41,7 @@
     # Description : Check printcap file consistency
     Register --test-no PRNT-2302 --os FreeBSD --weight L --network NO --category security --description "检查 printcap 的一致性"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：搜索/usr/sbin/chkprintcap"
+        LogText "检查：搜索/usr/sbin/chkprintcap"
         if [ ! -f ${ROOTDIR}usr/sbin/chkprintcap ]; then
             Display --indent 2 --text "- 检查 chkprintcap" --result "${STATUS_NOT_FOUND}" --color WHITE
             LogText "结果：未找到 ${ROOTDIR}usr/sbin/chkprintcap，跳过检查"
@@ -67,7 +67,7 @@
     # Description : Check cupsd status
     Register --test-no PRNT-2304 --weight L --network NO --category security --description "检查cupsd状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查 cupsd 状态"
+        LogText "检查：检查 cupsd 状态"
         if IsRunning "cupsd"; then
             Display --indent 2 --text "- 检查 cups 守护进程" --result "${STATUS_RUNNING}" --color GREEN
             LogText "结果：cups 守护进程正在运行"
@@ -85,7 +85,7 @@
     if [ ${CUPSD_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no PRNT-2306 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 CUPSd 配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：搜索cupsd配置文件"
+        LogText "检查：搜索cupsd配置文件"
         for DIR in ${CUPSD_CONFIG_LOCS}; do
             if [ -f ${DIR}/cupsd.conf ]; then
                 if FileIsReadable ${DIR}/cupsd.conf; then
@@ -113,7 +113,7 @@
     if [ ${CUPSD_FOUND} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no PRNT-2307 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 CUPSd 配置文件权限"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查CUPS配置文件权限"
+        LogText "检查：检查CUPS配置文件权限"
         FIND=$(${LSBINARY} -l ${CUPSD_CONFIG_FILE} | ${CUTBINARY} -c 2-10)
         LogText "结果：找到${FIND}"
         case "${FIND}" in
@@ -140,7 +140,7 @@
         FOUND=0
         PORT_FOUND=0
 
-        LogText "测试：检查CUPS守护进程侦听网络地址"
+        LogText "检查：检查CUPS守护进程侦听网络地址"
 
         # Search for Port statement
         FIND=$(${GREPBINARY} -E "^Port 631" ${CUPSD_CONFIG_FILE})
@@ -177,7 +177,7 @@
         fi
 
         # Checking sockets
-        LogText "测试：检查 cups 守护进程侦听套接字"
+        LogText "检查：检查 cups 守护进程侦听套接字"
         FIND=$(${GREPBINARY} "^Listen" ${CUPSD_CONFIG_FILE} | ${GREPBINARY} "/" | ${AWKBINARY} '{ print $2 }')
         for ITEM in ${FIND}; do
             LogText "找到套接字地址：${ITEM}"
@@ -199,7 +199,7 @@
     # Description : Check lpd status
     Register --test-no PRNT-2314 --weight L --network NO --category security --description "检查 lpd 状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查 lpd 状态"
+        LogText "检查：检查 lpd 状态"
         if IsRunning "lpd"; then
             Display --indent 2 --text "- 检查 lp 守护进程" --result "${STATUS_RUNNING}" --color GREEN
             LogText "结果：lp 守护进程运行"
@@ -217,7 +217,7 @@
     # Description : Check /etc/qconfig file
     Register --test-no PRNT-2316 --os AIX --weight L --network NO --category security --description "检查 /etc/qconfig 文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查 ${ROOTDIR}etc/qconfig"
+        LogText "检查：检查 ${ROOTDIR}etc/qconfig"
         QDAEMON_CONFIG_FILE="${ROOTDIR}etc/qconfig"
         FileIsReadable ${QDAEMON_CONFIG_FILE}
         if [ ${CANREAD} -eq 1 ]; then
@@ -241,7 +241,7 @@
     # Description : Check qdaemon printer spooler status
     Register --test-no PRNT-2418 --os AIX --weight L --network NO --category security --description "检查 qdaemon 打印机后台处理程序状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查 qdaemon 状态"
+        LogText "检查：检查 qdaemon 状态"
         if IsRunning "qdaemon"; then
             LogText "结果：qdaemon 守护进程正在运行"
             Display --indent 2 --text "- 检查 qdaemon 守护进程" --result "${STATUS_RUNNING}" --color GREEN
@@ -264,7 +264,7 @@
     # Description : Checking old print jobs
     Register --test-no PRNT-2420 --os AIX --weight L --network NO --category security --description "检查旧的打印作业"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "测试：检查旧的打印作业"
+        LogText "检查：检查旧的打印作业"
         DirectoryExists ${ROOTDIR}var/spool/lpd/qdir
         if [ ${DIRECTORY_FOUND} -eq 1 ]; then
             FIND=$(find ${ROOTDIR}var/spool/lpd/qdir -type f -mtime +1 2> /dev/null | ${SEDBINARY} 's/ /!space!/g')

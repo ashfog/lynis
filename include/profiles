@@ -480,7 +480,7 @@
                 test_skip_always)
                     STRING=$(echo ${VALUE} | awk '{print toupper($0)}')
                     SKIP_TESTS="${SKIP_TESTS} ${STRING}"
-                    LogText "[已弃用的选项] 要跳过的测试：${VALUE}"
+                    LogText "[已弃用的选项] 要跳过的检查：${VALUE}"
                     DisplayToolTip "Replace deprecated option 'test_skip_always' and replace with 'skip-test' (add to custom.prf)"
                 ;;
 
@@ -514,7 +514,7 @@
 #################################################################################
 #
     SKIP_TESTS=$(echo ${SKIP_TESTS} | sed "s/^ //")
-    if [ -n "${SKIP_TESTS}" ]; then LogText "跳过测试：${SKIP_TESTS}"; fi
+    if [ -n "${SKIP_TESTS}" ]; then LogText "跳过检查：${SKIP_TESTS}"; fi
 #
 #################################################################################
 #
