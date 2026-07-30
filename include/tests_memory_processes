@@ -27,19 +27,19 @@
 #
     # Test        : PROC-3602
     # Description : Query /proc/meminfo
-    Register --test-no PROC-3602 --os Linux --weight L --network NO --category security --description "Checking /proc/meminfo for memory details"
+    Register --test-no PROC-3602 --os Linux --weight L --network NO --category security --description "检查 /proc/meminfo 中的内存信息"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ -f ${ROOTDIR}proc/meminfo ]; then
-            LogText "Result: found ${ROOTDIR}proc/meminfo"
-            Display --indent 2 --text "- Checking ${ROOTDIR}proc/meminfo" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：发现 ${ROOTDIR}proc/meminfo"
+            Display --indent 2 --text "- 正在检查 ${ROOTDIR}proc/meminfo" --result "${STATUS_FOUND}" --color GREEN
             FIND=$(${AWKBINARY} '/^MemTotal/ { print $2, $3 }' ${ROOTDIR}proc/meminfo)
             MEMORY_SIZE=$(echo ${FIND} | ${AWKBINARY} '{ print $1 }')
             MEMORY_UNITS=$(echo ${FIND} | ${AWKBINARY} '{ print $2 }')
-            LogText "Result: Found ${MEMORY_SIZE} ${MEMORY_UNITS} memory"
+            LogText "结果：发现 ${MEMORY_SIZE} ${MEMORY_UNITS} 内存"
             Report "memory_size=${MEMORY_SIZE}"
             Report "memory_units=${MEMORY_UNITS}"
         else
-            LogText "Result: ${ROOTDIR}proc/meminfo file not found on this system"
+            LogText "结果：系统中未找到 ${ROOTDIR}proc/meminfo 文件"
         fi
     fi
 #
@@ -48,19 +48,19 @@
     # Test        : PROC-3604
     # Description : Query /proc/meminfo
     # Notes       : TODO - prtconf replacement
-    Register --test-no PROC-3604 --os Solaris --weight L --network NO --category security --description "Query prtconf for memory details"
+    Register --test-no PROC-3604 --os Solaris --weight L --network NO --category security --description "通过 prtconf 查询内存信息"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Searching /usr/sbin/prtconf"
+        LogText "检查：搜索 /usr/sbin/prtconf"
         if [ -x /usr/sbin/prtconf ]; then
-            Display --indent 2 --text "- Querying prtconf for installed memory" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 2 --text "- 通过 prtconf 查询已安装内存" --result "${STATUS_DONE}" --color GREEN
             MEMORY_SIZE=$(/usr/sbin/prtconf | ${GREPBINARY} "^Memory size:" | ${CUTBINARY} -d ' ' -f3)
             MEMORY_UNITS=$(/usr/sbin/prtconf | ${GREPBINARY} "^Memory size:" | ${CUTBINARY} -d ' ' -f4)
-            LogText "Result: Found ${MEMORY_SIZE} ${MEMORY_UNITS} memory"
+            LogText "结果：发现 ${MEMORY_SIZE} ${MEMORY_UNITS} 内存"
             Report "memory_size=${MEMORY_SIZE}"
             Report "memory_units=${MEMORY_UNITS}"
         else
-            Display --indent 2 --text "- Querying prtconf for installed memory" --result "${STATUS_SKIPPED}" --color WHITE
-            LogText "Result: /usr/sbin/prtconf not found"
+            Display --indent 2 --text "- 通过 prtconf 查询已安装内存" --result "${STATUS_SKIPPED}" --color WHITE
+            LogText "结果：未找到 /usr/sbin/prtconf"
         fi
     fi
 #
@@ -70,7 +70,7 @@
     # Description : Searching for dead and zombie processes
     # Notes       : Don't perform test on Solaris
     if [ ! "${OS}" = "Solaris" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PROC-3612 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check dead or zombie processes"
+    Register --test-no PROC-3612 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查已终止或僵尸进程"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ "${OS}" = "AIX" ]; then
             FIND=$(${PSBINARY} -Ae -o pid,stat,comm | ${AWKBINARY} '{ if ($2 ~ /Z|X/) print $1 }' | ${XARGSBINARY})
@@ -78,13 +78,13 @@
             FIND=$(${PSBINARY} x -o pid,stat,comm | ${AWKBINARY} '{ if ($2 ~ /Z|X/) print $1 }' | ${XARGSBINARY})
         fi
         if [ -z "${FIND}" ]; then
-            LogText "Result: no zombie processes found"
-            Display --indent 2 --text "- Searching for dead/zombie processes" --result "${STATUS_NOT_FOUND}" --color GREEN
+            LogText "结果：未发现僵尸进程"
+            Display --indent 2 --text "- 正在搜索已终止或僵尸进程" --result "${STATUS_NOT_FOUND}" --color GREEN
         else
-            LogText "Result: found one or more dead or zombie processes"
-            LogText "Output: PIDs ${FIND}"
-            Display --indent 2 --text "- Searching for dead/zombie processes" --result "${STATUS_FOUND}" --color RED
-            ReportSuggestion "${TEST_NO}" "Check the output of ps for dead or zombie processes"
+            LogText "结果：发现一个或多个已终止或僵尸进程"
+            LogText "输出：进程 ID ${FIND}"
+            Display --indent 2 --text "- 正在搜索已终止或僵尸进程" --result "${STATUS_FOUND}" --color RED
+            ReportSuggestion "${TEST_NO}" "检查 ps 输出中的已终止或僵尸进程"
         fi
     fi
 #
@@ -94,7 +94,7 @@
     # Description : Searching for heavy IO based waiting processes
     # Notes       : Don't perform test on Solaris
     if [ ! "${OS}" = "Solaris" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PROC-3614 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check heavy IO waiting based processes"
+    Register --test-no PROC-3614 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查因大量 I/O 而等待的进程"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ "${OS}" = "AIX" ]; then
             FIND=$(${PSBINARY} -Ae -o pid,stat,comm | ${AWKBINARY} '{ if ($2=="D") print $1 }' | ${XARGSBINARY})
@@ -102,14 +102,14 @@
             FIND=$(${PSBINARY} x -o pid,stat,comm | ${AWKBINARY} '{ if ($2=="D") print $1 }' | ${XARGSBINARY})
         fi
         if [ -z "${FIND}" ]; then
-            LogText "Result: No processes were waiting for IO requests to be handled first"
-            Display --indent 2 --text "- Searching for IO waiting processes" --result "${STATUS_NOT_FOUND}" --color GREEN
+            LogText "结果：没有进程在等待优先处理 I/O 请求"
+            Display --indent 2 --text "- 正在搜索等待 I/O 的进程" --result "${STATUS_NOT_FOUND}" --color GREEN
         else
-            LogText "Result: found one or more processes which were waiting to get IO requests handled first"
-            LogText "More info: processes which show up with the status flag 'D' are often stuck, until a disk IO event finished. This can happen for example with network storage, where the connection or protocol settings are not logtext well configured."
-            LogText "Output: PIDs ${FIND}"
-            Display --indent 2 --text "- Searching for IO waiting processes" --result "${STATUS_FOUND}" --color RED
-            ReportSuggestion "${TEST_NO}" "Check process listing for processes waiting for IO requests"
+            LogText "结果：发现一个或多个等待优先处理 I/O 请求的进程"
+            LogText "更多信息：状态标志为 'D' 的进程通常会一直等待，直到磁盘 I/O 事件完成。例如网络存储连接或协议配置不当时可能出现这种情况。"
+            LogText "输出：进程 ID ${FIND}"
+            Display --indent 2 --text "- 正在搜索等待 I/O 的进程" --result "${STATUS_FOUND}" --color RED
+            ReportSuggestion "${TEST_NO}" "检查进程列表中等待 I/O 请求的进程"
         fi
     fi
 #
@@ -117,18 +117,18 @@
 #
     # Test        : PROC-3802
     # Description : Check presence of prelink tooling
-    Register --test-no PROC-3802 --package-manager-required --os Linux --weight L --network NO --category security --description "Check presence of prelink tooling"
+    Register --test-no PROC-3802 --package-manager-required --os Linux --weight L --network NO --category security --description "检查是否存在 prelink 工具"
     if [ ${SKIPTEST} -eq 0 ]; then
         if PackageIsInstalled "prelink"; then
-            LogText "Result: prelink packages is installed"
+            LogText "结果：已安装 prelink 软件包"
             # TODO
             # - Add item to website with rationale
             #ReportSuggestion "${TEST_NO}" "Disable and remove prelinking of binaries"
             AddHP 1 3
-            Display --indent 2 --text "- Search prelink tooling" --result "${STATUS_FOUND}" --color YELLOW
+            Display --indent 2 --text "- 搜索 prelink 工具" --result "${STATUS_FOUND}" --color YELLOW
         else
-            Display --indent 2 --text "- Search prelink tooling" --result "${STATUS_NOT_FOUND}" --color GREEN
-            LogText "Result: prelink package is NOT installed"
+            Display --indent 2 --text "- 搜索 prelink 工具" --result "${STATUS_NOT_FOUND}" --color GREEN
+            LogText "结果：未安装 prelink 软件包"
             AddHP 3 3
         fi
     fi
