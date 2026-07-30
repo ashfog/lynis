@@ -594,38 +594,38 @@
 #################################################################################
 #
     # Test        : BOOT-5165
-    # Description : Check for FreeBSD boot services
-    Register --test-no BOOT-5165 --os FreeBSD --weight L --network NO --category security --description "Check for FreeBSD boot services"
+    # Description : 检查 FreeBSD 启动服务
+    Register --test-no BOOT-5165 --os FreeBSD --weight L --network NO --category security --description "检查 FreeBSD 启动服务"
     if [ ${SKIPTEST} -eq 0 ]; then
         if HasData "${SERVICEBINARY}"; then
             # FreeBSD (Ask services(8) for enabled services)
-            LogText "Searching for services at startup (service)"
+            LogText "搜索启动时运行的服务（service）"
             FIND=$(${SERVICEBINARY} -e | ${SEDBINARY} 's|^.*\/||' | ${SORTBINARY})
         else
             # FreeBSD (Read /etc/rc.conf file for enabled services)
-            LogText "Searching for services at startup (rc.conf)"
+            LogText "搜索启动时运行的服务（rc.conf）"
             FIND=$(${GREPBINARY} -E -v -i '^#|none' ${ROOTDIR}etc/rc.conf | ${GREPBINARY} -E -i '_enable.*(yes|on|1)' | ${SORTBINARY} | ${AWKBINARY} -F= '{ print $1 }' | ${SEDBINARY} 's/_enable//')
         fi
         COUNT=0
         for ITEM in ${FIND}; do
-            LogText "Found service (service/rc.conf): ${ITEM}"
+            LogText "发现服务（service/rc.conf）：${ITEM}"
             Report "boottask[]=${ITEM}"
             COUNT=$((COUNT + 1))
         done
-        Display --indent 2 --text "- Checking services at startup (service/rc.conf)" --result "${STATUS_DONE}" --color GREEN
-        Display --indent 6 --text "Result: found ${COUNT} services/options set"
-        LogText "Found ${COUNT} services/options to run at startup"
+        Display --indent 2 --text "- 检查启动服务（service/rc.conf）" --result "${STATUS_DONE}" --color GREEN
+        Display --indent 6 --text "结果：发现 ${COUNT} 个已配置的服务/选项"
+        LogText "发现 ${COUNT} 个将在启动时运行的服务/选项"
     fi
 #
 #################################################################################
 #
     # Test        : BOOT-5170
-    # Description : Check for Solaris boot daemons
-    Register --test-no BOOT-5170 --os Solaris --weight L --network NO --category security --description "Check for Solaris boot daemons"
+    # Description : 检查 Solaris 启动守护进程
+    Register --test-no BOOT-5170 --os Solaris --weight L --network NO --category security --description "检查 Solaris 启动守护进程"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ -n "${SVCSBINARY}" ]; then
-            LogText "Result: Using svcs binary to check for daemons"
-            LogText "SysV style services may be incorrectly counted as running."
+            LogText "结果：使用 svcs 检查守护进程"
+            LogText "SysV 风格服务可能被误计为正在运行。"
 
             Report "running_service_tool=svcs"
 
@@ -636,28 +636,28 @@
             FIND=$("${SVCSBINARY}" -Ha | ${AWKBINARY} '{ if ($1 == "online" || $1 == "legacy_run") print $3 }')
             COUNT=0
             for ITEM in ${FIND}; do
-                LogText "Found running daemon: ${ITEM}"
+                LogText "发现正在运行的守护进程：${ITEM}"
                 Report "running_service[]=${ITEM}"
                 COUNT=$((COUNT + 1 ))
             done
-            Display --indent 2 --text "- Check running daemons (svcs)" --result "${STATUS_DONE}" --color GREEN
-            Display --indent 8 --text "Result: found ${COUNT} running daemons"
-            LogText "Result: Found ${COUNT} running daemons"
+            Display --indent 2 --text "- 检查正在运行的守护进程（svcs）" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 8 --text "结果：发现 ${COUNT} 个正在运行的守护进程"
+            LogText "结果：发现 ${COUNT} 个正在运行的守护进程"
 
-            LogText "Searching for enabled daemons (svcs)"
+            LogText "搜索已启用的守护进程（svcs）"
             Report "boot_service_tool=svcs"
 
             FIND=$("${SVCSBINARY}" -Ha | ${AWKBINARY} '{ if ($1 != "disabled" && $1 != "uninitialized") print $3 }')
             COUNT=0
             for ITEM in ${FIND}; do
-                LogText "Found enabled daemon at boot: ${ITEM}"
+                LogText "发现启动时启用的守护进程：${ITEM}"
                 Report "boot_service[]=${ITEM}"
                 COUNT=$((COUNT + 1 ))
             done
-            LogText "Note: Run svcs -a see all services"
-            Display --indent 2 --text "- Check enabled daemons at boot (svcs)" --result "${STATUS_DONE}" --color GREEN
-            Display --indent 8 --text "Result: found ${COUNT} enabled daemons at boot"
-            LogText "Result: Found ${COUNT} enabled daemons at boot"
+            LogText "提示：运行 svcs -a 查看所有服务"
+            Display --indent 2 --text "- 检查启动时启用的守护进程（svcs）" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 8 --text "结果：发现 ${COUNT} 个启动时启用的守护进程"
+            LogText "结果：发现 ${COUNT} 个启动时启用的守护进程"
         fi
     fi
 #
@@ -671,63 +671,63 @@
     # Test        : BOOT-5177
     # Description : Check for Linux boot services (systemd and chkconfig)
     # Notes       : We skip using chkconfig if systemd is being used.
-    Register --test-no BOOT-5177 --os Linux --weight L --network NO --category security --description "Check for Linux boot and running services"
+    Register --test-no BOOT-5177 --os Linux --weight L --network NO --category security --description "检查 Linux 启动服务与正在运行的服务"
     if [ ${SKIPTEST} -eq 0 ]; then
         CHECKED=0
-        LogText "Test: checking presence systemctl binary"
+        LogText "检查：确认 systemctl 是否存在"
         # Determine if we have systemctl on board
         if HasData "${SYSTEMCTLBINARY}"; then
-            LogText "Result: systemctl binary found, trying that to discover information"
+            LogText "结果：发现 systemctl，使用它收集服务信息"
             # Running services
-            LogText "Searching for running services (systemctl services only)"
+            LogText "搜索正在运行的服务（仅 systemctl service 单元）"
             FIND=$(${SYSTEMCTLBINARY} --no-legend --full --type=service --state=running | ${AWKBINARY} -F.service '{ print $1 }')
             COUNT=0
             Report "running_service_tool=systemctl"
             for ITEM in ${FIND}; do
-                LogText "Found running service: ${ITEM}"
+                LogText "发现正在运行的服务：${ITEM}"
                 Report "running_service[]=${ITEM}"
                 COUNT=$((COUNT + 1))
             done
-            LogText "Hint: Run systemctl --full --type=service to see all services"
-            Display --indent 2 --text "- Check running services (systemctl)" --result "${STATUS_DONE}" --color GREEN
-            Display --indent 8 --text "Result: found ${COUNT} running services"
-            LogText "Result: Found ${COUNT} running services"
+            LogText "提示：运行 systemctl --full --type=service 查看所有服务"
+            Display --indent 2 --text "- 检查正在运行的服务（systemctl）" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 8 --text "结果：发现 ${COUNT} 个正在运行的服务"
+            LogText "结果：发现 ${COUNT} 个正在运行的服务"
 
             # Services at boot
-            LogText "Searching for enabled services (systemctl services only)"
+            LogText "搜索已启用的服务（仅 systemctl service 单元）"
             FIND=$(${SYSTEMCTLBINARY} list-unit-files --no-legend --type=service --state=enabled | ${SORTBINARY} -u | ${AWKBINARY} -F.service '{ print $1 }')
             COUNT=0
             Report "boot_service_tool=systemctl"
             for ITEM in ${FIND}; do
-                LogText "Found enabled service at boot: ${ITEM}"
+                LogText "发现启动时启用的服务：${ITEM}"
                 Report "boot_service[]=${ITEM}"
                 COUNT=$((COUNT + 1))
             done
-            LogText "Hint: Run systemctl list-unit-files --type=service to see all services"
-            Display --indent 2 --text "- Check enabled services at boot (systemctl)" --result "${STATUS_DONE}" --color GREEN
-            Display --indent 8 --text "Result: found ${COUNT} enabled services"
-            LogText "Result: Found ${COUNT} enabled services"
+            LogText "提示：运行 systemctl list-unit-files --type=service 查看所有服务"
+            Display --indent 2 --text "- 检查启动时启用的服务（systemctl）" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 8 --text "结果：发现 ${COUNT} 个已启用的服务"
+            LogText "结果：发现 ${COUNT} 个已启用的服务"
 
         else
 
-            LogText "Result: systemctl binary not found, checking chkconfig binary"
+            LogText "结果：未找到 systemctl，继续检查 chkconfig"
             if [ -n "${CHKCONFIGBINARY}" ]; then
-                LogText "Result: chkconfig binary found, trying that to discover information"
-                LogText "Searching for services at startup (chkconfig, runlevel 3 and 5)"
+                LogText "结果：发现 chkconfig，使用它收集服务信息"
+                LogText "搜索启动服务（chkconfig，运行级别 3 和 5）"
                 FIND=$(${CHKCONFIGBINARY} --list | ${GREPBINARY} -E '3:on|5:on' | ${AWKBINARY} '{ print $1 }')
                 COUNT=0
                 Report "boot_service_tool=chkconfig"
                 for ITEM in ${FIND}; do
-                    LogText "Found service (at boot, runlevel 3 or 5): ${ITEM}"
+                    LogText "发现启动服务（运行级别 3 或 5）：${ITEM}"
                     Report "boot_service[]=${ITEM}"
                     COUNT=$((COUNT + 1))
                 done
-                LogText "Hint: Run chkconfig --list to see all services and disable unneeded services"
-                Display --indent 2 --text "- Check services at startup (chkconfig)" --result "${STATUS_DONE}" --color GREEN
-                Display --indent 8 --text "Result: found ${COUNT} services"
-                LogText "Result: Found ${COUNT} services at startup"
+                LogText "提示：运行 chkconfig --list 查看所有服务并禁用不需要的服务"
+                Display --indent 2 --text "- 检查启动服务（chkconfig）" --result "${STATUS_DONE}" --color GREEN
+                Display --indent 8 --text "结果：发现 ${COUNT} 个服务"
+                LogText "结果：发现 ${COUNT} 个启动服务"
             else
-                LogText "Result: both systemctl and chkconfig not found. Skipping this test"
+                LogText "结果：未找到 systemctl 和 chkconfig，跳过此检查"
             fi
         fi
     fi
@@ -735,7 +735,7 @@
 #################################################################################
 #
     # Test        : BOOT-5180
-    # Description : Check for Linux boot services (Debian style)
+    # Description : 检查 Linux 启动服务（Debian 风格）
     # Notes       : Debian 8+ shows runlevel 5
     if [ "${LINUX_VERSION}" = "Debian" ] || [ "${LINUX_VERSION}" = "Ubuntu" ] ||
            [ "${LINUX_VERSION_LIKE}" = "Debian" ] || [ "${LINUX_VERSION_LIKE}" = "Ubuntu" ]; then
@@ -744,28 +744,28 @@
         PREQS_MET="NO"
     fi
 
-    Register --test-no BOOT-5180 --os Linux --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check for Linux boot services (Debian style)"
+    Register --test-no BOOT-5180 --os Linux --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 Linux 启动服务（Debian 风格）"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Runlevel check
         sRUNLEVEL=$(${RUNLEVELBINARY} | ${GREPBINARY} "N [0-9]" | ${AWKBINARY} '{ print $2} ')
-        LogText "Result: found runlevel ${sRUNLEVEL}"
+        LogText "结果：发现运行级别 ${sRUNLEVEL}"
         if [ "${sRUNLEVEL}" = "2" ]; then
-            LogText "Result: performing find in /etc/rc2.d as runlevel 2 is found"
+            LogText "结果：检测到运行级别 2，搜索 /etc/rc2.d"
             FIND=$(${FINDBINARY} ${ROOTDIR}etc/rc2.d -type l -print | ${CUTBINARY} -d '/' -f4 | ${SEDBINARY} "s/S[0-9][0-9]//g" | sort)
             if [ -n "${FIND}" ]; then
                 COUNT=0
                 for SERVICE in ${FIND}; do
-                    LogText "Found service (at boot, runlevel 2): ${SERVICE}"
+                    LogText "发现启动服务（运行级别 2）：${SERVICE}"
                     COUNT=$((COUNT + 1))
                 done
-                Display --indent 2 --text "- Check services at startup (rc2.d)" --result "${STATUS_DONE}" --color WHITE
-                Display --indent 4 --text "Result: found ${COUNT} services"
-                LogText "Result: found ${COUNT} services"
+                Display --indent 2 --text "- 检查启动服务（rc2.d）" --result "${STATUS_DONE}" --color WHITE
+                Display --indent 4 --text "结果：发现 ${COUNT} 个服务"
+                LogText "结果：发现 ${COUNT} 个服务"
             fi
         elif [ -z "${sRUNLEVEL}" ]; then
-            ReportSuggestion "${TEST_NO}" "Determine runlevel and services at startup"
+            ReportSuggestion "${TEST_NO}" "确定运行级别和启动服务"
         else
-            LogText "Result: skipping further actions"
+            LogText "结果：跳过后续操作"
         fi
     fi
 #
@@ -773,48 +773,48 @@
 #
     # Test        : BOOT-5184
     # Description : Check world writable startup scripts
-    Register --test-no BOOT-5184 --os "Linux Solaris" --weight L --network NO --category security --description "Check permissions for boot files/scripts"
+    Register --test-no BOOT-5184 --os "Linux Solaris" --weight L --network NO --category security --description "检查启动文件和脚本权限"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         CHECKDIRS="${ROOTDIR}etc/init.d ${ROOTDIR}etc/rc.d ${ROOTDIR}etc/rcS.d"
 
-        LogText "Result: checking ${ROOTDIR}etc/init.d scripts for writable bit"
+        LogText "结果：检查 ${ROOTDIR}etc/init.d 脚本的可写权限"
         for DIR in ${CHECKDIRS}; do
-            LogText "Test: checking if directory ${DIR} exists"
+            LogText "检查：确认目录 ${DIR} 是否存在"
             if [ -d ${DIR} ]; then
-                LogText "Result: directory ${DIR} found"
-                LogText "Test: checking for available files in directory"
+                LogText "结果：发现目录 ${DIR}"
+                LogText "检查：搜索目录中的文件"
                 FIND=$(${FINDBINARY} -L ${DIR} -type f -print | ${SORTBINARY})
                 if [ -n "${FIND}" ]; then
-                    LogText "Result: found files in directory, checking permissions now"
+                    LogText "结果：目录中发现文件，开始检查权限"
                     for FILE in ${FIND}; do
-                        LogText "Test: checking permissions of file ${FILE}"
+                        LogText "检查：检查文件 ${FILE} 的权限"
                         if IsWorldWritable ${FILE}; then
                             FOUND=1
-                            LogText "Result: warning, file ${FILE} is world writable"
+                            LogText "结果：警告，文件 ${FILE} 可被所有用户写入"
                         else
-                            LogText "Result: good, file ${FILE} not world writable"
+                            LogText "结果：正常，文件 ${FILE} 不可被所有用户写入"
                         fi
                     done
                 else
-                    LogText "Result: found no files in directory."
+                    LogText "结果：目录中未发现文件。"
                 fi
             else
-                LogText "Result: directory ${DIR} not found. Skipping.."
+                LogText "结果：未找到目录 ${DIR}，跳过。"
             fi
         done
 
         # /etc/rc[0-6].d
         for NO in 0 1 2 3 4 5 6; do
-            LogText "Test: Checking ${ROOTDIR}etc/rc${NO}.d scripts for writable bit"
+            LogText "检查：检查 ${ROOTDIR}etc/rc${NO}.d 脚本的可写权限"
             if [ -d ${ROOTDIR}etc/rc${NO}.d ]; then
                 FIND=$(${FINDBINARY} -L ${ROOTDIR}etc/rc${NO}.d -type f -print | ${SORTBINARY})
                 for I in ${FIND}; do
                     if IsWorldWritable ${I}; then
                         FOUND=1
-                        LogText "Result: warning, file ${I} is world writable"
+                        LogText "结果：警告，文件 ${I} 可被所有用户写入"
                     else
-                        LogText "Result: good, file ${I} not world writable"
+                        LogText "结果：正常，文件 ${I} 不可被所有用户写入"
                     fi
                 done
             fi
@@ -827,29 +827,29 @@
                 ShowSymlinkPath "${I}"
                 if [ ${FOUNDPATH} -eq 1 ]; then
                     CHECKFILE="${SYMLINK}"
-                    LogText "Result: found the path behind this symlink (${CHECKFILE} --> ${I})"
+                    LogText "结果：发现符号链接指向的路径（${CHECKFILE} --> ${I}）"
                 else
                     CHECKFILE="${I}"
                 fi
-                LogText "Test: Checking ${CHECKFILE} file for writable bit"
+                LogText "检查：检查文件 ${CHECKFILE} 的可写权限"
                 if IsWorldWritable ${CHECKFILE}; then
                     FOUND=1
-                    ReportWarning "${TEST_NO}" "Found writable startup script ${CHECKFILE}"
-                    LogText "Result: warning, file ${CHECKFILE} is world writable"
+                    ReportWarning "${TEST_NO}" "发现可写的启动脚本 ${CHECKFILE}"
+                    LogText "结果：警告，文件 ${CHECKFILE} 可被所有用户写入"
                 else
-                    LogText "Result: good, file ${CHECKFILE} not world writable"
+                    LogText "结果：正常，文件 ${CHECKFILE} 不可被所有用户写入"
                 fi
             fi
         done
 
         # Check results
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 2 --text "- Check startup files (permissions)" --result "${STATUS_WARNING}" --color RED
-            ReportWarning "${TEST_NO}" "Found world writable startup scripts" "-" "-"
-            LogText "Result: found one or more scripts which are possibly writable by other users"
+            Display --indent 2 --text "- 检查启动文件权限" --result "${STATUS_WARNING}" --color RED
+            ReportWarning "${TEST_NO}" "发现可被所有用户写入的启动脚本" "-" "-"
+            LogText "结果：发现一个或多个可能被其他用户写入的脚本"
             AddHP 0 3
         else
-            Display --indent 2 --text "- Check startup files (permissions)" --result "${STATUS_OK}" --color GREEN
+            Display --indent 2 --text "- 检查启动文件权限" --result "${STATUS_OK}" --color GREEN
             AddHP 3 3
         fi
     fi
@@ -857,8 +857,8 @@
 #################################################################################
 #
     # Test        : BOOT-5202
-    # Description : Check uptime of system
-    Register --test-no BOOT-5202 --weight L --network NO --category security --description "Check uptime of system"
+    # Description : 检查系统运行时间
+    Register --test-no BOOT-5202 --weight L --network NO --category security --description "检查系统运行时间"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         FIND=""
@@ -869,8 +869,8 @@
                 if [ -f /proc/uptime ]; then
                     UPTIME_IN_SECS=$(${CUTBINARY} -d ' ' -f1 /proc/uptime | ${CUTBINARY} -d '.' -f1)
                 else
-                    Display --indent 2 --text "- Checking uptime" --result "${STATUS_SKIPPED}" --color YELLOW
-                    ReportException "${TEST_NO}:1" "No uptime test available for this operating system (/proc/uptime missing)"
+                    Display --indent 2 --text "- 检查运行时间" --result "${STATUS_SKIPPED}" --color YELLOW
+                    ReportException "${TEST_NO}:1" "此操作系统没有可用的运行时间检查（缺少 /proc/uptime）"
                 fi
             ;;
 
@@ -878,16 +878,16 @@
                 if [ -n "${SYSCTLBINARY}" ]; then
                     TIME_BOOT=$(${SYSCTLBINARY} kern.boottime | ${AWKBINARY} '{ print $5 }' | ${SEDBINARY} -e 's/,//' | ${GREPBINARY} "[0-9]")
                     TIME_NOW=$(date "+%s")
-                    LogText "Boot time: ${TIME_BOOT}"
-                    LogText "Current time: ${TIME_NOW}"
+                    LogText "启动时间：${TIME_BOOT}"
+                    LogText "当前时间：${TIME_NOW}"
                     if [ -n "${TIME_BOOT}" -a -n "${TIME_NOW}" ]; then
                         UPTIME_IN_SECS=$((TIME_NOW - TIME_BOOT))
                     else
-                        ReportException "${TEST_NO}:5" "Most likely kern.boottime empty, unable to determine uptime"
+                        ReportException "${TEST_NO}:5" "kern.boottime 可能为空，无法确定运行时间"
                     fi
                 else
-                    Display --indent 2 --text "- Checking uptime" --result "${STATUS_SKIPPED}" --color YELLOW
-                    ReportException "${TEST_NO}:4" "No uptime test available for this operating system (sysctl missing)"
+                    Display --indent 2 --text "- 检查运行时间" --result "${STATUS_SKIPPED}" --color YELLOW
+                    ReportException "${TEST_NO}:4" "此操作系统没有可用的运行时间检查（缺少 sysctl）"
                 fi
             ;;
 
@@ -895,16 +895,16 @@
                 if [ -n "${SYSCTLBINARY}" ]; then
                     TIME_BOOT=$(${SYSCTLBINARY} -n kern.boottime)
                     TIME_NOW=$(date "+%s")
-                    LogText "Boot time: ${TIME_BOOT}"
-                    LogText "Current time: ${TIME_NOW}"
+                    LogText "启动时间：${TIME_BOOT}"
+                    LogText "当前时间：${TIME_NOW}"
                     if [ -n "${TIME_BOOT}" -a -n "${TIME_NOW}" ]; then
                         UPTIME_IN_SECS=$((TIME_NOW - TIME_BOOT))
                     else
-                        ReportException "${TEST_NO}:5" "Most likely kern.boottime empty, unable to determine uptime"
+                        ReportException "${TEST_NO}:5" "kern.boottime 可能为空，无法确定运行时间"
                     fi
                 else
-                    Display --indent 2 --text "- Checking uptime" --result "${STATUS_SKIPPED}" --color YELLOW
-                    ReportException "${TEST_NO}:4" "No uptime test available for this operating system (sysctl missing)"
+                    Display --indent 2 --text "- 检查运行时间" --result "${STATUS_SKIPPED}" --color YELLOW
+                    ReportException "${TEST_NO}:4" "此操作系统没有可用的运行时间检查（缺少 sysctl）"
                 fi
             ;;
 
@@ -912,93 +912,93 @@
                 if [ -n "${KSTATBINARY}" ]; then
                     UPTIME_IN_SECS=$(${KSTATBINARY} -p unix:0:system_misc:snaptime | ${GREPBINARY} "^unix" | ${AWKBINARY} '{print $2}' | ${CUTBINARY} -d "." -f1)
                 else
-                    Display --indent 2 --text "- Checking uptime" --result "${STATUS_SKIPPED}" --color YELLOW
-                    ReportException "${TEST_NO}:2" "No uptime test available for this operating system (kstat missing)"
+                    Display --indent 2 --text "- 检查运行时间" --result "${STATUS_SKIPPED}" --color YELLOW
+                    ReportException "${TEST_NO}:2" "此操作系统没有可用的运行时间检查（缺少 kstat）"
                 fi
             ;;
 
             *)
-                Display --indent 2 --text "- Checking uptime" --result "${STATUS_SKIPPED}" --color YELLOW
+                Display --indent 2 --text "- 检查运行时间" --result "${STATUS_SKIPPED}" --color YELLOW
 
                 # Want to help improving Lynis? Share your operating system and a way to determine the uptime (in seconds)
-                ReportException "${TEST_NO}:3" "No uptime test available yet for this operating system"
+                ReportException "${TEST_NO}:3" "尚未为此操作系统提供运行时间检查"
             ;;
         esac
 
         if [ -n "${UPTIME_IN_SECS}" ]; then
             UPTIME_IN_DAYS=$((UPTIME_IN_SECS / 60 / 60 / 24))
-            LogText "Uptime (in seconds): ${UPTIME_IN_SECS}"
-            LogText "Uptime (in days): ${UPTIME_IN_DAYS}"
+            LogText "运行时间（秒）：${UPTIME_IN_SECS}"
+            LogText "运行时间（天）：${UPTIME_IN_DAYS}"
             Report "uptime_in_seconds=${UPTIME_IN_SECS}"
             Report "uptime_in_days=${UPTIME_IN_DAYS}"
         else
-            LogText "Result: no uptime information available"
+            LogText "结果：没有可用的运行时间信息"
         fi
     fi
 #
 #################################################################################
 #
     # Test        : BOOT-5260
-    # Description : Check single user mode for systemd
-    Register --test-no BOOT-5260 --os Linux --weight L --network NO --category security --description "Check single user mode for systemd"
+    # Description : 检查 systemd 单用户模式保护
+    Register --test-no BOOT-5260 --os Linux --weight L --network NO --category security --description "检查 systemd 单用户模式保护"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Searching /usr/lib/systemd/system/rescue.service"
+        LogText "检查：查找 /usr/lib/systemd/system/rescue.service"
         if [ -f ${ROOTDIR}usr/lib/systemd/system/rescue.service ]; then
-            LogText "Result: file /usr/lib/systemd/system/rescue.service"
-            LogText "Test: checking presence sulogin for single user mode"
+            LogText "结果：发现 /usr/lib/systemd/system/rescue.service 文件"
+            LogText "检查：确认单用户模式是否使用 sulogin"
             FIND=$(${GREPBINARY} -E "^ExecStart=.*sulogin" ${ROOTDIR}usr/lib/systemd/system/rescue.service)
             if [ -n "${FIND}" ]; then
                 FOUND=1
-                LogText "Result: found sulogin, so single user is protected"
+                LogText "结果：发现 sulogin，单用户模式已受保护"
                 AddHP 3 3
             else
-                LogText "Result: did not find sulogin in rescue.service"
+                LogText "结果：rescue.service 中未找到 sulogin"
                 AddHP 1 3
-                Display --indent 2 --text "- Checking sulogin in rescue.service" --result "${STATUS_NOT_FOUND}" --color YELLOW
-                ReportSuggestion "${TEST_NO}" "Protect rescue.service by using sulogin"
+                Display --indent 2 --text "- 检查 rescue.service 中的 sulogin" --result "${STATUS_NOT_FOUND}" --color YELLOW
+                ReportSuggestion "${TEST_NO}" "使用 sulogin 保护 rescue.service"
             fi
         else
-            LogText "Result: file ${ROOTDIR}usr/lib/systemd/system/rescue.service does not exist"
+            LogText "结果：文件 ${ROOTDIR}usr/lib/systemd/system/rescue.service 不存在"
         fi
     fi
 #
 #################################################################################
 #
     # Test        : BOOT-5262
-    # Description : Check for OpenBSD boot daemons
-    Register --test-no BOOT-5262 --os OpenBSD --weight L --network NO --category security --description "Check for OpenBSD boot daemons"
+    # Description : 检查 OpenBSD 启动守护进程
+    Register --test-no BOOT-5262 --os OpenBSD --weight L --network NO --category security --description "检查 OpenBSD 启动守护进程"
     if [ ${SKIPTEST} -eq 0 ]; then
         if HasData "${RCCTLBINARY}"; then
-            LogText "Result: rcctl binary found, trying that to discover information"
+            LogText "结果：发现 rcctl，使用它收集守护进程信息"
             # OpenBSD (Ask rcctl(8) for running daemons)
-            LogText "Searching for running daemons (rcctl)"
+            LogText "搜索正在运行的守护进程（rcctl）"
             FIND=$(${RCCTLBINARY} ls started)
             COUNT=0
             Report "running_service_tool=rcctl"
             for ITEM in ${FIND}; do
-                LogText "Found running daemon: ${ITEM}"
+                LogText "发现正在运行的守护进程：${ITEM}"
                 Report "running_service[]=${ITEM}"
                 COUNT=$((COUNT + 1 ))
             done
-            LogText "Note: Run rcctl ls all | grep -E '^(pf|check_quotas|library_aslr)$' to see all daemons"
-            Display --indent 2 --text "- Check running daemons (rcctl)" --result "${STATUS_DONE}" --color GREEN
-            Display --indent 8 --text "Result: found ${COUNT} running daemons"
-            LogText "Result: Found ${COUNT} running daemons"
+            LogText "提示：运行 rcctl ls all | grep -E '^(pf|check_quotas|library_aslr)$' 查看所有守护进程"
+            Display --indent 2 --text "- 检查正在运行的守护进程（rcctl）" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 8 --text "结果：发现 ${COUNT} 个正在运行的守护进程"
+            LogText "结果：发现 ${COUNT} 个正在运行的守护进程"
 
             # OpenBSD (Ask rcctl(8) for enabled daemons)
-            LogText "Searching for enabled daemons (rcctl)"
+            LogText "搜索已启用的守护进程（rcctl）"
             FIND=$(${RCCTLBINARY} ls on | ${GREPBINARY} -E -v '^(pf|check_quotas|library_aslr)$')
             COUNT=0
             Report "boot_service_tool=rcctl"
             for ITEM in ${FIND}; do
-                LogText "Found enabled daemon at boot: ${ITEM}"
+                LogText "发现启动时启用的守护进程：${ITEM}"
                 Report "boot_service[]=${ITEM}"
                 COUNT=$((COUNT + 1 ))
             done
-            LogText "Note: Run rcctl ls all | grep -E  '^(pf|check_quotas|library_aslr)$' to see all daemons"
-            Display --indent 2 --text "- Check enabled daemons at boot (rcctl)" --result "${STATUS_DONE}" --color GREEN
-            Display --indent 8 --text "Result: found ${COUNT} enabled daemons at boot"
-            LogText "Result: Found ${COUNT} enabled daemons at boot"
+            LogText "提示：运行 rcctl ls all | grep -E  '^(pf|check_quotas|library_aslr)$' 查看所有守护进程"
+            Display --indent 2 --text "- 检查启动时启用的守护进程（rcctl）" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 8 --text "结果：发现 ${COUNT} 个启动时启用的守护进程"
+            LogText "结果：发现 ${COUNT} 个启动时启用的守护进程"
         fi
     fi
 #
@@ -1006,37 +1006,37 @@
 #
     # Test        : BOOT-5263
     # Description : Check OpenBSD world writable startup scripts
-    Register --test-no BOOT-5263 --os OpenBSD --weight L --network NO --category security --description "Check permissions for boot files/scripts"
+    Register --test-no BOOT-5263 --os OpenBSD --weight L --network NO --category security --description "检查启动文件和脚本权限"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         CHECKDIR="${ROOTDIR}etc/rc.d"
         LogText "Result: checking ${ROOTDIR}etc/rc.d scripts for writable bit"
-        LogText "Test: checking if directory ${DIR} exists"
+        LogText "检查：确认目录 ${DIR} 是否存在"
         if [ -d ${CHECKDIR} ]; then
-            LogText "Result: directory ${DIR} found"
-            LogText "Test: checking for available files in directory"
+            LogText "结果：发现目录 ${DIR}"
+            LogText "检查：搜索目录中的文件"
             # OpenBSD uses symlinks to create another instance of daemons
             FIND=$(${FINDBINARY} -L ${CHECKDIR} -type f -print | ${SORTBINARY})
             if [ -n "${FIND}" ]; then
-                LogText "Result: found files in directory, checking permissions now"
+                LogText "结果：目录中发现文件，开始检查权限"
                 for FILE in ${FIND}; do
-                    LogText "Test: checking permissions of file ${FILE}"
+                    LogText "检查：检查文件 ${FILE} 的权限"
                     ShowSymlinkPath "${FILE}"
                     if [ ${FOUNDPATH} -eq 1 ]; then
                         CHECKFILE="${SYMLINK}"
-                        LogText "Result: found the path behind this symlink (${CHECKFILE} --> ${FILE})"
+                        LogText "结果：发现符号链接指向的路径（${CHECKFILE} --> ${FILE}）"
                     else
                         CHECKFILE="${FILE}"
                     fi
                     if IsWorldWritable ${CHECKFILE}; then
                         FOUND=1
-                        LogText "Result: warning, file ${CHECKFILE} is world writable"
+                        LogText "结果：警告，文件 ${CHECKFILE} 可被所有用户写入"
                     else
-                        LogText "Result: good, file ${CHECKFILE} not world writable"
+                        LogText "结果：正常，文件 ${CHECKFILE} 不可被所有用户写入"
                     fi
                 done
             else
-                LogText "Result: found no files in directory."
+                LogText "结果：目录中未发现文件。"
             fi
         else
             LogText "Result: directory ${CHECKDIR} not found. Skipping.."
@@ -1049,29 +1049,29 @@
                 ShowSymlinkPath "${I}"
                 if [ ${FOUNDPATH} -eq 1 ]; then
                     CHECKFILE="${SYMLINK}"
-                    LogText "Result: found the path behind this symlink (${CHECKFILE} --> ${I})"
+                    LogText "结果：发现符号链接指向的路径（${CHECKFILE} --> ${I}）"
                 else
                     CHECKFILE="${I}"
                 fi
-                LogText "Test: Checking ${CHECKFILE} file for writable bit"
+                LogText "检查：检查文件 ${CHECKFILE} 的可写权限"
                 if IsWorldWritable ${CHECKFILE}; then
                     FOUND=1
-                    ReportWarning "${TEST_NO}" "Found writable startup script ${CHECKFILE}"
-                    LogText "Result: warning, file ${CHECKFILE} is world writable"
+                    ReportWarning "${TEST_NO}" "发现可写的启动脚本 ${CHECKFILE}"
+                    LogText "结果：警告，文件 ${CHECKFILE} 可被所有用户写入"
                 else
-                    LogText "Result: good, file ${CHECKFILE} not world writable"
+                    LogText "结果：正常，文件 ${CHECKFILE} 不可被所有用户写入"
                 fi
             fi
         done
 
         # Check results
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 2 --text "- Check startup files (permissions)" --result "${STATUS_WARNING}" --color RED
-            ReportWarning "${TEST_NO}" "Found world writable startup scripts" "-" "-"
-            LogText "Result: found one or more scripts which are possibly writable by other users"
+            Display --indent 2 --text "- 检查启动文件权限" --result "${STATUS_WARNING}" --color RED
+            ReportWarning "${TEST_NO}" "发现可被所有用户写入的启动脚本" "-" "-"
+            LogText "结果：发现一个或多个可能被其他用户写入的脚本"
             AddHP 0 3
         else
-            Display --indent 2 --text "- Check startup files (permissions)" --result "${STATUS_OK}" --color GREEN
+            Display --indent 2 --text "- 检查启动文件权限" --result "${STATUS_OK}" --color GREEN
             AddHP 3 3
         fi
     fi
@@ -1079,17 +1079,17 @@
 #################################################################################
 #
     # Test        : BOOT-5264
-    # Description : Run systemd-analyze security
-    if [ -z "${SYSTEMDANALYZEBINARY}" ]; then SKIPREASON="systemd-analyze not available"; PREQS_MET="NO";
+    # Description : 运行 systemd-analyze security
+    if [ -z "${SYSTEMDANALYZEBINARY}" ]; then SKIPREASON="systemd-analyze 不可用"; PREQS_MET="NO";
     else
         SYSTEMD_VERSION=$("${SYSTEMDANALYZEBINARY}" --version | ${AWKBINARY} '/^systemd / {print $2}')
-        if [ "${SYSTEMD_VERSION}" -ge 240 ]; then PREQS_MET="YES"; else SKIPREASON="systemd-analyze too old (v${SYSTEMD_VERSION}), need at least v240"; PREQS_MET="NO"; fi
+        if [ "${SYSTEMD_VERSION}" -ge 240 ]; then PREQS_MET="YES"; else SKIPREASON="systemd-analyze 版本过旧（v${SYSTEMD_VERSION}），至少需要 v240"; PREQS_MET="NO"; fi
     fi
-    Register --test-no BOOT-5264 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --os Linux --weight L --network NO --category security --description "Run systemd-analyze security"
+    Register --test-no BOOT-5264 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --os Linux --weight L --network NO --category security --description "运行 systemd-analyze security"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Run systemd-analyze security"
-        Display --indent 2 --text "- Running 'systemd-analyze security'"
-        Display --indent 6 --text "Unit name (exposure value) and predicate"
+        LogText "Test: 运行 systemd-analyze security"
+        Display --indent 2 --text "- 运行 'systemd-analyze security'"
+        Display --indent 6 --text "单元名称（暴露值）和安全等级"
         Display --indent 6 --text "--------------------------------"
         ${SYSTEMDANALYZEBINARY} security | while read UNIT EXPOSURE PREDICATE HAPPY; do
             if [ "${UNIT}" = "UNIT" ]; then
@@ -1115,10 +1115,10 @@
                     COLOR=YELLOW
                 ;;
             esac
-            Display --indent 4 --text "- ${UNIT} (value=${EXPOSURE})" --result "${STATUS}" --color "${COLOR}"
-            LogText "Result: ${UNIT} has exposure value ${EXPOSURE} with predicate '${STATUS}'"
+            Display --indent 4 --text "- ${UNIT}（值=${EXPOSURE}）" --result "${STATUS}" --color "${COLOR}"
+            LogText "结果：${UNIT} 的暴露值为 ${EXPOSURE}，安全等级为 '${STATUS}'"
         done
-        ReportSuggestion "${TEST_NO}" "Consider hardening system services" "Run '${SYSTEMDANALYZEBINARY} security SERVICE' for each service"
+        ReportSuggestion "${TEST_NO}" "考虑加强系统服务的安全配置" "对每个服务运行 '${SYSTEMDANALYZEBINARY} security SERVICE'"
     fi
 #
 #################################################################################
