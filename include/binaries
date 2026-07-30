@@ -128,84 +128,84 @@
                         fi
                         # Optimized, much quicker (limited file access needed)
                         case ${FILENAME} in
-                            aa-status)              AASTATUSBINARY=${BINARY};          LogText "发现已知程序：aa-status（AppArmor 组件）- ${BINARY}" ;;
-                            afick.pl)               AFICKBINARY=${BINARY};             LogText "发现已知的二进制文件：afick（文件完整性检查器）- ${BINARY}" ;;
-                            aide)                   AIDEBINARY=${BINARY};              LogText "发现已知程序：aide（文件完整性检查器）-${BINARY}" ;;
-                            apache2)                HTTPDBINARY=${BINARY};             LogText "发现已知程序：apache2（网络服务器）-${BINARY}" ;;
-                            apt)                    APTBINARY=${BINARY};               LogText "发现已知程序：apt（包管理器）-${BINARY}" ;;
-                            apk)                    APKBINARY=${BINARY};               LogText "发现已知程序：apk（包管理器）-${BINARY}" ;;
-                            arch-audit)             ARCH_AUDIT_BINARY="${BINARY}";     LogText "发现已知的二进制文件：arch-audit（用于测试易受攻击的包的审核实用程序）- ${BINARY}" ;;
-                            auditd)                 AUDITDBINARY=${BINARY};            LogText "发现已知程序：auditd（审核框架）-${BINARY}" ;;
-                            awk)                    AWKBINARY=${BINARY};               LogText "发现已知程序：awk（字符串工具）-${BINARY}" ;;
-                            as)                     ASBINARY="${BINARY}";              COMPILER_INSTALLED=1;                  LogText "发现已知程序：as（编译器）-${BINARY}" ;;
-                            auditctl)               AUDITCTLBINARY="${BINARY}";        LogText "发现已知程序：auditctl（审计守护程序的控制实用程序）- ${BINARY}" ;;
-                            autolog)                AUTOLOGBINARY="${BINARY}";         IDLE_SESSION_KILLER_INSTALLED=1;       LogText "发现已知的二进制文件：autolog（空闲会话杀手）- ${BINARY}" ;;
-                            base64)                 BASE64BINARY="${BINARY}";          LogText "发现已知程序：base64（编码工具）-${BINARY}" ;;
-                            blkid)                  BLKIDBINARY="${BINARY}";           LogText "发现已知程序：blkid（有关块设备的信息）-${BINARY}" ;;
-                            bootctl)                BOOTCTLBINARY="${BINARY}";         LogText "发现已知程序：bootctl（systemd-启动管理器实用程序）-${BINARY}" ;;
-                            bro)                    BROBINARY="${BINARY}";             LogText "发现已知程序：兄弟 (IDS) - ${BINARY}" ;;
-                            cat)                    CAT_BINARY="${BINARY}";            LogText "发现已知程序：cat（通用文件处理）-${BINARY}" ;;
-                            cc)                     CCBINARY="${BINARY}";              COMPILER_INSTALLED=1;  LogText "发现已知程序：cc（编译器）-${BINARY}" ;;
-                            chkconfig)              CHKCONFIGBINARY=${BINARY};         LogText "发现已知程序：chkconfig（管理工具）-${BINARY}" ;;
-                            clamconf)               CLAMCONF_BINARY=${BINARY};         LogText "发现已知程序：clamconf（有关 ClamAV 的信息）- ${BINARY}" ;;
-                            clamscan)               CLAMSCANBINARY=${BINARY};          LogText "发现已知程序：clamscan (AV 扫描仪) - ${BINARY}" ;;
-                            clang)                  CLANGBINARY=${BINARY};             COMPILER_INSTALLED=1;  LogText "发现已知程序：clang（编译器）-${BINARY}" ;;
-                            cfagent)                CFAGENTBINARY="${BINARY}";         FILE_INT_TOOL_FOUND=1;                 LogText "发现已知程序：cfengine代理（配置工具）-${BINARY}" ;;
-                            chkrootkit)             CHKROOTKITBINARY="${BINARY}";      MALWARE_SCANNER_INSTALLED=1;           LogText "发现已知的二进制文件：chkrootkit（恶意软件扫描程序）- ${BINARY}" ;;
-                            cmd_daemon)             CMDBINARY=${BINARY};               LogText "发现已知程序：cmd（审核框架）-${BINARY}" ;;
-                            comm)                   COMMBINARY="${BINARY}";            LogText "发现已知程序：comm（文件比较）-${BINARY}" ;;
-                            cryptsetup)             CRYPTSETUPBINARY="${BINARY}";      LogText "发现已知程序：cryptsetup（块设备加密）- ${BINARY}" ;;
-                            csum)                   CSUMBINARY="${BINARY}";            LogText "发现已知程序：csum（AIX 上的哈希工具）- ${BINARY}" ;;
-                            curl)                   CURLBINARY="${BINARY}";            CURLVERSION=$(${BINARY} --version | grep "^curl" | awk '{ if ($1=="curl") { print $2 }}'); LogText " 发现已知程序：curl（浏览器、下载工具）- ${BINARY}" ;;
-                            cut)                    CUTBINARY="${BINARY}";             LogText "发现已知程序：cut（文本流编辑器）-${BINARY}" ;;
-                            debsecan)               DEBSECANBINARY="${BINARY}";        LogText "发现已知的二进制文件：debsecan（程序包漏洞检查）- ${BINARY}" ;;
-                            debsums)                DEBSUMSBINARY="${BINARY}";         LogText "发现已知的二进制文件：debsums（包完整性检查）- ${BINARY}" ;;
-                            dig)                    DIGBINARY=${BINARY};               LogText "发现已知程序：dig（网络/dns工具）-${BINARY}" ;;
-                            dmidecode)              DMIDECODEBINARY=${BINARY};         LogText "发现已知程序：dmidecode（硬件收集工具）-${BINARY}" ;;
-                            dnf)                    DNFBINARY="${BINARY}";             LogText "发现已知程序：dnf（包管理器）-${BINARY}" ;;
-                            dnsdomainname)          DNSDOMAINNAMEBINARY="${BINARY}";   LogText "发现已知程序：dnsdomainname（DNS 域）- ${BINARY}" ;;
-                            docker)                 DOCKERBINARY="${BINARY}";          LogText "发现已知二进制文件：docker（容器技术）- ${BINARY}" ;;
-                            domainname)             DOMAINNAMEBINARY="${BINARY}";      LogText "发现已知程序：域名（NIS 域）- ${BINARY}" ;;
-                            dpkg)                   DPKGBINARY="${BINARY}";            LogText "发现已知的二进制文件：dpkg（包管理）-${BINARY}" ;;
-                            xbps-query)             XBPSBINARY="${BINARY}";            LogText "发现已知程序：xbps（包管理）-${BINARY}" ;;
-                            equery)                 EQUERYBINARY="${BINARY}";          LogText "发现已知程序：查询（包管理器）-${BINARY}" ;;
-                            evmctl)                 EVMCTLBINARY=${BINARY};            LogText "发现已知程序：evmctl（IMA/EVM工具）-${BINARY}" ;;
+                            aa-status)              AASTATUSBINARY=${BINARY};          LogText "发现已知程序：aa-status（AppArmor 组件） - ${BINARY}" ;;
+                            afick.pl)               AFICKBINARY=${BINARY};             LogText "发现已知程序：afick.pl（文件完整性检查器） - ${BINARY}" ;;
+                            aide)                   AIDEBINARY=${BINARY};              LogText "发现已知程序：aide（文件完整性检查器） - ${BINARY}" ;;
+                            apache2)                HTTPDBINARY=${BINARY};             LogText "发现已知程序：apache2（Web 服务器） - ${BINARY}" ;;
+                            apt)                    APTBINARY=${BINARY};               LogText "发现已知程序：apt（软件软件包管理器） - ${BINARY}" ;;
+                            apk)                    APKBINARY=${BINARY};               LogText "发现已知程序：apk（软件软件包管理器） - ${BINARY}" ;;
+                            arch-audit)             ARCH_AUDIT_BINARY="${BINARY}";     LogText "发现已知程序：arch-audit（软件包漏洞审计工具） - ${BINARY}" ;;
+                            auditd)                 AUDITDBINARY=${BINARY};            LogText "发现已知程序：auditd（审计框架） - ${BINARY}" ;;
+                            awk)                    AWKBINARY=${BINARY};               LogText "发现已知程序：awk（文本处理工具） - ${BINARY}" ;;
+                            as)                     ASBINARY="${BINARY}";              COMPILER_INSTALLED=1;                  LogText "发现已知程序：as（编译器） - ${BINARY}" ;;
+                            auditctl)               AUDITCTLBINARY="${BINARY}";        LogText "发现已知程序：auditctl（auditd 控制工具） - ${BINARY}" ;;
+                            autolog)                AUTOLOGBINARY="${BINARY}";         IDLE_SESSION_KILLER_INSTALLED=1;       LogText "发现已知程序：autolog（空闲会话终止工具） - ${BINARY}" ;;
+                            base64)                 BASE64BINARY="${BINARY}";          LogText "发现已知程序：base64（编码工具） - ${BINARY}" ;;
+                            blkid)                  BLKIDBINARY="${BINARY}";           LogText "发现已知程序：blkid（块设备信息信息） - ${BINARY}" ;;
+                            bootctl)                BOOTCTLBINARY="${BINARY}";         LogText "发现已知程序：bootctl（systemd-boot 管理工具） - ${BINARY}" ;;
+                            bro)                    BROBINARY="${BINARY}";             LogText "发现已知程序：bro（IDS） - ${BINARY}" ;;
+                            cat)                    CAT_BINARY="${BINARY}";            LogText "发现已知程序：cat（通用文件处理工具） - ${BINARY}" ;;
+                            cc)                     CCBINARY="${BINARY}";              COMPILER_INSTALLED=1;  LogText "发现已知程序：cc（编译器） - ${BINARY}" ;;
+                            chkconfig)              CHKCONFIGBINARY=${BINARY};         LogText "发现已知程序：chkconfig（管理工具） - ${BINARY}" ;;
+                            clamconf)               CLAMCONF_BINARY=${BINARY};         LogText "发现已知程序：clamconf（ClamAV 配置信息） - ${BINARY}" ;;
+                            clamscan)               CLAMSCANBINARY=${BINARY};          LogText "发现已知程序：clamscan（AV 扫描仪） - ${BINARY}" ;;
+                            clang)                  CLANGBINARY=${BINARY};             COMPILER_INSTALLED=1;  LogText "发现已知程序：clang（编译器） - ${BINARY}" ;;
+                            cfagent)                CFAGENTBINARY="${BINARY}";         FILE_INT_TOOL_FOUND=1;                 LogText "发现已知程序：cfagent（配置工具） - ${BINARY}" ;;
+                            chkrootkit)             CHKROOTKITBINARY="${BINARY}";      MALWARE_SCANNER_INSTALLED=1;           LogText "发现已知程序：chkrootkit（恶意软件扫描器） - ${BINARY}" ;;
+                            cmd_daemon)             CMDBINARY=${BINARY};               LogText "发现已知程序：cmd（审计框架） - ${BINARY}" ;;
+                            comm)                   COMMBINARY="${BINARY}";            LogText "发现已知程序：comm（文件比较工具） - ${BINARY}" ;;
+                            cryptsetup)             CRYPTSETUPBINARY="${BINARY}";      LogText "发现已知程序：cryptsetup（块设备信息加密） - ${BINARY}" ;;
+                            csum)                   CSUMBINARY="${BINARY}";            LogText "发现已知程序：csum（AIX 上的哈希工具） - ${BINARY}" ;;
+                            curl)                   CURLBINARY="${BINARY}";            CURLVERSION=$(${BINARY} --version | grep "^curl" | awk '{ if ($1=="curl") { print $2 }}'); LogText "发现已知程序：curl（浏览器、下载工具） - ${BINARY}" ;;
+                            cut)                    CUTBINARY="${BINARY}";             LogText "发现已知程序：cut（文本流处理工具） - ${BINARY}" ;;
+                            debsecan)               DEBSECANBINARY="${BINARY}";        LogText "发现已知程序：debsecan（软件包漏洞检查） - ${BINARY}" ;;
+                            debsums)                DEBSUMSBINARY="${BINARY}";         LogText "发现已知程序：debsums（软件包完整性检查） - ${BINARY}" ;;
+                            dig)                    DIGBINARY=${BINARY};               LogText "发现已知程序：dig（网络/DNS 工具） - ${BINARY}" ;;
+                            dmidecode)              DMIDECODEBINARY=${BINARY};         LogText "发现已知程序：dmidecode（硬件信息收集工具） - ${BINARY}" ;;
+                            dnf)                    DNFBINARY="${BINARY}";             LogText "发现已知程序：dnf（软件软件包管理器） - ${BINARY}" ;;
+                            dnsdomainname)          DNSDOMAINNAMEBINARY="${BINARY}";   LogText "发现已知程序：dnsdomainname（DNS 域） - ${BINARY}" ;;
+                            docker)                 DOCKERBINARY="${BINARY}";          LogText "发现已知程序：docker（容器技术） - ${BINARY}" ;;
+                            domainname)             DOMAINNAMEBINARY="${BINARY}";      LogText "发现已知程序：domainname（NIS 域查询） - ${BINARY}" ;;
+                            dpkg)                   DPKGBINARY="${BINARY}";            LogText "发现已知程序：dpkg（软件包管理） - ${BINARY}" ;;
+                            xbps-query)             XBPSBINARY="${BINARY}";            LogText "发现已知程序：xbps-query（软件包管理） - ${BINARY}" ;;
+                            equery)                 EQUERYBINARY="${BINARY}";          LogText "发现已知程序：equery（软件软件包管理器） - ${BINARY}" ;;
+                            evmctl)                 EVMCTLBINARY=${BINARY};            LogText "发现已知程序：evmctl（IMA/EVM 工具） - ${BINARY}" ;;
                             exim)                   EXIMBINARY="${BINARY}";            EXIMVERSION=$(${BINARY} -bV | grep 'Exim version' | awk '{ print $3 }' | xargs); LogText "找到已知的二进制文件 ${BINARY}（版本 ${EXIMVERSION}）" ;;
-                            fail2ban-server)        FAIL2BANBINARY="${BINARY}";        LogText "发现已知程序：fail2ban（IPS 工具）- ${BINARY}" ;;
-                            file)                   FILEBINARY="${BINARY}";            LogText "发现已知的二进制文件：文件（文件类型检测）-${BINARY}" ;;
-                            find)                   FINDBINARY="${BINARY}";            LogText "发现已知程序：find（搜索工具）-${BINARY}" ;;
-                            g++)                    GPLUSPLUSBINARY="${BINARY}";       COMPILER_INSTALLED=1;  LogText "发现已知程序：g++（编译器）-${BINARY}" ;;
-                            gcc)                    GCCBINARY="${BINARY}";             COMPILER_INSTALLED=1;  LogText "发现已知程序：gcc（编译器）-${BINARY}" ;;
-                            getcap)                 GETCAPBINARY="${BINARY}";          LogText "发现已知程序：getcap（内核功能）-${BINARY}" ;;
-                            getent)                 GETENT_BINARY="${BINARY}";         LogText "发现已知程序：getent（名称服务切换库的查询工具）-${BINARY}" ;;
-                            gradm)                  GRADMBINARY=${BINARY};             LogText "发现已知程序：gradm（Grsecurity 管理工具）-${BINARY}" ;;
-                            grep)                   GREPBINARY=${BINARY};              LogText "发现已知程序：grep（文本搜索）-${BINARY}" ;;
-                            grpck)                  GRPCKBINARY="${BINARY}";           LogText "发现已知程序：grpck（一致性检查器）- ${BINARY}" ;;
-                            grub2-install)          GRUB2INSTALLBINARY=${BINARY};      LogText "发现已知程序：grub2-install（引导加载程序的安装程序）-${BINARY}" ;;
-                            gzip)                   GZIPBINARY="${BINARY}";            LogText "发现已知程序：gzip（压缩实用程序）- ${BINARY}" ;;
-                            head)                   HEADBINARY="${BINARY}";            LogText "发现已知程序：head（文本过滤器）-${BINARY}" ;;
-                            httpd)                  HTTPDBINARY="${BINARY}";           LogText "发现已知程序：httpd（网络服务器）-${BINARY}" ;;
-                            httpd2-prefork)         HTTPDBINARY=${BINARY};             LogText "发现已知程序：apache2（网络服务器）-${BINARY}" ;;
-                            initctl)                INITCTLBINARY=${BINARY};           SERVICE_MANAGER="upstart";  LogText "发现已知程序：initctl（新贵 init 的客户端）- ${BINARY}" ;;
-                            ifconfig)               IFCONFIGBINARY="${BINARY}";        LogText "发现已知程序：ipconfig（IP 配置）- ${BINARY}" ;;
-                            integritysetup)         INTEGRITYSETUPBINARY="${BINARY}";  LogText "发现已知程序：integritysetup（dm-integrity 设置工具）- ${BINARY}" ;;
-                            ip)                     IPBINARY="${BINARY}";              LogText "发现已知程序：ip（IP配置）-${BINARY}" ;;
-                            ipf)                    IPFBINARY="${BINARY}";             LogText "发现已知程序：ipf（防火墙）-${BINARY}" ;;
-                            iptables)               IPTABLESBINARY="${BINARY}";        LogText "发现已知程序：iptables（防火墙）-${BINARY}" ;;
-                            iptables-save)          IPTABLESSAVEBINARY="${BINARY}";    LogText "发现已知程序：iptables-save（防火墙）-${BINARY}" ;;
-                            istat)                  ISTATBINARY="${BINARY}";           LogText "发现已知程序：istat（文件信息）-${BINARY}" ;;
-                            journalctl)             JOURNALCTLBINARY="${BINARY}";      LogText "发现已知程序：journalctl (systemd 日志) - ${BINARY}" ;;
-                            kadmin.local)           KADMINLOCALBINARY="${BINARY}";     LogText "发现已知程序：kadmin.local (krb5) - ${BINARY}" ;;
-                            kdb5_util)              KDB5UTILBINARY="${BINARY}";        LogText "发现已知程序：kdb5_util (krb5) - ${BINARY}" ;;
-                            kldstat)                KLDSTATBINARY="${BINARY}";         LogText "发现已知程序：kldstat（内核模块）-${BINARY}" ;;
-                            kstat)                  KSTATBINARY="${BINARY}";           LogText "发现已知程序：kstat（内核统计）-${BINARY}" ;;
-                            launchctl)              LAUNCHCTL_BINARY="${BINARY}";      SERVICE_MANAGER="launchd"; LogText "发现已知程序：launchctl（launchd客户端）-${BINARY}" ;;
-                            locate)                 LOCATEBINARY="${BINARY}";          LogText "发现已知程序：locate（文件数据库）-${BINARY}" ;;
-                            logrotate)              LOGROTATEBINARY="${BINARY}";       LogText "发现已知程序：logrotate（日志旋转工具）-${BINARY}" ;;
-                            ls)                     LSBINARY="${BINARY}";              LogText "发现已知程序：ls（文件列表）-${BINARY}" ;;
-                            lsattr)                 LSATTRBINARY="${BINARY}";          LogText "发现已知程序：lsattr（文件属性）-${BINARY}" ;;
-                            lsblk)                  LSBLKBINARY="${BINARY}";           LogText "发现已知程序：lsblk（块设备）-${BINARY}" ;;
-                            lsmod)                  LSMODBINARY="${BINARY}";           LogText "发现已知程序：lsmod（内核模块）-${BINARY}" ;;
+                            fail2ban-server)        FAIL2BANBINARY="${BINARY}";        LogText "发现已知程序：fail2ban-server（IPS 工具） - ${BINARY}" ;;
+                            file)                   FILEBINARY="${BINARY}";            LogText "发现已知程序：file（文件类型检测） - ${BINARY}" ;;
+                            find)                   FINDBINARY="${BINARY}";            LogText "发现已知程序：find（搜索工具） - ${BINARY}" ;;
+                            g++)                    GPLUSPLUSBINARY="${BINARY}";       COMPILER_INSTALLED=1;  LogText "发现已知程序：g++（编译器） - ${BINARY}" ;;
+                            gcc)                    GCCBINARY="${BINARY}";             COMPILER_INSTALLED=1;  LogText "发现已知程序：gcc（编译器） - ${BINARY}" ;;
+                            getcap)                 GETCAPBINARY="${BINARY}";          LogText "发现已知程序：getcap（内核能力） - ${BINARY}" ;;
+                            getent)                 GETENT_BINARY="${BINARY}";         LogText "发现已知程序：getent（名称服务查询工具） - ${BINARY}" ;;
+                            gradm)                  GRADMBINARY=${BINARY};             LogText "发现已知程序：gradm（Grsecurity 管理工具） - ${BINARY}" ;;
+                            grep)                   GREPBINARY=${BINARY};              LogText "发现已知程序：grep（文本搜索） - ${BINARY}" ;;
+                            grpck)                  GRPCKBINARY="${BINARY}";           LogText "发现已知程序：grpck（一致性检查器） - ${BINARY}" ;;
+                            grub2-install)          GRUB2INSTALLBINARY=${BINARY};      LogText "发现已知程序：grub2-install（引导加载器安装工具） - ${BINARY}" ;;
+                            gzip)                   GZIPBINARY="${BINARY}";            LogText "发现已知程序：gzip（压缩工具） - ${BINARY}" ;;
+                            head)                   HEADBINARY="${BINARY}";            LogText "发现已知程序：head（文本过滤工具） - ${BINARY}" ;;
+                            httpd)                  HTTPDBINARY="${BINARY}";           LogText "发现已知程序：httpd（Web 服务器） - ${BINARY}" ;;
+                            httpd2-prefork)         HTTPDBINARY=${BINARY};             LogText "发现已知程序：httpd2-prefork（Web 服务器） - ${BINARY}" ;;
+                            initctl)                INITCTLBINARY=${BINARY};           SERVICE_MANAGER="upstart";  LogText "发现已知程序：initctl（Upstart 客户端） - ${BINARY}" ;;
+                            ifconfig)               IFCONFIGBINARY="${BINARY}";        LogText "发现已知程序：ifconfig（IP 配置） - ${BINARY}" ;;
+                            integritysetup)         INTEGRITYSETUPBINARY="${BINARY}";  LogText "发现已知程序：integritysetup（dm-integrity 设置工具） - ${BINARY}" ;;
+                            ip)                     IPBINARY="${BINARY}";              LogText "发现已知程序：ip（IP 配置） - ${BINARY}" ;;
+                            ipf)                    IPFBINARY="${BINARY}";             LogText "发现已知程序：ipf（防火墙） - ${BINARY}" ;;
+                            iptables)               IPTABLESBINARY="${BINARY}";        LogText "发现已知程序：iptables（防火墙） - ${BINARY}" ;;
+                            iptables-save)          IPTABLESSAVEBINARY="${BINARY}";    LogText "发现已知程序：iptables-save（防火墙） - ${BINARY}" ;;
+                            istat)                  ISTATBINARY="${BINARY}";           LogText "发现已知程序：istat（文件信息工具） - ${BINARY}" ;;
+                            journalctl)             JOURNALCTLBINARY="${BINARY}";      LogText "发现已知程序：journalctl（systemd 日志） - ${BINARY}" ;;
+                            kadmin.local)           KADMINLOCALBINARY="${BINARY}";     LogText "发现已知程序：kadmin.local（krb5） - ${BINARY}" ;;
+                            kdb5_util)              KDB5UTILBINARY="${BINARY}";        LogText "发现已知程序：kdb5_util（krb5） - ${BINARY}" ;;
+                            kldstat)                KLDSTATBINARY="${BINARY}";         LogText "发现已知程序：kldstat（内核模块） - ${BINARY}" ;;
+                            kstat)                  KSTATBINARY="${BINARY}";           LogText "发现已知程序：kstat（内核统计） - ${BINARY}" ;;
+                            launchctl)              LAUNCHCTL_BINARY="${BINARY}";      SERVICE_MANAGER="launchd"; LogText "发现已知程序：launchctl（launchd 客户端） - ${BINARY}" ;;
+                            locate)                 LOCATEBINARY="${BINARY}";          LogText "发现已知程序：locate（文件索引数据库） - ${BINARY}" ;;
+                            logrotate)              LOGROTATEBINARY="${BINARY}";       LogText "发现已知程序：logrotate（日志轮转工具） - ${BINARY}" ;;
+                            ls)                     LSBINARY="${BINARY}";              LogText "发现已知程序：ls（文件列表工具） - ${BINARY}" ;;
+                            lsattr)                 LSATTRBINARY="${BINARY}";          LogText "发现已知程序：lsattr（文件属性） - ${BINARY}" ;;
+                            lsblk)                  LSBLKBINARY="${BINARY}";           LogText "发现已知程序：lsblk（块设备信息） - ${BINARY}" ;;
+                            lsmod)                  LSMODBINARY="${BINARY}";           LogText "发现已知程序：lsmod（内核模块） - ${BINARY}" ;;
                             lsof)
                                 LSOFBINARY="${BINARY}"
                                 LogText "发现已知程序：lsof（打开文件）-${BINARY}"
@@ -215,24 +215,24 @@
                                     LSOF_EXTRA_OPTIONS=" -K i"
                                 fi
                             ;;
-                            lsvg)                   LSVGBINARY=${BINARY};              LogText "发现已知程序：lsvg（卷管理器）-${BINARY}" ;;
-                            lvdisplay)              LVDISPLAYBINARY="${BINARY}";       LogText "发现已知程序：lvdisplay（LVM工具）-${BINARY}" ;;
-                            lynx)                   LYNXBINARY="${BINARY}";            LYNXVERSION=$(${BINARY} -version | grep "^Lynx Version" | cut -d ' ' -f3); LogText "发现已知程序：lynx（浏览器）- ${BINARY}（版本 ${LYNXVERSION}）" ;;
-                            maldet)                 LMDBINARY="${BINARY}";             MALWARE_SCANNER_INSTALLED=1;           LogText " 发现已知程序：maldet（Linux Malware Detect 恶意软件扫描器）- ${BINARY}" ;;
-                            md5)                    MD5BINARY="${BINARY}";             LogText "发现已知程序：md5（哈希工具）-${BINARY}" ;;
-                            md5sum)                 MD5BINARY="${BINARY}";             LogText "发现已知程序：md5sum（哈希工具）-${BINARY}" ;;
-                            mdatp)                  MDATPBINARY="${BINARY}";           MALWARE_SCANNER_INSTALLED=1;           LogText " 发现已知程序：mdatp（Microsoft Defender ATP 恶意软件扫描器）- ${BINARY}" ;;
-                            modprobe)               MODPROBEBINARY="${BINARY}";        LogText "发现已知程序：modprobe (kernel 模块）- ${BINARY}" ;;
-                            mount)                  MOUNTBINARY="${BINARY}";           LogText "发现已知程序：mount（磁盘实用程序）-${BINARY}" ;;
-                            mtree)                  MTREEBINARY="${BINARY}";           LogText "发现已知程序：mtree（映射目录树）-${BINARY}" ;;
+                            lsvg)                   LSVGBINARY=${BINARY};              LogText "发现已知程序：lsvg（卷管理工具） - ${BINARY}" ;;
+                            lvdisplay)              LVDISPLAYBINARY="${BINARY}";       LogText "发现已知程序：lvdisplay（LVM 工具） - ${BINARY}" ;;
+                            lynx)                   LYNXBINARY="${BINARY}";            LYNXVERSION=$(${BINARY} -version | grep "^Lynx Version" | cut -d ' ' -f3); LogText "发现已知程序：lynx（浏览器） - ${BINARY}（版本 ${LYNXVERSION}）" ;;
+                            maldet)                 LMDBINARY="${BINARY}";             MALWARE_SCANNER_INSTALLED=1;           LogText "发现已知程序：maldet（Linux Malware Detect 恶意软件扫描器） - ${BINARY}" ;;
+                            md5)                    MD5BINARY="${BINARY}";             LogText "发现已知程序：md5（哈希工具） - ${BINARY}" ;;
+                            md5sum)                 MD5BINARY="${BINARY}";             LogText "发现已知程序：md5sum（哈希工具） - ${BINARY}" ;;
+                            mdatp)                  MDATPBINARY="${BINARY}";           MALWARE_SCANNER_INSTALLED=1;           LogText "发现已知程序：mdatp（Microsoft Defender ATP 恶意软件扫描器） - ${BINARY}" ;;
+                            modprobe)               MODPROBEBINARY="${BINARY}";        LogText "发现已知程序：modprobe（内核模块） - ${BINARY}" ;;
+                            mount)                  MOUNTBINARY="${BINARY}";           LogText "发现已知程序：mount（磁盘工具） - ${BINARY}" ;;
+                            mtree)                  MTREEBINARY="${BINARY}";           LogText "发现已知程序：mtree（目录树映射工具） - ${BINARY}" ;;
                             mysql)                  MYSQLCLIENTBINARY="${BINARY}";     MYSQLCLIENTVERSION=$(${BINARY} -V | awk '{ if ($4=="Distrib") { print $5 }}' | sed 's/,//g') ;  LogText "找到${BINARY}（版本：${MYSQLCLIENTVERSION}）" ;;
-                            named-checkconf)        NAMEDCHECKCONFBINARY="${BINARY}";  LogText "发现已知程序：named-checkconf（BIND 配置分析器）- ${BINARY}" ;;
-                            netstat)                NETSTATBINARY="${BINARY}";         LogText "发现已知程序：netstat（网络统计）-${BINARY}" ;;
-                            nft)                    NFTBINARY="${BINARY}";             LogText "发现已知程序：nft（nftables 客户端）- ${BINARY}" ;;
+                            named-checkconf)        NAMEDCHECKCONFBINARY="${BINARY}";  LogText "发现已知程序：named-checkconf（BIND 配置分析器） - ${BINARY}" ;;
+                            netstat)                NETSTATBINARY="${BINARY}";         LogText "发现已知程序：netstat（网络统计信息） - ${BINARY}" ;;
+                            nft)                    NFTBINARY="${BINARY}";             LogText "发现已知程序：nft（nftables 客户端） - ${BINARY}" ;;
                             nmap)                   NMAPBINARY="${BINARY}";            NMAPVERSION=$(${BINARY} -V | grep "^Nmap version" | awk '{ print $3 }'); LogText "发现 ${BINARY}（版本 ${NMAPVERSION}）" ;;
-                            ntpctl)                 NTPCTLBINARY="${BINARY}";                LogText "发现已知程序：ntpctl（openntpd 客户端）- ${BINARY}" ;;
-                            ntpq)                   NTPQBINARY="${BINARY}";            LogText "发现已知的二进制 ntpq（时间守护进程客户端）- ${BINARY}" ;;
-                            osiris)                 OSIRISBINARY="${BINARY}";          LogText "发现已知的二进制文件：osiris - ${BINARY}" ;;
+                            ntpctl)                 NTPCTLBINARY="${BINARY}";                LogText "发现已知程序：ntpctl（OpenNTPD 客户端） - ${BINARY}" ;;
+                            ntpq)                   NTPQBINARY="${BINARY}";            LogText "发现已知程序：ntpq（NTP 客户端） - ${BINARY}" ;;
+                            osiris)                 OSIRISBINARY="${BINARY}";          LogText "发现已知程序：osiris - ${BINARY}" ;;
                             openssl)                OPENSSLBINARY="${BINARY}";         OPENSSLVERSION=$(${BINARY} version 2> /dev/null | head -n 1 | awk '{ print $2 }' | xargs); LogText "找到${BINARY}（版本${OPENSSLVERSION}）" ;;
                             pacman)
                                 if [ -z "$(echo "${BINARY}" | grep -E "/usr(/local)?/games")" ]; then
@@ -241,79 +241,79 @@
                                 fi
                             ;;
                             perl)                   PERLBINARY="${BINARY}";            PERLVERSION=$(${BINARY} -V:version | sed 's/^version=//' | sed 's/;//' | xargs); LogText "找到${BINARY}（版本${PERLVERSION}）" ;;
-                            pgrep)                  PGREPBINARY="${BINARY}";           LogText "发现已知程序：pgrep（在进程列表中搜索）-${BINARY}" ;;
-                            php)                    PHPBINARY="${BINARY}";             PHPVERSION=$(${BINARY} -v | awk '{ if ($1=="PHP") { print $2 }}' | head -1); LogText "发现已知程序：php（编程语言解释器）-${BINARY}（版本${PHPVERSION}）" ;;
-                            pkg)                    PKG_BINARY="${BINARY}";            LogText "发现已知程序：pkg（软件包管理）-${BINARY}" ;;
-                            pkg_admin)              PKGADMINBINARY="${BINARY}";        LogText "发现已知程序：pkg_admin（软件包管理）-${BINARY}" ;;
-                            pkg_info)               PKGINFOBINARY="${BINARY}";         LogText "发现已知程序：pkg_info（软件包信息）-${BINARY}" ;;
-                            postconf)               POSTCONFBINARY="${BINARY}";        LogText "发现已知程序：postconf（postfix 配置）- ${BINARY}" ;;
-                            postfix)                POSTFIXBINARY="${BINARY}";         LogText "发现已知程序：postfix（postfix 二进制文件）- ${BINARY}" ;;
-                            prelink)                PRELINKBINARY="${BINARY}";         LogText "发现已知程序：预链接（系统优化器）-${BINARY}" ;;
-                            pfctl)                  PFCTLBINARY="${BINARY}";           LogText "发现已知程序：pfctl（pf 防火墙的客户端）- ${BINARY}" ;;
-                            ps)                     PSBINARY="${BINARY}";              LogText "发现已知程序：ps（进程列表）-${BINARY}" ;;
-                            puppet)                 PUPPETBINARY="${BINARY}";          LogText "发现已知程序：puppet（自动化工具）-${BINARY}" ;;
-                            puppetmasterd)          PUPPETMASTERDBINARY="${BINARY}";   LogText "发现已知程序：puppetmasterd（puppet 主守护程序）- ${BINARY}" ;;
-                            python)                 PYTHONBINARY="${BINARY}";          PYTHONVERSION=$(${BINARY}  --version 2>&1 | sed 's/^Python //'); LogText "发现已知程序：${FILENAME}（编程语言解释器）-${BINARY}（版本${PYTHONVERSION}）" ;;
-                            python2)                PYTHON2BINARY="${BINARY}";         PYTHON2VERSION=$(${BINARY}  --version 2>&1 | sed 's/^Python //'); LogText "发现已知程序：${FILENAME}（编程语言解释器）-${BINARY}（版本${PYTHON2VERSION}）" ;;
-                            python3)                PYTHON3BINARY="${BINARY}";         PYTHON3VERSION=$(${BINARY}  --version 2>&1 | sed 's/^Python //'); LogText "发现已知程序：${FILENAME}（编程语言解释器）-${BINARY}（版本${PYTHON3VERSION}）" ;;
-                            rcctl)                  RCCTLBINARY="${BINARY}";           LogText "发现已知程序：rcctl（服务和守护程序配置和控制）-${BINARY}" ;;
-                            readlink)               READLINKBINARY="${BINARY}";        LogText "发现已知程序：readlink（遵循符号链接）-${BINARY}" ;;
-                            resolvectl)             RESOLVECTLBINARY="${BINARY}";      LogText "发现已知程序：resolvectl (systemd-resolved DNS 解析器管理器) - ${BINARY}" ;;
-                            rkhunter)               RKHUNTERBINARY="${BINARY}";        MALWARE_SCANNER_INSTALLED=1;           LogText "发现已知的二进制文件：rkhunter（恶意软件扫描程序）- ${BINARY}" ;;
-                            rootsh)                 ROOTSHBINARY="${BINARY}";          LogText "发现已知程序：rootsh（shell 包装器）- ${BINARY}" ;;
-                            rpcinfo)                RPCINFOBINARY="${BINARY}";         LogText "发现已知程序：rpcinfo（RPC信息）-${BINARY}" ;;
-                            rpm)                    RPMBINARY="${BINARY}";             LogText "发现已知程序：rpm（包管理器）-${BINARY}" ;;
-                            runlevel)               RUNLEVELBINARY="${BINARY}";        LogText "发现已知程序：运行级别（系统实用程序）- ${BINARY}" ;;
-                            salt-master)            SALTMASTERBINARY="${BINARY}";      LogText "发现已知程序：salt-master (SaltStack master) - ${BINARY}" ;;
-                            salt-minion)            SALTMINIONBINARY="${BINARY}";      LogText "发现已知程序：salt-minion（SaltStack 客户端）- ${BINARY}" ;;
-                            samhain)                SAMHAINBINARY="${BINARY}";         LogText "发现已知的二进制文件：samhain（完整性工具）- ${BINARY}" ;;
-                            service)                SERVICEBINARY="${BINARY}";         LogText "发现已知程序：service（系统服务）-${BINARY}" ;;
-                            sed)                    SEDBINARY="${BINARY}";             LogText "发现已知程序：sed（文本流编辑器）-${BINARY}" ;;
-                            semanage)               SEMANAGEBINARY="${BINARY}";        LogText "发现已知程序：semanage（SELinux策略管理工具）-${BINARY}" ;;
-                            sestatus)               SESTATUSBINARY="${BINARY}";        LogText "发现已知程序：sestatus（SELinux状态工具）-${BINARY}" ;;
-                            slocate)                LOCATEBINARY="${BINARY}";          LogText "发现已知程序：slocate（文件数据库）-${BINARY}" ;;
+                            pgrep)                  PGREPBINARY="${BINARY}";           LogText "发现已知程序：pgrep（在进程列表中搜索） - ${BINARY}" ;;
+                            php)                    PHPBINARY="${BINARY}";             PHPVERSION=$(${BINARY} -v | awk '{ if ($1=="PHP") { print $2 }}' | head -1); LogText "发现已知程序：php（编程语言解释器） - ${BINARY}（版本${PHPVERSION}）" ;;
+                            pkg)                    PKG_BINARY="${BINARY}";            LogText "发现已知程序：pkg（软件软件包管理） - ${BINARY}" ;;
+                            pkg_admin)              PKGADMINBINARY="${BINARY}";        LogText "发现已知程序：pkg_admin（软件软件包管理） - ${BINARY}" ;;
+                            pkg_info)               PKGINFOBINARY="${BINARY}";         LogText "发现已知程序：pkg_info（软件包信息） - ${BINARY}" ;;
+                            postconf)               POSTCONFBINARY="${BINARY}";        LogText "发现已知程序：postconf（Postfix 配置） - ${BINARY}" ;;
+                            postfix)                POSTFIXBINARY="${BINARY}";         LogText "发现已知程序：postfix（Postfix 服务程序） - ${BINARY}" ;;
+                            prelink)                PRELINKBINARY="${BINARY}";         LogText "发现已知程序：prelink（系统优化器） - ${BINARY}" ;;
+                            pfctl)                  PFCTLBINARY="${BINARY}";           LogText "发现已知程序：pfctl（PF 防火墙客户端） - ${BINARY}" ;;
+                            ps)                     PSBINARY="${BINARY}";              LogText "发现已知程序：ps（进程列表） - ${BINARY}" ;;
+                            puppet)                 PUPPETBINARY="${BINARY}";          LogText "发现已知程序：puppet（自动化工具） - ${BINARY}" ;;
+                            puppetmasterd)          PUPPETMASTERDBINARY="${BINARY}";   LogText "发现已知程序：puppetmasterd（Puppet 主守护进程） - ${BINARY}" ;;
+                            python)                 PYTHONBINARY="${BINARY}";          PYTHONVERSION=$(${BINARY}  --version 2>&1 | sed 's/^Python //'); LogText "发现已知程序：${FILENAME}（编程语言解释器） - ${BINARY}（版本${PYTHONVERSION}）" ;;
+                            python2)                PYTHON2BINARY="${BINARY}";         PYTHON2VERSION=$(${BINARY}  --version 2>&1 | sed 's/^Python //'); LogText "发现已知程序：${FILENAME}（编程语言解释器） - ${BINARY}（版本${PYTHON2VERSION}）" ;;
+                            python3)                PYTHON3BINARY="${BINARY}";         PYTHON3VERSION=$(${BINARY}  --version 2>&1 | sed 's/^Python //'); LogText "发现已知程序：${FILENAME}（编程语言解释器） - ${BINARY}（版本${PYTHON3VERSION}）" ;;
+                            rcctl)                  RCCTLBINARY="${BINARY}";           LogText "发现已知程序：rcctl（服务与守护进程管理） - ${BINARY}" ;;
+                            readlink)               READLINKBINARY="${BINARY}";        LogText "发现已知程序：readlink（解析符号链接） - ${BINARY}" ;;
+                            resolvectl)             RESOLVECTLBINARY="${BINARY}";      LogText "发现已知程序：resolvectl（systemd-resolved DNS 解析器管理器） - ${BINARY}" ;;
+                            rkhunter)               RKHUNTERBINARY="${BINARY}";        MALWARE_SCANNER_INSTALLED=1;           LogText "发现已知程序：rkhunter（恶意软件扫描器） - ${BINARY}" ;;
+                            rootsh)                 ROOTSHBINARY="${BINARY}";          LogText "发现已知程序：rootsh（Shell 包装器） - ${BINARY}" ;;
+                            rpcinfo)                RPCINFOBINARY="${BINARY}";         LogText "发现已知程序：rpcinfo（RPC 信息） - ${BINARY}" ;;
+                            rpm)                    RPMBINARY="${BINARY}";             LogText "发现已知程序：rpm（软件软件包管理器） - ${BINARY}" ;;
+                            runlevel)               RUNLEVELBINARY="${BINARY}";        LogText "发现已知程序：runlevel（系统工具） - ${BINARY}" ;;
+                            salt-master)            SALTMASTERBINARY="${BINARY}";      LogText "发现已知程序：salt-master（SaltStack 主服务器） - ${BINARY}" ;;
+                            salt-minion)            SALTMINIONBINARY="${BINARY}";      LogText "发现已知程序：salt-minion（SaltStack 客户端） - ${BINARY}" ;;
+                            samhain)                SAMHAINBINARY="${BINARY}";         LogText "发现已知程序：samhain（文件完整性工具） - ${BINARY}" ;;
+                            service)                SERVICEBINARY="${BINARY}";         LogText "发现已知程序：service（系统服务管理） - ${BINARY}" ;;
+                            sed)                    SEDBINARY="${BINARY}";             LogText "发现已知程序：sed（文本流处理工具） - ${BINARY}" ;;
+                            semanage)               SEMANAGEBINARY="${BINARY}";        LogText "发现已知程序：semanage（SELinux 策略管理工具） - ${BINARY}" ;;
+                            sestatus)               SESTATUSBINARY="${BINARY}";        LogText "发现已知程序：sestatus（SELinux 状态工具） - ${BINARY}" ;;
+                            slocate)                LOCATEBINARY="${BINARY}";          LogText "发现已知程序：slocate（文件索引数据库） - ${BINARY}" ;;
                             smbd)                   SMBDBINARY="${BINARY}";            if [ "${OS}" = "macOS" ]; then SMBDVERSION="unknown"; else SMBDVERSION=$(${BINARY} -V | grep "^Version" | awk '{ print $2 }'); fi; LogText "发现 ${BINARY}（版本 ${SMBDVERSION}）" ;;
-                            smtpctl)                SMTPCTLBINARY="${BINARY}";         LogText "发现已知程序：smtpctl（OpenSMTPD 客户端）- ${BINARY}" ;;
-                            showmount)              SHOWMOUNTBINARY="${BINARY}";       LogText "发现已知程序：showmount（NFS 安装）- ${BINARY}" ;;
-                            snort)                  SNORTBINARY="${BINARY}";           LogText "发现已知的二进制文件：snort (IDS) - ${BINARY}" ;;
-                            sockstat)               SOCKSTATBINARY="${BINARY}";        LogText "发现已知程序：sockstat（开放网络套接字）-${BINARY}" ;;
-                            sort)                   SORTBINARY="${BINARY}";            LogText "找到已知的二进制：排序（排序数据流）-${BINARY}" ;;
-                            squid)                  SQUIDBINARY="${BINARY}";           LogText "发现已知程序：squid（代理）- ${BINARY}" ;;
-                            ss)                     SSBINARY="${BINARY}";              LogText "发现已知程序：ss（显示套接字）-${BINARY}" ;;
+                            smtpctl)                SMTPCTLBINARY="${BINARY}";         LogText "发现已知程序：smtpctl（OpenSMTPD 客户端） - ${BINARY}" ;;
+                            showmount)              SHOWMOUNTBINARY="${BINARY}";       LogText "发现已知程序：showmount（NFS 挂载信息） - ${BINARY}" ;;
+                            snort)                  SNORTBINARY="${BINARY}";           LogText "发现已知程序：snort（IDS） - ${BINARY}" ;;
+                            sockstat)               SOCKSTATBINARY="${BINARY}";        LogText "发现已知程序：sockstat（打开的网络套接字） - ${BINARY}" ;;
+                            sort)                   SORTBINARY="${BINARY}";            LogText "发现已知程序：sort（数据流排序工具） - ${BINARY}" ;;
+                            squid)                  SQUIDBINARY="${BINARY}";           LogText "发现已知程序：squid（代理服务器） - ${BINARY}" ;;
+                            ss)                     SSBINARY="${BINARY}";              LogText "发现已知程序：ss（套接字信息） - ${BINARY}" ;;
                             sshd)                   SSHDBINARY="${BINARY}";            SSHDVERSION=$(${BINARY} -t -d 2>&1 | grep 'sshd version' | awk '{ print $4 }' | cut -d '_' -f2 | tr -d ',' | tr -d '\r'); LogText "找到${BINARY}（版本${SSHDVERSION}）" ;;
-                            stat)                   STATBINARY="${BINARY}";            LogText "发现已知程序：stat（文件信息）-${BINARY}" ;;
-                            strings)                STRINGSBINARY="${BINARY}";         LogText "找到已知的二进制：字符串（文本字符串搜索）- ${BINARY}" ;;
-                            sha1|sha1sum|shasum)    SHA1SUMBINARY="${BINARY}";         LogText "发现已知程序：sha1/sha1sum/shasum（加密哈希）- ${BINARY}" ;;
-                            sha256|sha256sum)       SHA256SUMBINARY="${BINARY}";       LogText "发现已知程序：sha256/sha256sum（加密哈希）-${BINARY}" ;;
-                            ssh-keyscan)            SSHKEYSCANBINARY="${BINARY}";      LogText "发现已知程序：ssh-keyscan（SSH 密钥扫描器）- ${BINARY}" ;;
-                            suricata)               SURICATABINARY="${BINARY}";        LogText "发现已知程序：suricata (IDS) - ${BINARY}" ;;
-                            swapon)                 SWAPONBINARY="${BINARY}";          LogText "发现已知程序：swapon（交换设备工具）- ${BINARY}" ;;
-                            svcs)                   SVCSBINARY="${BINARY}" ;           LogText "发现已知程序：svcs（服务管理器）-${BINARY}" ;;
-                            swupd)                  SWUPDBINARY="${BINARY}";           LogText "发现已知程序：swupd（包管理器）-${BINARY}" ;;
-                            synoavd)                SYNOAVDBINARY=${BINARY};           LogText "发现已知程序：synoavd（Synology AV 扫描仪）- ${BINARY}" ;;
-                            sysctl)                 SYSCTLBINARY="${BINARY}";          LogText "发现已知程序：sysctl（内核参数）-${BINARY}" ;;
+                            stat)                   STATBINARY="${BINARY}";            LogText "发现已知程序：stat（文件信息工具） - ${BINARY}" ;;
+                            strings)                STRINGSBINARY="${BINARY}";         LogText "发现已知程序：strings（可打印字符串搜索） - ${BINARY}" ;;
+                            sha1|sha1sum|shasum)    SHA1SUMBINARY="${BINARY}";         LogText "发现已知程序：sha1/sha1sum/shasum（加密哈希） - ${BINARY}" ;;
+                            sha256|sha256sum)       SHA256SUMBINARY="${BINARY}";       LogText "发现已知程序：sha256/sha256sum（加密哈希） - ${BINARY}" ;;
+                            ssh-keyscan)            SSHKEYSCANBINARY="${BINARY}";      LogText "发现已知程序：ssh-keyscan（SSH 密钥扫描器） - ${BINARY}" ;;
+                            suricata)               SURICATABINARY="${BINARY}";        LogText "发现已知程序：suricata（IDS） - ${BINARY}" ;;
+                            swapon)                 SWAPONBINARY="${BINARY}";          LogText "发现已知程序：swapon（交换设备管理工具） - ${BINARY}" ;;
+                            svcs)                   SVCSBINARY="${BINARY}" ;           LogText "发现已知程序：svcs（服务管理器） - ${BINARY}" ;;
+                            swupd)                  SWUPDBINARY="${BINARY}";           LogText "发现已知程序：swupd（软件软件包管理器） - ${BINARY}" ;;
+                            synoavd)                SYNOAVDBINARY=${BINARY};           LogText "发现已知程序：synoavd（Synology 杀毒扫描器） - ${BINARY}" ;;
+                            sysctl)                 SYSCTLBINARY="${BINARY}";          LogText "发现已知程序：sysctl（内核参数管理） - ${BINARY}" ;;
                             syslog-ng)              SYSLOGNGBINARY="${BINARY}";        SYSLOGNGVERSION=$(${BINARY} -V 2>&1 | grep "^syslog-ng" | awk '{ print $2 }'); LogText "发现 ${BINARY}（版本 ${SYSLOGNGVERSION}）" ;;
-                            systemctl)              SYSTEMCTLBINARY="${BINARY}";       LogText "发现已知程序：systemctl（systemd 的客户端）- ${BINARY}" ;;
-                            systemd-analyze)        SYSTEMDANALYZEBINARY="${BINARY}";  LogText "发现已知二进制文件：systemd-analyze（systemd服务分析工具）-${BINARY}" ;;
-                            tail)                   TAILBINARY="${BINARY}";            LogText "发现已知程序：tail（文本过滤器）-${BINARY}" ;;
-                            timedatectl)            TIMEDATECTL="${BINARY}";           LogText "发现已知程序：timedatectl（timedate 客户端）- ${BINARY}" ;;
-                            tomoyo-init)            TOMOYOINITBINARY=${BINARY};        LogText "发现已知程序：tomoyo-init（tomoyo 组件）- ${BINARY}" ;;
-                            tomoyo-pstree)          TOMOYOPSTREEBINARY=${BINARY};      LogText "发现已知程序：tomoyo-pstree（tomoyo进程树）-${BINARY}" ;;
-                            tr)                     TRBINARY="${BINARY}";              LogText "发现已知程序：tr（文本转换）-${BINARY}" ;;
-                            tripwire)               TRIPWIREBINARY="${BINARY}";        LogText "发现已知的二进制文件：tripwire（文件完整性）- ${BINARY}" ;;
-                            tune2fs)                TUNE2FSBINARY="${BINARY}";         LogText "发现已知程序：tune2fs（文件系统工具）-${BINARY}" ;;
-                            uname)                  UNAMEBINARY="${BINARY}";           LogText "发现已知程序：uname（操作系统详细信息）-${BINARY}" ;;
-                            uniq)                   UNIQBINARY="${BINARY}";            LogText "发现已知程序：uniq（文本操作实用程序）- ${BINARY}";;
-                            usbguard)               USBGUARDBINARY="${BINARY}";        LogText "发现已知程序：usbguard（USB安全工具）-${BINARY}" ;;
-                            veritysetup)            VERITYSETUPBINARY="${BINARY}";     LogText "发现已知程序：veritysetup（dm-verity 设置工具）- ${BINARY}" ;;
-                            vgdisplay)              VGDISPLAYBINARY="${BINARY}";       LogText "发现已知程序：vgdisplay（LVM 工具）- ${BINARY}" ;;
-                            vmtoolsd)               VMWARETOOLSDBINARY="${BINARY}";    LogText "发现已知程序：vmtoolsd（VMWare 工具）- ${BINARY}" ;;
-                            wc)                     WCBINARY="${BINARY}";              LogText "发现已知程序：wc（字数）-${BINARY}" ;;
+                            systemctl)              SYSTEMCTLBINARY="${BINARY}";       LogText "发现已知程序：systemctl（systemd 的客户端） - ${BINARY}" ;;
+                            systemd-analyze)        SYSTEMDANALYZEBINARY="${BINARY}";  LogText "发现已知程序：systemd-analyze（systemd 服务分析工具） - ${BINARY}" ;;
+                            tail)                   TAILBINARY="${BINARY}";            LogText "发现已知程序：tail（文本过滤工具） - ${BINARY}" ;;
+                            timedatectl)            TIMEDATECTL="${BINARY}";           LogText "发现已知程序：timedatectl（时间日期管理客户端） - ${BINARY}" ;;
+                            tomoyo-init)            TOMOYOINITBINARY=${BINARY};        LogText "发现已知程序：tomoyo-init（TOMOYO 组件） - ${BINARY}" ;;
+                            tomoyo-pstree)          TOMOYOPSTREEBINARY=${BINARY};      LogText "发现已知程序：tomoyo-pstree（TOMOYO 进程树） - ${BINARY}" ;;
+                            tr)                     TRBINARY="${BINARY}";              LogText "发现已知程序：tr（文本转换工具） - ${BINARY}" ;;
+                            tripwire)               TRIPWIREBINARY="${BINARY}";        LogText "发现已知程序：tripwire（文件完整性） - ${BINARY}" ;;
+                            tune2fs)                TUNE2FSBINARY="${BINARY}";         LogText "发现已知程序：tune2fs（文件系统工具） - ${BINARY}" ;;
+                            uname)                  UNAMEBINARY="${BINARY}";           LogText "发现已知程序：uname（操作系统信息） - ${BINARY}" ;;
+                            uniq)                   UNIQBINARY="${BINARY}";            LogText "发现已知程序：uniq（文本处理工具） - ${BINARY}";;
+                            usbguard)               USBGUARDBINARY="${BINARY}";        LogText "发现已知程序：usbguard（USB 安全工具） - ${BINARY}" ;;
+                            veritysetup)            VERITYSETUPBINARY="${BINARY}";     LogText "发现已知程序：veritysetup（dm-verity 设置工具） - ${BINARY}" ;;
+                            vgdisplay)              VGDISPLAYBINARY="${BINARY}";       LogText "发现已知程序：vgdisplay（LVM 工具） - ${BINARY}" ;;
+                            vmtoolsd)               VMWARETOOLSDBINARY="${BINARY}";    LogText "发现已知程序：vmtoolsd（VMware 工具） - ${BINARY}" ;;
+                            wc)                     WCBINARY="${BINARY}";              LogText "发现已知程序：wc（字符/单词统计） - ${BINARY}" ;;
                             wget)                   WGETBINARY="${BINARY}";            WGETVERSION=$(${BINARY} -V 2> /dev/null | grep "^GNU Wget" | awk '{ print $3 }'); LogText "发现 ${BINARY}（版本 ${WGETVERSION}）" ;;
-                            yum)                    YUMBINARY="${BINARY}";             LogText "发现已知程序：yum（包管理器）-${BINARY}" ;;
-                            xargs)                  XARGSBINARY="${BINARY}";           LogText "发现已知程序：xargs（命令输出重定向）- ${BINARY}" ;;
-                            zgrep)                  ZGREPBINARY=${BINARY};             LogText "发现已知程序：zgrep（压缩文件的文本搜索）-${BINARY}" ;;
-                            zypper)                 ZYPPERBINARY="${BINARY}";          LogText "发现已知程序：zypper（包管理器）-${BINARY}" ;;
+                            yum)                    YUMBINARY="${BINARY}";             LogText "发现已知程序：yum（软件软件包管理器） - ${BINARY}" ;;
+                            xargs)                  XARGSBINARY="${BINARY}";           LogText "发现已知程序：xargs（命令参数构造工具） - ${BINARY}" ;;
+                            zgrep)                  ZGREPBINARY=${BINARY};             LogText "发现已知程序：zgrep（压缩文件文本搜索） - ${BINARY}" ;;
+                            zypper)                 ZYPPERBINARY="${BINARY}";          LogText "发现已知程序：zypper（软件软件包管理器） - ${BINARY}" ;;
                         esac
                     done
                 else
@@ -321,7 +321,7 @@
                     if [ -n "${ORGPATH}" ]; then TEXT="${ORGPATH} (links to ${SCANDIR})"; else TEXT="${SCANDIR}"; fi
                 fi
             else
-                LogText "结果：目录 ${SCANDIR} 是否存在 NOT"
+                LogText "结果：目录 ${SCANDIR} 不存在"
             fi
         done
 
@@ -329,9 +329,9 @@
         BINARY_SCAN_FINISHED=1
         BINARY_PATHS_FOUND=$(echo ${BINARY_PATHS_FOUND} | sed 's/^, //g' | sed 's/, /,/g')
         LogText "发现目录：${BINARY_PATHS_FOUND}"
-        LogText "结果：找到 ${COUNT} 二进制文件，包括 ${NSUID_BINARIES} set-uid 和 ${NSGID_BINARIES} set-gid"
-        LogText "结果：set-uid 二进制文件：${SUID_BINARIES}"
-        LogText "结果：set-gid 二进制文件：${SGID_BINARIES}"
+        LogText "结果：发现 ${COUNT} 个程序，其中 ${NSUID_BINARIES} 个设置了 set-uid，${NSGID_BINARIES} 个设置了 set-gid"
+        LogText "结果：设置了 set-uid 的程序：${SUID_BINARIES}"
+        LogText "结果：设置了 set-gid 的程序：${SGID_BINARIES}"
         Report "binaries_count=${COUNT}"
         Report "binaries_suid_count=${SUID_BINARIES}"
         Report "binaries_sgid_count=${SGID_BINARIES}"
@@ -347,20 +347,20 @@
 	
 
         # Test if the basic system tools are defined. These will be used during the audit.
-        [ "${AWKBINARY:-}" ] || ExitFatal "awk binary not found"
-        [ "${CAT_BINARY:-}" ] || ExitFatal "cat binary not found"
-        [ "${CUTBINARY:-}" ] || ExitFatal "cut binary not found"
-        [ "${FINDBINARY:-}" ] || ExitFatal "find binary not found"
-        [ "${GREPBINARY:-}" ] || ExitFatal "grep binary not found"
-        [ "${HEADBINARY:-}" ] || ExitFatal "head binary not found"
-        [ "${TAILBINARY:-}" ] || ExitFatal "tail binary not found"
-        [ "${LSBINARY:-}" ] || ExitFatal "ls binary not found"
-        [ "${PSBINARY:-}" ] || ExitFatal "ps binary not found"
-        [ "${SEDBINARY:-}" ] || ExitFatal "sed binary not found"
-        [ "${SORTBINARY:-}" ] || ExitFatal "sort binary not found"
-        [ "${TRBINARY:-}" ] || ExitFatal "tr binary not found"
-        [ "${UNIQBINARY:-}" ] || ExitFatal "uniq binary not found"
-        [ "${WCBINARY:-}" ] || ExitFatal "wc binary not found"
+        [ "${AWKBINARY:-}" ] || ExitFatal "未找到 awk 程序"
+        [ "${CAT_BINARY:-}" ] || ExitFatal "未找到 cat 程序"
+        [ "${CUTBINARY:-}" ] || ExitFatal "未找到 cut 程序"
+        [ "${FINDBINARY:-}" ] || ExitFatal "未找到 find 程序"
+        [ "${GREPBINARY:-}" ] || ExitFatal "未找到 grep 程序"
+        [ "${HEADBINARY:-}" ] || ExitFatal "未找到 head 程序"
+        [ "${TAILBINARY:-}" ] || ExitFatal "未找到 tail 程序"
+        [ "${LSBINARY:-}" ] || ExitFatal "未找到 ls 程序"
+        [ "${PSBINARY:-}" ] || ExitFatal "未找到 ps 程序"
+        [ "${SEDBINARY:-}" ] || ExitFatal "未找到 sed 程序"
+        [ "${SORTBINARY:-}" ] || ExitFatal "未找到 sort 程序"
+        [ "${TRBINARY:-}" ] || ExitFatal "未找到 tr 程序"
+        [ "${UNIQBINARY:-}" ] || ExitFatal "未找到 uniq 程序"
+        [ "${WCBINARY:-}" ] || ExitFatal "未找到 wc 程序"
 
         # Test a few other tools that we did not specifically define (yet)
         #TOOLS="xxd"
