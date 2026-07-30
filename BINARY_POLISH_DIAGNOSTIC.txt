@@ -1,4 +1,0 @@
-python_status=0
-sh_status=0
---- python output ---
---- sh output ---
