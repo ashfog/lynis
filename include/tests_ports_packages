@@ -44,7 +44,7 @@
         LogText "结果：发现 apk 可执行文件"
         Report "package_manager[]=apk"
         PACKAGE_MGR_PKG=1
-        LogText "Test: 查询 apk info -v to get package list"
+        LogText "检查：运行 apk info -v 获取软件包列表"
         Display --indent 6 --text "- 查询软件包管理器"
         LogText "输出："
         SPACKAGES=$(apk info -v | ${SEDBINARY} -r -e 's/([a-z,A-Z,0-9,_,-,.]{1,250})-([a-z,A-Z,0-9,.]+-r[a-z,A-Z,0-9]+)/\1,\2/' | sort)
@@ -504,7 +504,7 @@ EOF
         LogText "结果：发现 dpkg 可执行文件"
         Report "package_manager[]=dpkg"
         PACKAGE_MGR_PKG=1
-        LogText "Test: 查询 dpkg -l to get package list"
+        LogText "检查：运行 dpkg -l 获取软件包列表"
         Display --indent 6 --text "- 查询软件包管理器"
         LogText "输出："
         SPACKAGES=$(dpkg -l 2>/dev/null | ${GREPBINARY} "^ii" | ${TRBINARY} -s ' ' | ${TRBINARY} ' ' ',' | sort)
@@ -529,7 +529,7 @@ EOF
     Register --test-no PKGS-7346 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "搜索系统中未彻底清除的软件包"
     if [ ${SKIPTEST} -eq 0 ]; then
         COUNT=0
-        LogText "Test: 查询 dpkg -l to get unpurged packages"
+        LogText "检查：运行 dpkg -l 查询未彻底清除的软件包"
         SPACKAGES=$(${ROOTDIR}usr/bin/dpkg -l 2>/dev/null | ${GREPBINARY} "^rc" | ${CUTBINARY} -d ' ' -f3 | sort)
         if [ -z "${SPACKAGES}" ]; then
             Display --indent 4 --text "- 查询未彻底清除的软件包" --result "${STATUS_NONE}" --color GREEN
@@ -1170,7 +1170,7 @@ EOF
                 ReportException "${TEST_NO}:1" "apt-check 未返回任何结果"
             else
                 if [ "${FIND}" = "0" ]; then
-                    LogText "结果：未发现存在漏洞的软件包 via apt-check"
+                    LogText "结果：apt-check 未发现存在漏洞的软件包"
                     SCAN_PERFORMED=1
                 else
                     VULNERABLE_PACKAGES_FOUND=1
@@ -1189,7 +1189,7 @@ EOF
         if [ -n "${FIND}" ]; then
             VULNERABLE_PACKAGES_FOUND=1
             SCAN_PERFORMED=1
-            LogText "结果：发现存在漏洞的软件包 via apt-get (-security channel)"
+            LogText "结果：apt-get 在 -security 渠道中发现存在漏洞的软件包"
             PACKAGE_AUDIT_TOOL="apt-get"
             PACKAGE_AUDIT_TOOL_FOUND=1
             for PKG in ${FIND}; do
@@ -1395,7 +1395,7 @@ EOF
                 LogText "结果：rpm -q kernel 输出中未发现内核软件包，情况异常"
             elif [ ${KERNELS} -gt 5 ]; then
                 LogText "结果：系统中发现超过 5 个内核软件包，可能未定期清理"
-                ReportSuggestion "${TEST_NO}" "删除不需要的内核软件包 with package-cleanup utility (--old-kernels)"
+                ReportSuggestion "${TEST_NO}" "使用 package-cleanup --old-kernels 删除不需要的内核软件包"
             else
                 LogText "结果：系统中发现 ${KERNELS} 个内核软件包，数量正常"
             fi
