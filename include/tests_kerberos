@@ -171,7 +171,7 @@ InsertSection "${SECTION_KERBEROS}"
 ${FIND}
 EOF
             Display --indent 4 --text "- Principals with weak crypto" --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "Remove weak (des|arcfour|cbc|sha1) cryptographic keys from principals"
+            ReportSuggestion "${TEST_NO}" "从主体中移除弱加密密钥（des|arcfour|cbc|sha1）"
         else
             Display --indent 4 --text "- Principals with weak crypto" --result "${STATUS_OK}" --color GREEN
         fi

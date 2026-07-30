@@ -34,7 +34,7 @@
     # Test        : FILE-6310
     # Description : Checking if some mount points are separated from /
     # Goal        : Users should not be able to fill their home directory or temporary directory and creating a Denial of Service
-    Register --test-no FILE-6310 --weight L --network NO --category security --description "Checking /tmp, /home and /var directory"
+    Register --test-no FILE-6310 --weight L --network NO --category security --description "检查 /tmp、/home 和 /var 目录"
     if [ ${SKIPTEST} -eq 0 ]; then
         Display --indent 2 --text "- Checking mount points"
         SEPARATED_FILESYTEMS="/home /tmp /var"
@@ -56,7 +56,7 @@
                 if IsEmpty "${FIND}"; then
                     LogText "Result: ${I} not found in mount list. Directory most likely stored on / file system"
                     Display --indent 4 --text "- Checking ${I} mount point" --result "${STATUS_SUGGESTION}" --color YELLOW
-                    ReportSuggestion "${TEST_NO}" "To decrease the impact of a full ${I} file system, place ${I} on a separate partition"
+                    ReportSuggestion "${TEST_NO}" "为降低 ${I} 文件系统占满带来的影响，请将 ${I} 放在独立分区中"
                     AddHP 9 10
                 else
                     LogText "Result: found ${I} as a separated mount point"
@@ -86,7 +86,7 @@
                  FIND=$(${VGDISPLAYBINARY} 2> /dev/null | ${GREPBINARY} -v "No volume groups found" | ${GREPBINARY} "VG Name" | ${AWKBINARY} '{ print $3 }' | ${SORTBINARY})
             ;;
             *)
-                 ReportException "${TEST_NO}:1" "Don't know this specific operating system yet, while volume group manager was found"
+                 ReportException "${TEST_NO}:1" "发现了卷组管理器，但尚不支持识别此操作系统"
             ;;
         esac
         if [ -n "${FIND}" ]; then
@@ -282,7 +282,7 @@
                         REAL="${FIND2}"
                     fi
                 else
-                    LogText "Result: blkid binary not found, trying by checking device listing"
+                    LogText "结果：未找到 blkid 程序，尝试检查设备列表"
                     sFILE=""
                     if [ -L /dev/disk/by-uuid/${UUID} ]; then
                         LogText "Result: found disk via /dev/disk/by-uuid listing"
@@ -330,7 +330,7 @@
             LogText "Result: possible incorrect mount options used for mounting swap partition (${FIND})"
             #ReportWarning "${TEST_NO}" "Possible incorrect mount options used for swap partition (${FIND})"
             ReportSuggestion "${TEST_NO}" "Check your /etc/fstab file for swap partition mount options"
-            LogText "Notes: usually swap partition have 'sw' or 'swap' in the options field (4th)"
+            LogText "说明：交换分区的选项字段（第 4 列）通常包含 'sw' 或 'swap'"
         fi
     fi
 #
@@ -404,7 +404,7 @@
                 LogText "Old temporary file: ${FILE}"
                 COUNT=$((COUNT + 1))
             done
-            LogText "Result: found old files in ${ROOTDIR}tmp, which were not modified in the last ${TMP_OLD_DAYS} days"
+            LogText "结果：在 ${ROOTDIR}tmp 中发现过去 ${TMP_OLD_DAYS} 天内未修改的旧文件"
             LogText "Advice: check and clean up unused files in ${ROOTDIR}tmp. Old files can fill up a disk or contain"
             LogText "private information and should be deleted it not being used actively. Use a tool like lsof to"
             LogText "see which programs possibly are using a particular file. Some systems can cleanup temporary"
@@ -428,12 +428,12 @@
             AddHP 3 3
         else
             Display --indent 2 --text "- Checking ${ROOTDIR}tmp sticky bit" --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "Set the sticky bit on ${ROOTDIR}tmp, to prevent users deleting (by other owned) files in the /tmp directory." "/tmp" "text:Set sticky bit"
+            ReportSuggestion "${TEST_NO}" "为 ${ROOTDIR}tmp 设置粘滞位，防止用户删除 /tmp 中属于其他用户的文件。" "/tmp" "text:设置粘滞位"
             AddHP 0 3
         fi
         unset FIND
     else
-        LogText "Result: Sticky bit test (on /tmp) skipped. Possible reason: missing directory, or symlinked directory, or test skipped."
+        LogText "结果：已跳过 /tmp 的粘滞位检查。可能原因：目录不存在、目录为符号链接或检查被跳过。"
     fi
 #
 #################################################################################
@@ -451,12 +451,12 @@
             AddHP 3 3
         else
             Display --indent 2 --text "- Checking ${ROOTDIR}var/tmp sticky bit" --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "Set the sticky bit on ${ROOTDIR}var/tmp, to prevent users deleting (by other owned) files in the /var/tmp directory." "/var/tmp" "text:Set sticky bit"
+            ReportSuggestion "${TEST_NO}" "为 ${ROOTDIR}var/tmp 设置粘滞位，防止用户删除 /var/tmp 中属于其他用户的文件。" "/var/tmp" "text:设置粘滞位"
             AddHP 0 3
         fi
         unset FIND
     else
-        LogText "Result: Sticky bit test (on /var/tmp) skipped. Possible reason: missing directory, or symlinked directory, or test skipped."
+        LogText "结果：已跳过 /var/tmp 的粘滞位检查。可能原因：目录不存在、目录为符号链接或检查被跳过。"
     fi
 #
 #################################################################################
@@ -517,8 +517,8 @@
 
         if [ ${FOUND} -eq 0 ]; then
             LogText "Result: ACL option NOT enabled on root file system"
-            LogText "Additional information: if file access need to be more restricted, ACLs could be used. Install the acl utilities and remount the file system with the acl option"
-            LogText "Activate acl support on and active file system with mount -o remount,acl / and add the acl option to the fstab file"
+            LogText "补充信息：如需进一步限制文件访问，可使用 ACL。请安装 acl 工具，并使用 acl 选项重新挂载文件系统"
+            LogText "可执行 mount -o remount,acl / 为活动文件系统启用 ACL，并在 fstab 中添加 acl 选项"
             Display --indent 2 --text "- ACL support root file system" --result "${STATUS_DISABLED}" --color YELLOW
             AddHP 0 1
         else
@@ -611,7 +611,7 @@
                             LogText "Result: Could not find mount option ${FLAG} on file system ${FILESYSTEM}"
                             FULLY_HARDENED=0
                         else
-                            LogText "Result: GOOD, found mount option ${FLAG} on file system ${FILESYSTEM}"
+                            LogText "结果：正常，文件系统 ${FILESYSTEM} 上已设置挂载选项 ${FLAG}"
                             PARTIALLY_HARDENED=1
                         fi
                     done
@@ -644,8 +644,8 @@
         NEXECMOUNTS=$(mount | ${AWKBINARY} '{print $6}' | ${GREPBINARY} -v noexec | ${WCBINARY} -l)
         NSUIDMOUNTS=$(mount | ${AWKBINARY} '{print $6}' | ${GREPBINARY} -v nosuid | ${WCBINARY} -l)
         NWRITEANDEXECMOUNTS=$(mount | ${AWKBINARY} '{print $6}' | ${GREPBINARY} -v noexec | ${GREPBINARY} -E -v '^\(ro[,)]' | ${WCBINARY} -l)
-        LogText "Result: Total without nodev:${NDEVMOUNTS} noexec:${NEXECMOUNTS} nosuid:${NSUIDMOUNTS} ro or noexec (W^X): ${NWRITEANDEXECMOUNTS}, of total ${NMOUNTS}"
-        Display --indent 2 --text "- Total without nodev:${NDEVMOUNTS} noexec:${NEXECMOUNTS} nosuid:${NSUIDMOUNTS} ro or noexec (W^X): ${NWRITEANDEXECMOUNTS} of total ${NMOUNTS}"
+        LogText "结果：共 ${NMOUNTS} 个挂载点，其中缺少 nodev：${NDEVMOUNTS}，缺少 noexec：${NEXECMOUNTS}，缺少 nosuid：${NSUIDMOUNTS}，缺少 ro 或 noexec（W^X）：${NWRITEANDEXECMOUNTS}"
+        Display --indent 2 --text "- 共 ${NMOUNTS} 个挂载点，缺少 nodev：${NDEVMOUNTS}，noexec：${NEXECMOUNTS}，nosuid：${NSUIDMOUNTS}，ro 或 noexec（W^X）：${NWRITEANDEXECMOUNTS}"
     fi
 #
 #################################################################################
@@ -711,12 +711,12 @@
             if [ -d "/sys/block/${PHYSDISK}" ]; then
                 HDDORSDD=$(${CAT_BINARY} "/sys/block/${PHYSDISK}/queue/rotational")
                 if [ ${HDDORSDD} -eq 1 ]; then
-                    ReportSuggestion "${TEST_NO}" "vm.swappiness set to: ${SWAPLEVEL} > 60 (default) - consider installing an SSD for swap partition for better performance."
+                    ReportSuggestion "${TEST_NO}" "vm.swappiness 设置为 ${SWAPLEVEL}，高于默认值 60；建议为交换分区使用 SSD 以提高性能。"
                 fi
             fi
         elif [ ${SWAPLEVEL} -eq 0 ]; then
             LogText "Result: vm.swappiness=${SWAPLEVEL} meaning swapping is disabled."
-            ReportSuggestion "${TEST_NO}" "vm.swappiness set to: ${SWAPLEVEL}. Consider setting value to minimum of 1 for minimizing swappiness, but not quite disabling it. Will prevent OOM killer from killing processes when running out of physical memory."
+            ReportSuggestion "${TEST_NO}" "vm.swappiness 设置为 ${SWAPLEVEL}。可考虑至少设置为 1，以尽量减少交换但不完全禁用，从而避免物理内存耗尽时 OOM killer 过早终止进程。"
         elif [ ${SWAPLEVEL} -eq 1 ]; then
             LogText "Result: vm.swappiness=${SWAPLEVEL} meaning that swapping can still occur but at very minimum."
         elif [ ${SWAPLEVEL} -eq 10 ]; then
@@ -805,7 +805,7 @@
         else
             LogText "Result: database not found"
             Display --indent 2 --text "- Checking Locate database" --result "${STATUS_NOT_FOUND}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "The database required for 'locate' could not be found. Run 'updatedb' or 'locate.updatedb' to create this file."
+            ReportSuggestion "${TEST_NO}" "找不到 'locate' 所需的数据库。请运行 'updatedb' 或 'locate.updatedb' 创建该文件。"
         fi
     fi
 #
@@ -899,7 +899,7 @@
             done
             if [ ${FOUND} -eq 1 ]; then
                 Display --indent 4 --text "- Discovered kernel modules: ${AVAILABLE_MODPROBE_FS}"
-                ReportSuggestion "${TEST_NO}" "Consider disabling unused kernel modules" "/etc/modprobe.d/blacklist.conf" "Add 'install MODULENAME /bin/true' (without quotes)"
+                ReportSuggestion "${TEST_NO}" "建议禁用未使用的内核模块" "/etc/modprobe.d/blacklist.conf" "添加 install MODULENAME /bin/true（不含引号）"
             fi
         else
             LogText "Test skipped lsmod binary not found or /proc/modules can not be opened"

@@ -48,12 +48,12 @@
                 Display --indent 2 --text "- Checking default runlevel" --result "runlevel 5" --color GREEN
                 Report "linux_default_runlevel=5"
             else
-                LogText "Result: No match found on runlevel, defaulting to runlevel 3"
+                LogText "结果：未找到匹配的运行级别，默认使用运行级别 3"
                 Display --indent 2 --text "- Checking default runlevel" --result "runlevel 3" --color GREEN
                 Report "linux_default_runlevel=3"
             fi
         else
-            LogText "Result: no systemd found, so trying inittab"
+            LogText "结果：未找到 systemd，尝试检查 inittab"
             LogText "Test: Checking ${ROOTDIR}etc/inittab"
             if [ -f ${ROOTDIR}etc/inittab ]; then
                 LogText "Result: file ${ROOTDIR}etc/inittab found"
@@ -61,23 +61,23 @@
                 FIND=$(${AWKBINARY} -F: '/^id/ { print $2; }' ${ROOTDIR}etc/inittab | head -n 1)
                 if IsEmpty "${FIND}"; then
                     Display --indent 2 --text "- Checking default runlevel" --result "${STATUS_UNKNOWN}" --color YELLOW
-                    LogText "Result: Can't determine default run level from ${ROOTDIR}etc/inittab"
+                    LogText "结果：无法从 ${ROOTDIR}etc/inittab 确定默认运行级别"
                 else
                     Display --indent 2 --text "- Checking default run level" --result "${FIND}" --color GREEN
-                    LogText "Found default run level '${FIND}'"
+                    LogText "发现默认运行级别 '${FIND}'"
                     Report "linux_default_runlevel=${FIND}"
                 fi
             else
                 LogText "Result: file ${ROOTDIR}etc/inittab not found"
                 if [ "${LINUX_VERSION}" = "Debian" ] || [ "${LINUX_VERSION}" = "Ubuntu" ] || [ "${LINUX_VERSION_LIKE}" = "Debian" ] || [ "${LINUX_VERSION_LIKE}" = "Ubuntu" ]; then
-                    LogText "Test: Checking run level with who -r, for Debian based systems"
+                    LogText "检查：在 Debian 系统上使用 who -r 检查运行级别"
                     FIND=$(who -r | ${AWKBINARY} '{ if ($1=="run-level") { print $2 } }')
                     if HasData "${FIND}"; then
-                        LogText "Result: Found default run level '${FIND}'"
+                        LogText "Result: 发现默认运行级别 '${FIND}'"
                         Report "linux_default_runlevel=${FIND}"
                         Display --indent 2 --text "- Checking default run level" --result "RUNLEVEL ${FIND}" --color GREEN
                     else
-                        LogText "Result: Can't determine default run level from who -r"
+                        LogText "结果：无法通过 who -r 确定默认运行级别"
                         Display --indent 2 --text "- Checking default run level" --result "${STATUS_UNKNOWN}" --color YELLOW
                     fi
                 fi
@@ -186,7 +186,7 @@
                 MONOLITHIC_KERNEL=0
             fi
         else
-            LogText "Test skipped, lsmod binary not found or /proc/modules can not be opened"
+            LogText "已跳过检查：未找到 lsmod 程序或无法打开 /proc/modules"
         fi
     fi
 #
@@ -210,10 +210,10 @@
                 Display --indent 6 --text "Found ${COUNT} active modules"
             else
                 LogText "Result: no loaded modules found"
-                LogText "Notice: No loaded kernel modules could indicate a broken/malformed lsmod, or a (custom) monolithic kernel"
+                LogText "注意：未发现已加载的内核模块，可能是 lsmod 损坏或格式异常，也可能使用了自定义单体内核"
             fi
         else
-            LogText "Test skipped, lsmod binary not found or /proc/modules can not be opened"
+            LogText "已跳过检查：未找到 lsmod 程序或无法打开 /proc/modules"
         fi
     fi
 #
@@ -260,7 +260,7 @@
             LogText "Test: Checking the default I/O kernel scheduler"
             LINUX_KERNEL_IOSCHED=$(${GREPTOOL} "CONFIG_DEFAULT_IOSCHED" ${LINUXCONFIGFILE} | ${AWKBINARY} -F= '{ print $2 }' | ${SEDBINARY} s/\"//g)
             if [ -n "${LINUX_KERNEL_IOSCHED}" ]; then
-                LogText "Result: found IO scheduler '${LINUX_KERNEL_IOSCHED}'"
+                LogText "结果：发现 I/O 调度器 '${LINUX_KERNEL_IOSCHED}'"
                 Display --indent 2 --text "- Checking default I/O kernel scheduler" --result "${STATUS_FOUND}" --color GREEN
                 Report "linux_kernel_io_scheduler[]=${LINUX_KERNEL_IOSCHED}"
             else
@@ -298,7 +298,7 @@
                 LogText "Result: Problem with executing kldstat"
             fi
         else
-            LogText "Result: no results, can't find /sbin/kldstat"
+            LogText "结果：没有结果，找不到 /sbin/kldstat"
         fi
     fi
 #
@@ -329,7 +329,7 @@
             fi
         else
             echo "[ ${WHITE}SKIPPED${NORMAL} ]"
-            LogText "Result: no results, can NOT find /sbin/kldstat"
+            LogText "结果：没有结果，找不到 /sbin/kldstat"
         fi
     fi
 #
@@ -366,7 +366,7 @@
     if [ ${SKIPTEST} -eq 0 ]; then
         FINDKERNEL=""
         HAS_VMLINUZ=0
-        LogText "Test: Searching apt-cache, to determine if a newer kernel is available"
+        LogText "检查：搜索 apt-cache，以确定是否有更新的内核"
         if [ -x ${ROOTDIR}usr/bin/apt-cache ]; then
             LogText "Result: found ${ROOTDIR}usr/bin/apt-cache"
             LogText "Test: checking presence of ${ROOTDIR}vmlinuz or ${ROOTDIR}boot/vmlinuz"
@@ -386,7 +386,7 @@
                 LogText "Output: dpkg -S reported package ${FINDKERNEL}"
             elif [ -e ${ROOTDIR}dev/grsec ]; then
                 FINDKERNEL="linux-image-$(uname -r)"
-                LogText "Result: ${ROOTDIR}vmlinuz missing due to grsecurity; assuming ${FINDKERNEL}"
+                LogText "结果：由于 grsecurity，${ROOTDIR}vmlinuz 缺失；假定内核为 ${FINDKERNEL}"
             elif [ -e ${ROOTDIR}etc/rpi-issue ]; then
                 FINDKERNEL="raspberrypi-kernel"
                 LogText "Result: ${ROOTDIR}vmlinuz missing due to Raspbian"
@@ -401,7 +401,7 @@
             if IsEmpty "${FINDKERNEL}"; then
                 LogText "Result: could not check kernel update status as kernel is unknown"
             else
-                LogText "Result: found kernel '${FINDKERNEL}' which will be used for further testing"
+                LogText "结果：发现内核 '${FINDKERNEL}'，将用于后续检查"
                 LogText "Test: Using apt-cache policy to determine if there is an update available"
                 FINDINSTALLED=$(apt-cache policy ${FINDKERNEL} | ${GREPBINARY} -E 'Installed' | ${CUTBINARY} -d ':' -f2 | ${TRBINARY} -d ' ')
                 FINDCANDIDATE=$(apt-cache policy ${FINDKERNEL} | ${GREPBINARY} -E 'Candidate' | ${CUTBINARY} -d ':' -f2 | ${TRBINARY} -d ' ')
@@ -409,7 +409,7 @@
                 LogText "Kernel candidate: ${FINDCANDIDATE}"
                 if IsEmpty "${FINDINSTALLED}"; then
                     Display --indent 2 --text "- Checking for available kernel update" --result "${STATUS_UNKNOWN}" --color YELLOW
-                    LogText "Result: Exception occurred, no output from apt-cache policy"
+                    LogText "结果：发生异常，apt-cache policy 没有输出"
                     if [ ${HAS_VMLINUZ} -eq 1 ]; then
                         ReportException "${TEST_NO}:01" "Found vmlinuz (${FINDVMLINUZ}) but could not determine the installed kernel using apt-cache policy"
                         ReportSuggestion "${TEST_NO}" "Check the output of apt-cache policy to determine why its output is empty"
@@ -419,7 +419,7 @@
                     if [ "${FINDINSTALLED}" = "${FINDCANDIDATE}" ]; then
                         if [ -e /dev/grsec ]; then
                             Display --indent 2 --text "- Checking for available kernel update" --result GRSEC --color GREEN
-                            LogText "Result: Grsecurity is installed; unable to determine if there's a newer kernel available"
+                            LogText "结果：已安装 Grsecurity，无法确定是否有更新的内核"
                             ReportManual "Manually check to confirm you're using a recent kernel and grsecurity patch"
                         else
                             Display --indent 2 --text "- Checking for available kernel update" --result "${STATUS_OK}" --color GREEN
@@ -427,13 +427,13 @@
                         fi
                     else
                         Display --indent 2 --text "- Checking for available kernel update" --result "UPDATE AVAILABLE" --color YELLOW
-                        LogText "Result: kernel update available according 'apt-cache policy'."
+                        LogText "结果：根据 'apt-cache policy'，有可用的内核更新。"
                         ReportSuggestion "${TEST_NO}" "Determine priority for available kernel update"
                     fi
                 fi
             fi
         else
-            LogText "Result: could NOT find ${ROOTDIR}usr/bin/apt-cache, skipped other tests."
+            LogText "结果：找不到 ${ROOTDIR}usr/bin/apt-cache，跳过其他检查。"
         fi
         unset FINDCANDIDATE FINDINSTALLED FINDKERNEL HAS_VMLINUZ
     fi
@@ -449,7 +449,7 @@
         # systemd option
         if [ $HAS_SYSTEMD -eq 1 ]; then
             LogText "Result: systemd is present on this system"
-            LogText "Test: Checking if core dumps are disabled in ${ROOTDIR}etc/systemd/coredump.conf and ${ROOTDIR}etc/systemd/coredump.conf.d/*.conf"
+            LogText "检查：确认 ${ROOTDIR}etc/systemd/coredump.conf 和 ${ROOTDIR}etc/systemd/coredump.conf.d/*.conf 中是否禁用了核心转储"
             # check likely main config file for systemd: ${ROOTDIR}etc/systemd/coredump.conf for ProcessSizeMax=0 and Storage=none
             SYSD_CORED_BASE_PROCSIZEMAX_NR_DISABLED=$(${GREPBINARY} -v "^ *#" ${ROOTDIR}etc/systemd/coredump.conf 2> /dev/null | ${SEDBINARY} 's/^ *//g' | ${GREPBINARY} -i "^ProcessSizeMax=" | ${CUTBINARY} -d'=' -f2 | ${SEDBINARY} 's/ .*$//g ; s/\([A-Z][a-z]*\)*$//g' | ${GREPBINARY} "^0 *$" | ${WCBINARY} -l)
             SYSD_CORED_BASE_PROCSIZEMAX_NR_ENABLED=$(${GREPBINARY} -v "^ *#" ${ROOTDIR}etc/systemd/coredump.conf 2> /dev/null | ${SEDBINARY} 's/^ *//g' | ${GREPBINARY} -i "^ProcessSizeMax=" | ${CUTBINARY} -d'=' -f2 | ${SEDBINARY} 's/ .*$//g ; s/\([A-Z][a-z]*\)*$//g' | ${GREPBINARY} -v "^0 *$" | ${WCBINARY} -l)
@@ -468,17 +468,17 @@
                ( [ ${SYSD_CORED_BASE_PROCSIZEMAX_NR_DISABLED} -ge 1 ] && [ ${SYSD_CORED_SUB_STORAGE_NR_DISABLED} -ge 1 ] && [ ${SYSD_CORED_SUB_PROCSIZEMAX_NR_ENABLED} -eq 0 ] && [ ${SYSD_CORED_SUB_STORAGE_NR_ENABLED} -eq 0 ] ) || \
                ( [ ${SYSD_CORED_BASE_STORAGE_NR_DISABLED} -ge 1 ] && [ ${SYSD_CORED_SUB_PROCSIZEMAX_NR_DISABLED} -ge 1 ] && [ ${SYSD_CORED_SUB_PROCSIZEMAX_NR_ENABLED} -eq 0 ] && [ ${SYSD_CORED_SUB_STORAGE_NR_ENABLED} -eq 0 ] ) || \
                ( [ ${SYSD_CORED_SUB_PROCSIZEMAX_NR_DISABLED} -ge 1 ] && [ ${SYSD_CORED_SUB_STORAGE_NR_DISABLED} -ge 1 ] && [ ${SYSD_CORED_SUB_PROCSIZEMAX_NR_ENABLED} -eq 0 ] && [ ${SYSD_CORED_SUB_STORAGE_NR_ENABLED} -eq 0 ] ); then
-                LogText "Result: core dumps are disabled by 'ProcessSizeMax=0' and 'Storage=none' in systemd configuration files"
+                LogText "结果：systemd 配置文件中的 'ProcessSizeMax=0' 和 'Storage=none' 已禁用核心转储"
                 AddHP 1 1
                 TMP_COLOR="GREEN"
                 if [ ${SYSD_CORED_BASE_PROCSIZEMAX_NR_DISABLED} -gt 1 ] || [ ${SYSD_CORED_BASE_STORAGE_NR_DISABLED} -gt 1 ] || [ ${SYSD_CORED_SUB_PROCSIZEMAX_NR_DISABLED} -gt 1 ] || [ ${SYSD_CORED_SUB_STORAGE_NR_DISABLED} -gt 1 ]; then
-                    LogText "Result: 'ProcessSizeMax=0' and 'Storage=none' are set multiple times in systemd configuration files. Check config!"
+                    LogText "结果：systemd 配置文件中多次设置了 'ProcessSizeMax=0' 和 'Storage=none'，请检查配置！"
                     ReportSuggestion "${TEST_NO}" "Check systemd configuration for duplicate entries of core dump settings"
                     TMP_COLOR="YELLOW"
                 fi
                 Display --indent 4 --text "- configuration in systemd conf files" --result "${STATUS_DISABLED}" --color "${TMP_COLOR}"
             elif [ ${SYSD_CORED_BASE_PROCSIZEMAX_NR_DISABLED} -ge 1 ] && [ ${SYSD_CORED_BASE_STORAGE_NR_DISABLED} -ge 1 ] && ( [ ${SYSD_CORED_SUB_PROCSIZEMAX_NR_ENABLED} -ge 1 ] || [ ${SYSD_CORED_SUB_STORAGE_NR_ENABLED} -ge 1 ] ); then
-                LogText "Result: 'ProcessSizeMax=0' and 'Storage=none' are set in ${ROOTDIR}etc/systemd/coredump.conf but overwritten in subdir config files"
+                LogText "结果：${ROOTDIR}etc/systemd/coredump.conf 中设置了 'ProcessSizeMax=0' 和 'Storage=none'，但被子目录中的配置文件覆盖"
                 ReportSuggestion "${TEST_NO}" "Check systemd configuration for overwriting core dump settings"
                 Display --indent 4 --text "- configuration in systemd conf files" --result "${STATUS_ENABLED}" --color YELLOW
                 AddHP 0 1
@@ -487,11 +487,11 @@
                  ( [ ${SYSD_CORED_BASE_STORAGE_NR_ENABLED} -ge 1 ] && [ ${SYSD_CORED_SUB_PROCSIZEMAX_NR_ENABLED} -ge 1 ] ) || \
                  ( [ ${SYSD_CORED_SUB_PROCSIZEMAX_NR_ENABLED} -ge 1 ] && [ ${SYSD_CORED_SUB_STORAGE_NR_ENABLED} -ge 1 ] ); then
                 LogText "Result: core dumps are explicitly enabled in systemd configuration files"
-                ReportSuggestion "${TEST_NO}" "If not required, consider explicit disabling of core dump in ${ROOTDIR}etc/systemd/coredump.conf ('ProcessSizeMax=0', 'Storage=none')"
+                ReportSuggestion "${TEST_NO}" "如非必要，建议在 ${ROOTDIR}etc/systemd/coredump.conf 中明确禁用核心转储（'ProcessSizeMax=0'、'Storage=none'）"
                 Display --indent 4 --text "- configuration in systemd conf files" --result "${STATUS_ENABLED}" --color RED
                 AddHP 0 1
             else
-                LogText "Result: core dumps are not disabled in systemd configuration. Didn't find settings 'ProcessSizeMax=0' and 'Storage=none'"
+                LogText "结果：systemd 配置中未禁用核心转储，未找到 'ProcessSizeMax=0' 和 'Storage=none' 设置"
                 Display --indent 4 --text "- configuration in systemd conf files" --result "${STATUS_DEFAULT}" --color WHITE
                 AddHP 0 1
             fi
@@ -499,24 +499,24 @@
         # Profile option
         LogText "Test: Checking presence ${ROOTDIR}etc/profile"
         if [ -f "${ROOTDIR}etc/profile" ]; then
-            LogText "Test: Checking if 'ulimit -c 0' exists in ${ROOTDIR}etc/profile or ${ROOTDIR}etc/profile.d/*.sh"
+            LogText "检查：确认 ${ROOTDIR}etc/profile 或 ${ROOTDIR}etc/profile.d/*.sh 中是否存在 'ulimit -c 0'"
             # use tail -1 in the following commands to get the last entry, which is the one that counts (in case of profile.d/ probably counts)
             ULIMIT_C_VALUE="$(${GREPBINARY} "ulimit -H\?c " ${ROOTDIR}etc/profile 2> /dev/null | ${SEDBINARY} 's/^ *//g' | ${GREPBINARY} -v "^#" | ${TAILBINARY} -1 | ${CUTBINARY} -d' ' -f3 | ${SEDBINARY} 's/ .*$//g ; s/\([A-Z][a-z]*\)*$//g')"
             ULIMIT_C_VALUE_SUB="$(${FINDBINARY} -L ${ROOTDIR}etc/profile.d -name "*.sh" -type f -exec ${CAT_BINARY} {} \; 2> /dev/null | ${GREPBINARY} "ulimit -H\?c " | ${SEDBINARY} 's/^ *//g' | ${GREPBINARY} -v "^#" | ${TAILBINARY} -1 | ${CUTBINARY} -d' ' -f3 | ${SEDBINARY} 's/ .*$//g ; s/\([A-Z][a-z]*\)*$//g')"
             if ( [ -n "${ULIMIT_C_VALUE_SUB}" ] && [ "${ULIMIT_C_VALUE_SUB}" = "0" ] ) || ( [ -n "${ULIMIT_C_VALUE}" ] && [ -z "${ULIMIT_C_VALUE_SUB}" ] && [ "${ULIMIT_C_VALUE}" = "0" ] ); then
-                LogText "Result: core dumps are disabled by 'ulimit -c 0' in ${ROOTDIR}etc/profile or ${ROOTDIR}etc/profile.d/*.sh"
+                LogText "结果：${ROOTDIR}etc/profile 或 ${ROOTDIR}etc/profile.d/*.sh 中的 'ulimit -c 0' 已禁用核心转储"
                 Display --indent 4 --text "- configuration in etc/profile" --result "${STATUS_DISABLED}" --color GREEN
                 AddHP 1 1
             elif [ -z "${ULIMIT_C_VALUE_SUB}" ] && [ -z "${ULIMIT_C_VALUE}" ]; then
-                LogText "Result: core dumps are not disabled in ${ROOTDIR}etc/profile or ${ROOTDIR}etc/profile.d/*.sh config files. Didn't find setting 'ulimit -c 0'"
+                LogText "结果：${ROOTDIR}etc/profile 或 ${ROOTDIR}etc/profile.d/*.sh 中未禁用核心转储，未找到 'ulimit -c 0' 设置"
                 Display --indent 4 --text "- configuration in ${ROOTDIR}etc/profile" --result "${STATUS_DEFAULT}" --color WHITE
                 AddHP 0 1
             elif ( [ -n "${ULIMIT_C_VALUE_SUB}" ] && ( [ "${ULIMIT_C_VALUE_SUB}" = "unlimited" ] || [ "${ULIMIT_C_VALUE_SUB}" != "0" ] ) ) || ( [ -n "${ULIMIT_C_VALUE}" ] && [ -z "${ULIMIT_C_VALUE_SUB}" ] && ( [ "${ULIMIT_C_VALUE}" = "unlimited" ] || [ "${ULIMIT_C_VALUE}" != "0" ] ) ); then
-                LogText "Result: core dumps are enabled in ${ROOTDIR}etc/profile or ${ROOTDIR}etc/profile.d/*.sh config files. A value higher than 0 is configured for 'ulimit -c'"
+                LogText "结果：${ROOTDIR}etc/profile 或 ${ROOTDIR}etc/profile.d/*.sh 中启用了核心转储，'ulimit -c' 配置值高于 0"
                 Display --indent 4 --text "- configuration in ${ROOTDIR}etc/profile" --result "${STATUS_ENABLED}" --color RED
                 AddHP 0 1
             else
-                LogText "Result: ERROR - something went wrong. Unexpected result during check of ${ROOTDIR}etc/profile and ${ROOTDIR}etc/profile.d/*.sh config files. Please report on Github!"
+                LogText "结果：错误——检查 ${ROOTDIR}etc/profile 和 ${ROOTDIR}etc/profile.d/*.sh 配置文件时得到异常结果，请在 GitHub 报告！"
                 Display --indent 4 --text "- configuration in ${ROOTDIR}etc/profile" --result "${STATUS_ERROR}" --color YELLOW
             fi
         fi
@@ -526,7 +526,7 @@
             LogText "Test: Checking presence ${DIR}etc/security/limits.conf"
             if [ -f "${DIR}etc/security/limits.conf" ]; then
                 LogText "Result: file ${DIR}etc/security/limits.conf exists"
-                LogText "Test: Checking if core dumps are disabled in ${DIR}etc/security/limits.conf and ${LIMITS_DIRECTORY}/*"
+                LogText "检查：确认 ${DIR}etc/security/limits.conf 和 ${LIMITS_DIRECTORY}/* 中是否禁用了核心转储"
                 # using find instead of grep -r to stay POSIX compliant. On AIX and HPUX grep -r is not available.
                 FIND1=$(${FINDBINARY} -L "${DIR}etc/security/limits.conf" "${LIMITS_DIRECTORY}" -type f -exec ${CAT_BINARY} {} \; 2> /dev/null | ${GREPBINARY} -v "^$" | ${AWKBINARY} '{ if ($1=="*" && $2=="soft" && $3=="core" && $4=="0") { print "soft core disabled" } else if ($1=="*" && $2=="soft" && $3=="core" && $4!="0") { print "soft core enabled" } }' | ${TAILBINARY} -1)
                 FIND2=$(${FINDBINARY} -L "${DIR}etc/security/limits.conf" "${LIMITS_DIRECTORY}" -type f -exec ${CAT_BINARY} {} \; 2> /dev/null | ${GREPBINARY} -v "^$" | ${AWKBINARY} '{ if ($1=="*" && $2=="hard" && $3=="core" && $4=="0") { print "hard core disabled" } else if ($1=="*" && $2=="hard" && $3=="core" && $4!="0") { print "hard core enabled" } }' | ${TAILBINARY} -1)
@@ -546,38 +546,38 @@
 
                 if [ "${FIND2}" = "hard core disabled" ]; then
                     LogText "Result: core dumps are hard disabled"
-                    Display --indent 4 --text "- 'hard' configuration in ${DIR}etc/security/limits.conf" --result "${IS_HARDCORE_DISABLED}" --color "GREEN"
+                    Display --indent 4 --text "- ${DIR}etc/security/limits.conf 中的 'hard' 配置" --result "${IS_HARDCORE_DISABLED}" --color "GREEN"
                     if [ "${FIND1}" = "soft core disabled" ]; then
-                        Display --indent 4 --text "- 'soft' configuration in ${DIR}etc/security/limits.conf" --result "${IS_SOFTCORE_DISABLED}" --color "GREEN"
+                        Display --indent 4 --text "- ${DIR}etc/security/limits.conf 中的 'soft' 配置" --result "${IS_SOFTCORE_DISABLED}" --color "GREEN"
                     else
-                        Display --indent 4 --text "- 'soft' config in ${DIR}etc/security/limits.conf (implicit)" --result "${STATUS_DISABLED}" --color "GREEN"
+                        Display --indent 4 --text "- ${DIR}etc/security/limits.conf 中的 'soft' 配置（隐式）" --result "${STATUS_DISABLED}" --color "GREEN"
                     fi
                     AddHP 3 3
                 elif [ "${FIND1}" = "soft core enabled" ] && [ "${FIND2}" = "hard core enabled" ]; then
                     LogText "Result: core dumps (soft and hard) are enabled"
-                    Display --indent 4 --text "- 'hard' configuration in ${DIR}etc/security/limits.conf" --result "${STATUS_ENABLED}" --color "RED"
-                    Display --indent 4 --text "- 'soft' configuration in ${DIR}etc/security/limits.conf" --result "${STATUS_ENABLED}" --color "RED"
-                    ReportSuggestion "${TEST_NO}" "If not required, consider explicit disabling of core dump in /etc/security/limits.conf file"
+                    Display --indent 4 --text "- ${DIR}etc/security/limits.conf 中的 'hard' 配置" --result "${STATUS_ENABLED}" --color "RED"
+                    Display --indent 4 --text "- ${DIR}etc/security/limits.conf 中的 'soft' 配置" --result "${STATUS_ENABLED}" --color "RED"
+                    ReportSuggestion "${TEST_NO}" "如非必要，建议在 /etc/security/limits.conf 中明确禁用核心转储"
                     AddHP 0 3
                 elif [ "${FIND1}" = "soft core disabled" ]; then
-                    LogText "Result: core dumps are disabled for 'soft' ('hard'=${IS_HARDCORE_DISABLED})"
-                    Display --indent 4 --text "- 'hard' configuration in ${DIR}etc/security/limits.conf" --result "${IS_HARDCORE_DISABLED}" --color "$(if [ "${IS_HARDCORE_DISABLED}" = "ENABLED" ]; then ${ECHOCMD} RED; elif [ "${IS_HARDCORE_DISABLED}" = "DISABLED" ]; then ${ECHOCMD} GREEN; else ${ECHOCMD} WHITE; fi)"
-                    Display --indent 4 --text "- 'soft' configuration in ${DIR}etc/security/limits.conf" --result "${IS_SOFTCORE_DISABLED}" --color "GREEN"
+                    LogText "结果：已对 'soft' 禁用核心转储（'hard'=${IS_HARDCORE_DISABLED}）"
+                    Display --indent 4 --text "- ${DIR}etc/security/limits.conf 中的 'hard' 配置" --result "${IS_HARDCORE_DISABLED}" --color "$(if [ "${IS_HARDCORE_DISABLED}" = "ENABLED" ]; then ${ECHOCMD} RED; elif [ "${IS_HARDCORE_DISABLED}" = "DISABLED" ]; then ${ECHOCMD} GREEN; else ${ECHOCMD} WHITE; fi)"
+                    Display --indent 4 --text "- ${DIR}etc/security/limits.conf 中的 'soft' 配置" --result "${IS_SOFTCORE_DISABLED}" --color "GREEN"
                     AddHP 2 3
                 elif [ "${FIND1}" = "soft core enabled" ] || [ "${FIND2}" = "hard core enabled" ]; then
-                    LogText "Result: core dumps are partially enabled ('hard'=${IS_HARDCORE_DISABLED}, 'soft'=${IS_SOFTCORE_DISABLED})"
-                    Display --indent 4 --text "- 'hard' configuration in ${DIR}etc/security/limits.conf" --result "${IS_HARDCORE_DISABLED}" --color "$(if [ "${IS_HARDCORE_DISABLED}" = "ENABLED" ]; then ${ECHOCMD} RED; elif [ "${IS_HARDCORE_DISABLED}" = "DISABLED" ]; then ${ECHOCMD} GREEN; else ${ECHOCMD} WHITE; fi)"
-                    Display --indent 4 --text "- 'soft' configuration in ${DIR}etc/security/limits.conf" --result "${IS_SOFTCORE_DISABLED}" --color "$(if [ "${IS_SOFTCORE_DISABLED}" = "ENABLED" ]; then ${ECHOCMD} RED; elif [ "${IS_SOFTCORE_DISABLED}" = "DISABLED" ]; then ${ECHOCMD} GREEN; else ${ECHOCMD} WHITE; fi)"
+                    LogText "结果：核心转储部分启用（'hard'=${IS_HARDCORE_DISABLED}，'soft'=${IS_SOFTCORE_DISABLED}）"
+                    Display --indent 4 --text "- ${DIR}etc/security/limits.conf 中的 'hard' 配置" --result "${IS_HARDCORE_DISABLED}" --color "$(if [ "${IS_HARDCORE_DISABLED}" = "ENABLED" ]; then ${ECHOCMD} RED; elif [ "${IS_HARDCORE_DISABLED}" = "DISABLED" ]; then ${ECHOCMD} GREEN; else ${ECHOCMD} WHITE; fi)"
+                    Display --indent 4 --text "- ${DIR}etc/security/limits.conf 中的 'soft' 配置" --result "${IS_SOFTCORE_DISABLED}" --color "$(if [ "${IS_SOFTCORE_DISABLED}" = "ENABLED" ]; then ${ECHOCMD} RED; elif [ "${IS_SOFTCORE_DISABLED}" = "DISABLED" ]; then ${ECHOCMD} GREEN; else ${ECHOCMD} WHITE; fi)"
                     AddHP 0 3
                 else
                     LogText "Result: core dumps are not explicitly disabled"
-                    Display --indent 4 --text "- 'hard' configuration in ${DIR}etc/security/limits.conf" --result "${IS_HARDCORE_DISABLED}" --color "WHITE"
-                    Display --indent 4 --text "- 'soft' configuration in ${DIR}etc/security/limits.conf" --result "${IS_HARDCORE_DISABLED}" --color "WHITE"
-                    ReportSuggestion "${TEST_NO}" "If not required, consider explicit disabling of core dump in ${DIR}etc/security/limits.conf file"
+                    Display --indent 4 --text "- ${DIR}etc/security/limits.conf 中的 'hard' 配置" --result "${IS_HARDCORE_DISABLED}" --color "WHITE"
+                    Display --indent 4 --text "- ${DIR}etc/security/limits.conf 中的 'soft' 配置" --result "${IS_HARDCORE_DISABLED}" --color "WHITE"
+                    ReportSuggestion "${TEST_NO}" "如非必要，建议在 ${DIR}etc/security/limits.conf 中明确禁用核心转储"
                     AddHP 1 3
                 fi
             else
-                LogText "Result: file ${DIR}etc/security/limits.conf does not exist, skipping test for this file"
+                LogText "结果：文件 ${DIR}etc/security/limits.conf 不存在，跳过该文件的检查"
             fi
         done
 
@@ -590,18 +590,18 @@
             LogText "Result: value ${FIND} found"
         fi
         if [ "${FIND}" = "2" ]; then
-            LogText "Result: programs can dump core dump, but only readable by root (value 2, for debugging with file protection)"
+            LogText "结果：程序可以生成核心转储，但仅 root 可读取（值 2，用于带文件保护的调试）"
             Display --indent 4 --text "- Checking setuid core dumps configuration" --result "${STATUS_PROTECTED}" --color WHITE
             AddHP 1 1
         elif [ "${FIND}" = "1" ]; then
-            LogText "Result: all programs can perform core dumps (value 1, for debugging)"
+            LogText "结果：所有程序都可以生成核心转储（值 1，用于调试）"
             Display --indent 2 --text "- Checking setuid core dumps configuration" --result "${STATUS_DEBUG}" --color YELLOW
             ReportSuggestion "${TEST_NO}" "Determine if all binaries need to be able to core dump"
             AddHP 0 1
         else
             # 0 - (default) - traditional behaviour. Any process which has changed privilege levels or is execute only will not be dumped
             # https://www.kernel.org/doc/Documentation/sysctl/fs.txt
-            LogText "Result: found default option (0), no execute only program or program with changed privilege levels can dump"
+            LogText "结果：发现默认选项（0），仅执行程序或权限级别发生变化的程序无法生成核心转储"
             Display --indent 4 --text "- Checking setuid core dumps configuration" --result "${STATUS_DISABLED}" --color GREEN
             AddHP 1 1
         fi
@@ -626,7 +626,7 @@
                     break
                 else
                     PKGSCOUNT=$(${WCBINARY} -l < ${FILE})
-                    LogText "Result: reboot is needed, related to ${PKGSCOUNT} packages"
+                    LogText "结果：需要重启，涉及 ${PKGSCOUNT} 个软件包"
                     for I in ${FIND}; do
                         LogText "Package: ${I}"
                     done
@@ -640,7 +640,7 @@
 
         # Check if /boot exists
         if [ -d "${ROOTDIR}boot" ]; then
-            LogText "Result: /boot exists, performing more tests from here"
+            LogText "结果：/boot 存在，将继续执行更多检查"
             FIND=$(${LSBINARY} ${ROOTDIR}boot/* 2> /dev/null)
             if [ -n "${FIND}" ]; then
                 if [ -f ${ROOTDIR}boot/vmlinuz -a ! -L ${ROOTDIR}boot/vmlinuz ]; then
@@ -659,11 +659,11 @@
                     if [ -n "${FINDVERSION}" ]; then
                         CURRENT_KERNEL=$(uname -r)
                         if [ ! "${CURRENT_KERNEL}" = "${FINDVERSION}" ]; then
-                            LogText "Result: reboot needed, as current kernel is different than the one loaded"
+                            LogText "结果：当前内核与已加载内核不同，需要重启"
                             REBOOT_NEEDED=1
                         fi
                     else
-                        ReportException "${TEST_NO}:1" "Can't determine kernel version on disk, need debug data"
+                        ReportException "${TEST_NO}:1" "无法确定磁盘上的内核版本，需要调试数据"
                     fi
                 elif [ -f ${ROOTDIR}boot/vmlinuz-linux ] || [ -f ${ROOTDIR}boot/vmlinuz-linux-lts ] || [ -f "$(${LSBINARY} -t ${ROOTDIR}boot/vm[l0-9]* 2> /dev/null | ${HEADBINARY} -1)" ]; then
                     if [ -f ${ROOTDIR}boot/vmlinuz ]; then
@@ -687,14 +687,14 @@
 
                     VERSION_ON_DISK=""
                     if [ -L "${FOUND_VMLINUZ}" ]; then
-                        LogText "Result: found a symlink, retrieving destination"
+                        LogText "结果：发现符号链接，正在获取目标路径"
                         FOUND_VMLINUZ=$(readlink "${FOUND_VMLINUZ}")
                         LogText "Result: destination file is ${FOUND_VMLINUZ}"
                         VERSION_ON_DISK=$(echo ${FOUND_VMLINUZ} | ${SEDBINARY} 's#^/boot/##' | ${SEDBINARY} 's/^vmlinuz-//')
-                        LogText "Result: version derived from file name is '${VERSION_ON_DISK}'"
+                        LogText "结果：从文件名推导出的版本为 '${VERSION_ON_DISK}'"
                     elif [ -f "${FOUND_VMLINUZ}" ]; then
                         VERSION_ON_DISK=$(echo ${FOUND_VMLINUZ} | ${SEDBINARY} 's#^/boot/##' | ${SEDBINARY} 's/^vmlinuz-//' | ${SEDBINARY} '$s/-\?\(linux\)\?-\?\(lts\)\?//')
-                        LogText "Result: version derived from file name is '${VERSION_ON_DISK}'"
+                        LogText "结果：从文件名推导出的版本为 '${VERSION_ON_DISK}'"
 
                     fi
 
@@ -733,17 +733,17 @@
                         LogText "Result: active kernel version ${ACTIVE_KERNEL}"
                         if [ "${VERSION_ON_DISK}" = "${ACTIVE_KERNEL}" ]; then
                             REBOOT_NEEDED=0
-                            LogText "Result: no reboot needed, active kernel is the same version as the one on disk"
+                            LogText "结果：活动内核与磁盘上的版本相同，无需重启"
                         else
                             REBOOT_NEEDED=1
-                            LogText "Result: reboot needed, as there is a difference between active kernel and the one on disk"
+                            LogText "结果：活动内核与磁盘上的版本不同，需要重启"
                         fi
                     fi
                 else
                     if [ -L ${ROOTDIR}boot/vmlinuz ]; then
-                        LogText "Result: found symlink of ${ROOTDIR}boot/vmlinuz, skipping file"
+                        LogText "结果：发现 ${ROOTDIR}boot/vmlinuz 是符号链接，跳过该文件"
                     else
-                        LogText "Result: ${ROOTDIR}boot/vmlinuz not on disk, trying to find ${ROOTDIR}boot/vmlinuz*"
+                        LogText "结果：磁盘上没有 ${ROOTDIR}boot/vmlinuz，尝试查找 ${ROOTDIR}boot/vmlinuz*"
                     fi
                     # Extra current kernel version and replace dashes to allow numeric ${SORTBINARY} later on
                     MYKERNEL=$(${UNAMEBINARY} -r | ${SEDBINARY} 's/\.[a-z].*.//g' | ${SEDBINARY} 's/-[a-z].*.//g' | ${SEDBINARY} 's/-/./g')
@@ -768,7 +768,7 @@
                         KERNELS=$(${LSBINARY} ${ROOTDIR}boot/kernel* | ${AWKBINARY} -F- '{ if ($2=="genkernel") { print $4 }}' | ${GREPBINARY} "^[0-9]" | ${SORTBINARY} -n -k1,1 -k2,2 -k3,3 -k4,4 -k5,5 -k6,6 -t \.)
                         if [ -n "${KERNELS}" ]; then LogText "Output: ${KERNELS}"; fi
                     else
-                        ReportException "${TEST_NO}:2" "Can not find any vmlinuz or kernel files in /boot, which is unexpected"
+                        ReportException "${TEST_NO}:2" "在 /boot 中找不到任何 vmlinuz 或内核文件，情况异常"
                     fi
                     if [ -n "${KERNELS}" ]; then
                         FOUND_KERNEL=0
@@ -787,11 +787,11 @@
                         done
                         # Check if we at least found the kernel on disk
                         if [ ${FOUND_KERNEL} -eq 0 ]; then
-                            ReportException "${TEST_NO}:3" "Could not find our running kernel on disk, which is unexpected"
+                            ReportException "${TEST_NO}:3" "在磁盘上找不到当前运行的内核，情况异常"
                         else
                             # If we are not sure yet reboot it needed, but we found running kernel as last one on disk, we run latest kernel
                             if [ ${REBOOT_NEEDED} -eq 2 ]; then
-                                LogText "Result: found the running kernel on disk being the last entry, so it looks up-to-date"
+                                LogText "结果：磁盘上当前运行的内核是最后一个条目，看起来已是最新版本"
                                 REBOOT_NEEDED=0
                             fi
                         fi
@@ -799,7 +799,7 @@
                 fi
             # No files in /boot
             else
-                LogText "Result: Skipping this test, as there are no files in /boot"
+                LogText "结果：/boot 中没有文件，跳过此检查"
             fi
         else
             LogText "Result: /boot does not exist or not privileged to read files"
@@ -811,7 +811,7 @@
         # Of course there can be a time difference between kernel build and kernel packaging, therefore a time difference of
         # 3 days is accepted and it is assumed with only 3 days apart, this must be the same kernel version.
         if [ ${REBOOT_NEEDED} -eq 2 ] && [ -d "${APT_ARCHIVE_DIRECTORY}" ]; then
-            LogText "Result: found folder ${APT_ARCHIVE_DIRECTORY}; assuming this is a debian based distribution"
+            LogText "结果：发现目录 ${APT_ARCHIVE_DIRECTORY}，假定这是基于 Debian 的发行版"
             LogText "Check: try to find raspberrypi-kernel file in ${APT_ARCHIVE_DIRECTORY} and extract package date from file name"
 
             FOUND_KERNEL_DATE=$(${FINDBINARY} ${APT_ARCHIVE_DIRECTORY} -name "raspberrypi-kernel*" -printf "%T@ %Tc %p\n" 2> /dev/null \
@@ -820,19 +820,19 @@
             if [ -n "${FOUND_KERNEL_DATE}" ]; then
                 FOUND_KERNEL_IN_SECONDS=$(date -d "${FOUND_KERNEL_DATE}" "+%s" 2> /dev/null)
             else
-                LogText "Result: Skipping this test, as there was no package date to extract"
+                LogText "结果：没有可提取的软件包日期，跳过此检查"
             fi
 
             if [ -n "${FOUND_KERNEL_IN_SECONDS}" ] && [ ${FOUND_KERNEL_IN_SECONDS} -gt 1 ]; then
                 LogText "Result: Got package date: ${FOUND_KERNEL_DATE} (= ${FOUND_KERNEL_IN_SECONDS} seconds)"
                 UNAME_OUTPUT="$(${UNAMEBINARY} -v 2> /dev/null)"
             else
-                LogText "Result: Skipping this test, as extracting the seconds of package date failed"
+                LogText "结果：无法提取软件包日期的秒数，跳过此检查"
             fi
 
             if [ -n "${UNAME_OUTPUT}" ]; then
-                LogText "Result: Got an output from 'uname -v'"
-                LogText "Check: Trying to extract kernel build date from 'uname -v' output"
+                LogText "结果：从 'uname -v' 获取到输出"
+                LogText "检查：尝试从 'uname -v' 输出中提取内核构建日期"
                 next=""
                 for part in ${UNAME_OUTPUT}; do
                     if [ -z "$next" ]; then
@@ -865,7 +865,7 @@
                     UNAME_DATE_IN_SECONDS=$(date -d "${UNAME_DATE_DAY} ${UNAME_DATE_MONTH} ${UNAME_DATE_YEAR}" "+%s" 2> /dev/null)
                     LogText "Check: Comparing kernel build date in seconds (${UNAME_DATE_IN_SECONDS}s) with package date in seconds (${FOUND_KERNEL_IN_SECONDS}s)"
                     if [ -n "${UNAME_DATE_IN_SECONDS}" ] && [ ${FOUND_KERNEL_IN_SECONDS} -ge ${UNAME_DATE_IN_SECONDS} ]; then
-                        LogText "Result: package creation date is older than running kernel. Hence, this check should be valid."
+                        LogText "结果：软件包创建日期早于运行中的内核，因此此检查应有效。"
                         LogText "Check if package create date and kernel build date are not more than 3 days apart."
 
                         SECONDS_APART=$(( ${FOUND_KERNEL_IN_SECONDS} - ${UNAME_DATE_IN_SECONDS} ))
@@ -892,13 +892,13 @@
                             REBOOT_NEEDED=1
                         fi
                     else
-                        LogText "Result: Package's create date is older than running kernel, which is unexpected. Might not be a valid test. Skipping..."
+                        LogText "结果：软件包创建日期早于运行中的内核，情况异常，此检查可能无效，正在跳过……"
                     fi
                 else
-                    LogText "Result: Could not extract Day, Month and Year from 'uname -v' output"
+                    LogText "结果：无法从 'uname -v' 输出中提取日、月和年"
                 fi
             else
-                LogText "Result: Did not get output from 'uname -v'. Skipping test."
+                LogText "结果：未从 'uname -v' 获取输出，跳过检查。"
             fi
 
         else

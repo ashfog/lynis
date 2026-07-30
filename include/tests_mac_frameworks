@@ -37,7 +37,7 @@
             Display --indent 2 --text "- Checking presence AppArmor" --result "${STATUS_NOT_FOUND}" --color WHITE
         else
             APPARMORFOUND=1
-            LogText "Result: aa-status binary found, AppArmor is installed"
+            LogText "结果：发现 aa-status 程序，已安装 AppArmor"
             Display --indent 2 --text "- Checking presence AppArmor" --result "${STATUS_FOUND}" --color GREEN
         fi
     fi
@@ -81,13 +81,13 @@
                         LogText "Result: Unconfined process: ${PROCESS}"
                     done
                 elif [ $? -eq 4 ]; then
-                    LogText "Result: Can not determine status, most likely due to lacking permissions"
+                    LogText "结果：无法确定状态，很可能是权限不足"
                     Display --indent 4 --text "- Checking AppArmor status" --result "${STATUS_UNKNOWN}" --color RED
                 elif [ $? -eq 3 ]; then
                     LogText "Result: Can not check control files"
                     Display --indent 4 --text "- Checking AppArmor status" --result "${STATUS_UNKNOWN}" --color RED
                 elif [ $? -eq 2 ]; then
-                    LogText "Result: AppArmor is enabled, but no policy is loaded"
+                    LogText "结果：AppArmor 已启用，但未加载策略"
                     ReportSuggestion "${TEST_NO}" "Load AppArmor policies"
                     Display --indent 4 --text "- Checking AppArmor status" --result "NON-ACTIVE" --color GREEN
                     Report "apparmor_enabled=1"
@@ -153,7 +153,7 @@
                 Display --indent 6 --text "- Checking current mode and config file" --result "${STATUS_OK}" --color GREEN
             else
                 LogText "Result: Current SELinux mode (${FIND}) is NOT the same as in config file (${FIND2})."
-                ReportWarning "${TEST_NO}" "Current SELinux mode is different from config file (current: ${FIND}, config file: ${FIND2})"
+                ReportWarning "${TEST_NO}" "当前 SELinux 模式与配置文件不同（当前：${FIND}，配置文件：${FIND2}）"
                 Display --indent 6 --text "- Checking current mode and config file" --result "${STATUS_WARNING}" --color RED
             fi
             Display --indent 8 --text "Current SELinux mode: ${FIND}"
@@ -163,7 +163,7 @@
                 Display --indent 8 --text "Found ${NPERMISSIVE} permissive SELinux object types"
                 LogText "Permissive SELinux object types: ${PERMISSIVE}"
             else
-                LogText "Result: semanage binary NOT found, can't analyse permissive domains"
+                LogText "结果：未找到 semanage 程序，无法分析宽容域"
             fi
             UNCONFINED=$(${PSBINARY} -eo label,pid,command | ${GREPBINARY} '[u]nconfined_t' | ${TRBINARY} '\n' ' ')
             INITRC=$(${PSBINARY} -eo label,pid,command | ${GREPBINARY} '[i]nitrc_t' | ${TRBINARY} '\n' ' ')

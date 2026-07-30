@@ -280,7 +280,7 @@
 
             if IsRunning "pflogd"; then
                 LogText "结果：在进程列表中发现 pflog 守护进程"
-                Display --indent 4 --text "- 正在检查 pflogd 状态" --result "ACTIVE" --color GREEN
+                Display --indent 4 --text "- 正在检查 pflogd 状态" --result "活跃" --color GREEN
                 PFFOUND=1
                 PFLOGDFOUND=1
             else

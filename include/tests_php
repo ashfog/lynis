@@ -249,10 +249,10 @@
             if [ -z "${FIND}" ]; then
                 LogText "Result: no files found for ${DIR}"
             else
-                LogText "Result: found files in location ${DIR}, checking"
+                LogText "结果：在位置 ${DIR} 中发现文件，正在检查"
                 for FILE in ${FIND}; do
                     if [ -f ${FILE} ]; then
-                        LogText "Result: file ${FILE} exists, adding to php.ini array"
+                        LogText "结果：文件 ${FILE} 存在，加入 php.ini 数组"
                         PHPINI_ALLFILES="${PHPINI_ALLFILES} ${FILE}"
                     fi
                 done
@@ -300,7 +300,7 @@
             LogText "Result: all PHP functions can be executed"
             Display --indent 4 --text "- Checking PHP disabled functions" --result "${STATUS_NONE}" --color YELLOW
             ReportSuggestion "${TEST_NO}" "Harden PHP by disabling risky functions"
-            LogText "Functions of interest to research/disable: chown, diskfreespace, disk_free_space, disk_total_space, dl, exec, escapeshellarg, escapeshellcmd, fileinode, highlight_file, max_execution_time, passthru, pclose, phpinfo, popen, proc_close, proc_open, proc_get_status, proc_nice, proc_open, proc_terminate, set_time_limit, shell_exec, show_source, system)"
+            LogText "建议评估或禁用的函数： chown, diskfreespace, disk_free_space, disk_total_space, dl, exec, escapeshellarg, escapeshellcmd, fileinode, highlight_file, max_execution_time, passthru, pclose, phpinfo, popen, proc_close, proc_open, proc_get_status, proc_nice, proc_open, proc_terminate, set_time_limit, shell_exec, show_source, system)"
             AddHP 0 1
         else
             LogText "Result: one or more PHP functions are disabled/blacklisted"
@@ -337,13 +337,13 @@
         FIND=$(${GREPBINARY} -E -i 'register_globals.*(on|yes|1)' ${PHPINIFILE} | ${GREPBINARY} -v '^;')
         if [ -n "${FIND}" ]; then
             Display --indent 4 --text "- Checking register_globals option" --result "${STATUS_WARNING}" --color RED
-            ReportWarning "${TEST_NO}" "PHP option register_globals option is turned on, which can be a risk for variable value overwriting"
+            ReportWarning "${TEST_NO}" "PHP 的 register_globals 选项已开启，可能存在变量值被覆盖的风险"
             ReportSuggestion "${TEST_NO}" "Change the register_globals line to: register_globals = Off"
-            LogText "Result: register_globals option is turned on, which can be a risk for variable value overwriting."
+            LogText "结果：register_globals 选项已开启，可能存在变量值被覆盖的风险。"
             AddHP 1 2
         else
             Display --indent 4 --text "- Checking register_globals option" --result "${STATUS_OK}" --color GREEN
-            LogText "Result: No 'register_globals' found. Most likely it is in disabled state (0, no, or off), which is the default nowadays and considered the safe value."
+            LogText "结果：未找到 'register_globals'，它很可能处于禁用状态（0、no 或 off），这是当前默认且较安全的值。"
             ReportManual ${TEST_NO}:01
             AddHP 2 2
         fi
@@ -382,7 +382,7 @@
             AddHP 1 3
         else
             Display --indent 4 --text "- Checking expose_php option" --result "${STATUS_OFF}" --color GREEN
-            LogText "Result: Found 'expose_php' in disabled state (0, no, or off)"
+            LogText "结果：发现 'expose_php' 处于禁用状态（0、no 或 off）"
             AddHP 2 2
         fi
     fi
@@ -400,11 +400,11 @@
         if [ -n "${FIND}" ]; then
             Display --indent 4 --text "- Checking enable_dl option" --result "${STATUS_ON}" --color YELLOW
             Report "Result: enable_dl option is turned on, which can be used to enable more modules dynamically and circumventing security controls"
-            ReportSuggestion "${TEST_NO}" "Change the enable_dl line to: enable_dl = Off, to disable dynamically loading new modules"
+            ReportSuggestion "${TEST_NO}" "将 enable_dl 行改为 enable_dl = Off，以禁用动态加载新模块"
             AddHP 0 1
         else
             Display --indent 4 --text "- Checking enable_dl option" --result "${STATUS_OFF}" --color GREEN
-            LogText "Result: Found 'enable_dl' in disabled state (not present, 0, no, or off)"
+            LogText "结果：发现 'enable_dl' 处于禁用状态（未配置、0、no 或 off）"
             AddHP 2 2
         fi
     fi
@@ -421,12 +421,12 @@
         FIND=$(${GREPBINARY} -E -i 'allow_url_fopen.*(off|no|0)' ${PHPINIFILE} | ${GREPBINARY} -v '^;')
         if [ -z "${FIND}" ]; then
             Display --indent 4 --text "- Checking allow_url_fopen option" --result "${STATUS_ON}" --color YELLOW
-            LogText "Result: allow_url_fopen option is turned on, which can be used for downloads via PHP and is a security risk"
-            ReportSuggestion "${TEST_NO}" "Change the allow_url_fopen line to: allow_url_fopen = Off, to disable downloads via PHP"
+            LogText "结果：allow_url_fopen 选项已开启，可通过 PHP 下载内容，存在安全风险"
+            ReportSuggestion "${TEST_NO}" "将 allow_url_fopen 行改为 allow_url_fopen = Off，以禁用通过 PHP 下载内容"
             AddHP 0 1
         else
             Display --indent 4 --text "- Checking allow_url_fopen option" --result "${STATUS_OFF}" --color GREEN
-            LogText "Result: Found 'allow_url_fopen' in disabled state (0, no, or off)"
+            LogText "结果：发现 'allow_url_fopen' 处于禁用状态（0、no 或 off）"
             AddHP 2 2
         fi
         # TODO Check through all files
@@ -445,11 +445,11 @@
         if [ -z "${FIND}" ]; then
             Display --indent 4 --text "- Checking allow_url_include option" --result "${STATUS_ON}" --color YELLOW
             Report "Result: allow_url_include option is turned on, which can be used for downloads via PHP and is a risk"
-            ReportSuggestion "${TEST_NO}" "Change the allow_url_include line to: allow_url_include = Off, to disable downloads via PHP"
+            ReportSuggestion "${TEST_NO}" "将 allow_url_include 行改为 allow_url_include = Off，以禁用通过 PHP 包含远程内容"
             AddHP 0 1
         else
             Display --indent 4 --text "- Checking allow_url_include option" --result "${STATUS_OFF}" --color GREEN
-            LogText "Result: Found 'allow_url_include' in disabled state (0, no, or off)"
+            LogText "结果：发现 'allow_url_include' 处于禁用状态（0、no 或 off）"
             AddHP 2 2
         fi
     fi
@@ -552,7 +552,7 @@
             if HasData "${FIND}"; then
                 LogText "Result: found listen on just a port number"
                 LogText "Data: ${FIND}"
-                LogText "Note: when possible, limit access to just localhost, so it can't be accessed from outside"
+                LogText "注意：条件允许时，请将访问限制为仅 localhost，避免外部访问"
                 FOUND=1
             fi
         done

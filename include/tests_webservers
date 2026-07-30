@@ -99,7 +99,7 @@
         APACHE_TEST=$(${HTTPDBINARY} -V 2> /dev/null | ${GREPBINARY} "\-D SERVER_CONFIG_FILE=" | ${SEDBINARY} 's/[ ]-D SERVER_CONFIG_FILE=//' | ${TRBINARY} -d '"' | ${TRBINARY} -d ' ' | ${TRBINARY} -d '[:cntrl:]')
 
         if IsEmpty "${APACHE_TEST}"; then
-            LogText "Result: Can't find the configuration file, so skipping some Apache related tests"
+            LogText "结果：找不到配置文件，跳过部分 Apache 相关检查"
         else
             # We found a possible match. Checking if it's valid filename. If not, we need to add a prefix
             if [ -f ${APACHE_TEST} ]; then
@@ -115,9 +115,9 @@
                     LogText "Result: Configuration file found (${APACHE_CONFIGFILE})"
                 else
                     LogText "Result: File or directory ${APACHE_TESTFILE} does not exist"
-                    Display --indent 6 --text "[Notice] possible directory/file parts found, but still unsure what the real configuration file is. Skipping some Apache related tests"
+                    Display --indent 6 --text "[注意] 发现可能的目录或文件片段，但仍无法确定实际配置文件，跳过部分 Apache 相关检查"
                     ReportException "${TEST_NO}:1" "Found some unknown directory or file references in Apache configuration"
-                    LogText "Note: if only the Apache binary package has been installed, then the configuration might be missing. Is the Apache package really needed?"
+                    LogText "注意：如果只安装了 Apache 二进制软件包，配置文件可能缺失。请确认是否确实需要 Apache 软件包。"
                 fi
             fi
         fi
@@ -236,10 +236,10 @@
             fi
         done
         if [ ${COUNT} -eq 0 ]; then
-            Display --indent 4 --text "* Loadable modules" --result "${STATUS_NONE}" --color WHITE
+            Display --indent 4 --text "* 可加载模块" --result "${STATUS_NONE}" --color WHITE
             ReportException "${TEST_NO}:1" "No loadable Apache modules found"
         else
-            Display --indent 4 --text "* Loadable modules" --result "${STATUS_FOUND} (${COUNT})" --color GREEN
+            Display --indent 4 --text "* 可加载模块" --result "${STATUS_FOUND} (${COUNT})" --color GREEN
             Display --indent 8 --text "- Found ${COUNT} loadable modules"
         fi
     fi
@@ -314,7 +314,7 @@
 
         # Check all Apache conf-files for TraceEnable
         if [ -f ${TMPFILE3} ]; then
-            Display --indent 2 --text '- Checking TraceEnable setting in:'
+            Display --indent 2 --text '- 检查以下文件中的 TraceEnable 设置：'
             for APACHE_CONFFILE in $(cat ${TMPFILE3}); do
                 TRACEENABLE=$( ${GREPBINARY} -i -E '^TraceEnable' ${APACHE_CONFFILE} | ${AWKBINARY} '{print $2}' )
                 if [ ! ${TRACEENABLE} ]; then
@@ -323,14 +323,14 @@
                 else
                     TRACEENABLED_SETTING=$( echo ${TRACEENABLE} | tr 'A-Z' 'a-z' )
                     if [ "x${TRACEENABLED_SETTING}" = 'xoff' ]; then
-                        LogText "Result: found TraceEnable setting set to 'off' in ${APACHE_CONFFILE}"
+                        LogText "结果：在 ${APACHE_CONFFILE} 中发现 TraceEnable 设置为 'off'"
                         Report "Apache setting: 'TraceEnable Off' in ${APACHE_CONFFILE}"
                         Display --indent 4 --text "  ${APACHE_CONFFILE}" --result "${STATUS_FOUND}" --color GREEN
                     else
-                        LogText "Result: found TraceEnable setting set to '"${TRACEENABLE}"' in ${APACHE_CONFFILE}"
+                        LogText "结果：发现 TraceEnable 设置为 '"${TRACEENABLE}"' in ${APACHE_CONFFILE}"
                         Report "Apache setting: 'TraceEnable "${TRACEENABLE}"' in ${APACHE_CONFFILE}"
                         Display --indent 4 --text "  ${APACHE_CONFFILE}" --result "${STATUS_SUGGESTION}" --color YELLOW
-                        ReportSuggestion "${TEST_NO}" "Consider setting 'TraceEnable Off' in ${APACHE_CONFFILE}" "Set TraceEnable to 'On' or 'extended' for testing and diagnostic purposes only."
+                        ReportSuggestion "${TEST_NO}" "建议在 ${APACHE_CONFFILE} 中设置 'TraceEnable Off'" "仅在测试和诊断时将 TraceEnable 设置为 'On' 或 'extended'。"
                     fi
                 fi
             done
@@ -409,7 +409,7 @@
                         NGINX_CONF_FILES="${NGINX_CONF_FILES} ${J}"
                         FIND3=$(sed -e 's/^[ \t]*//' ${J} | ${GREPBINARY} -v "^#" | ${GREPBINARY} -v "^$" | ${SEDBINARY} 's/[\t]/ /g' | ${SEDBINARY} 's/  / /g' | ${SEDBINARY} 's/  / /g' >> ${TMPFILE})
                     else
-                        ReportException "${TEST_NO}:1" "Can not parse file ${J}, as it is not readable"
+                        ReportException "${TEST_NO}:1" "文件 ${J} 不可读，无法解析"
                     fi
                 fi
             done
@@ -452,7 +452,7 @@
                     Display --indent 8 --text "- ${FILE}" --result "SKIPPED (NOT READABLE)" --color YELLOW
                 fi
             else
-                LogText "Result: this configuration file is skipped, as it contains usually no interesting details"
+                LogText "结果：该配置文件通常不包含有价值的信息，已跳过"
             fi
         done
         if [ -n "${NGINX_CONF_FILES_ADDITIONS}" ]; then
@@ -466,7 +466,7 @@
                         Display --indent 8 --text "- ${I}" --result "SKIPPED (NOT READABLE)" --color YELLOW
                     fi
                 else
-                    LogText "Result: this configuration file is skipped, as it contains usually no interesting details"
+                    LogText "结果：该配置文件通常不包含有价值的信息，已跳过"
                 fi
             done
         fi
@@ -616,7 +616,7 @@
         for DIR in ${NGINX_CONF_LOCS}; do
             LogText "Test: Checking ${DIR}"
             if [ -d ${DIR} ]; then
-                LogText "Result: Directory ${DIR} exists, so will be used as search path"
+                LogText "结果：目录 ${DIR} 存在，将作为搜索路径"
                 FIND=$(find ${DIR} -type f -exec ${GREPBINARY} access_log \{\} \; | ${GREPBINARY} -v "#" | ${AWKBINARY} '{ if($1=="access_log") { print $2 } }' | ${SEDBINARY} 's/;$//g' | ${SORTBINARY} -u)
                 if IsEmpty "${FIND}"; then
                     LogText "Result: no log files found"
@@ -632,7 +632,7 @@
                     done
                 fi
             else
-                LogText "Result: directory ${DIR} not found, skipping search in this directory."
+                LogText "结果：未找到目录 ${DIR}，跳过在该目录中的搜索。"
             fi
         done
         unset DIR FILE FIND

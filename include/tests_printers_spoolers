@@ -44,7 +44,7 @@
         LogText "Test: Searching /usr/sbin/chkprintcap"
         if [ ! -f ${ROOTDIR}usr/sbin/chkprintcap ]; then
             Display --indent 2 --text "- Checking chkprintcap" --result "${STATUS_NOT_FOUND}" --color WHITE
-            LogText "Result: ${ROOTDIR}usr/sbin/chkprintcap NOT found, test skipped"
+            LogText "结果：未找到 ${ROOTDIR}usr/sbin/chkprintcap，跳过检查"
         else
             LogText "Result: ${ROOTDIR}usr/sbin/chkprintcap found"
             FIND=$(${ROOTDIR}usr/sbin/chkprintcap > /dev/null ; echo $?)
@@ -74,7 +74,7 @@
             CUPSD_RUNNING=1; PRINTING_DAEMON="cups"
         else
             Display --indent 2 --text "- Checking cups daemon" --result "${STATUS_NOT_FOUND}" --color WHITE
-            LogText "Result: cups daemon not running, cups daemon tests skipped"
+            LogText "结果：CUPS 守护进程未运行，跳过 CUPS 守护进程检查"
         fi
     fi
 #
@@ -278,7 +278,7 @@
                 LogText "Result: Found ${COUNT} old print jobs in /var/spool/lpd/qdir"
                 Display --indent 4 --text "- Checking old print jobs" --result "${STATUS_FOUND}" --color YELLOW
                 ReportSuggestion "${TEST_NO}" "Check old print jobs in /var/spool/lpd/qdir to prevent new jobs from being processed"
-                LogText "Risk: Failed or defunct print jobs can occupy a lot of space and in some cases, prevent new jobs from being processed"
+                LogText "风险：失败或失效的打印任务可能占用大量空间，并可能阻止新任务被处理"
             else
                 LogText "Result: Old print jobs not found in /var/spool/lpd/qdir"
                 Display --indent 4 --text "- Checking old print jobs" --result "${STATUS_NONE}" --color GREEN

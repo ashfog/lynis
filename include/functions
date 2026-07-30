@@ -236,7 +236,7 @@
                     RETVAL=1
                 fi
             else
-                LogText "Skipping search, as /dev/null is being used"
+                LogText "正在使用 /dev/null，跳过搜索"
             fi
             return ${RETVAL}
         else
@@ -272,7 +272,7 @@
                         PROGRAM_LV=$(drill txt ${LYNIS_LV_RECORD} | awk '{ if ($1=="lynis-latest-version.cisofy.com." && $4=="TXT") { print $5 }}' | tr -d '"' | grep "^[1-9][0-9][0-9]$")
                         if [ -z "${PROGRAM_LV}" ]; then PROGRAM_LV=0; fi
                     else
-                        LogText "Result: dig, drill or host not installed, update check skipped"
+                        LogText "结果：未安装 dig、drill 或 host，跳过更新检查"
                         UPDATE_CHECK_SKIPPED=1
                     fi
                 fi
@@ -469,7 +469,7 @@
         fi
         if [ "${PROFILES}" = "" ]; then
             echo "${RED}Fatal error: ${WHITE}No profile defined and could not find default profile${NORMAL}"
-            echo "Search paths used --> ${tPROFILE_TARGETS}"
+            echo "使用的搜索路径 --> ${tPROFILE_TARGETS}"
             ExitCustom 66
         else
             PROFILES=$(echo ${PROFILES} | sed 's/^ //')
@@ -793,10 +793,10 @@
             find=$(${RPMBINARY} -qf "${file}" 2> /dev/null | ${AWKBINARY} -F- '{print $1}')
         fi
         if [ -n "${find}" ]; then
-            LogText "Result: file '${file}' belongs to package (${find})"
+            LogText "结果：文件 '${file}' 属于软件包（${find}）"
             exitcode=0
         else
-            LogText "Result: file '${file}' does most likely not belong to a package"
+            LogText "结果：文件 '${file}' 很可能不属于任何软件包"
         fi
         return ${exitcode}
     }
@@ -851,7 +851,7 @@
         # Only check the file if it isn't a symlink (after previous check)
         if [ -L "${escaped_file}" ]; then
             OTHERPERMS="-"
-            LogText "Result: unclear if we can read this file, as this is a symlink"
+            LogText "结果：该文件是符号链接，无法确定是否可读"
             ReportException "FileIsReadable" "Can not determine symlink ${sFILE}"
         elif [ -d "${escaped_file}" ]; then
             OTHERPERMS=$(${LSBINARY} -d -l "${escaped_file}" 2> /dev/null | ${CUTBINARY} -c 8)
@@ -864,9 +864,9 @@
         # Also check if we are the actual owner of the file (use -d to get directory itself, if its a directory)
         FILEOWNER=$(ls -dln "${escaped_file}" 2> /dev/null | ${AWKBINARY} -F" " '{ print $3 }')
         if [ "${FILEOWNER}" = "${MYID}" ]; then
-            LogText "Result: file is owned by our current user ID (${MYID}), checking if it is readable"
+            LogText "结果：文件属于当前用户 ID（${MYID}），正在检查是否可读"
             if [ -L "${sFILE}" ]; then
-                LogText "Result: unclear if we can read this file, as this is a symlink"
+                LogText "结果：该文件是符号链接，无法确定是否可读"
                 ReportException "FileIsReadable" "Can not determine symlink ${escaped_file}"
             elif [ -d "${escaped_file}" ]; then
                 OTHERPERMS=$(${LSBINARY} -d -l "${escaped_file}" 2> /dev/null | ${CUTBINARY} -c 2)
@@ -874,7 +874,7 @@
                 OTHERPERMS=$(${LSBINARY} -l "${escaped_file}" 2> /dev/null | ${CUTBINARY} -c 2)
             fi
         else
-            LogText "Result: file is not owned by current user ID (${MYID}), but UID ${FILEOWNER}"
+            LogText "结果：文件不属于当前用户 ID（${MYID}），其所有者 UID 为 ${FILEOWNER}"
         fi
 
         # Check if we are root, or have the read bit
@@ -884,7 +884,7 @@
             return 0
         else
             return 1
-            LogText "Result: file ${escaped_file} is NOT readable (or directory accessible), symlink, or does not exist. (OTHERPERMS: ${OTHERPERMS})"
+            LogText "结果：文件 ${escaped_file} 不可读（或目录不可访问）、是符号链接，或不存在。（OTHERPERMS：${OTHERPERMS}）"
         fi
     }
 
@@ -941,7 +941,7 @@
         fi
 
         if [ ! "${SHA1SUMBINARY}" = "" -o ! "${SHA256SUMBINARY}" = "" -o ! "${OPENSSLBINARY}" = "" -o ! "${CSUMBINARY}" = "" ]; then
-            LogText "Info: found hashing tool, start generation of HostID"
+            LogText "信息：发现哈希工具，开始生成 HostID"
             case "${OS}" in
 
                 "AIX")
@@ -959,10 +959,10 @@
                         elif [ -n "${OPENSSLBINARY}" ]; then
                             HOSTID=$(echo ${FIND} | ${OPENSSLBINARY} sha -sha1 | awk '{ print $2 }')
                         else
-                            ReportException "GetHostID" "No sha1, sha1sum, csum or openssl binary available on AIX"
+                            ReportException "GetHostID" "AIX 上没有可用的 sha1、sha1sum、csum 或 openssl 程序"
                         fi
                     else
-                        ReportException "GetHostID" "No output from entstat on interfaces: en0, ent0"
+                        ReportException "GetHostID" "entstat 未从接口 en0、ent0 返回输出"
                     fi
                 ;;
 
@@ -994,7 +994,7 @@
                         NET_INTERFACES=$(${FINDBINARY} /sys/class/net ! -type d -exec realpath {} \; 2> /dev/null | sort | awk -F'/' '!/virtual/ && /devices/ {for (x=1;x<=NF;x++) if ($x~"net") print $(x+1)}')
                         for INTERFACE in ${NET_INTERFACES}; do
                             if grep -q -s 'up' "/sys/class/net/${INTERFACE}/operstate"; then
-                                LogText "Interface '${INTERFACE}' is up, fetching MAC address"
+                                LogText "接口 '${INTERFACE}' 已启用，正在获取 MAC 地址"
                                 FIND=$(head -n 1 "/sys/class/net/${INTERFACE}/address" | tr '[:upper:]' '[:lower:]')
                                 if HasData "${FIND}"; then
                                     HOSTID_GEN="linux-sys-interface-up"
@@ -1006,7 +1006,7 @@
 
                     # Next is to try ip, as it is available to most modern Linux distributions
                     if IsEmpty "${FIND}" && [ -n "${IPBINARY}" ]; then
-                        LogText "Info: trying output from 'ip' to generate HostID"
+                        LogText "信息：尝试使用 'ip' 的输出生成 HostID"
                         # Determine if we have the common available eth0 interface. If so, give that priority.
                         # Note: apply sorting in case there would be multiple MAC addresses linked to increase predictable end result
                         FIND=$(${IPBINARY} addr show eth0 2> /dev/null | grep -E "link/ether " | awk '{ print $2 }' | tr '[:upper:]' '[:lower:]' | sort | head -n 1)
@@ -1023,14 +1023,14 @@
                             if HasData "${FIND}"; then
                                 HOSTID_GEN="linux-ip-interface-up-other"
                             else
-                                ReportException "GetHostID" "Can't create hostid (no MAC addresses found)"
+                                ReportException "GetHostID" "无法创建 hostid（未找到 MAC 地址）"
                             fi
                         fi
                     fi
 
                     # Finally try ifconfig
                     if IsEmpty "${FIND}" && [ -n "${IFCONFIGBINARY}" ]; then
-                        LogText "Info: no information found from 'ip' or in /sys, trying output from 'ifconfig'"
+                        LogText "信息：未从 'ip' 或 /sys 获取信息，尝试使用 'ifconfig' 的输出"
                         # Determine if we have the eth0 interface (not all Linux distributions have this, e.g. Arch)
                         HASETH0=$(${IFCONFIGBINARY} | grep "^eth0")
                         # Check if we can find it with HWaddr on the line
@@ -1053,7 +1053,7 @@
                                         ReportException "GetHostID" "No eth0 found (and no ether was found with ifconfig)"
                                     else
                                         HOSTID_GEN="linux-ifconfig-interface-first-ether"
-                                        LogText "Result: No eth0 found (but ether found), using first network interface to determine hostid (with ifconfig)"
+                                        LogText "结果：未找到 eth0（但发现 ether），使用第一个网络接口通过 ifconfig 确定 hostid"
                                     fi
                                 fi
                             else
@@ -1067,7 +1067,7 @@
 
                     # Check if we found a MAC address to generate the HostID
                     if HasData "${FIND}"; then
-                        LogText "Info: using hardware address '${FIND}' to create HostID"
+                        LogText "信息：使用硬件地址 '${FIND}' 创建 HostID"
                         if [ -n "${SHA1SUMBINARY}" ]; then
                             HOSTID=$(echo ${FIND} | ${SHA1SUMBINARY} | awk '{ print $1 }')
                         elif [ -n "${SHA256SUMBINARY}" ]; then
@@ -1145,7 +1145,7 @@
                 ;;
 
                 *)
-                        ReportException "GetHostID" "Can't create HOSTID as OS is not supported yet by this function"
+                        ReportException "GetHostID" "无法创建 HOSTID，此函数尚不支持当前操作系统"
                 ;;
             esac
 
@@ -1160,7 +1160,7 @@
             fi
 
         else
-            ReportException "GetHostID" "Can't create HOSTID as there is no hash tool available (sha1, sha1sum, openssl, truncated sha256sum)"
+            ReportException "GetHostID" "无法创建 HOSTID，没有可用的哈希工具（sha1、sha1sum、openssl 或截断的 sha256sum）"
         fi
 
         # Search machine ID
@@ -1175,7 +1175,7 @@
         fi
 
         if [ -z "${HOSTID}" ]; then
-            LogText "Result: no HOSTID available, trying to use SSH key as unique source"
+            LogText "结果：没有可用的 HOSTID，尝试使用 SSH 密钥作为唯一来源"
             # Create host ID when a MAC address was not found
             SSH_KEY_FILES="ssh_host_ed25519_key.pub ssh_host_ecdsa_key.pub ssh_host_dsa_key.pub ssh_host_rsa_key.pub"
             if [ -d /etc/ssh ]; then
@@ -1188,13 +1188,13 @@
                                 LogText "result: Created HostID with SSH key ($I): ${HOSTID}"
                                 HOSTID_GEN="fallback-ssh-public-key"
                             else
-                                ReportException "GetHostID" "Can't create HOSTID with SSH key, as sha1sum binary is missing"
+                                ReportException "GetHostID" "缺少 sha1sum 程序，无法使用 SSH 密钥创建 HOSTID"
                             fi
                         fi
                     fi
                 done
             else
-                LogText "Result: no /etc/ssh directory found, skipping"
+                LogText "结果：未找到 /etc/ssh 目录，跳过"
             fi
         fi
 
@@ -1208,7 +1208,7 @@
                 for I in ${SSH_PUBKEY_FILES}; do
                     if [ ${FOUND} -eq 0 ]; then
                         if [ -f /etc/ssh/${I} ]; then
-                            LogText "Result: found file ${I} in /etc/ssh, using that as candidate to create hostid2"
+                            LogText "结果：在 /etc/ssh 中发现文件 ${I}，将其作为创建 hostid2 的候选文件"
                             DATA_SSH=$(cat /etc/ssh/${I})
                             FOUND=1
                         fi
@@ -1219,7 +1219,7 @@
                 for I in ${SSH_KEY_FILES}; do
                     if [ ${FOUND} -eq 0 ]; then
                         if [ -f "/etc/dropbear/${I}" ]; then
-                            LogText "Result: found file ${I} in /etc/dropbear, using that as candidate to create hostid2"
+                            LogText "结果：在 /etc/dropbear 中发现文件 ${I}，将其作为创建 hostid2 的候选文件"
                             # Dropbear stores both keys in one binary file
                             DATA_SSH=$(dropbearkey -y -f "/etc/dropbear/${I}" | grep '^ssh')
                             FOUND=1
@@ -1227,7 +1227,7 @@
                     fi
                 done
             else
-                LogText "Result: no /etc/ssh nor /etc/dropbear directory found, skipping"
+                LogText "结果：未找到 /etc/ssh 或 /etc/dropbear 目录，跳过"
             fi
 
             STRING_TO_HASH=""
@@ -1409,11 +1409,11 @@
                         return 0
                     fi
                 else
-                    ReportException "HasCorrectFilePermissions:02" "No data value found, which is unexpected"
+                    ReportException "HasCorrectFilePermissions:02" "未找到数据值，情况异常"
                 fi
             done
 
-            LogText "Outcome: permissions of file ${CHECKFILE} are not matching expected value (${DATA} != ${CHECK_PERMISSION})"
+            LogText "结果：文件 ${CHECKFILE} 的权限与预期值不符（${DATA} != ${CHECK_PERMISSION}）"
             # No match, return exit code 1
             return 1
         fi
@@ -1489,7 +1489,7 @@
         if [ -e /proc/1/cgroup ]; then
             FIND=$(grep -i docker ${ROOTDIR}proc/1/cgroup 2> /dev/null)
             if [ $? -eq 0 ]; then
-                LogText "Result: found Docker in control groups (/proc/1/cgroup), so we are running in Docker container"
+                LogText "结果：在控制组（/proc/1/cgroup）中发现 Docker，当前运行于 Docker 容器中"
                 CONTAINER_TYPE="Docker"; FOUND=1
                 EXITCODE=0
             fi
@@ -1497,7 +1497,7 @@
         if [ -e /proc/1/environ ]; then
             FIND=$(grep -qa 'container=lxc' ${ROOTDIR}proc/1/environ 2> /dev/null)
             if [ $? -eq 0 ]; then
-                LogText "Result: found LXC in environment (/proc/1/environ), so we are running in LXC container"
+                LogText "结果：在环境（/proc/1/environ）中发现 LXC，当前运行于 LXC 容器中"
                 CONTAINER_TYPE="LXC"; FOUND=1
                 EXITCODE=0
             fi
@@ -1666,10 +1666,10 @@
 
         if [ -n "${FIND}" ]; then
             RUNNING=1
-            LogText "IsRunning: process '${search}' found (${FIND})"
+            LogText "IsRunning：发现进程 '${search}'（${FIND}）"
             return 0
         else
-            LogText "IsRunning: process '${search}' not found"
+            LogText "IsRunning：未发现进程 '${search}'"
             return 1
         fi
     }
@@ -1774,7 +1774,7 @@
                 fi
             fi
         else
-            LogText "Result: skipped lxc environ detection test, as we already found machine type"
+            LogText "结果：已确定机器类型，跳过 LXC 环境检测"
         fi
 
         # facter
@@ -1793,7 +1793,7 @@
                 LogText "Result: facter utility not found"
             fi
         else
-            LogText "Result: skipped facter test, as we already found machine type"
+            LogText "结果：已确定机器类型，跳过 facter 检测"
         fi
 
         # systemd
@@ -1809,7 +1809,7 @@
                 LogText "Result: systemd-detect-virt not found"
             fi
         else
-            LogText "Result: skipped systemd test, as we already found machine type"
+            LogText "结果：已确定机器类型，跳过 systemd 检测"
         fi
 
         # lscpu
@@ -1822,13 +1822,13 @@
                     LogText "Result: found ${FIND}"
                     SHORT="${FIND}"
                 else
-                    LogText "Result: can't find hypervisor vendor with lscpu"
+                    LogText "结果：无法通过 lscpu 找到虚拟机监控程序厂商"
                 fi
             else
                 LogText "Result: lscpu not found"
             fi
         else
-            LogText "Result: skipped lscpu test, as we already found machine type"
+            LogText "结果：已确定机器类型，跳过 lscpu 检测"
         fi
 
         # dmidecode
@@ -1843,13 +1843,13 @@
                     LogText "Result: found ${FIND}"
                     SHORT="${FIND}"
                 else
-                    LogText "Result: can't find product name with dmidecode"
+                    LogText "结果：无法通过 dmidecode 找到产品名称"
                 fi
             else
                 LogText "Result: dmidecode not found (or no access)"
             fi
         else
-            LogText "Result: skipped dmidecode test, as we already found machine type"
+            LogText "结果：已确定机器类型，跳过 dmidecode 检测"
         fi
 
         # Other options
@@ -1871,7 +1871,7 @@
             elif IsRunning VBoxService; then SHORT="virtualbox"
             fi
         else
-            LogText "Result: skipped processes test, as we already found platform"
+            LogText "结果：已确定平台，跳过进程检测"
         fi
 
         # Amazon EC2
@@ -1883,7 +1883,7 @@
                 LogText "Result: system not hosted on Amazon"
             fi
         else
-            LogText "Result: skipped Amazon EC2 test, as we already found platform"
+            LogText "结果：已确定平台，跳过 Amazon EC2 检测"
         fi
 
         # sysctl values
@@ -1898,7 +1898,7 @@
                 SHORT="${FIND}"
             fi
         else
-            LogText "Result: skipped sysctl test, as we already found platform"
+            LogText "结果：已确定平台，跳过 sysctl 检测"
         fi
 
         # lshw
@@ -1915,10 +1915,10 @@
                     LogText "Result: lshw not found"
                 fi
             else
-                LogText "Result: skipped lshw test, as we are non-privileged and need more permissions to run lshw"
+                LogText "结果：当前为非特权模式，运行 lshw 需要更多权限，因此跳过"
             fi
         else
-            LogText "Result: skipped lshw test, as we already found machine type"
+            LogText "结果：已确定机器类型，跳过 lshw 检测"
         fi
 
         # Check if we caught some string along all tests
@@ -1943,13 +1943,13 @@
                     xen)                ISVIRTUALMACHINE=1; VMTYPE="xen";             VMFULLTYPE="XEN"                                     ;;
                     zvm)                ISVIRTUALMACHINE=1; VMTYPE="zvm";             VMFULLTYPE="IBM z/VM"                                ;;
                     openstack)          ISVIRTUALMACHINE=1; VMTYPE="openstack";       VMFULLTYPE="Openstack Nova"                          ;;
-                    *)                  LogText "Result: Unknown virtualization type, so most likely system is physical"                   ;;
+                    *)                  LogText "结果：未知虚拟化类型，因此系统很可能是物理机"                   ;;
                 esac
         fi
 
         # Check final status
         if [ ${ISVIRTUALMACHINE} -eq 1 ]; then
-            LogText "Result: found virtual machine (type: ${VMTYPE}, ${VMFULLTYPE})"
+            LogText "结果：发现虚拟机（类型：${VMTYPE}，${VMFULLTYPE}）"
             Report "vm=1"
             Report "vmtype=${VMTYPE}"
         elif [ ${ISVIRTUALMACHINE} -eq 2 ]; then
@@ -2251,7 +2251,7 @@
             OPTION=$(echo ${I} | awk '{ print $1 }')
             # Use quotes here to prevent wildcard expansion
             VALUE=$(echo "${I}"| cut -d' ' -f2-)
-            LogText "Result: found option ${OPTION} in ${CONFIG_FILE} with value '${VALUE}'"
+            LogText "结果：在 ${CONFIG_FILE} 中发现选项 ${OPTION}，值为 '${VALUE}'"
             STORE_SETTING=1
             case ${OPTION} in
                 "events")
@@ -2355,10 +2355,10 @@
                     if [ -f "${VALUE}" ]; then
                         FOUND=0
                         for CONF in ${NGINX_CONF_FILES}; do
-                            if [ "${CONF}" = "${VALUE}" ]; then FOUND=1; LogText "Found this file already in our configuration files array, not adding to queue"; fi
+                            if [ "${CONF}" = "${VALUE}" ]; then FOUND=1; LogText "该文件已在配置文件数组中，不再加入队列"; fi
                         done
                         for CONF in ${NGINX_CONF_FILES_ADDITIONS}; do
-                            if [ "${CONF}" = "${VALUE}" ]; then FOUND=1; LogText "Found this file already in our configuration files array (additions), not adding to queue"; fi
+                            if [ "${CONF}" = "${VALUE}" ]; then FOUND=1; LogText "该文件已在附加配置文件数组中，不再加入队列"; fi
                         done
                         if [ ${FOUND} -eq 0 ]; then NGINX_CONF_FILES_ADDITIONS="${NGINX_CONF_FILES_ADDITIONS} ${VALUE}"; fi
                     # Check if include value is a relative path only
@@ -2366,10 +2366,10 @@
                         VALUE="${CONFIG_FILE%nginx.conf}${VALUE}"
                         FOUND=0
                         for CONF in ${NGINX_CONF_FILES}; do
-                            if [ "${CONF}" = "${VALUE}" ]; then FOUND=1; LogText "Found this file already in our configuration files array, not adding to queue"; fi
+                            if [ "${CONF}" = "${VALUE}" ]; then FOUND=1; LogText "该文件已在配置文件数组中，不再加入队列"; fi
                         done
                         for CONF in ${NGINX_CONF_FILES_ADDITIONS}; do
-                            if [ "${CONF}" = "${VALUE}" ]; then FOUND=1; LogText "Found this file already in our configuration files array (additions), not adding to queue"; fi
+                            if [ "${CONF}" = "${VALUE}" ]; then FOUND=1; LogText "该文件已在附加配置文件数组中，不再加入队列"; fi
                         done
                         if [ ${FOUND} -eq 0 ]; then NGINX_CONF_FILES_ADDITIONS="${NGINX_CONF_FILES_ADDITIONS} ${VALUE}"; fi
                     # Check for additional config files included as follows
@@ -2394,10 +2394,10 @@
                             fi
                             FOUND=0
                             for CONF in ${NGINX_CONF_FILES}; do
-                                if [ "${CONF}" = "${FOUND_CONF}" ]; then FOUND=1; LogText "Found this file already in our configuration files array, not adding to queue"; fi
+                                if [ "${CONF}" = "${FOUND_CONF}" ]; then FOUND=1; LogText "该文件已在配置文件数组中，不再加入队列"; fi
                             done
                             for CONF in ${NGINX_CONF_FILES_ADDITIONS}; do
-                                if [ "${CONF}" = "${FOUND_CONF}" ]; then FOUND=1; LogText "Found this file already in our configuration files array (additions), not adding to queue"; fi
+                                if [ "${CONF}" = "${FOUND_CONF}" ]; then FOUND=1; LogText "该文件已在附加配置文件数组中，不再加入队列"; fi
                             done
                             if [ ${FOUND} -eq 0 ]; then NGINX_CONF_FILES_ADDITIONS="${NGINX_CONF_FILES_ADDITIONS} ${FOUND_CONF}"; fi
                         done
@@ -2548,7 +2548,7 @@
         if [ -c /dev/urandom ]; then FILE="/dev/urandom"
         elif [ -c /dev/random ]; then FILE="/dev/random"
         else
-          Display "Can not use RandomString function, as there is no random device to be used"
+          Display "没有可用的随机设备，无法使用 RandomString 函数"
         fi
         if [ $# -eq 0 ]; then SIZE=16; else SIZE=$1; fi
         CSIZE=$((SIZE / 2))
@@ -2757,7 +2757,7 @@
         if [ ${SKIPTEST} -eq 0 -a ${TEST_NEED_PKG_MGR} -eq 1 -a ${HAS_PACKAGE_MANAGER} -eq 0 ]; then SKIPTEST=1; SKIPREASON="Requires a known package manager to test presence of a particular package"; fi
 
         # Not all prerequisites met, like missing tool
-        if [ ${SKIPTEST} -eq 0 -a "${PREQS_MET}" = "NO" ]; then SKIPTEST=1; if [ -z "${SKIPREASON}" ]; then SKIPREASON="Prerequisites not met (ie missing tool, other type of Linux distribution)"; fi; fi
+        if [ ${SKIPTEST} -eq 0 -a "${PREQS_MET}" = "NO" ]; then SKIPTEST=1; if [ -z "${SKIPREASON}" ]; then SKIPREASON="未满足前置条件（例如缺少工具或 Linux 发行版类型不同）"; fi; fi
 
         # Skip if a test is root only and we are running a non-privileged test
         if [ ${SKIPTEST} -eq 0 -a ${ROOT_ONLY} -eq 1 -a ! ${MYID} = "0" ]; then
@@ -2872,7 +2872,7 @@
                         LogText "Info: temporary file ${TMPFILE} was already removed"
                     fi
                 else
-                    LogText "Found invalid temporary file (${FILE}), not removed. Check your /tmp directory."
+                    LogText "发现无效的临时文件（${FILE}），未将其删除。请检查 /tmp 目录。"
                 fi
             done
         else
@@ -3129,7 +3129,7 @@
                 # File is not owned by active user, but still able to write
                 if [ ! -O "${FILE}" -a -w "${FILE}" ]; then
                     unsafe=1
-                    LogText "Security alert: file is not owned by active user, but can write to it"
+                    LogText "安全警报：文件不属于当前用户，但当前用户可以写入"
                 fi
             fi
 
@@ -3189,7 +3189,7 @@
                     OWNERID=$(ls -n $1 | awk -F" " '{ print $3 }')
                     if [ ${PENTESTINGMODE} -eq 0 -a ${IS_PARAMETERS} -eq 0 ]; then
                         if [ ! "${OWNER}" = "root" -a ! "${OWNERID}" = "0" ]; then
-                            echo "Fatal error: file $1 should be owned by user 'root' when running it as root (found: ${OWNER})."
+                            echo "致命错误：以 root 运行时，文件 $1 应由用户 'root' 所有（当前：${OWNER}）。"
                             ExitFatal
                         fi
                     fi
@@ -3199,7 +3199,7 @@
 
                     if [ ${PENTESTINGMODE} -eq 0 -a ${IS_PARAMETERS} -eq 0 ]; then
                         if [ ! "${GROUP}" = "root" -a ! "${GROUP}" = "wheel" -a ! "${GROUPID}" = "0" ]; then
-                            echo "Fatal error: group owner of directory $1 should be owned by root group, wheel or similar (found: ${GROUP})."
+                            echo "致命错误：目录 $1 的所属组应为 root、wheel 或类似特权组（当前：${GROUP}）。"
                             ExitFatal
                         fi
                     fi
@@ -3207,7 +3207,7 @@
                     # Owner permissions
                     OWNER_PERMS=$(echo ${PERMS} | cut -c2-4)
                     if [ ! "${OWNER_PERMS}" = "rw-" -a ! "${OWNER_PERMS}" = "r--" ]; then
-                        echo "Fatal error: permissions of file $1 are not strict enough. Access to 'owner' should be read-write, or read. Change with: chmod u=rw $1"
+                        echo "致命错误：文件 $1 权限不够严格。所有者权限应为读写或只读。可执行：chmod u=rw $1"
                         ExitFatal
                     fi
 
@@ -3215,14 +3215,14 @@
                     # TODO - harden this even more by setting default to read-only for group (like 'other')
                     GROUP_PERMS=$(echo ${PERMS} | cut -c5-7)
                     if [ ! "${GROUP_PERMS}" = "rw-" -a ! "${GROUP_PERMS}" = "r--" -a ! "${GROUP_PERMS}" = "---" ]; then
-                        echo "Fatal error: permissions of file $1 are not strict enough. Access to 'group' should be read-write, read, or none. Change with: chmod g=r $1"
+                        echo "致命错误：文件 $1 权限不够严格。组权限应为读写、只读或无权限。可执行：chmod g=r $1"
                         ExitFatal
                     fi
 
                     # Other permissions
                     OTHER_PERMS=$(echo ${PERMS} | cut -c8-10)
                     if [ ! "${OTHER_PERMS}" = "---" -a ! "${OTHER_PERMS}" = "r--" ]; then
-                        echo "Fatal error: permissions of file $1 are not strict enough. Access to 'other' should be denied or read-only. Change with: chmod o=r $1"
+                        echo "致命错误：文件 $1 权限不够严格。其他用户应无权限或仅可读取。可执行：chmod o=r $1"
                         ExitFatal
                     fi
                     # Set PERMS_OK to 1 if no fatal errors occurred
@@ -3283,19 +3283,19 @@
                 LogText "Test: search string ${STRING} in file ${FILE}"
                 FIND=$(grep -E "${STRING}" ${FILE})
                 if [ -n "${FIND}" ]; then
-                    LogText "Result: found search string '${STRING}'"
+                    LogText "结果：发现搜索字符串 '${STRING}'"
                     if [ ${MASK_LOG} -eq 0 ]; then LogText "Full string returned: ${FIND}"; fi
                     RETVAL=0
                 else
-                    LogText "Result: search search string '${STRING}' NOT found"
+                    LogText "结果：未找到搜索字符串 '${STRING}'"
                     RETVAL=1
                 fi
             else
-                LogText "Skipping search, file (${FILE}) does not exist"
+                LogText "文件（${FILE}）不存在，跳过搜索"
                 ReportException "${TEST_NO}" "Test is trying to search for a string in nonexistent file"
             fi
         else
-            ReportException "${TEST_NO}" "Search test is skipped, which is unexpected"
+            ReportException "${TEST_NO}" "搜索检查被跳过，情况异常"
         fi
         return ${RETVAL}
     }
@@ -3438,19 +3438,19 @@
                 LogText "Result: command did not return any value"
             elif [ -f ${tFILE} ]; then
                 sFILE="${tFILE}"
-                LogText "Result: symlink found, pointing to file ${sFILE}"
+                LogText "结果：发现符号链接，指向文件 ${sFILE}"
                 FOUNDPATH=1
             elif [ -b ${tFILE} ]; then
                 sFILE="${tFILE}"
-                LogText "Result: symlink found, pointing to block device ${sFILE}"
+                LogText "结果：发现符号链接，指向块设备 ${sFILE}"
                 FOUNDPATH=1
             elif [ -c ${tFILE} ]; then
                 sFILE="${tFILE}"
-                LogText "Result: symlink found, pointing to character device ${sFILE}"
+                LogText "结果：发现符号链接，指向字符设备 ${sFILE}"
                 FOUNDPATH=1
             elif [ -d ${tFILE} ]; then
                 sFILE="${tFILE}"
-                LogText "Result: symlink found, pointing to directory ${sFILE}"
+                LogText "结果：发现符号链接，指向目录 ${sFILE}"
                 FOUNDPATH=1
             else
                 # Check the full path of the symlink, strip the filename, copy the path and linked filename together
@@ -3467,22 +3467,22 @@
                     # Check if we now have a normal file
                     if [ -f ${tFILE} ]; then
                         sFILE="${tFILE}"
-                        LogText "Result: symlink finally found, seems to be file ${sFILE}"
+                        LogText "结果：最终找到符号链接目标，似乎是文件 ${sFILE}"
                         FOUNDPATH=1
                     elif [ -d ${tFILE} ]; then
                         sFILE="${tFILE}"
-                        LogText "Result: symlink finally found, seems to be directory ${sFILE}"
+                        LogText "结果：最终找到符号链接目标，似乎是目录 ${sFILE}"
                         FOUNDPATH=1
                     else
-                       LogText "Result: could not find file ${tFILE}, most likely too complicated symlink or too often linked"
+                       LogText "结果：找不到文件 ${tFILE}，可能符号链接过于复杂或链接层级过多"
                     fi
                 elif [ -f ${tFILE} ]; then
                     sFILE="${tFILE}"
-                    LogText "Result: symlink found, seems to be file ${sFILE}"
+                    LogText "结果：发现符号链接，目标似乎是文件 ${sFILE}"
                     FOUNDPATH=1
                 elif [ -d ${tFILE} ]; then
                     sFILE="${tFILE}"
-                    LogText "Result: symlink found, seems to be directory ${sFILE}"
+                    LogText "结果：发现符号链接，目标似乎是目录 ${sFILE}"
                     FOUNDPATH=1
                 else
                     LogText "Result: file ${tFILE} in ${tDIR} not found"
@@ -3493,7 +3493,7 @@
         fi
         # Now check if our new location is actually a file or directory destination
         if [ -L ${sFILE} ]; then
-            LogText "Result: unable to determine symlink, or location ${sFILE} is just another symlink"
+            LogText "结果：无法确定符号链接目标，或位置 ${sFILE} 本身仍是符号链接"
             FOUNDPATH=0
         fi
         if [ ${FOUNDPATH} -eq 1 ]; then
@@ -3659,7 +3659,7 @@
               ;;
               #"not-equal")   COLOR=$WHITE   ;;
               #"lt" | "less-than")  COLOR=$YELLOW  ;;
-              *) echo "INVALID OPTION USED (TestValue, parameter of function: $1)"; exit 1 ;;
+              *) echo "使用了无效选项（TestValue，函数参数：$1）"; exit 1 ;;
         esac
 
         if [ "${RETVAL}" -lt 2 ]; then
@@ -3716,7 +3716,7 @@
 
     WaitForKeyPress() {
         if [ ${QUICKMODE} -eq 0 ]; then
-            echo ""; echo "[ Press [ENTER] to continue, or [CTRL]+C to stop ]"
+            echo ""; echo "[ 按 [ENTER] 继续，或按 [CTRL]+C 停止 ]"
             read -r void
         fi
     }

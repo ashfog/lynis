@@ -72,7 +72,7 @@
             LogText "Result: ${ROOTDIR}etc/resolv.conf found"
             FIND=$(${AWKBINARY} '/^search/ { print $2 }' ${ROOTDIR}etc/resolv.conf)
             if IsEmpty "${FIND}"; then
-                LogText "Result: no search domains found, default domain is being used"
+                LogText "结果：未找到搜索域，正在使用默认域"
             else
                 for ITEM in ${FIND}; do
                     LogText "Found search domain: ${ITEM}"
@@ -83,7 +83,7 @@
                 if [ ${COUNT} -gt 6 ]; then
                     LogText "Result: Found ${COUNT} search domains"
                     Display --indent 2 --text "- Checking search domains" --result "${STATUS_WARNING}" --color YELLOW
-                    ReportWarning "${TEST_NO}" "Found more than 6 search domains, which is usually more than the maximum allowed number in most resolvers"
+                    ReportWarning "${TEST_NO}" "发现超过 6 个搜索域，通常已超过多数解析器允许的最大数量"
                 else
                     LogText "Result: Found ${COUNT} search domains"
                     Display --indent 2 --text "- Checking search domains" --result "${STATUS_FOUND}" --color GREEN
@@ -94,12 +94,12 @@
             if [ ! "${FIND}" = "0" -a ! "${FIND}" = "1" ]; then
                 LogText "Result: found ${FIND} line(s) with a search statement (expecting less than 2 lines)"
                 Display --indent 4 --text "- Checking search domains lines" --result "CONFIG ERROR" --color YELLOW
-                ReportWarning "${TEST_NO}" "Found more than 1 search lines in /etc/resolv.conf, which is probably a misconfiguration"
+                ReportWarning "${TEST_NO}" "在 /etc/resolv.conf 中发现多条 search 配置，可能存在配置错误"
             else
                 LogText "Result: found ${FIND} line(s) with a search statement (expecting less than 2 lines)"
             fi
         else
-            LogText "Result: ${ROOTDIR}etc/resolv.conf does not exist, skipping test"
+            LogText "结果：${ROOTDIR}etc/resolv.conf 不存在，跳过检查"
             Display --indent 2 --text "- Checking search domains" --result "${STATUS_NOT_FOUND}" --color YELLOW
         fi
     fi
@@ -128,7 +128,7 @@
                 Display --indent 2 --text "- Checking /etc/resolv.conf options" --result "${STATUS_FOUND}" --color GREEN
             fi
         else
-            LogText "Result: /etc/resolv.conf not found, test skipped"
+            LogText "结果：未找到 /etc/resolv.conf，跳过检查"
             Display --indent 2 --text "- Checking /etc/resolv.conf options" --result "${STATUS_NOT_FOUND}" --color YELLOW
         fi
     fi
@@ -140,7 +140,7 @@
     Register --test-no NAME-4024 --os Solaris --weight L --network NO --category security --description "Solaris uname -n output"
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=$(${UNAMEBINARY} -n)
-        LogText "Result: 'uname -n' returned ${FIND}"
+        LogText "结果：'uname -n' 返回 ${FIND}"
         Display --indent 2 --text "- Checking uname -n output" --result "${STATUS_DONE}" --color GREEN
     fi
 #
@@ -182,7 +182,7 @@
                 LogText "Result: dnsdomainname command returned no value"
             fi
         else
-            LogText "Result: dnsdomainname binary not found, skip specific test"
+            LogText "结果：未找到 dnsdomainname 程序，跳过该项检查"
         fi
 
         # If files and commands can't be found, use defined value from resolv.conf
@@ -264,7 +264,7 @@
                 ReportWarning "${TEST_NO}" "Found Unbound configuration file issues (run unbound-checkconf)"
             fi
         else
-            LogText "Result: skipped, can't find unbound-checkconf utility"
+            LogText "结果：找不到 unbound-checkconf 工具，已跳过"
         fi
     fi
 #
@@ -326,7 +326,7 @@
                 ReportWarning "${TEST_NO}" "Errors discovered in BIND configuration file"
             fi
         else
-            LogText "Result: named-checkconf not found, skipping test"
+            LogText "结果：未找到 named-checkconf，跳过检查"
         fi
     fi
 #
@@ -347,7 +347,7 @@
             LogText "Result: possible BIND version available in version banner"
             Display --indent 4 --text "- Checking BIND version in banner" --result "${STATUS_WARNING}" --color RED
             ReportWarning "${TEST_NO}" "Found BIND version in banner"
-            ReportSuggestion "${TEST_NO}" "The version in BIND can be masked by defining 'version none' in the configuration file"
+            ReportSuggestion "${TEST_NO}" "可在配置文件中设置 'version none' 隐藏 BIND 版本"
             AddHP 0 2
         fi
     fi
@@ -572,7 +572,7 @@
         LogText "Test: check duplicate line in ${ROOTDIR}etc/hosts"
         OUTPUT=$(${AWKBINARY} '{ print $1, $2 }' ${ROOTDIR}etc/hosts | ${GREPBINARY} -E -v '^(#|$)' | ${GREPBINARY} -E "[a-f0-9]" | ${SORTBINARY} | ${UNIQBINARY} -d)
         if [ -z "${OUTPUT}" ]; then
-            LogText "Result: OK, no duplicate lines found"
+            LogText "结果：正常，未发现重复行"
             Display --indent 4 --text "- Duplicate entries in hosts file" --result "${STATUS_NONE}" --color GREEN
         else
             LogText "Found duplicate line: ${OUTPUT}"
@@ -602,7 +602,7 @@
                 LogText "Risk: No entry for the server name [hostname] in /etc/hosts may cause unexpected performance problems for local connections"
             fi
         else
-            LogText "Result: Skipping test, no hostname configured"
+            LogText "结果：未配置主机名，跳过检查"
         fi
     fi
 #

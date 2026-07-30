@@ -538,7 +538,7 @@ ${NORMAL}
 #
     # Clear log file and test if it's writable
     CDATE=$(date "+%Y-%m-%d %H:%M:%S")
-    if [ ${LOGTEXT} -eq 1 ]; then echo "${CDATE} Starting ${PROGRAM_NAME} ${PROGRAM_VERSION} with PID ${OURPID}, build date ${PROGRAM_RELEASE_DATE}" > ${LOGFILE}; fi
+    if [ ${LOGTEXT} -eq 1 ]; then echo "${CDATE} 正在启动 ${PROGRAM_NAME} ${PROGRAM_VERSION}，PID ${OURPID}，构建日期 ${PROGRAM_RELEASE_DATE}" > ${LOGFILE}; fi
     if [ $? -gt 0 ]; then
         Display --indent 2 --text "- Clearing log file (${LOGFILE})... " --result "${STATUS_WARNING}" --color RED
         echo "${WARNING}致命错误${NORMAL}：写入日志文件时出现问题，请检查路径和权限。"
@@ -549,7 +549,7 @@ ${NORMAL}
     LogText "### ${PROGRAM_COPYRIGHT} ###"
 
     # Clear report file (to avoid appending to an existing file)
-    if [ ${CREATE_REPORT_FILE} -eq 1 ]; then echo "# ${PROGRAM_NAME} Report" > ${REPORTFILE}; fi
+    if [ ${CREATE_REPORT_FILE} -eq 1 ]; then echo "# ${PROGRAM_NAME} 报告" > ${REPORTFILE}; fi
     Report "report_version_major=${REPORT_version_major}"
     Report "report_version_minor=${REPORT_version_minor}"
     CDATE=$(date "+%F %H:%M:%S")
@@ -568,7 +568,7 @@ ${NORMAL}
 
     if [ -z "${HOSTNAME}" ]; then
         HOSTNAME="no-hostname"
-        LogText "Info: could not find a hostname, using 'no-hostname' instead"
+        LogText "信息：未找到主机名，改用 'no-hostname'"
         ReportSuggestion "LYNIS" "Check your hostname configuration" "hostname -s"
     fi
     Report "test_category=${TEST_CATEGORY_TO_CHECK}"
@@ -595,7 +595,7 @@ ${NORMAL}
         LogText "Language is set to ${LANGUAGE}"
         Display --indent 2 --text "- Detecting language and localization" --result "${LANGUAGE}" --color WHITE
         if [ ! -f ${DBDIR}/languages/${LANGUAGE} ]; then
-            Display --indent 4 --text "${YELLOW}Notice:${NORMAL} no language file found for '${LANGUAGE}' (tried: ${DBDIR}/languages/${LANGUAGE})"
+            Display --indent 4 --text "${YELLOW}注意：${NORMAL}未找到语言 '${LANGUAGE}' 的语言文件（已尝试：${DBDIR}/languages/${LANGUAGE}）"
             if IsDeveloperVersion; then Display --indent 4 --text "See https://github.com/CISOfy/lynis-sdk/blob/master/documentation/10-translations.md for more details to help translate Lynis"; fi
             sleep 5
         else
@@ -611,10 +611,10 @@ ${NORMAL}
                         Display --indent 4 --text "======================================================================="
                         Display --indent 4 --text "Help other users and translate the missing lines:"
                         Display --indent 4 --text "1) Go to: https://github.com/CISOfy/lynis/edit/master/db/languages/${LANGUAGE}"
-                        Display --indent 4 --text "2) Translate (some of) the lines starting with a hash (#) and remove the leading hash"
+                        Display --indent 4 --text "2）翻译部分以井号（#）开头的行，并移除行首井号"
                         Display --indent 4 --text "3) Commit the changes"
-                        Display --indent 4 --text "Thank you!"
-                        Display --indent 4 --text "Note: no lines with a hash? Look if the file recently has been changed by another translator."
+                        Display --indent 4 --text "谢谢！"
+                        Display --indent 4 --text "注意：没有以井号开头的行？请检查该文件近期是否已被其他翻译者修改。"
                         Display --indent 4 --text "======================================================================="
                         sleep 30
                     fi
@@ -654,7 +654,7 @@ ${NORMAL}
 
     # Drop out if our plugin directory can't be found
     if [ -z "${PLUGINDIR}" -o ! -d ${PLUGINDIR} ]; then
-        echo "Fatal error: can't find plugin directory ${PLUGINDIR}"
+        echo "致命错误：找不到插件目录 ${PLUGINDIR}"
         echo "请确认从完整解压后的目录运行 ${PROGRAM_NAME}，或检查安装是否正确。"
         exit 1
     fi
@@ -681,7 +681,7 @@ ${NORMAL}
             ReportWarning "GEN-0010" "This version ${OS_VERSION} is marked end-of-life as of ${EOL_DATE}"
         elif [ ${EOL} -eq 255 ]; then
             echo "  End-of-life:               ${WARNING}${STATUS_UNKNOWN}${NORMAL}"
-            LogText "Note: the end-of-life of '${OS_FULLNAME}' could not be checked. Entry is missing in db/software-eol.db?"
+            LogText "注意：无法检查 '${OS_FULLNAME}' 的生命周期结束日期，db/software-eol.db 中可能缺少对应条目。"
         fi
 
         if [ -n "${OS_MODE}" ]; then echo "  Operating system mode:     ${OS_MODE}"; fi
@@ -751,8 +751,8 @@ ${NORMAL}
 
     if [ -z "${PROGRAM_AC}" -o -z "${PROGRAM_LV}" ]; then
         Display --indent 2 --text "- Program update status... " --result "${STATUS_UNKNOWN}" --color YELLOW
-        LogText "Result: Update check failed. No network connection?"
-        LogText "Info: to perform an automatic update check, outbound DNS connections should be allowed (TXT record)."
+        LogText "结果：更新检查失败，可能没有网络连接。"
+        LogText "信息：要执行自动更新检查，需要允许出站 DNS 连接（TXT 记录）。"
         # Set both to safe values
         PROGRAM_AC=0; PROGRAM_LV=0
     else
@@ -764,14 +764,14 @@ ${NORMAL}
             LogText "Minimum required version   : ${PROGRAM_MINVERSION}"
             if [ ${PROGRAM_MINVERSION} -gt ${PROGRAM_AC} ]; then
                 Display --indent 2 --text "- Program update status... " --result "${STATUS_WARNING}" --color RED
-                LogText "Result: This version is VERY outdated. Newer ${PROGRAM_NAME} release available!"
+                LogText "结果：当前版本已严重过时，有新版 ${PROGRAM_NAME} 可用！"
                 ReportWarning "LYNIS" "Version of Lynis is very old and should be updated"
                 Report "lynis_update_available=1"
                 UPDATE_AVAILABLE=1
             else
                 Display --indent 2 --text "- Program update status... " --result "${STATUS_UPDATE_AVAILABLE}" --color YELLOW
-                LogText "Result: newer ${PROGRAM_NAME} release available!"
-                ReportSuggestion "LYNIS" "Version of Lynis outdated, consider upgrading to the latest version"
+                LogText "结果：有新版 ${PROGRAM_NAME} 可用！"
+                ReportSuggestion "LYNIS" "Lynis 版本已过时，建议升级到最新版本"
                 Report "lynis_update_available=1"
                 UPDATE_AVAILABLE=1
             fi
@@ -810,7 +810,7 @@ ${NORMAL}
                 echo ""
             fi
             echo "        ${WHITE}Please update to the latest version.${NORMAL}"
-            echo "        New releases include additional features, bug fixes, and tests.${NORMAL}"
+            echo "        新版本包含更多功能、错误修复和检查项目。${NORMAL}"
         elif [ ${OLD_RELEASE} -eq 1 ]; then
             echo ""
             echo "      ==============================================================================="
@@ -960,7 +960,7 @@ ${NORMAL}
                                     LogTextBreak
                                     LogText "Result: ${FIND2} plugin (phase ${PLUGIN_PHASE}) finished"
                                 else
-                                    LogText "Plugin ${FIND2}: Skipped (bad file permissions, should be 644, 640, 600 or 400)"
+                                    LogText "插件 ${FIND2}：已跳过（文件权限不安全，应为 644、640、600 或 400）"
                                 fi
                             else
                                 LogText "Plugin ${FIND2}: Skipped for phase ${PLUGIN_PHASE} (no file found: ${PLUGINFILE})"
@@ -1043,14 +1043,14 @@ ${NORMAL}
                 if SafeFile ${INCLUDE_FILE}; then
                     . ${INCLUDE_FILE}
                 else
-                    LogText "Exception: skipping test category ${INCLUDE_TEST}, file ${INCLUDE_FILE} has bad permissions (should be 640, 600 or 400)"
+                    LogText "异常：跳过检查类别 ${INCLUDE_TEST}，文件 ${INCLUDE_FILE} 权限不安全（应为 640、600 或 400）"
                     ReportWarning "NONE" "Invalid permissions on tests file tests_${INCLUDE_TEST}"
                     # Insert a section and warn user also on screen
                     InsertSection "${SECTION_GENERAL}"
                     Display --indent 2 --text "- Running test category ${INCLUDE_TEST}... " --result "${STATUS_SKIPPED}" --color RED
                 fi
             else
-                echo "Error: Can't find file (category: ${INCLUDE_TEST})"
+                echo "错误：找不到文件（类别：${INCLUDE_TEST}）"
             fi
         done
     fi
@@ -1067,10 +1067,10 @@ ${NORMAL}
             LogText "Result: tests_custom file found in include directory"
             if SafePerms ${INCLUDEDIR}/tests_custom; then
                 Display --indent 2 --text "- Start custom tests... "
-                LogText "Result: file permissions fine, running custom tests"
+                LogText "结果：文件权限正常，正在运行自定义检查"
                 . ${INCLUDEDIR}/tests_custom
             else
-                LogText "Exception: skipping custom tests, file has bad permissions (should be 640, 600 or 400)"
+                LogText "异常：跳过自定义检查，文件权限不安全（应为 640、600 或 400）"
                 ReportWarning "NONE" "Invalid permissions on custom tests file"
                 Display --indent 2 --text "- Running custom tests... " --result "${STATUS_WARNING}" --color RED
             fi
@@ -1094,7 +1094,7 @@ ${NORMAL}
                 InsertPluginSection "Helper: ${HELPER}"
                 . ${INCLUDEDIR}/helper_${HELPER} ${HELPER_PARAMS}
             else
-                echo "Error, could not find helper"
+                echo "错误：找不到辅助程序"
             fi
         fi
     fi
@@ -1145,7 +1145,7 @@ ${NORMAL}
             SafePerms ${INCLUDEDIR}/data_upload
             . ${INCLUDEDIR}/data_upload
         else
-            echo "Fatal error: can't find upload_data script"
+            echo "致命错误：找不到 upload_data 脚本"
         fi
     fi
 

@@ -202,7 +202,7 @@
     # Test        : ACCT-9632
     # Description : Check auditd configuration file
     if [ -n "${AUDITDBINARY}" -a ${LINUX_AUDITD_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no ACCT-9632 --os Linux --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 auditd configuration file"
+    Register --test-no ACCT-9632 --os Linux --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 auditd 配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         LogText "检查：检查 auditd 配置文件"
         for DIR in ${AUDITD_CONF_LOCS}; do
@@ -228,7 +228,7 @@
     # Test        : ACCT-9634
     # Description : Check auditd log file
     if [ -n "${AUDITDBINARY}" -a ${LINUX_AUDITD_RUNNING} -eq 1 -a -n "${AUDITD_CONF_FILE}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no ACCT-9634 --os Linux --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 auditd log file"
+    Register --test-no ACCT-9634 --os Linux --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 auditd 日志文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         LogText "检查：检查 auditd 日志文件"
         DEFAULT_LOCATION="/var/log/audit/audit.log"
@@ -244,11 +244,11 @@
 
         if [ -f ${FIND} ]; then
             LogText "结果：日志文件 ${FIND} 存在"
-            Display --indent 4 --text "- 检查 auditd log file" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- 检查 auditd 日志文件" --result "${STATUS_FOUND}" --color GREEN
             Report "logfile[]=${FIND}"
         else
             LogText "结果：磁盘上找不到日志文件 ${FIND}"
-            Display --indent 4 --text "- 检查 auditd log file" --result "${STATUS_SUGGESTION}" --color RED
+            Display --indent 4 --text "- 检查 auditd 日志文件" --result "${STATUS_SUGGESTION}" --color RED
             ReportWarning "${TEST_NO}" "检查 auditd 日志文件位置"
         fi
     fi
@@ -449,7 +449,7 @@
     # Test        : ACCT-9672
     # Description : Check cmd configuration file
     if [ -n "${CMDBINARY}" -a ${LINUX_CMD_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no ACCT-9672 --os Linux --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 cmd configuration file"
+    Register --test-no ACCT-9672 --os Linux --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 cmd 配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         LogText "检查：检查 cmd 配置文件"
         for DIR in ${CMD_CONF_LOCS}; do
@@ -462,10 +462,10 @@
         done
         # Check if we discovered the configuration file. It should be there is the binaries are available and process is running
         if [ -n "${CMD_CONF_FILE}" ]; then
-            Display --indent 4 --text "- 检查 cmd configuration file" --result "${STATUS_OK}" --color GREEN
+            Display --indent 4 --text "- 检查 cmd 配置文件" --result "${STATUS_OK}" --color GREEN
         else
             LogText "结果：找不到 cmd 配置文件"
-            Display --indent 4 --text "- 检查 cmd configuration file" --result "${STATUS_FOUND}" --color RED
+            Display --indent 4 --text "- 检查 cmd 配置文件" --result "${STATUS_FOUND}" --color RED
             ReportSuggestion "${TEST_NO}" "确定 cmd 配置文件的位置"
         fi
     fi

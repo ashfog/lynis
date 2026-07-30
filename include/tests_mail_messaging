@@ -285,7 +285,7 @@
             Report "postfix_config_error=1"
             Display --indent 6 --text "- Postfix configuration errors" --result "${STATUS_WARNING}" --color RED
             LogText "Result: found an error or warning in the Postfix configuration. Manual check suggested."
-            ReportSuggestion "${TEST_NO}" "Found a configuration error in Postfix" "${POSTFIX_CONFIGFILE}" "text:run postconf > /dev/null"
+            ReportSuggestion "${TEST_NO}" "发现 Postfix 配置错误" "${POSTFIX_CONFIGFILE}" "text:运行 postconf > /dev/null"
         else
             LogText "Result: all looks to be fine with Postfix configuration"
             if IsVerbose; then Display --indent 6 --text "- Postfix configuration errors" --result "${STATUS_OK}" --color GREEN; fi
@@ -325,7 +325,7 @@
 
         if [ ${SHOWWARNING} -eq 1 ]; then
             Display --indent 6 --text "- Postfix banner" --result "${STATUS_WARNING}" --color RED
-            LogText "Result: found OS, or mail_name in SMTP banner, and/or mail_name contains 'Postfix'."
+            LogText "结果：SMTP 横幅中发现操作系统或 mail_name，或者 mail_name 包含 'Postfix'。"
             ReportWarning "${TEST_NO}" "Found some information disclosure in SMTP banner (OS or software name)"
             ReportSuggestion "${TEST_NO}" "You are advised to hide the mail_name (option: smtpd_banner) from your postfix configuration. Use postconf -e or change your main.cf file (${POSTFIX_CONFIGFILE})"
         else
@@ -341,7 +341,7 @@
         if [ "$(postconf -h inet_interfaces 2> /dev/null)" = "all" ]; then
             if ! SkipAtomicTest "${TEST_NO}:disable_vrfy_command"; then
                 if [ "$(postconf -h disable_vrfy_command 2> /dev/null)" = "no" ]; then
-                    ReportSuggestion "${TEST_NO}:disable_vrfy_command" "Disable the 'VRFY' command" "disable_vrfy_command=no" "text:run postconf -e disable_vrfy_command=yes to change the value"
+                    ReportSuggestion "${TEST_NO}:disable_vrfy_command" "禁用 'VRFY' 命令" "disable_vrfy_command=no" "text:运行 postconf -e disable_vrfy_command=yes 修改该值"
                 fi
             fi
         fi

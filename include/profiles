@@ -41,15 +41,15 @@
             Display --text " "
             Display --text "=================================================================================================="
             DisplayWarning "Your profile contains old-style configuration entries. See log file for more details and how to convert these entries"
-            Display --indent 2 --text "* ${RED}ISSUE${NORMAL}"
+            Display --indent 2 --text "* ${RED}问题${NORMAL}"
             Display --indent 2 --text "Your profile has one or more lines that are in an old format (key:value). They need to be converted into the new format (key=value) or disabled."
             Display --text " "
-            Display --indent 2 --text "* ${GREEN}HOW TO RESOLVE${NORMAL}"
+            Display --indent 2 --text "* ${GREEN}解决方法${NORMAL}"
             Display --indent 2 --text "Use grep to see the relevant matches (grep -E \"^[a-z-]{1,}:\" custom.prf)"
             Display --text " "
             Display --text "=================================================================================================="
             Display --text " "
-            LogText "Insight: Profile '${PROFILE}' contains one or more old-style configuration entries"
+            LogText "提示：配置文件 '${PROFILE}' 包含一个或多个旧格式配置项"
             ReportWarning "GEN-0020" "Your profile contains one or more old-style configuration entries"
             sleep 10
         fi
@@ -57,12 +57,12 @@
         # Security check for unexpected and possibly harmful escape characters (hyphen should be listed as first or last character)
         DATA=$(grep -Ev '^$|^ |^#|^config:' "${PROFILE}" | tr -d '[a-zA-Z0-9]/\[\]\(\)_\|,\.:;= \n\r-')
         if ! IsEmpty "${DATA}"; then
-            DisplayWarning "Your profile '${PROFILE}' contains unexpected characters. See the log file for more information."
-            LogText "Found unexpected or possibly harmful characters in profile '${PROFILE}'. See which characters matched in the output below and compare them with your profile."
+            DisplayWarning "配置文件 '${PROFILE}' 包含异常字符，详情请查看日志文件。"
+            LogText "在配置文件 '${PROFILE}' 中发现异常或可能有害的字符。请查看下方匹配结果并与配置文件对照。"
             for I in $(printf ${DATA} | od -An -ta); do
                 LogText "Output: ${I}"
             done
-            LogText "Suggestion: comment incorrect lines with a '#' and try again. Open a GitHub issue if valid characters are blocked"
+            LogText "建议：使用 '#' 注释不正确的行后重试。如果合法字符被阻止，请提交 GitHub issue"
             ExitFatal "unexpected characters in profile. Stopping execution (security measure)"
         fi
 
@@ -230,7 +230,7 @@
 
                 # Language
                 language | lang)
-                    LogText "Language set via profile to '${VALUE}'"
+                    LogText "通过配置文件将语言设置为 '${VALUE}'"
                     if [ -n "${VALUE}" ]; then LANGUAGE="${VALUE}"; fi
                     AddSetting "language" "${LANGUAGE}" "Language"
                 ;;
@@ -271,11 +271,11 @@
 
                 # Plugin
                 plugin)
-                    LogText "Plugin '${VALUE}' enabled according profile (${PROFILE})"
+                    LogText "根据配置文件（${PROFILE}）启用插件 '${VALUE}'"
                 ;;
 
                 disable-plugin)
-                    LogText "Plugin '${VALUE}' disabled according profile (${PROFILE})"
+                    LogText "根据配置文件（${PROFILE}）禁用插件 '${VALUE}'"
                     DISABLED_PLUGINS="${DISABLED_PLUGINS} ${VALUE}"
                 ;;
 
@@ -284,7 +284,7 @@
                     if IsEmpty "${PLUGINDIR}"; then
                         PLUGINDIR="${VALUE}"
                     else
-                        LogText "Plugin directory was already set to ${PLUGINDIR} before (most likely as a program argument), not overwriting"
+                        LogText "插件目录此前已设置为 ${PLUGINDIR}（很可能通过程序参数设置），不进行覆盖"
                     fi
                     AddSetting "plugin-dir" "${PLUGINDIR}" "Plugin directory"
                 ;;
@@ -526,12 +526,12 @@
     # Set default values (only if not configured in profile)
     if [ -z "${MACHINE_ROLE}" ]; then
         MACHINE_ROLE="server"
-        LogText "Set option to default value: MACHINE_ROLE --> ${MACHINE_ROLE}"
+        LogText "将选项设置为默认值：MACHINE_ROLE --> ${MACHINE_ROLE}"
     fi
 
     if [ -z "${NTPD_ROLE}" ]; then
         NTPD_ROLE="client"
-        LogText "Set option to default value: NTPD_ROLE --> ${NTPD_ROLE}"
+        LogText "将选项设置为默认值：NTPD_ROLE --> ${NTPD_ROLE}"
     fi
 #
 #################################################################################

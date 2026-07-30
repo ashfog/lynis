@@ -235,7 +235,7 @@
         FIND=$(${FAIL2BANCLIENT} -d | ${TRBINARY} -d '[]' | ${TRBINARY} -d "'" | ${AWKBINARY} -F, '{ if ($1=="add") { print $2 }}' | ${TRBINARY} -d ' ')
         if [ -n "${FIND}" ]; then
             for F2BSERVICE in ${FIND}; do
-                LogText "Result: service '${F2BSERVICE}' enabled"
+                LogText "结果：服务 '${F2BSERVICE}' 已启用"
                 Report "fail2ban_enabled_service[]=${F2BSERVICE}"
             done
             LogText "Result: found at least one enabled jail"
