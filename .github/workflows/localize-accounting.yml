@@ -1,0 +1,180 @@
+name: One-time accounting localization
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/localize-accounting.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  localize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Translate accounting and auditing checks
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('include/tests_accounting')
+          text = path.read_text(encoding='utf-8')
+          original = text
+          replacements = [
+              ('Check for available FreeBSD accounting information', '检查可用的 FreeBSD 进程记账信息'),
+              ('Check for available OpenBSD accounting information', '检查可用的 OpenBSD 进程记账信息'),
+              ('Check for available Linux accounting information', '检查可用的 Linux 进程记账信息'),
+              ('- Checking accounting information', '- 检查进程记账信息'),
+              ('Result: ${ROOTDIR}var/account/acct available', '结果：${ROOTDIR}var/account/acct 可用'),
+              ('Result: No accounting information available', '结果：没有可用的进程记账信息'),
+              ('Remark: Possibly there is another location where the accounting data is stored', '说明：进程记账数据可能存储在其他位置'),
+              ('Enable process accounting', '启用进程记账'),
+              ('Test: Check accounting information', '检查：检查进程记账信息'),
+              ('Result: ${ROOTDIR}var/account/pacct available', '结果：${ROOTDIR}var/account/pacct 可用'),
+              ('Result: ${ROOTDIR}var/log/account/pacct available', '结果：${ROOTDIR}var/log/account/pacct 可用'),
+              ('Result: ${ROOTDIR}var/log/pacct available', '结果：${ROOTDIR}var/log/pacct 可用'),
+              ('Result: No accounting information available (${ROOTDIR}var/account/pacct, ${ROOTDIR}var/log/account/pacct nor ${ROOTDIR}var/log/pacct exist)', '结果：没有可用的进程记账信息（${ROOTDIR}var/account/pacct、${ROOTDIR}var/log/account/pacct 和 ${ROOTDIR}var/log/pacct 均不存在）'),
+              ('Check for sysstat accounting data', '检查 sysstat 记账数据'),
+              ('Test: check ${ROOTDIR}etc/default/sysstat presence', '检查：确认 ${ROOTDIR}etc/default/sysstat 是否存在'),
+              ('Result: ${ROOTDIR}etc/default/sysstat found', '结果：发现 ${ROOTDIR}etc/default/sysstat'),
+              ('Result: sysstat enabled via ${ROOTDIR}etc/default/sysstat', '结果：通过 ${ROOTDIR}etc/default/sysstat 启用了 sysstat'),
+              ('Result: sysstat disabled via ${ROOTDIR}etc/default/sysstat', '结果：通过 ${ROOTDIR}etc/default/sysstat 禁用了 sysstat'),
+              ('Result: sysstat enabled via ${ROOTDIR}etc/cron.d/sysstat', '结果：通过 ${ROOTDIR}etc/cron.d/sysstat 启用了 sysstat'),
+              ('Result: sysstat disabled via ${ROOTDIR}etc/cron.d/sysstat', '结果：通过 ${ROOTDIR}etc/cron.d/sysstat 禁用了 sysstat'),
+              ('Result: sysstat systemd unit found', '结果：发现 sysstat systemd 单元'),
+              ('Result: sysstat enabled via systemd', '结果：通过 systemd 启用了 sysstat'),
+              ('Result: sysstat disabled via systemd', '结果：通过 systemd 禁用了 sysstat'),
+              ('Result: sysstat not found via ${ROOTDIR}etc/default/sysstat or ${ROOTDIR}etc/cron.d/sysstat or as a systemd unit', '结果：未在 ${ROOTDIR}etc/default/sysstat、${ROOTDIR}etc/cron.d/sysstat 或 systemd 单元中发现 sysstat'),
+              ('- Checking sysstat accounting data', '- 检查 sysstat 记账数据'),
+              ('Enable sysstat to collect accounting (disabled)', '启用 sysstat 以收集记账数据（当前已禁用）'),
+              ('Enable sysstat to collect accounting (cron disabled)', '启用 sysstat 以收集记账数据（cron 当前已禁用）'),
+              ('Enable sysstat to collect accounting (no results)', '启用 sysstat 以收集记账数据（当前未发现配置）'),
+              ('Check for auditd', '检查 auditd'),
+              ('Test: Check auditd status', '检查：检查 auditd 状态'),
+              ('Result: auditd running', '结果：auditd 正在运行'),
+              ('Result: auditd not active', '结果：auditd 未运行'),
+              ('- Checking auditd', '- 检查 auditd'),
+              ('Enable auditd to collect audit information', '启用 auditd 以收集审计信息'),
+              ('Check for auditd rules', '检查 auditd 规则'),
+              ('Test: Checking auditd rules', '检查：检查 auditd 规则'),
+              ('Result: auditd rules empty', '结果：auditd 规则为空'),
+              ('- Checking audit rules', '- 检查审计规则'),
+              ('Audit daemon is enabled with an empty ruleset. Disable the daemon or define rules', '审计守护进程已启用，但规则集为空；请禁用该守护进程或定义审计规则'),
+              ('Result: found auditd rules', '结果：发现 auditd 规则'),
+              ('Output: ${RULE}', '输出：${RULE}'),
+              ('Check for auditd configuration file', '检查 auditd 配置文件'),
+              ('Test: Checking auditd configuration file', '检查：检查 auditd 配置文件'),
+              ('Result: Found ${DIR}/auditd.conf', '结果：发现 ${DIR}/auditd.conf'),
+              ('Result: ${DIR}/auditd.conf not found', '结果：未找到 ${DIR}/auditd.conf'),
+              ('- Checking audit configuration file', '- 检查审计配置文件'),
+              ('Result: could not find auditd configuration file', '结果：找不到 auditd 配置文件'),
+              ('Determine the location of auditd configuration file', '确定 auditd 配置文件的位置'),
+              ('Check for auditd log file', '检查 auditd 日志文件'),
+              ('Test: Checking auditd log file', '检查：检查 auditd 日志文件'),
+              ('Result: log file is defined', '结果：已定义日志文件'),
+              ('Defined value: ${FIND}', '配置值：${FIND}'),
+              ('Result: log file is not defined', '结果：未定义日志文件'),
+              ('Assumed default location: ${DEFAULT_LOCATION}', '采用默认位置：${DEFAULT_LOCATION}'),
+              ('Result: log file ${FIND} exists on disk', '结果：日志文件 ${FIND} 存在'),
+              ("Result: can't find log file ${FIND} on disk", '结果：磁盘上找不到日志文件 ${FIND}'),
+              ('- Checking auditd log file', '- 检查 auditd 日志文件'),
+              ('Check auditd log file location', '检查 auditd 日志文件位置'),
+              ('Check for Snoopy wrapper and logger', '检查 Snoopy 命令包装器和日志记录器'),
+              ('Result: found ${FILE}', '结果：发现 ${FILE}'),
+              ('- Checking Snoopy', '- 检查 Snoopy'),
+              ('Result: found ${ROOTDIR}etc/ld.so.preload, testing if snoopy.so is listed', '结果：发现 ${ROOTDIR}etc/ld.so.preload，检查是否列出了 snoopy.so'),
+              ('Result: found snoopy in ld.so.preload', '结果：在 ld.so.preload 中发现 snoopy'),
+              ('Output: ${FIND}', '输出：${FIND}'),
+              ('- Library in ld.so.preload', '- ld.so.preload 中的库'),
+              ('Snoopy is installed but not loaded via ${ROOTDIR}etc/ld.so.preload', 'Snoopy 已安装，但未通过 ${ROOTDIR}etc/ld.so.preload 加载'),
+              ('Result: ${ROOTDIR}etc/ld.so.preload does not exist', '结果：${ROOTDIR}etc/ld.so.preload 不存在'),
+              ('Unsure how Snoopy might be loaded as ld.so.preload does not exist', '由于 ld.so.preload 不存在，无法确定 Snoopy 的加载方式'),
+              ('Check Solaris audit daemon', '检查 Solaris 审计守护进程'),
+              ('Test: check if audit daemon is running', '检查：确认审计守护进程是否正在运行'),
+              ('Result: Solaris audit daemon is running', '结果：Solaris 审计守护进程正在运行'),
+              ('Result: Solaris audit daemon is not running', '结果：Solaris 审计守护进程未运行'),
+              ('- Checking Solaris audit daemon status', '- 检查 Solaris 审计守护进程状态'),
+              ('Check auditd SMF status', '检查 auditd 的 SMF 状态'),
+              ('Test: check if auditd service is enabled and online', '检查：确认 auditd 服务是否已启用并在线'),
+              ('Result: auditd service is online', '结果：auditd 服务在线'),
+              ('Check status of audit daemon', '检查审计守护进程状态'),
+              ('Check BSM auditing in ${ROOTDIR}etc/system', '检查 ${ROOTDIR}etc/system 中的 BSM 审计'),
+              ('Test: check if BSM is enabled in ${ROOTDIR}etc/system', '检查：确认 ${ROOTDIR}etc/system 中是否启用了 BSM'),
+              ('Result: BSM is enabled in ${ROOTDIR}etc/system', '结果：${ROOTDIR}etc/system 中已启用 BSM'),
+              ('- Checking Solaris BSM (${ROOTDIR}etc/system)', '- 检查 Solaris BSM（${ROOTDIR}etc/system）'),
+              ('Result: ${ROOTDIR}etc/system does not exist', '结果：${ROOTDIR}etc/system 不存在'),
+              ('Check BSM auditing in module list', '检查模块列表中的 BSM 审计'),
+              ('Test: check if c2audit module is active', '检查：确认 c2audit 模块是否处于活动状态'),
+              ('Result: c2audit found in modinfo output', '结果：在 modinfo 输出中发现 c2audit'),
+              ('Result: c2audit not found in modinfo output', '结果：在 modinfo 输出中未发现 c2audit'),
+              ('- Checking Solaris BSM (modules list)', '- 检查 Solaris BSM（模块列表）'),
+              ('Result: ${ROOTDIR}usr/sbin/modinfo does not exist, skipping test', '结果：${ROOTDIR}usr/sbin/modinfo 不存在，跳过检查'),
+              ('Check location of audit events', '检查审计事件存储位置'),
+              ('Test: check ${ROOTDIR}etc/security/audit_control for event logging location', '检查：在 ${ROOTDIR}etc/security/audit_control 中检查事件日志位置'),
+              ('Result: file ${ROOTDIR}etc/security/audit_control found', '结果：发现文件 ${ROOTDIR}etc/security/audit_control'),
+              ('Result: found location ${FIND}', '结果：发现位置 ${FIND}'),
+              ('Test: Checking if location is a valid directory', '检查：确认该位置是否为有效目录'),
+              ('Result: location ${FIND} is valid', '结果：位置 ${FIND} 有效'),
+              ('Result: location ${FIND} does not exist', '结果：位置 ${FIND} 不存在'),
+              ('- Checking Solaris audit location', '- 检查 Solaris 审计位置'),
+              ('Check if the Solaris audit directory is available', '检查 Solaris 审计目录是否可用'),
+              ('Result: unknown event location', '结果：审计事件位置未知'),
+              ('Check if the Solaris audit directory is properly configured', '检查 Solaris 审计目录是否配置正确'),
+              ('Result: could not find ${ROOTDIR}etc/security/audit_control', '结果：找不到 ${ROOTDIR}etc/security/audit_control'),
+              ('Check Solaris auditing stats', '检查 Solaris 审计统计信息'),
+              ('Test: Check auditing statistics', '检查：检查审计统计信息'),
+              ('Output: ${ITEM}', '输出：${ITEM}'),
+              ('- Checking Solaris audit statistics', '- 检查 Solaris 审计统计信息'),
+              ('Result: ${ROOTDIR}usr/sbin/auditstat not found, skipping test', '结果：未找到 ${ROOTDIR}usr/sbin/auditstat，跳过检查'),
+              ('Check for cmd', '检查 cmd'),
+              ('Test: Check cmd status', '检查：检查 cmd 状态'),
+              ('Result: cmd running', '结果：cmd 正在运行'),
+              ('Result: cmd not active', '结果：cmd 未运行'),
+              ('- Checking cmd', '- 检查 cmd'),
+              ('Install cmd to collect audit information', '安装 cmd 以收集审计信息'),
+              ('Check for cmd configuration file', '检查 cmd 配置文件'),
+              ('Test: Checking cmd configuration file', '检查：检查 cmd 配置文件'),
+              ('Result: Found ${DIR}/config.ini', '结果：发现 ${DIR}/config.ini'),
+              ('Result: ${DIR}/config.ini not found', '结果：未找到 ${DIR}/config.ini'),
+              ('- Checking cmd configuration file', '- 检查 cmd 配置文件'),
+              ('Result: could not find cmd configuration file', '结果：找不到 cmd 配置文件'),
+              ('Determine the location of cmd configuration file', '确定 cmd 配置文件的位置'),
+              ('--result "LOADED"', '--result "已加载"'),
+              ('--result "NOT ONLINE"', '--result "未在线"'),
+          ]
+
+          required = ['Check for auditd', 'Check for sysstat accounting data', 'Check Solaris audit daemon']
+          for marker in required:
+              if marker not in original:
+                  raise SystemExit(f'missing required marker: {marker}')
+
+          changed = 0
+          for old, new in replacements:
+              if old in text:
+                  text = text.replace(old, new)
+                  changed += 1
+
+          if changed < 85:
+              raise SystemExit(f'too few replacements applied: {changed}')
+
+          path.write_text(text, encoding='utf-8')
+          print(f'applied {changed} accounting translations')
+          PY
+
+          sh -n include/tests_accounting
+
+      - name: Commit localized accounting checks and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/localize-accounting.yml
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add include/tests_accounting .github/workflows/localize-accounting.yml
+          git commit -m "i18n: translate accounting and audit checks"
+          git push origin HEAD:master
