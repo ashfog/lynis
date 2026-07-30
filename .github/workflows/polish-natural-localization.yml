@@ -1,0 +1,249 @@
+name: One-time polish natural localization
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/polish-natural-localization.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Polish mixed visible strings
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          Q = re.compile(r'"((?:\\.|[^"\\])*)"')
+
+          EXACT = {
+              '测试：检查tests_custom文件': '检查：检查 tests_custom 文件',
+              '结果：在包含目录中找到tests_custom文件': '结果：在 include 目录中找到 tests_custom 文件',
+              '找到已知的二进制文件：': '发现已知程序：',
+              'Grsecurity Administration Utility': 'Grsecurity 管理工具',
+              '结果：没有可用的进程记账信息 (${ROOTDIR}var/account/pacct, ${ROOTDIR}var/log/account/pacct nor ${ROOTDIR}var/log/pacct exist)': '结果：没有可用的进程记账信息（${ROOTDIR}var/account/pacct、${ROOTDIR}var/log/account/pacct 和 ${ROOTDIR}var/log/pacct 均不存在）',
+              '- 检查用户密码有效期 (minimum)': '- 检查用户密码最短有效期',
+              'Result: 发现默认运行级别 \'${FIND}\'': '结果：发现默认运行级别 \'${FIND}\'',
+              'RUNLEVEL ${FIND}': '运行级别 ${FIND}',
+              '结果：发现No eXecute': '结果：发现不可执行（NX）支持',
+              '尽可能使用启用 PAE 的内核以获得本机 No eXecute/eXecute Disable 支持': '尽可能使用启用 PAE 的内核，以获得原生的不可执行（NX）/执行禁用支持',
+              '[ ${WHITE}SKIPPED${NORMAL} ]': '[ ${WHITE}已跳过${NORMAL} ]',
+              '测试：检查存在 ${ROOTDIR}etc/profile': '检查：确认 ${ROOTDIR}etc/profile 是否存在',
+              '测试：检查存在 ${DIR}etc/security/limits.conf': '检查：确认 ${DIR}etc/security/limits.conf 是否存在',
+              '- 检查 wazuh-agent status': '- 检查 wazuh-agent 状态',
+              '- 检查 wazuh-agent daemon status': '- 检查 wazuh-agent 守护进程状态',
+              '- 检查 loghost entry': '- 检查 loghost 条目',
+              '检查 loghost is localhost': '检查 loghost 是否为 localhost',
+              '- 检查 loghost entry is localhost': '- 检查 loghost 条目是否为 localhost',
+              '结果：发现用于远程日志的目标 ${DESTINATION} with wazuh': '结果：发现 Wazuh 用于远程日志的目标 ${DESTINATION}',
+              '建议您从 postfix 配置中隐藏 mail_name（选项：smtpd_banner）。使用 postconf -e or 更改您的 main.cf 文件 (${POSTFIX_CONFIGFILE})': '建议在 Postfix 配置中隐藏 mail_name（选项：smtpd_banner）。可以使用 postconf -e，或修改 main.cf 文件（${POSTFIX_CONFIGFILE}）',
+              '- 检查 sources.list 中的安全仓库 or directory': '- 检查 sources.list 或目录中的安全仓库',
+              '- 检查存在漏洞的软件包 (apt-get only)': '- 检查存在漏洞的软件包（仅 apt-get）',
+              '${COUNT} FOUND': '已发现 ${COUNT} 项',
+              '检查您的 nginx error_log 语句': '检查 nginx 的 error_log 配置',
+              '检查您的 nginx error_log 语句并禁用调试模式': '检查 nginx 的 error_log 配置并禁用调试模式',
+              'OS: Linux': '操作系统：Linux',
+              'OS: *BSD': '操作系统：*BSD',
+              'url:https://cisofy.com/support/': '网址：https://cisofy.com/support/',
+              '结果：${I}：找不到disabled_functions': '结果：${I}：未找到 disabled_functions',
+              '结果：${I}：找到disabled_functions': '结果：${I}：找到 disabled_functions',
+              '在配置文件中找到master=yes': '在配置文件中找到 master=yes',
+              '在配置文件中找到slave=yes': '在配置文件中找到 slave=yes',
+              '检查：检查${ROOTDIR}etc/sysconfig/network': '检查：检查 ${ROOTDIR}etc/sysconfig/network',
+              'ModSecurity：Web应用程序防火墙': 'ModSecurity：Web 应用程序防火墙',
+              '检查 McAfee VirusScan for Command Line': '检查 McAfee VirusScan for Command Line',
+              '检查：McAfee VirusScan for Command Line 是否存在': '检查：确认是否存在 McAfee VirusScan for Command Line',
+              '结果：文件 ${ROOTDIR}etc/security/policy.conf 不存在': '结果：${ROOTDIR}etc/security/policy.conf 不存在',
+          }
+
+          PHRASES = [
+              ('Result:', '结果：'), ('Test:', '检查：'),
+              (' status', ' 状态'), (' daemon status', ' 守护进程状态'),
+              (' entry is localhost', ' 条目是否为 localhost'), (' entry', ' 条目'),
+              (' is localhost', ' 是否为 localhost'), (' with wazuh', '，使用 Wazuh'),
+              (' (minimum)', '（最小值）'), (' (apt-get only)', '（仅 apt-get）'),
+              (' or directory', '或目录'), (' or ', '或'), (' only)', ' 仅）'),
+              (' configuration file', ' 配置文件'), (' configuration', ' 配置'),
+              (' log file', ' 日志文件'), (' daemon', ' 守护进程'),
+              (' blacklisted', ' 已列入黑名单'), (' is blacklisted', ' 已列入黑名单'),
+              (' FOUND', ' 已发现'), (' SKIPPED', ' 已跳过'),
+              ('Administration Utility', '管理工具'),
+          ]
+
+          def fields(line, spans):
+              s = line.lstrip(); selected = set()
+              if not s or s.startswith('#'):
+                  return selected
+              if 'Register ' in line and '--description' in line:
+                  p = line.find('--description')
+                  for i,m in enumerate(spans):
+                      if m.start() > p: selected.add(i); break
+              if 'Display ' in line:
+                  for flag in ('--text','--result'):
+                      p=line.find(flag)
+                      if p >= 0:
+                          for i,m in enumerate(spans):
+                              if m.start() > p: selected.add(i); break
+              if any(x in line for x in ('DisplayError ','DisplayWarning ','DisplaySuggestion ')) and spans:
+                  selected.add(0)
+              if 'LogText ' in line:
+                  p=line.find('LogText ')
+                  for i,m in enumerate(spans):
+                      if m.start() > p: selected.add(i); break
+              for fn in ('ReportWarning ','ReportSuggestion ','ReportException '):
+                  p=line.find(fn)
+                  if p >= 0:
+                      after=[i for i,m in enumerate(spans) if m.start() > p]
+                      if len(after) >= 2: selected.add(after[1])
+                      for i in after[2:]:
+                          v=spans[i].group(1)
+                          if v.startswith(('text:','manual:','details:','solution:')): selected.add(i)
+              if 'SKIPREASON=' in line:
+                  p=line.find('SKIPREASON=')
+                  for i,m in enumerate(spans):
+                      if m.start() > p: selected.add(i); break
+              if s.startswith(('echo ','printf ')) or re.match(r'^(?:if .*; then )?(?:echo|printf) ',s):
+                  if not re.search(r'>\s*\$?\{?(?:LOGFILE|REPORTFILE|SETTINGS_FILE|TMPFILE)',line):
+                      selected.update(range(len(spans)))
+              return selected
+
+          files=[Path('lynis')]+sorted(p for p in Path('include').iterdir() if p.is_file())
+          changed=[]
+          for path in files:
+              try: lines=path.read_text(encoding='utf-8').splitlines(keepends=True)
+              except UnicodeDecodeError: continue
+              output=[]; touched=False
+              for line in lines:
+                  spans=list(Q.finditer(line)); ids=fields(line,spans)
+                  if not ids:
+                      output.append(line); continue
+                  values=[m.group(1) for m in spans]
+                  for i in ids:
+                      v=values[i]
+                      prefix=''
+                      for scheme in ('text:','manual:','details:','solution:'):
+                          if v.startswith(scheme): prefix=scheme; v=v[len(scheme):]; break
+                      if v in EXACT: v=EXACT[v]
+                      for old,new in sorted(PHRASES,key=lambda x:len(x[0]),reverse=True):
+                          v=v.replace(old,new)
+                      v=re.sub(r'\s+([，。；：！？）])',r'\1',v)
+                      v=re.sub(r'（\s+','（',v)
+                      v=re.sub(r' {2,}',' ',v)
+                      values[i]=(prefix+v).replace('"','\\"')
+                  parts=[];last=0
+                  for m,v in zip(spans,values):
+                      parts.append(line[last:m.start(1)]);parts.append(v);last=m.end(1)
+                  parts.append(line[last:]);new=''.join(parts)
+                  if new!=line:touched=True
+                  output.append(new)
+              if touched:
+                  path.write_text(''.join(output),encoding='utf-8');changed.append(str(path))
+
+          # Machine-readable prefixes and URLs must remain ASCII.
+          for path in files:
+              try:t=path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:continue
+              before=t
+              for a,b in [('https：//','https://'),('http：//','http://'),('ftp：//','ftp://'),('text：','text:'),('file：','file:'),('url：','url:'),('manual：','manual:'),('command：','command:'),('details：','details:'),('solution：','solution:')]:
+                  t=t.replace(a,b)
+              if t!=before:
+                  path.write_text(t,encoding='utf-8')
+                  if str(path) not in changed:changed.append(str(path))
+
+          Path('/tmp/polished-localization-files').write_text('\n'.join(changed),encoding='utf-8')
+          PY
+
+          while IFS= read -r file; do
+            [ -n "$file" ] && sh -n "$file"
+          done < /tmp/polished-localization-files
+
+      - name: Audit remaining mixed prose
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          Q=re.compile(r'"((?:\\.|[^"\\])*)"')
+          CJK=re.compile(r'[\u3400-\u9fff]')
+          GRAMMAR=re.compile(r'\b(result|test|testing|checking|found|status|entry|with|without|and|or|is|are|was|were|only|minimum|maximum|configuration|directory|available|missing|exists|exist|skipped|warning|error|unable|unknown|please|should|could|would|more|less|than|current|latest|outdated)\b',re.I)
+          TECH=[
+              'Rootkit Hunter','Linux Malware Detect','McAfee VirusScan for Command Line','McAfee Antivirus for Linux',
+              'Synology Antivirus Essential','Trend Micro Anti Malware','Wazuh Agent','Little Snitch Daemon','Hands Off! Daemon','LuLu Daemon',
+              'systemd-analyze security','docker version','docker info','systemctl service','service/rc.conf','rcctl ls all',
+              'mail_name','main.cf','smtpd_banner','Safe_port','external_acl_type','httpd_suppress_version_string',
+              'pkg_info','pkg_admin audit','arch-audit','apt-get','apt-cache','apk version','rpm -q kernel','glsa-check',
+              'readonly','typeset -r','TMOUT','disabled_functions','register_globals','expose_php','enable_dl','allow_url_fopen','allow_url_include',
+              'master=yes','slave=yes','boot1','boot2','loader','No eXecute','eXecute Disable','lockdown_keys','c2audit','modinfo',
+              'error_log','access_log','mod_reqtimeout/mod_qos','mod_evasive','ModSecurity','wazuh-agent','loghost','Shell','BSM','COPYRIGHT',
+          ]
+          def mask(v):
+              for x in sorted(TECH,key=len,reverse=True):v=re.sub(re.escape(x),'',v,flags=re.I)
+              v=re.sub(r'\$\{[^}]+\}|\$[A-Za-z_][A-Za-z0-9_]*|https?://\S+|/\S+|\[[^]]+\]|\([^)]*[A-Za-z0-9_./=-][^)]*\)', ' ',v)
+              v=re.sub(r"'[^']*'|`[^`]*`",' ',v)
+              return v
+          def fields(line,spans):
+              s=line.lstrip();o=set()
+              if not s or s.startswith('#'):return o
+              if 'Register ' in line and '--description' in line:
+                  p=line.find('--description');
+                  for i,m in enumerate(spans):
+                      if m.start()>p:o.add(i);break
+              if 'Display ' in line:
+                  for f in ('--text','--result'):
+                      p=line.find(f)
+                      if p>=0:
+                          for i,m in enumerate(spans):
+                              if m.start()>p:o.add(i);break
+              if any(x in line for x in ('DisplayError ','DisplayWarning ','DisplaySuggestion ')) and spans:o.add(0)
+              if 'LogText ' in line:
+                  p=line.find('LogText ')
+                  for i,m in enumerate(spans):
+                      if m.start()>p:o.add(i);break
+              for fn in ('ReportWarning ','ReportSuggestion ','ReportException '):
+                  p=line.find(fn)
+                  if p>=0:
+                      a=[i for i,m in enumerate(spans) if m.start()>p]
+                      if len(a)>=2:o.add(a[1])
+                      for i in a[2:]:
+                          if spans[i].group(1).startswith(('text:','manual:','details:','solution:')):o.add(i)
+              if 'SKIPREASON=' in line:
+                  p=line.find('SKIPREASON=')
+                  for i,m in enumerate(spans):
+                      if m.start()>p:o.add(i);break
+              return o
+          remaining=[]
+          for path in [Path('lynis')]+sorted(p for p in Path('include').iterdir() if p.is_file()):
+              try:lines=path.read_text(encoding='utf-8').splitlines()
+              except UnicodeDecodeError:continue
+              for n,line in enumerate(lines,1):
+                  spans=list(Q.finditer(line))
+                  for i in fields(line,spans):
+                      value=spans[i].group(1);body=mask(value)
+                      if CJK.search(value) and GRAMMAR.search(body):remaining.append(f'{path}:{n}: {value}')
+                      elif not CJK.search(value) and len(re.findall(r'[A-Za-z]{2,}',body))>=3:
+                          remaining.append(f'{path}:{n}: {value}')
+          Path('LOCALIZATION_POLISH_REPORT.txt').write_text('# Remaining mixed visible prose\n# Count: '+str(len(remaining))+'\n\n'+'\n'.join(remaining)+'\n',encoding='utf-8')
+          print('remaining',len(remaining))
+          PY
+
+      - name: Commit polish and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/polish-natural-localization.yml
+          rm -f NATURAL_LOCALIZATION_REPORT.txt
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "i18n: polish complete Chinese user output"
+          git push origin HEAD:master
