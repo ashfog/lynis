@@ -659,7 +659,7 @@
 #
     # Test        : AUTH-9262
     # Description : Search for PAM password strength testing libraries
-    Register --test-no AUTH-9262 --weight L --network NO --category security --description "Checking presence password strength testing tools (PAM)"
+    Register --test-no AUTH-9262 --weight L --network NO --category security --description "检查 PAM 密码强度检测工具"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         FOUND_CRACKLIB=0
@@ -667,60 +667,60 @@
         FOUND_PWQUALITY=0
 
         # Cracklib
-        LogText "Searching PAM password testing modules (cracklib, passwdqc, pwquality)"
+        LogText "搜索 PAM 密码检测模块（cracklib、passwdqc、pwquality）"
         for I in ${PAM_FILE_LOCATIONS}; do
 
             if [ -f ${I}/pam_cracklib.so ]; then
                 FOUND_CRACKLIB=1
                 FOUND=1
-                LogText "Result: found pam_cracklib.so (crack library PAM) in ${I}"
+                LogText "结果：在 ${I} 中发现 pam_cracklib.so（PAM cracklib 模块）"
             fi
 
             if [ -f ${I}/pam_passwdqc.so ]; then
                 FOUND_PASSWDQC=1
                 FOUND=1
-                LogText "Result: found pam_passwdqc.so (passwd quality control PAM) in ${I}"
+                LogText "结果：在 ${I} 中发现 pam_passwdqc.so（PAM 密码质量控制模块）"
             fi
 
             if [ -f ${I}/pam_pwquality.so ]; then
                 FOUND_PWQUALITY=1
                 FOUND=1
-                LogText "Result: found pam_pwquality.so (password quality control PAM) in ${I}"
+                LogText "结果：在 ${I} 中发现 pam_pwquality.so（PAM 密码质量控制模块）"
             fi
         done
 
         # Cracklib
         if [ ${FOUND_CRACKLIB} -eq 1 ]; then
-            LogText "Result: pam_cracklib.so found"
+            LogText "结果：发现 pam_cracklib.so"
             Report "pam_cracklib=1"
         else
-            LogText "Result: pam_cracklib.so NOT found (crack library PAM)"
+            LogText "结果：未发现 pam_cracklib.so（PAM cracklib 模块）"
         fi
 
         # Password quality control
         if [ ${FOUND_PASSWDQC} -eq 1 ]; then
-            LogText "Result: pam_passwdqc.so found"
+            LogText "结果：发现 pam_passwdqc.so"
             Report "pam_passwdqc=1"
         else
-            LogText "Result: pam_passwdqc.so NOT found (passwd quality control PAM)"
+            LogText "结果：未发现 pam_passwdqc.so（PAM 密码质量控制模块）"
         fi
 
         # pwquality module
         if [ ${FOUND_PWQUALITY} -eq 1 ]; then
-            LogText "Result: pam_pwquality.so found"
+            LogText "结果：发现 pam_pwquality.so"
             Report "pam_pwquality=1"
         else
-            LogText "Result: pam_pwquality.so NOT found (pwquality control PAM)"
+            LogText "结果：未发现 pam_pwquality.so（PAM 密码质量控制模块）"
         fi
 
         if [ ${FOUND} -eq 0 ]; then
-            Display --indent 2 --text "- PAM password strength tools" --result "${STATUS_SUGGESTION}" --color YELLOW
-            LogText "Result: no PAM modules for password strength testing found"
-            ReportSuggestion "${TEST_NO}" "Install a PAM module for password strength testing like pam_cracklib or pam_passwdqc or libpam-passwdqc"
+            Display --indent 2 --text "- PAM 密码强度工具" --result "${STATUS_SUGGESTION}" --color YELLOW
+            LogText "结果：未发现用于密码强度检测的 PAM 模块"
+            ReportSuggestion "${TEST_NO}" "安装用于密码强度检测的 PAM 模块，例如 pam_cracklib、pam_passwdqc 或 libpam-passwdqc"
             AddHP 0 3
         else
-            Display --indent 2 --text "- PAM password strength tools" --result "${STATUS_OK}" --color GREEN
-            LogText "Result: found at least one PAM module for password strength testing"
+            Display --indent 2 --text "- PAM 密码强度工具" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：至少发现一个用于密码强度检测的 PAM 模块"
             AddHP 3 3
         fi
     fi
@@ -729,26 +729,26 @@
 #
     # Test        : AUTH-9264
     # Description : Scan /etc/pam.conf file
-    Register --test-no AUTH-9264 --weight L --network NO --category security --description "Checking presence pam.conf"
+    Register --test-no AUTH-9264 --weight L --network NO --category security --description "检查 pam.conf 是否存在"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking file /etc/pam.conf"
+        LogText "检查：检查 /etc/pam.conf 文件"
         if [ -f ${ROOTDIR}etc/pam.conf ]; then
-            LogText "Result: file ${ROOTDIR}etc/pam.conf exists"
-            Display --indent 2 --text "- PAM configuration files (pam.conf)" --result "${STATUS_FOUND}" --color GREEN
-            LogText "Test: searching PAM configuration files"
+            LogText "结果：文件 ${ROOTDIR}etc/pam.conf 存在"
+            Display --indent 2 --text "- PAM 配置文件（pam.conf）" --result "${STATUS_FOUND}" --color GREEN
+            LogText "检查：搜索 PAM 配置文件"
             FIND=$(${GREPBINARY} -E -v "^#" ${ROOTDIR}etc/pam.conf | ${GREPBINARY} -E -v "^$" | ${SEDBINARY} 's/[[:space:]]/ /g' | ${SEDBINARY} 's/  / /g' | ${SEDBINARY} 's/ /:space:/g')
             if [ -z "${FIND}" ]; then
-                LogText "Result: File has no configuration options defined (empty, or only filled with comments and empty lines)"
+                LogText "结果：文件未定义配置选项（为空，或仅包含注释和空行）"
             else
-                LogText "Result: found one or more configuration lines"
+                LogText "结果：发现一行或多行配置"
                 for LINE in ${FIND}; do
                     LINE=$(echo ${LINE} | ${SEDBINARY} 's/:space:/ /g')
-                    LogText "Found line: ${LINE}"
+                    LogText "发现配置行：${LINE}"
                 done
             fi
         else
-            LogText "Result: file /etc/pam.conf could not be found"
-            Display --indent 2 --text "- PAM configuration file (pam.conf)" --result "${STATUS_NOT_FOUND}" --color WHITE
+            LogText "结果：未找到 /etc/pam.conf 文件"
+            Display --indent 2 --text "- PAM 配置文件（pam.conf）" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
 #
@@ -756,20 +756,20 @@
 #
     # Test        : AUTH-9266
     # Description : Searching available PAM configurations (/etc/pam.d)
-    Register --test-no AUTH-9266 --weight L --network NO --category security --description "Checking presence pam.d files"
+    Register --test-no AUTH-9266 --weight L --network NO --category security --description "检查 pam.d 文件是否存在"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking directory ${ROOTDIR}etc/pam.d"
+        LogText "检查：检查目录 ${ROOTDIR}etc/pam.d"
         if [ -d ${ROOTDIR}etc/pam.d ]; then
-            LogText "Result: directory /etc/pam.d exists"
-            Display --indent 2 --text "- PAM configuration files (pam.d)" --result "${STATUS_FOUND}" --color GREEN
-            LogText "Test: searching PAM configuration files"
+            LogText "结果：目录 /etc/pam.d 存在"
+            Display --indent 2 --text "- PAM 配置文件（pam.d）" --result "${STATUS_FOUND}" --color GREEN
+            LogText "检查：搜索 PAM 配置文件"
             FIND=$(${FINDBINARY} -L ${ROOTDIR}etc/pam.d \! -name "*.pam-old" -type f -print | sort)
             for FILE in ${FIND}; do
-                LogText "Found file: ${FILE}"
+                LogText "发现文件：${FILE}"
             done
         else
-            LogText "Result: directory /etc/pam.d could not be found"
-            Display --indent 2 --text "- PAM configuration files (pam.d)" --result "${STATUS_NOT_FOUND}" --color WHITE
+            LogText "结果：未找到目录 /etc/pam.d"
+            Display --indent 2 --text "- PAM 配置文件（pam.d）" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
 #
@@ -779,14 +779,14 @@
     # Description : Searching available PAM files
     # Notes       : PAM is used on AIX, FreeBSD, Linux, HPUX, NetBSD, Solaris
     OS_USES_PAM="AIX DragonFly FreeBSD Linux HPUX NetBSD Solaris"
-    Register --test-no AUTH-9268 --os "${OS_USES_PAM}" --weight L --network NO --category security --description "Checking presence pam.d files"
+    Register --test-no AUTH-9268 --os "${OS_USES_PAM}" --weight L --network NO --category security --description "检查 pam.d 文件是否存在"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
-        LogText "Test: Searching pam modules"
+        LogText "检查：搜索 PAM 模块"
         for DIR in ${PAM_FILE_LOCATIONS}; do
-            LogText "Test: Checking ${DIR}"
+            LogText "检查：检查 ${DIR}"
             if [ -d ${DIR} -a ! -L ${DIR} ]; then
-                LogText "Result: directory ${DIR} exists"
+                LogText "结果：目录 ${DIR} 存在"
                 # Search in the specified directory
                 if [ "${OS}" = "AIX" -o "${OS}" = "Solaris" ]; then
                     # AIX/Solaris does not support -maxdepth
@@ -796,19 +796,19 @@
                 fi
                 if [ -n "${FIND}" ]; then FOUND=1; fi
                 for FILE in ${FIND}; do
-                    LogText "Found file: ${FILE}"
+                    LogText "发现文件：${FILE}"
                     Report "pam_module[]=${FILE}"
                 done
             else
-                LogText "Result: directory ${DIR} could not be found or is a symlink to another directory"
+                LogText "结果：目录 ${DIR} 不存在，或是指向其他目录的符号链接"
             fi
         done
         # Check if we found at least one module
         if [ ${FOUND} -eq 0 ]; then
-            Display --indent 2 --text "- PAM modules" --result "${STATUS_NOT_FOUND}" --color WHITE
-            LogText "Result: no PAM modules found"
+            Display --indent 2 --text "- PAM 模块" --result "${STATUS_NOT_FOUND}" --color WHITE
+            LogText "结果：未发现 PAM 模块"
         else
-            Display --indent 2 --text "- PAM modules" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 2 --text "- PAM 模块" --result "${STATUS_FOUND}" --color GREEN
         fi
         unset DIR FILE FIND
     fi
@@ -817,32 +817,32 @@
 #
     # Test        : AUTH-9278
     # Description : Search LDAP support in PAM files
-    Register --test-no AUTH-9278 --weight L --network NO --category security --description "Determine LDAP support in PAM files"
+    Register --test-no AUTH-9278 --weight L --network NO --category security --description "检查 PAM 文件中的 LDAP 支持"
     if [ ${SKIPTEST} -eq 0 ]; then
         AUTH_FILES="${ROOTDIR}etc/pam.d/common-auth ${ROOTDIR}etc/pam.d/system-auth"
         for FILE in ${AUTH_FILES}; do
-            LogText "Test: checking presence ${FILE}"
+            LogText "检查：确认 ${FILE} 是否存在"
             if [ -f ${FILE} ]; then
-                LogText "Result: file ${FILE} exists"
-                LogText "Test: checking presence LDAP module"
+                LogText "结果：文件 ${FILE} 存在"
+                LogText "检查：确认 LDAP 模块是否存在"
                 FIND=$(${GREPBINARY} "^auth.*ldap" ${FILE})
                 if [ -n "${FIND}" ]; then
-                    LogText "Result: LDAP module present"
-                    LogText "Output: ${FIND}"
+                    LogText "结果：LDAP 模块存在"
+                    LogText "输出：${FIND}"
                     LDAP_AUTH_ENABLED=1
                     LDAP_PAM_ENABLED=1
                 else
-                    LogText "Result: LDAP module not found"
+                    LogText "结果：未找到 LDAP 模块"
                 fi
             else
-                LogText "Result: file ${FILE} not found, skipping test"
+                LogText "结果：未找到文件 ${FILE}，跳过检查"
             fi
         done
 
         if [ ${LDAP_PAM_ENABLED} -eq 1 ]; then
-            Display --indent 2 --text "- LDAP module in PAM" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 2 --text "- PAM 中的 LDAP 模块" --result "${STATUS_FOUND}" --color GREEN
         else
-            Display --indent 2 --text "- LDAP module in PAM" --result "${STATUS_NOT_FOUND}" --color WHITE
+            Display --indent 2 --text "- PAM 中的 LDAP 模块" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
 #
@@ -873,7 +873,7 @@
             FIND2=$(for I in $(${AWKBINARY} -F: '{print $1}' "${ROOTDIR}etc/passwd") ; do passwd -S "$I" | ${AWKBINARY} '{ if ($2=="NP") print $1 }' ; done)
             FIND3=$(for I in $(${AWKBINARY} -F: '{print $1}' "${ROOTDIR}etc/passwd") ; do passwd -S "$I" | ${AWKBINARY} '{ if ($2=="L" || $2=="LK") print $1 }' | sort | uniq ; done)
         else
-            LogText "Result: skipping test for this Linux version"
+            LogText "结果：此 Linux 版本不执行该检查"
             ReportManual "AUTH-9282:01"
             PREQS_MET="NO"
             FIND_P=""
@@ -886,48 +886,48 @@
 
     # Test        : AUTH-9282
     # Description : Search password protected accounts without expire (Linux)
-    Register --test-no AUTH-9282 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Checking password protected account without expire date"
+    Register --test-no AUTH-9282 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查没有过期日期的密码保护账户"
     if [ "${SKIPTEST}" -eq 0 ]; then
-        LogText "Test: Checking Linux version and password expire date status"
+        LogText "检查：检查 Linux 版本和密码过期日期状态"
         if [ -z "${FIND_P}" ]; then
-            LogText "Result: all accounts seem to have an expire date"
-            Display --indent 2 --text "- Accounts without expire date" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：所有账户似乎都设置了过期日期"
+            Display --indent 2 --text "- 未设置过期日期的账户" --result "${STATUS_OK}" --color GREEN
         else
-            LogText "Result: found one or more accounts without expire date set"
+            LogText "结果：发现一个或多个未设置过期日期的账户"
             for I in ${FIND_P}; do
-                LogText "Account without expire date: ${I}"
+                LogText "未设置过期日期的账户：${I}"
             done
-            Display --indent 2 --text "- Accounts without expire date" --result "${STATUS_SUGGESTION}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "When possible set expire dates for all password protected accounts"
+            Display --indent 2 --text "- 未设置过期日期的账户" --result "${STATUS_SUGGESTION}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "尽可能为所有密码保护账户设置过期日期"
         fi
     fi
 
     # Test        : AUTH-9283
     # Description : Search passwordless accounts
     # Notes       : requires FIND2 variable
-    Register --test-no AUTH-9283 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Checking accounts without password"
+    Register --test-no AUTH-9283 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查无密码账户"
     if [ "${SKIPTEST}" -eq 0 ]; then
-        LogText "Test: Checking passwordless accounts"
+        LogText "检查：检查无密码账户"
         if [ -z "${FIND2}" ]; then
-            LogText "Result: all accounts seem to have a password"
-            Display --indent 2 --text "- Accounts without password" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：所有账户似乎都设置了密码"
+            Display --indent 2 --text "- 无密码账户" --result "${STATUS_OK}" --color GREEN
         else
-            LogText "Result: found one or more accounts without password"
+            LogText "结果：发现一个或多个无密码账户"
             for I in ${FIND2}; do
-                LogText "Account without password: ${I}"
+                LogText "无密码账户：${I}"
                 Report "account_without_password[]=${I}"
             done
-            Display --indent 2 --text "- Accounts without password" --result "${STATUS_WARNING}" --color RED
-            ReportWarning "${TEST_NO}" "Found accounts without password"
+            Display --indent 2 --text "- 无密码账户" --result "${STATUS_WARNING}" --color RED
+            ReportWarning "${TEST_NO}" "发现无密码账户"
         fi
     fi
 
     # Test        : AUTH-9284
-    # Description : Check locked user accounts in /etc/passwd
+    # Description : 检查 /etc/passwd 中被锁定的用户账户
     # Notes       : requires FIND3 variable
-    Register --test-no AUTH-9284 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check locked user accounts in /etc/passwd"
+    Register --test-no AUTH-9284 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 /etc/passwd 中被锁定的用户账户"
     if [ "${SKIPTEST}" -eq 0 ]; then
-        LogText "Test: Checking locked accounts"
+        LogText "检查：检查被锁定的账户"
         NON_SYSTEM_ACCOUNTS=$(${AWKBINARY} -F : '$3 > 999 && $3 != 65534 {print $1}' ${ROOTDIR}etc/passwd | ${SORTBINARY} | ${UNIQBINARY})
         LOCKED_NON_SYSTEM_ACCOUNTS=0
         for account in ${FIND3}; do
@@ -936,18 +936,18 @@
             fi
         done
         if [ ${LOCKED_NON_SYSTEM_ACCOUNTS} -eq 0 ]; then
-            LogText "Result: all accounts seem to be unlocked"
-            Display --indent 2 --text "- Locked accounts" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：所有账户似乎均未锁定"
+            Display --indent 2 --text "- 被锁定的账户" --result "${STATUS_OK}" --color GREEN
         else
-            LogText "Result: found one or more locked accounts"
+            LogText "结果：发现一个或多个被锁定的账户"
             for account in ${FIND3}; do
                 if echo "${NON_SYSTEM_ACCOUNTS}" | ${GREPBINARY} -w "${account}" > /dev/null ; then
-                    LogText "Locked account: ${account}"
+                    LogText "被锁定的账户：${account}"
                     Report "locked_account[]=${account}"
                 fi
             done
-            Display --indent 2 --text "- Locked accounts" --result "${STATUS_FOUND}" --color RED
-            ReportSuggestion "${TEST_NO}" "Look at the locked accounts and consider removing them"
+            Display --indent 2 --text "- 被锁定的账户" --result "${STATUS_FOUND}" --color RED
+            ReportSuggestion "${TEST_NO}" "检查被锁定的账户，并考虑删除不再需要的账户"
         fi
         unset account LOCKED_NON_SYSTEM_ACCOUNTS NON_SYSTEM_ACCOUNTS
     fi
@@ -965,33 +965,33 @@
         PREQS_MET="YES"
         # Future TODO: check if PAM overrule these settings
     fi
-    Register --test-no AUTH-9286 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Checking user password aging"
+    Register --test-no AUTH-9286 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查用户密码有效期"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking PASS_MIN_DAYS option in ${ROOTDIR}etc/login.defs"
+        LogText "检查：${ROOTDIR}etc/login.defs 中的 PASS_MIN_DAYS 选项"
         FIND=$(${GREPBINARY} "^PASS_MIN_DAYS" ${ROOTDIR}etc/login.defs | ${AWKBINARY} '{ if ($1=="PASS_MIN_DAYS") { print $2 } }')
         if [ -z "${FIND}" -o "${FIND}" = "0" ]; then
-            LogText "Result: password minimum age is not configured"
-            Display --indent 2 --text "- Checking user password aging (minimum)" --result "${STATUS_DISABLED}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Configure minimum password age in /etc/login.defs"
+            LogText "结果：未配置密码最短使用期限"
+            Display --indent 2 --text "- 检查用户密码有效期 (minimum)" --result "${STATUS_DISABLED}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "在 /etc/login.defs 中配置密码最短使用期限"
             AddHP 0 1
         else
-            LogText "Result: password needs to be at least ${FIND} days old"
+            LogText "结果：密码至少需要使用 ${FIND} 天"
             PASSWORD_MINIMUM_DAYS=${FIND}
-            Display --indent 2 --text "- User password aging (minimum)" --result CONFIGURED --color GREEN
+            Display --indent 2 --text "- 用户密码有效期（最小值）" --result CONFIGURED --color GREEN
             AddHP 3 3
         fi
 
-        LogText "Test: Checking PASS_MAX_DAYS option in ${ROOTDIR}etc/login.defs "
+        LogText "检查：${ROOTDIR}etc/login.defs 中的 PASS_MAX_DAYS 选项 "
         FIND=$(${GREPBINARY} "^PASS_MAX_DAYS" ${ROOTDIR}etc/login.defs | ${AWKBINARY} '{ if ($1=="PASS_MAX_DAYS") { print $2 } }')
         if [ -z "${FIND}" -o "${FIND}" = "99999" ]; then
-            LogText "Result: password aging limits are not configured"
-            Display --indent 2 --text "- User password aging (maximum)" --result "${STATUS_DISABLED}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Configure maximum password age in /etc/login.defs"
+            LogText "结果：未配置密码有效期限制"
+            Display --indent 2 --text "- 用户密码有效期（最大值）" --result "${STATUS_DISABLED}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "在 /etc/login.defs 中配置密码最长使用期限"
             AddHP 0 1
         else
-            LogText "Result: max password age is ${FIND} days"
+            LogText "结果：密码最长使用期限为 ${FIND} 天"
             PASSWORD_MAXIMUM_DAYS=${FIND}
-            Display --indent 2 --text "- User password aging (maximum)" --result CONFIGURED --color GREEN
+            Display --indent 2 --text "- 用户密码有效期（最大值）" --result CONFIGURED --color GREEN
             AddHP 3 3
         fi
     fi
@@ -1002,7 +1002,7 @@
     # Description : Determine which accounts have an expired password
     # Notes       : This test might not work (yet) on all platforms
     if [ -f ${ROOTDIR}etc/shadow ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no AUTH-9288 --preqs-met ${PREQS_MET} --weight L --network NO --root-only YES --category security --description "Checking for expired passwords"
+    Register --test-no AUTH-9288 --preqs-met ${PREQS_MET} --weight L --network NO --root-only YES --category security --description "检查已过期密码"
     if [ ${SKIPTEST} -eq 0 ]; then
         if FileIsReadable ${ROOTDIR}etc/shadow; then
 
@@ -1013,25 +1013,25 @@
             fi
 
             DAYS_SINCE_EPOCH=$((NOW / 86400))
-            LogText "Data: Days since epoch is ${DAYS_SINCE_EPOCH}"
-            LogText "Test: collecting accounts which have an expired password (last day changed + maximum change time)"
+            LogText "数据：自 Unix 纪元以来的天数为 ${DAYS_SINCE_EPOCH}"
+            LogText "检查：收集密码已过期的账户（最后修改日期加最长有效期）"
             # Skip fields with a !, *, or x, or !* (field $3 is last changed, $5 is maximum changed)
             FIND=$(${GREPBINARY} -E -v ":[\!\*x]([\*\!])?:" /etc/shadow | ${AWKBINARY} -v today=${DAYS_SINCE_EPOCH} -F: '{ if (($5!="") && (today>$3+$5)) { print $1 }}')
             if [ -n "${FIND}" ]; then
                 for ACCOUNT in ${FIND}; do
-                    LogText "Result: password of user ${ACCOUNT} has been expired"
+                    LogText "结果：用户 ${ACCOUNT} 的密码已过期"
                     Report "account_password_expired[]=${ACCOUNT}"
                 done
                 AddHP 0 10
-                Display --indent 2 --text "- Checking expired passwords" --result "${STATUS_FOUND}" --color RED
-                ReportSuggestion "${TEST_NO}" "Delete accounts which are no longer used"
+                Display --indent 2 --text "- 检查已过期密码" --result "${STATUS_FOUND}" --color RED
+                ReportSuggestion "${TEST_NO}" "删除不再使用的账户"
             else
-                LogText "Result: good, no passwords have been expired"
-                Display --indent 2 --text "- Checking expired passwords" --result "${STATUS_OK}" --color GREEN
+                LogText "结果：良好，未发现已过期密码"
+                Display --indent 2 --text "- 检查已过期密码" --result "${STATUS_OK}" --color GREEN
                 AddHP 10 10
             fi
         else
-            Display --indent 2 --text "- Checking expired passwords" --result "${STATUS_SKIPPED}" --color YELLOW
+            Display --indent 2 --text "- 检查已过期密码" --result "${STATUS_SKIPPED}" --color YELLOW
         fi
     fi
 #
@@ -1040,25 +1040,25 @@
     # Test        : AUTH-9304
     # Description : Check if single user mode login is properly configured in Solaris
     # Notes       : sulogin should be called from svm script (Solaris <10) in /etc/rcS.d
-    Register --test-no AUTH-9304 --os Solaris --weight L --network NO --category security --description "Check single user login configuration"
+    Register --test-no AUTH-9304 --os Solaris --weight L --network NO --category security --description "检查单用户模式登录配置"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check if file exists (Solaris 10 does not have this file by default)
         if [ -f ${ROOTDIR}etc/default/sulogin ]; then
-            LogText "Result: file ${ROOTDIR}etc/default/sulogin exists"
-            LogText "Test: checking presence PASSREQ=NO"
+            LogText "结果：文件 ${ROOTDIR}etc/default/sulogin 存在"
+            LogText "检查：确认是否存在 PASSREQ=NO"
             FIND=$(${GREPBINARY} "^PASSREQ=NO" ${ROOTDIR}etc/default/sulogin)
             if [ -z "${FIND}" ]; then
-                LogText "Result: option not present or configured to request a password at single user mode login"
-                Display --indent 2 --text "- Checking Solaris /etc/default/sulogin file" --result "${STATUS_OK}" --color GREEN
+                LogText "结果：该选项不存在，或已配置为单用户模式登录时要求密码"
+                Display --indent 2 --text "- 检查 Solaris /etc/default/sulogin 文件" --result "${STATUS_OK}" --color GREEN
                 AddHP 1 1
             else
-                LogText "Result: option present, no password needed at single user mode login"
-                Display --indent 2 --text "- Checking Solaris /etc/default/sulogin file" --result "${STATUS_WARNING}" --color RED
-                ReportWarning "${TEST_NO}" "No password needed for single user mode login"
+                LogText "结果：该选项存在，单用户模式登录无需密码"
+                Display --indent 2 --text "- 检查 Solaris /etc/default/sulogin 文件" --result "${STATUS_WARNING}" --color RED
+                ReportWarning "${TEST_NO}" "单用户模式登录无需密码"
                 AddHP 0 1
             fi
         else
-            LogText "Result: file /etc/default/sulogin does not exist"
+            LogText "结果：文件 /etc/default/sulogin 不存在"
         fi
     fi
 #
@@ -1069,26 +1069,26 @@
     # Notes       : :d_boot_authenticate: is a good option for production machines to
     #               avoid unauthorized booting of systems. Option :d_boot_authentication@:
     #               disabled a required login.
-    Register --test-no AUTH-9306 --os HP-UX --weight L --network NO --category security --description "Check single boot authentication"
+    Register --test-no AUTH-9306 --os HP-UX --weight L --network NO --category security --description "检查单用户启动身份验证"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check if file exists
-        LogText "Test: Searching /tcb/files/auth/system/default"
+        LogText "检查：搜索 /tcb/files/auth/system/default"
         if [ -f ${ROOTDIR}tcb/files/auth/system/default ]; then
-            LogText "Result: file ${ROOTDIR}tcb/files/auth/system/default exists"
-            LogText "Test: checking presence :d_boot_authenticate@:"
+            LogText "结果：文件 ${ROOTDIR}tcb/files/auth/system/default 存在"
+            LogText "检查：确认是否存在 :d_boot_authenticate@:"
             FIND=$(${GREPBINARY} "^:d_boot_authenticate@" /tcb/files/auth/system/default)
             if [ -z "${FIND}" ]; then
-                LogText "Result: option not set, password is needed at boot"
-                Display --indent 2 --text "- Checking HP-UX boot authentication" --result "${STATUS_OK}" --color GREEN
+                LogText "结果：未设置该选项，启动时需要密码"
+                Display --indent 2 --text "- 检查 HP-UX 启动身份验证" --result "${STATUS_OK}" --color GREEN
                 AddHP 1 1
             else
-                LogText "Result: option present, no password needed at single user mode login"
-                Display --indent 2 --text "- Checking HP-UX boot authentication" --result "${STATUS_SUGGESTION}" --color YELLOW
-                ReportSuggestion "${TEST_NO}" "Set password for system boot"
+                LogText "结果：该选项存在，单用户模式登录无需密码"
+                Display --indent 2 --text "- 检查 HP-UX 启动身份验证" --result "${STATUS_SUGGESTION}" --color YELLOW
+                ReportSuggestion "${TEST_NO}" "为系统启动设置密码"
                 AddHP 0 1
             fi
         else
-            LogText "Result: file ${ROOTDIR}tcb/files/auth/system/default does not exist"
+            LogText "结果：文件 ${ROOTDIR}tcb/files/auth/system/default 不存在"
         fi
     fi
 #
@@ -1096,41 +1096,41 @@
 #
     # Test        : AUTH-9308
     # Description : Check single user mode login for Linux
-    Register --test-no AUTH-9308 --os Linux --weight L --network NO --category security --description "Check single user login configuration"
+    Register --test-no AUTH-9308 --os Linux --weight L --network NO --category security --description "检查单用户模式登录配置"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         TEST_PERFORMED=0
 
         if [ ${HAS_SYSTEMD} -eq 0 ]; then
             # Check inittab
-            LogText "Test: Searching ${ROOTDIR}etc/inittab"
+            LogText "检查：搜索 ${ROOTDIR}etc/inittab"
             if [ -f ${ROOTDIR}etc/inittab ]; then
                 TEST_PERFORMED=1
-                LogText "Result: file ${ROOTDIR}etc/inittab exists"
-                LogText "Test: checking presence sulogin for single user mode"
+                LogText "结果：文件 ${ROOTDIR}etc/inittab 存在"
+                LogText "检查：确认单用户模式是否使用 sulogin"
                 FIND=$(${GREPBINARY} -E "^[a-zA-Z0-9~]+:S:(respawn|wait):/sbin/sulogin" /etc/inittab)
                 FIND2=$(${GREPBINARY} -E "^su:S:(respawn|wait):/sbin/sulogin" /etc/inittab)
                 if [ -n "${FIND}" -o -n "${FIND2}" ]; then
                     FOUND=1
-                    LogText "Result: found sulogin, so single user is protected"
+                    LogText "结果：发现 sulogin，单用户模式受到保护"
                 fi
             else
-                LogText "Result: file ${ROOTDIR}etc/inittab does not exist"
+                LogText "结果：文件 ${ROOTDIR}etc/inittab 不存在"
             fi
 
             # Check init
-            LogText "Test: Searching ${ROOTDIR}etc/sysconfig/init"
+            LogText "检查：搜索 ${ROOTDIR}etc/sysconfig/init"
             if [ -f ${ROOTDIR}etc/sysconfig/init ]; then
                 TEST_PERFORMED=1
-                LogText "Result: file ${ROOTDIR}etc/sysconfig/init exists"
-                LogText "Test: checking presence sulogin for single user mode"
+                LogText "结果：文件 ${ROOTDIR}etc/sysconfig/init 存在"
+                LogText "检查：确认单用户模式是否使用 sulogin"
                 FIND=$(${GREPBINARY} "^SINGLE=/sbin/sulogin" ${ROOTDIR}etc/sysconfig/init)
                 if [ -n "${FIND}" ]; then
                     FOUND=1
-                    LogText "Result: found sulogin, so single user is protected"
+                    LogText "结果：发现 sulogin，单用户模式受到保护"
                 fi
             else
-                LogText "Result: file ${ROOTDIR}etc/sysconfig/init does not exist"
+                LogText "结果：文件 ${ROOTDIR}etc/sysconfig/init 不存在"
             fi
         fi
 
@@ -1138,41 +1138,41 @@
         SYSTEMD_DIRECTORY="/lib/systemd/system"
         if [ -d ${SYSTEMD_DIRECTORY} ]; then
             FILES="console-shell.service emergency.service rescue.service"
-            LogText "Test: going to check several systemd targets now"
+            LogText "检查：开始检查多个 systemd 目标"
             for I in ${FILES}; do
                 FILE="${SYSTEMD_DIRECTORY}/${I}"
-                LogText "Test: checking if target ${I} is available (${FILE})"
+                LogText "检查：确认目标 ${I} 是否可用（${FILE}）"
                 if [ -f ${FILE} ]; then
                     # Mark test as performed only when at least 1 target exists (e.g. Ubuntu 14.04 has limited systemd support)
                     TEST_PERFORMED=1
-                    LogText "Result: found target ${I}"
+                    LogText "结果：发现目标 ${I}"
                     FIND=$(${GREPBINARY} -E "^ExecStart=" ${FILE} | ${GREPBINARY} "sulogin")
                     if [ "${FIND}" = "" ]; then
-                        LogText "Result: did not find sulogin specified, possible risk of getting into single user mode without authentication"
+                        LogText "结果：未发现 sulogin 配置，可能存在未经身份验证进入单用户模式的风险"
                     else
-                        LogText "Result: sulogin was found, which is a good measure to protect single user mode"
+                        LogText "结果：发现 sulogin，可有效保护单用户模式"
                         FOUND=1
                     fi
                 else
-                    LogText "Result: target ${I} not found"
+                    LogText "结果：未找到目标 ${I}"
                 fi
             done
         fi
 
         if [ ${TEST_PERFORMED} -eq 1 ]; then
             if [ ${FOUND} -eq 0 ]; then
-                LogText "Result: option not set, no password needed at single user mode boot"
-                Display --indent 2 --text "- Checking Linux single user mode authentication" --result "${STATUS_WARNING}" --color RED
-                ReportWarning "${TEST_NO}" "No password set for single mode"
-                ReportSuggestion "${TEST_NO}" "Set password for single user mode to minimize physical access attack surface"
+                LogText "结果：未设置该选项，单用户模式启动无需密码"
+                Display --indent 2 --text "- 检查 Linux 单用户模式身份验证" --result "${STATUS_WARNING}" --color RED
+                ReportWarning "${TEST_NO}" "单用户模式未设置密码"
+                ReportSuggestion "${TEST_NO}" "为单用户模式设置密码，以降低物理访问攻击面"
                 AddHP 0 2
             else
-                LogText "Result: option set, password is needed at single user mode boot"
-                Display --indent 2 --text "- Checking Linux single user mode authentication" --result "${STATUS_OK}" --color GREEN
+                LogText "结果：已设置该选项，单用户模式启动需要密码"
+                Display --indent 2 --text "- 检查 Linux 单用户模式身份验证" --result "${STATUS_OK}" --color GREEN
                 AddHP 2 2
             fi
         else
-            LogText "Result: no tests performed"
+            LogText "结果：未执行任何检查"
         fi
     fi
 #
@@ -1418,7 +1418,7 @@
             else
                 # Improve check
                 LogText "Result: exec line present in file, setting of umask not needed in this script"
-                LogText "Output: ${FIND}"
+                LogText "输出：${FIND}"
             fi
           else
             LogText "Result: file /etc/init.d/rcS does not exist"
@@ -1439,7 +1439,7 @@
             if [ ! "${FIND}" = "" ]; then
                 FOUND=1
                 LogText "Result: account locking option set"
-                LogText "Output: ${FIND}"
+                LogText "输出：${FIND}"
                 AddHP 2 2
             else
                 LogText "Result: option LOCK_AFTER_RETRIES not set"
@@ -1459,7 +1459,7 @@
                 if [ -n "${FIND}" ]; then
                     FOUND=1
                     LogText "Result: retries option configured"
-                    LogText "Output: ${FIND}"
+                    LogText "输出：${FIND}"
                     AddHP 2 2
                 else
                     LogText "Result: retries option not configured"
@@ -1508,7 +1508,7 @@
         for FILE in ${LDAP_CONF_LOCATIONS}; do
             LogText "Test: checking ${FILE}"
             if [ -f ${FILE} ]; then
-                LogText "Result: file ${FILE} exists, LDAP being used"
+                LogText "结果：文件 ${FILE} 存在, LDAP being used"
                 LDAP_CLIENT_CONFIG_FILE="${FILE}"
                 LogText "Test: checking LDAP servers in file ${FILE}"
                 FIND=$(${GREPBINARY} -E "^host " ${FILE} | ${AWKBINARY} '{ print $2 }')
