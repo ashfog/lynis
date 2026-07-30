@@ -122,9 +122,9 @@
         HPPOINTS=$((HPPOINTS + HPADD))
         HPTOTAL=$((HPTOTAL + HPADDMAX))
         if [ ${HPADD} -eq ${HPADDMAX} ]; then
-            LogText "硬化：为此项目指定最大硬化点数 (${HPADDMAX})。目前拥有 ${HPPOINTS} 积分（${HPTOTAL} 中）"
+            LogText "加固：此项目获得全部加固得分（${HPADDMAX}）。当前总得分为 ${HPPOINTS}/${HPTOTAL}"
         else
-            LogText "硬化：分配部分硬化点（${HPADD} 或 ${HPADDMAX}）。目前拥有 ${HPPOINTS} 积分（来自 ${HPTOTAL}）"
+            LogText "加固：此项目获得部分加固得分（${HPADD}/${HPADDMAX}）。当前总得分为 ${HPPOINTS}/${HPTOTAL}"
         fi
     }
 
@@ -163,7 +163,7 @@
                 echo "${SETTING};${VALUE};${DESCRIPTION};" >> ${SETTINGS_FILE}
             fi
         else
-            echo "错误：对 AddSetting 的调用不正确。需要 3 个参数。"
+            echo "错误：AddSetting 调用方式不正确，需要 3 个参数。"
         fi
     }
 
@@ -232,7 +232,7 @@
                     RETVAL=0
                     LogText "结果：找到搜索字符串（结果：$FIND）"
                 else
-                    LogText "结果：找到搜索字符串 NOT"
+                    LogText "结果：未找到搜索字符串"
                     RETVAL=1
                 fi
             else
@@ -240,7 +240,7 @@
             fi
             return ${RETVAL}
         else
-            ReportException ${TEST_NO} "Error in function call to CheckItem"
+            ReportException ${TEST_NO} "调用 CheckItem 函数时发生错误"
         fi
     }
 
@@ -354,7 +354,7 @@
         if [ ! "${TEMP_FILE}" = "" ]; then
             LogText "操作：创建临时文件 ${TEMP_FILE}"
         else
-            Fatal "Could not create a temporary file"
+            Fatal "无法创建临时文件"
         fi
         # Add temporary file to queue for cleanup later
         TEMP_FILES="${TEMP_FILES} ${TEMP_FILE}"
@@ -371,7 +371,7 @@
 
     # Determine if a directory exists
     DirectoryExists() {
-        if [ $# -eq 0 ]; then ExitFatal "Missing parameter when calling DirectoryExists function"; fi
+        if [ $# -eq 0 ]; then ExitFatal "调用 DirectoryExists 函数时缺少参数"; fi
         DIRECTORY_FOUND=0
         LogText "检查：检查目录 $1 是否存在"
         if [ -d $1 ]; then
@@ -463,7 +463,7 @@
                     Debug "Found profile defined with --profile"
                     PROFILES="${PROFILES} ${FILE}"
                 else
-                    ExitFatal "Could not find or read profile (${FILE})"
+                    ExitFatal "找不到或无法读取配置文件（${FILE}）"
                 fi
             done
         fi
@@ -514,7 +514,7 @@
                     TEXT=$1
                 ;;
                 *)
-                    echo "INVALID OPTION（显示）：1 美元"
+                    echo "无效选项（Display）：$1"
                     ExitFatal
                 ;;
             esac
@@ -571,7 +571,7 @@
         EXITCODE=""
         if [ $# -gt 1 ]; then EXITCODE=$2; fi
         ${ECHOCMD} ""
-        ${ECHOCMD} "${WARNING}Error${NORMAL}: ${BOLD}$1${NORMAL}"
+        ${ECHOCMD} "${WARNING}错误${NORMAL}：${BOLD}$1${NORMAL}"
         ${ECHOCMD} ""
         if [ -n "${EXITCODE}" ]; then ExitCustom ${EXITCODE}; fi
     }
@@ -591,19 +591,19 @@
         ${ECHOCMD:-echo} ""
         ${ECHOCMD:-echo} "================================================================="
         ${ECHOCMD:-echo} ""
-        ${ECHOCMD:-echo} "  ${WARNING}Exception found!${NORMAL}"
+        ${ECHOCMD:-echo} "  ${WARNING}发现异常！${NORMAL}"
         ${ECHOCMD:-echo} ""
-        ${ECHOCMD:-echo} "  Function/test:  [$1]"
-        ${ECHOCMD:-echo} "  Message:        ${BOLD}$2${NORMAL}"
+        ${ECHOCMD:-echo} "  函数/检查：    [$1]"
+        ${ECHOCMD:-echo} "  消息：         ${BOLD}$2${NORMAL}"
         ${ECHOCMD:-echo} ""
-        ${ECHOCMD:-echo} "  Help improving the Lynis community with your feedback!"
+        ${ECHOCMD:-echo} "  请提供反馈，帮助改进 Lynis 社区版本！"
         ${ECHOCMD:-echo} ""
-        ${ECHOCMD:-echo} "  Steps:"
-        ${ECHOCMD:-echo} "  - Ensure you are running the latest version ($0 update check)"
-        ${ECHOCMD:-echo} "  - If so, create a GitHub issue at ${PROGRAM_SOURCE}"
-        ${ECHOCMD:-echo} "  - Include relevant parts of the log file or configuration file"
+        ${ECHOCMD:-echo} "  操作步骤："
+        ${ECHOCMD:-echo} "  - 确认当前运行的是最新版本（$0 update check）"
+        ${ECHOCMD:-echo} "  - 如果问题仍然存在，请在 ${PROGRAM_SOURCE} 提交 GitHub issue"
+        ${ECHOCMD:-echo} "  - 附上日志文件或配置文件中的相关内容"
         ${ECHOCMD:-echo} ""
-        ${ECHOCMD:-echo} "  Thanks!"
+        ${ECHOCMD:-echo} "  谢谢！"
         ${ECHOCMD:-echo} ""
         ${ECHOCMD:-echo} "================================================================="
         ${ECHOCMD:-echo} ""
@@ -639,10 +639,10 @@
             if [ "${ECHOCMD}" = "" ]; then ECHOCMD="echo"; fi
             if [ ${CRONJOB} -eq 0 ]; then
                 printf "\n"
-                ${ECHOCMD} "  ${BG_BLUE}[TIP]${NORMAL}: ${LIGHTBLUE}$1${NORMAL}"
+                ${ECHOCMD} "  ${BG_BLUE}[提示]${NORMAL}：${LIGHTBLUE}$1${NORMAL}"
                 printf "\n"
             else
-                ${ECHOCMD} "  [TIP]: $1"
+                ${ECHOCMD} "  [提示]：$1"
             fi
             TOOLTIP_SHOWED=1
         fi
@@ -660,10 +660,10 @@
     DisplayWarning() {
         if [ ${CRONJOB} -eq 0 ]; then
             printf "\n"
-            ${ECHOCMD:-echo} "  ${BG_WARNING}[WARNING]${NORMAL}: $1${NORMAL}"
+            ${ECHOCMD:-echo} "  ${BG_WARNING}[警告]${NORMAL}：$1${NORMAL}"
             printf "\n"
         else
-            ${ECHOCMD} "  [WARNING]: $1"
+            ${ECHOCMD} "  [警告]：$1"
         fi
     }
 
@@ -746,7 +746,7 @@
         LogText "${PROGRAM_NAME} 以退出代码 1 结束。"
         if [ $# -eq 1 ]; then
             ${ECHOCMD:-echo} ""
-            ${ECHOCMD:-echo} "${RED}Fatal error${NORMAL}: ${WHITE}$1${NORMAL}"
+            ${ECHOCMD:-echo} "${RED}致命错误${NORMAL}：${WHITE}$1${NORMAL}"
             ${ECHOCMD:-echo} ""
         fi
         exit 1
@@ -763,7 +763,7 @@
     ################################################################################
 
     FileExists() {
-        if [ $# -eq 0 ]; then ExitFatal "Missing parameter when calling FileExists function"; fi
+        if [ $# -eq 0 ]; then ExitFatal "调用 FileExists 函数时缺少参数"; fi
         FILE_FOUND=0
         LogText "检查：检查文件 $1 是否存在"
         if [ -f $1 ]; then
@@ -812,7 +812,7 @@
     ################################################################################
 
     FileIsEmpty() {
-        if [ $# -eq 0 ]; then ExitFatal "Missing parameter when calling FileIsEmpty function"; fi
+        if [ $# -eq 0 ]; then ExitFatal "调用 FileIsEmpty 函数时缺少参数"; fi
         EMPTY=0
         LogText "检查：检查文件 $1 是否为空"
         if [ ! -s "$1" ]; then
@@ -835,7 +835,7 @@
     ################################################################################
 
     FileIsReadable() {
-        if [ $# -eq 0 ]; then ExitFatal "Function FileIsReadable() called without a file name"; fi
+        if [ $# -eq 0 ]; then ExitFatal "调用 FileIsReadable() 时未提供文件名"; fi
         sFILE=$1
         CANREAD=0
         RETVAL=1
@@ -1279,7 +1279,7 @@
     GetReportData() {
         KEY=""
         VALID_CHARS="[:alnum:]/:;\-,\._\[\]\n "
-        if [ $# -eq 0 ]; then ExitFatal "No parameters provided to GetReportData() function"; fi
+        if [ $# -eq 0 ]; then ExitFatal "调用 GetReportData() 函数时未提供参数"; fi
 
         while [ $# -ge 1 ]; do
             case $1 in
@@ -1292,7 +1292,7 @@
                     VALID_CHARS="$1"
                 ;;
                 *)
-                    ExitFatal "Invalid option provided to GetReportData() function"
+                    ExitFatal "向 GetReportData() 函数提供了无效选项"
                 ;;
             esac
             # Go to next parameter
@@ -1318,7 +1318,7 @@
     ################################################################################
 
     HasCorrectFilePermissions() {
-        if [ $# -ne 2 ]; then Fatal "Incorrect usage of HasCorrectFilePermissions"; fi
+        if [ $# -ne 2 ]; then Fatal "HasCorrectFilePermissions 函数使用方式不正确"; fi
         CHECKFILE="$1"
         CHECKPERMISSION_FULL="$2"
         # Check for symlink
@@ -1405,7 +1405,7 @@
 
                 if [ -n "${DATA}" ]; then
                     if [ "${DATA}" -le "${CHECK_PERMISSION}" ]; then
-                        LogText "结果：正确的权限 (${DATA})"
+                        LogText "结果：权限正确（${DATA}）"
                         return 0
                     fi
                 else
@@ -1432,7 +1432,7 @@
         if [ $# -eq 1 ]; then
             if [ -n "$1" ]; then return 0; else return 1; fi
         else
-            ExitFatal "Function HasData called without parameters - look in log to determine where this happened, or use sh -x lynis to see all details."
+            ExitFatal "调用 HasData 函数时未提供参数；请查看日志确定调用位置，或使用 sh -x lynis 查看详细信息。"
         fi
     }
 
@@ -1560,7 +1560,7 @@
 
     IsEmpty() {
         if [ $# -eq 0 ]; then
-            ExitFatal "Function IsEmpty called without parameters - look in log to determine where this happened, or use sh -x lynis to see all details."
+            ExitFatal "调用 IsEmpty 函数时未提供参数；请查看日志确定调用位置，或使用 sh -x lynis 查看详细信息。"
         else
             if [ -z "$1" ]; then return 0; else return 1; fi
         fi
@@ -1580,7 +1580,7 @@
     ################################################################################
 
     IsRunning() {
-        if [ $# -eq 0 ]; then ExitFatal "Missing parameter when calling IsRunning function"; fi
+        if [ $# -eq 0 ]; then ExitFatal "调用 IsRunning 函数时缺少参数"; fi
         pgrep_options="-x"
         search=""
         FIND=""
@@ -1604,7 +1604,7 @@
             shift  # Go to next parameter
         done
 
-        if [ -z "${search}" ]; then ExitFatal "Missing process to search for when using IsRunning function"; fi
+        if [ -z "${search}" ]; then ExitFatal "使用 IsRunning 函数时未提供要搜索的进程"; fi
         RUNNING=0
         if [ -x "${PGREPBINARY}" ] && [ "${OS}" != "AIX" ]; then
             # When --user is used, perform a search using the -u option
@@ -1971,7 +1971,7 @@
     ################################################################################
 
     IsWorldReadable() {
-        if [ $# -eq 0 ]; then ExitFatal "Missing parameter when calling IsWorldReadable function"; fi
+        if [ $# -eq 0 ]; then ExitFatal "调用 IsWorldReadable 函数时缺少参数"; fi
         sFILE=$1
         # Check for symlink
         if [ -L ${sFILE} ]; then
@@ -2024,7 +2024,7 @@
     ################################################################################
 
     IsWorldWritable() {
-        if [ $# -eq 0 ]; then ExitFatal "Missing parameter when calling IsWorldWritable function"; fi
+        if [ $# -eq 0 ]; then ExitFatal "调用 IsWorldWritable 函数时缺少参数"; fi
         sFILE=$1
         FileIsWorldWritable=""
         # Check for symlink
@@ -2086,7 +2086,7 @@
         if [ $# -eq 1 ]; then
             package="$1"
         else
-            Fatal "Incorrect usage of PackageIsInstalled function"
+            Fatal "PackageIsInstalled 函数使用方式不正确"
         fi
 
         if [ -n "${DNFBINARY}" ]; then
@@ -2228,7 +2228,7 @@
     ParseNginx() {
         COUNT=0
         BREADCRUMB=""
-        if [ $# -eq 0 ]; then ExitFatal "No arguments provided to ParseNginx()"; fi
+        if [ $# -eq 0 ]; then ExitFatal "调用 ParseNginx() 时未提供参数"; fi
         CONFIG_FILE=$1
 
         # Create temporary files
@@ -2242,7 +2242,7 @@
         # Now clean up the file further (combine lines, remove commented lines and empty lines)
         sed 's#\\$##g' ${TMP_NGINX_FILE_RAW} | grep -v "^#" | grep -v "^$" > ${TMP_NGINX_FILE}
 
-        LogText "操作：解析配置文件${CONFIG_FILE}"
+        LogText "操作：解析配置文件 ${CONFIG_FILE}"
         COUNT=$(( COUNT + 1))
         FIND=$(sed 's/ /:space:/g' ${TMP_NGINX_FILE})
         DEPTH=0
@@ -2493,15 +2493,15 @@
                 LogText "检查：查找监听 $1:$2 的服务"
                 if [ $1 = "TCP" ]; then FIND=$(${LSOFBINARY}${LSOF_EXTRA_OPTIONS} -i${1} -s${1}:LISTEN -P -n | grep ":${2} "); else FIND=$(${LSOFBINARY}${LSOF_EXTRA_OPTIONS} -i${1} -P -n | grep ":${2} "); fi
                 if [ ! "${FIND}" = "" ]; then
-                    LogText "结果：发现服务正在端口 $2 ($1) 上侦听"
+                    LogText "结果：发现服务正在端口 $2（$1）上监听"
                     return 0
                 else
-                    LogText "结果：未找到在端口 $2 ($1) 上侦听的服务"
+                    LogText "结果：未找到在端口 $2（$1）上监听的服务"
                     return 1
                 fi
             else
                 return 255
-                ReportException ${TEST_NO} "Error in function call to PortIsListening"
+                ReportException ${TEST_NO} "调用 PortIsListening 函数时发生错误"
             fi
         fi
     }
@@ -2572,7 +2572,7 @@
                 Debug "No typeset available to mark variable '$1' as read-only variable"
             fi
         else
-            ExitFatal "Expected 1 parameter, received none or multiple"
+            ExitFatal "应提供 1 个参数，但实际未提供或提供了多个参数"
         fi
     }
 
@@ -2587,11 +2587,11 @@
 
     GetTimestamp() {
         ts=0
-        # Detect if the implementation of date supports nanoseconds,
+        # Detect if the implementation of date supports 纳秒,
         if [ "${OS}" = "Linux" ]; then
-            current_nanoseconds=$(date "+%N")
+            current_纳秒=$(date "+%N")
             # Verify if the result of the command is a number
-            if [ -n "$current_nanoseconds" ] && [ "$current_nanoseconds" -eq "$current_nanoseconds" ] 2>/dev/null; then
+            if [ -n "$current_纳秒" ] && [ "$current_纳秒" -eq "$current_纳秒" ] 2>/dev/null; then
                 ts=$(date "+%s%N")
             else
                 ts=$(date "+%s")
@@ -2664,7 +2664,7 @@
                 ;;
 
                 *)
-                    echo "INVALID OPTION（注册）：1 美元"
+                    echo "无效选项（Register）：$1"
                     exit 1
                 ;;
             esac
@@ -2676,21 +2676,21 @@
         CURRENT_TS=$(GetTimestamp)
         if [ ${PREVIOUS_TS} -gt 0 ]; then
             SLOW_TEST=0
-            TIME_THRESHOLD=$SLOW_TEST_THRESHOLD  # seconds
+            TIME_THRESHOLD=$SLOW_TEST_THRESHOLD  # 秒
 
-            # Calculate timing and determine if we use seconds or nanoseconds (more precise)
+            # Calculate timing and determine if we use 秒 or 纳秒 (more precise)
             TIME_DIFF=$((CURRENT_TS - PREVIOUS_TS))
             if [ ${CURRENT_TS} -gt 1000000000000000000 ]; then
-                TIME_DIFF_FORMAT="nanoseconds"
+                TIME_DIFF_FORMAT="纳秒"
                 TIME_THRESHOLD=$((TIME_THRESHOLD * 1000000000))
                 if [ ${TIME_DIFF} -gt ${TIME_THRESHOLD} ]; then
                     SLOW_TEST=1
-                    # Convert back to seconds for readability
-                    TIME_DIFF_FORMAT="seconds"
+                    # Convert back to 秒 for readability
+                    TIME_DIFF_FORMAT="秒"
                     TIME_DIFF=$(echo ${TIME_DIFF} | ${AWKBINARY} '{printf "%f",$1/1000000000}')
                 fi
             else
-                TIME_DIFF_FORMAT="seconds"
+                TIME_DIFF_FORMAT="秒"
                 if [ ${TIME_DIFF} -gt ${TIME_THRESHOLD} ]; then
                     SLOW_TEST=1
                 fi
@@ -2704,26 +2704,26 @@
         # Skip test if it's configured in profile (old style)
         if [ ${SKIPTEST} -eq 0 ]; then
             FIND=$(echo "${TEST_SKIP_ALWAYS}" | grep "${TEST_NO}" | tr '[:lower:]' '[:upper:]')
-            if [ ! "${FIND}" = "" ]; then SKIPTEST=1; SKIPREASON="被配置跳过"; fi
+            if [ ! "${FIND}" = "" ]; then SKIPTEST=1; SKIPREASON="已通过配置跳过"; fi
         fi
 
         # Check if this test is on the list to skip
         if [ ${SKIPTEST} -eq 0 ]; then
             VALUE=$(echo ${TEST_NO} | tr '[:lower:]' '[:upper:]')
             for I in ${SKIP_TESTS}; do
-                if [ "${I}" = "${VALUE}" ]; then SKIPTEST=1; SKIPREASON="通过配置文件设置跳过（跳过测试）"; fi
+                if [ "${I}" = "${VALUE}" ]; then SKIPTEST=1; SKIPREASON="已通过配置文件的 skip-test 设置跳过"; fi
             done
         fi
 
         # Skip if test is not in the list
         if [ ${SKIPTEST} -eq 0 -a ! "${TESTS_TO_PERFORM}" = "" ]; then
             FIND=$(echo "${TESTS_TO_PERFORM}" | grep "${TEST_NO}")
-            if [ "${FIND}" = "" ]; then SKIPTEST=1; SKIPREASON="测试不在要执行的测试列表中"; fi
+            if [ "${FIND}" = "" ]; then SKIPTEST=1; SKIPREASON="该检查不在本次要执行的检查列表中"; fi
         fi
 
         # Do not run scans which have a higher intensity than what we prefer
-        if [ ${SKIPTEST} -eq 0 -a "${TEST_WEIGHT}" = "H" -a "${SCAN_TEST_HEAVY}" = "NO" ]; then SKIPTEST=1; SKIPREASON="测试系统密集扫描模式 (H)"; fi
-        if [ ${SKIPTEST} -eq 0 -a "${TEST_WEIGHT}" = "M" -a "${SCAN_TEST_MEDIUM}" = "NO" ]; then SKIPTEST=1; SKIPREASON="测试系统密集扫描模式 (M)"; fi
+        if [ ${SKIPTEST} -eq 0 -a "${TEST_WEIGHT}" = "H" -a "${SCAN_TEST_HEAVY}" = "NO" ]; then SKIPTEST=1; SKIPREASON="当前扫描模式不执行高强度检查（H）"; fi
+        if [ ${SKIPTEST} -eq 0 -a "${TEST_WEIGHT}" = "M" -a "${SCAN_TEST_MEDIUM}" = "NO" ]; then SKIPTEST=1; SKIPREASON="当前扫描模式不执行中等强度检查（M）"; fi
 
         # Test if our OS is the same as the requested OS (can be multiple values)
         if [ ${SKIPTEST} -eq 0 -a -n "${TEST_NEED_OS}" ]; then
@@ -2732,14 +2732,14 @@
                 if [ "${I}" = "${OS}" ]; then HASMATCH=1; fi
             done
             if [ ${HASMATCH} -eq 0 ]; then
-                SKIPTEST=1; SKIPREASON="错误的来宾 OS（仅限 ${TEST_NEED_OS}）"
+                SKIPTEST=1; SKIPREASON="操作系统不匹配（仅适用于 ${TEST_NEED_OS}）"
                 if [ ${LOG_INCORRECT_OS} -eq 0 ]; then SKIPLOGTEST=1; fi
             fi
         fi
 
         # Skip test when it belongs to another category (default is 'all')
         if [ ${SKIPTEST} -eq 0 -a -n "${TEST_CATEGORY_TO_CHECK}" -a ! "${TEST_CATEGORY_TO_CHECK}" = "all" -a ! "${TEST_CATEGORY}" = "${TEST_CATEGORY_TO_CHECK}" ]; then
-            SKIPTEST=1; SKIPREASON="类别不正确（仅限 ${TEST_CATEGORY_TO_CHECK}）"
+            SKIPTEST=1; SKIPREASON="检查类别不匹配（仅执行 ${TEST_CATEGORY_TO_CHECK}）"
         fi
 
         # Check for correct hardware platform
@@ -2749,26 +2749,26 @@
                 if [ "${I}" = "${HARDWARE}" ]; then HASMATCH=1; fi
             done
             if [ ${HASMATCH} -eq 0 ]; then
-                SKIPTEST=1; SKIPREASON="硬件平台不正确（仅限 ${TEST_NEED_PLATFORM}）"
+                SKIPTEST=1; SKIPREASON="硬件平台不匹配（仅适用于 ${TEST_NEED_PLATFORM}）"
             fi
         fi
 
         # Check for required (and discovered) package manager
-        if [ ${SKIPTEST} -eq 0 -a ${TEST_NEED_PKG_MGR} -eq 1 -a ${HAS_PACKAGE_MANAGER} -eq 0 ]; then SKIPTEST=1; SKIPREASON="需要已知的包管理器来测试特定包的存在"; fi
+        if [ ${SKIPTEST} -eq 0 -a ${TEST_NEED_PKG_MGR} -eq 1 -a ${HAS_PACKAGE_MANAGER} -eq 0 ]; then SKIPTEST=1; SKIPREASON="需要可识别的软件包管理器才能检查特定软件包"; fi
 
         # Not all prerequisites met, like missing tool
         if [ ${SKIPTEST} -eq 0 -a "${PREQS_MET}" = "NO" ]; then SKIPTEST=1; if [ -z "${SKIPREASON}" ]; then SKIPREASON="未满足前置条件（例如缺少工具或 Linux 发行版类型不同）"; fi; fi
 
         # Skip if a test is root only and we are running a non-privileged test
         if [ ${SKIPTEST} -eq 0 -a ${ROOT_ONLY} -eq 1 -a ! ${MYID} = "0" ]; then
-            SKIPTEST=1; SKIPREASON="本次测试需要root权限"
+            SKIPTEST=1; SKIPREASON="此检查需要 root 权限"
             SKIPPED_TESTS_ROOTONLY="${SKIPPED_TESTS_ROOTONLY}====${TEST_NO}:space:-:space:${TEST_DESCRIPTION}"
             #SkipTest "${TEST_NO}:Test:space:requires:space:root:space:permissions:-:-:"
         fi
 
         # Skip test?
         if [ ${SKIPTEST} -eq 0 ]; then
-            # First wait X seconds (depending pause_between_tests)
+            # First wait X 秒 (depending pause_between_tests)
             if [ ${TEST_PAUSE_TIME} -gt 0 ]; then sleep ${TEST_PAUSE_TIME}; fi
 
             # Increase counter for every registered test which is performed
@@ -2947,7 +2947,7 @@
                     TEST_VALUE="value:$1;"
                 ;;
                 *)
-                    echo "INVALID OPTION（报告详细信息）：1 美元"
+                    echo "无效选项（ReportDetails）：$1"
                     ExitFatal
                 ;;
             esac
@@ -2970,7 +2970,7 @@
 
     ReportException() {
         Report "exception_event[]=$1|${2-NoInfo}|"
-        LogText "异常：测试有一个异常事件 ($1)，文本为 ${2-NoText}"
+        LogText "异常：检查 $1 发生异常，消息为 ${2-NoText}"
         if [ ${QUIET} -eq 0 ]; then
             DisplayException "$1" "$2"
         fi
@@ -2986,7 +2986,7 @@
 
     ReportManual() {
         Report "manual_event[]=$1"
-        LogText "手动：需要一个或多个手动操作来进一步测试该控件/插件"
+        LogText "手动操作：需要执行一个或多个手动步骤，才能进一步检查该控制项或插件"
     }
 
 
@@ -3033,7 +3033,7 @@
         TOTAL_WARNINGS=$((TOTAL_WARNINGS + 1))
         # Old style used L/M/H level as second parameter. This is deprecated as of 3.x
         if [ "$2" = "L" -o "$2" = "M" -o "$2" = "H" ]; then
-            ExitFatal "Deprecated usage of ReportWarning() function"
+            ExitFatal "使用了已弃用的 ReportWarning() 函数调用方式"
         else
             # New style warning format:
             # <ID> <Warning> <Details> <Solution>
@@ -3081,7 +3081,7 @@
             testchars="$2"
             cleaned=$(echo $1 | tr -cd "${testchars}")
         else
-            ExitFatal "No argument or too many arguments provided to SafeInput()"
+            ExitFatal "调用 SafeInput() 时未提供参数或参数过多"
         fi
         # Test if the cleaned string is the same as the original input
         if [ "${cleaned}" = "${input}" ]; then
@@ -3102,7 +3102,7 @@
     SafeFile() {
         unsafe=0
         if [ $# -ne 1 ]; then
-            ExitFatal "No argument or too many arguments provided to SafeFile()"
+            ExitFatal "调用 SafeFile() 时未提供参数或参数过多"
         else
             FILE="$1"
 
@@ -3180,7 +3180,7 @@
                 # Check file permissions
                 if [ ! -f "$1" ]; then
                     LogText "致命错误：文件 $1 不存在。"
-                    ExitFatal "Fatal error: file $1 does not exist"
+                    ExitFatal "致命错误：文件 $1 不存在"
                 else
                     PERMS=$(ls -l $1)
 
@@ -3258,7 +3258,7 @@
         MASK_LOG=0
         RETVAL=1
         if [ $# -lt 2 ]; then
-            ExitFatal "Not enough arguments for function SearchItem()"
+            ExitFatal "调用 SearchItem() 函数时参数不足"
         elif [ $# -ge 2 ]; then
             FILE=$2
             STRING=$1
@@ -3381,9 +3381,9 @@
         # Only display if standard is enabled in the profile and mark system as non-compliant
         if [ ${SHOW} -eq 1 ]; then
             COMPLIANCE_FINDINGS_FOUND=1
-            DisplayManual "  [${WHITE}${STANDARD_FRIENDLY_NAME} ${STANDARD_VERSION}${NORMAL}] - ${CYAN}Section ${STANDARD_SECTION}${NORMAL} - ${WHITE}${STANDARD_SECTION_TITLE}${NORMAL}"
-            DisplayManual "  - Details:        ${REASON}"
-            DisplayManual "  - Configuration:  ${RED}${ACTUAL_VALUE}${NORMAL} / ${EXPECTED_VALUE}"
+            DisplayManual "  [${WHITE}${STANDARD_FRIENDLY_NAME} ${STANDARD_VERSION}${NORMAL}] - ${CYAN}章节 ${STANDARD_SECTION}${NORMAL} - ${WHITE}${STANDARD_SECTION_TITLE}${NORMAL}"
+            DisplayManual "  - 详情：          ${REASON}"
+            DisplayManual "  - 配置：          ${RED}${ACTUAL_VALUE}${NORMAL} / ${EXPECTED_VALUE}"
             DisplayManual ""
         fi
     }
@@ -3398,7 +3398,7 @@
     ################################################################################
 
     ShowSymlinkPath() {
-        if [ $# -eq 0 ]; then ExitFatal "Function ShowSymlinkPath() called without a file name"; fi
+        if [ $# -eq 0 ]; then ExitFatal "调用 ShowSymlinkPath() 时未提供文件名"; fi
         sFILE=$1
         FOUNDPATH=0
         SYMLINK_USE_PYTHON=0
@@ -3412,7 +3412,7 @@
                 # If a Python binary is found, use the one in path
                 if [ ${BINARY_SCAN_FINISHED} -eq 0 -a "${PYTHONBINARY}" = "" ]; then
                     FIND=$(which python 2> /dev/null | grep -v "no [^ ]* in ")
-                    if [ ! "${FIND}" = "" ]; then LogText "设置临时 pythonbinary 变量"; PYTHONBINARY="${FIND}"; fi
+                    if [ ! "${FIND}" = "" ]; then LogText "设置临时 PYTHONBINARY 变量"; PYTHONBINARY="${FIND}"; fi
                 fi
 
                 if [ ! "${PYTHONBINARY}" = "" ]; then
@@ -3423,14 +3423,14 @@
             else
                 if [ ${BINARY_SCAN_FINISHED} -eq 0 -a "${READLINKBINARY}" = "" ]; then
                     FIND=$(which readlink 2> /dev/null | grep -v "no [^ ]* in ")
-                    if [ ! "${FIND}" = "" ]; then LogText "设置临时 readlinkbinary 变量"; READLINKBINARY="${FIND}"; fi
+                    if [ ! "${FIND}" = "" ]; then LogText "设置临时 READLINKBINARY 变量"; READLINKBINARY="${FIND}"; fi
                 fi
 
                 if [ ! "${READLINKBINARY}" = "" ]; then
                     SYMLINK_USE_READLINK=1
-                    LogText "注意：使用真实的 readlink 二进制文件来确定 ${sFILE} 上的符号链接"
+                    LogText "注意：使用 readlink 程序确定 ${sFILE} 的符号链接目标"
                     tFILE=$(${READLINKBINARY} -f ${sFILE})
-                    LogText "结果：readlink 显示 ${tFILE} 作为输出"
+                    LogText "结果：readlink 返回 ${tFILE}"
                 fi
             fi
             # Check if we can find the file now
@@ -3457,7 +3457,7 @@
                 tDIR=$(echo ${sFILE} | awk '{match($1, "^.*/"); print substr($1, 1, RLENGTH-1)}')
                 tFILE="${tDIR}/${tFILE}"
                 if [ -L ${tFILE} ]; then
-                    LogText "结果：此符号链接链接到另一个符号链接"
+                    LogText "结果：该符号链接指向另一个符号链接"
                     # Ensure that we use a second try with the right tool as well
                     if [ ${SYMLINK_USE_PYTHON} -eq 1 ]; then
                         tFILE=$(python -c "import os,sys; print(os.path.realpath(os.path.expanduser(sys.argv[1])))" ${tFILE})
@@ -3521,10 +3521,10 @@
             # Check if this test is on the list to skip
             for item in ${SKIP_TESTS}; do
                 STRING=$(echo $1 | tr '[:lower:]' '[:upper:]')
-                if [ "${item}" = "${STRING}" ]; then RETVAL=0; LogText "配置跳过的原子测试 ($1) (skip-test)"; fi
+                if [ "${item}" = "${STRING}" ]; then RETVAL=0; LogText "通过配置跳过原子检查 $1（skip-test）"; fi
             done
         else
-            ReportException "SkipAtomicTest()" "在没有正确数量的参数的情况下调用函数 (1)"
+            ReportException "SkipAtomicTest()" "调用函数时参数数量不正确（需要 1 个参数）"
         fi
         return $RETVAL
     }
@@ -3540,8 +3540,8 @@
 
     Status() {
         echo ""
-        echo "Date / time : $(date "+%Y-%m-%d %H:%M:%S")"
-        echo "主动检查：${TEST_NO:-NONE}"
+        echo "日期/时间：$(date "+%Y-%m-%d %H:%M:%S")"
+        echo "当前检查：${TEST_NO:-无}"
         echo ""
     }
 
@@ -3589,7 +3589,7 @@
                     CONFIG_VALUE=$1
                 ;;
                 *)
-                    echo "INVALID OPTION（StoreNginx 设置）：1 美元 2 美元"
+                    echo "无效选项（StoreNginxSettings）：$1 $2"
                     #ExitFatal
                 ;;
             esac
@@ -3635,7 +3635,7 @@
                     SEARCH=$1
                 ;;
                 *)
-                    echo "INVALID OPTION USED（测试值）：1 美元"
+                    echo "使用了无效选项（TestValue）：$1"
                     exit 1
                 ;;
             esac
@@ -3665,7 +3665,7 @@
         if [ "${RETVAL}" -lt 2 ]; then
             return ${RESULT}
         else
-            Fatal "ERROR: No result returned from function (TestValue). Incorrect usage?"
+            Fatal "错误：TestValue 函数未返回结果，可能使用方式不正确。"
             #ExitFatal
         fi
     }

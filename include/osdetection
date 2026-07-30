@@ -989,11 +989,11 @@
                     Debug "Found a matching line: ${EOL_OS_MATCH} (timestamp=${EOL_TIMESTAMP}, date=${EOL_DATE})"
                     if [ ${NOW} -gt ${EOL_TIMESTAMP} ]; then
                         EOL=1
-                        EOL_STATE="This operating system seems be end-of-life and may no longer receive updates or support!"
+                        EOL_STATE="此操作系统似乎已结束生命周期，可能不再接收更新或支持！"
                         Debug "Outcome: OS is end-of-life!"
                     else
                         EOL=0
-                        EOL_STATE="This operating system seems not to be end-of-life yet"
+                        EOL_STATE="此操作系统似乎尚未结束生命周期"
                         Debug "Outcome: OS is not end-of-life yet"
                     fi
                 else

@@ -420,7 +420,7 @@
                         if [ -e /dev/grsec ]; then
                             Display --indent 2 --text "- 检查可用的内核更新" --result GRSEC --color GREEN
                             LogText "结果：已安装 Grsecurity，无法确定是否有更新的内核"
-                            ReportManual "Manually check to confirm you're using a recent kernel and grsecurity patch"
+                            ReportManual "手动确认当前使用的是较新的内核和 grsecurity 补丁"
                         else
                             Display --indent 2 --text "- 检查可用的内核更新" --result "${STATUS_OK}" --color GREEN
                             LogText "结果：没有可用的内核更新"

@@ -64,7 +64,7 @@
             if [ ${FOUND} -eq 1 ]; then
                 # Stop execution if privileged, otherwise continue but warn user
                 if [ ${PRIVILEGED} -eq 1 ]; then
-                    ExitFatal "Suspicious location (${SCANDIR}) in PATH discovered. Quitting..."
+                    ExitFatal "在 PATH 中发现可疑位置（${SCANDIR}），程序将退出……"
                 else
                     Display --indent 4 --text "警告：PATH 中的可疑位置 (${SCANDIR})"
                     ReportWarning "${TEST_NO}" "发现 PATH 中的可疑位置" "text:${MSG}"

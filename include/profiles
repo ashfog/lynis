@@ -42,7 +42,7 @@
             Display --text "=================================================================================================="
             DisplayWarning "您的配置文件包含旧式配置条目。有关更多详细信息以及如何转换这些条目，请参阅日志文件"
             Display --indent 2 --text "* ${RED}问题${NORMAL}"
-            Display --indent 2 --text "您的个人资料中有一行或多行采用旧格式（键：值）。它们需要转换为新格式（key=value) 或禁用。"
+            Display --indent 2 --text "配置文件中有一行或多行采用旧格式（key:value），需要转换为新格式（key=value）或将其禁用。"
             Display --text " "
             Display --indent 2 --text "* ${GREEN}解决方法${NORMAL}"
             Display --indent 2 --text "使用grep查看相关匹配项（grep -E \\"^[a-z-]{1,}:\\" custom.prf）"
@@ -63,7 +63,7 @@
                 LogText "输出：${I}"
             done
             LogText "建议：使用 '#' 注释不正确的行后重试。如果合法字符被阻止，请提交 GitHub issue"
-            ExitFatal "unexpected characters in profile. Stopping execution (security measure)"
+            ExitFatal "配置文件中包含异常字符，出于安全考虑停止执行"
         fi
 
         # Now parse the profile and filter out unwanted characters
@@ -120,7 +120,7 @@
                     FIND=$(echo "${VALUE}" | grep -E "^(0|false|no)$") && COLORS=0
                     if [ -n "${FIND}" ]; then SETTING_COLORS=0; RemoveColors; fi
                     Debug "Colors set to ${SETTING_COLORS}"
-                    AddSetting "colors" "${SETTING_COLORS}" "Colored screen output"
+                    AddSetting "colors" "${SETTING_COLORS}" "彩色屏幕输出"
                     unset SETTING_COLORS
                 ;;
 
@@ -132,70 +132,70 @@
                 # Maximum number of WAITing connections
                 connections-max-wait-state | connections_max_wait_state)
                     OPTIONS_CONN_MAX_WAIT_STATE="${VALUE}"
-                    AddSetting "connections-max-wait-state" "${OPTIONS_CONN_MAX_WAIT_STATE}" "Connections (max-wait-state)"
+                    AddSetting "connections-max-wait-state" "${OPTIONS_CONN_MAX_WAIT_STATE}" "连接数（最大等待状态）"
                 ;;
 
                 # Append something to URL for control information
                 control-url-append | control_url_append)
                     CONTROL_URL_APPEND="${VALUE}"
-                    AddSetting "control-url-append" "${CONTROL_URL_APPEND}" "Control URL (append)"
+                    AddSetting "control-url-append" "${CONTROL_URL_APPEND}" "控制 URL（追加内容）"
                 ;;
 
                 # Prepend an URL before control information link
                 control-url-prepend | control_url_prepend)
                     CONTROL_URL_PREPEND="${VALUE}"
-                    AddSetting "control-url-prepend" "${CONTROL_URL_PREPEND}" "Control URL (prepend)"
+                    AddSetting "control-url-prepend" "${CONTROL_URL_PREPEND}" "控制 URL（前置内容）"
                 ;;
 
                 # Protocol to use for control information link
                 control-url-protocol | control_url_protocol)
                     CONTROL_URL_PROTOCOL="${VALUE}"
-                    AddSetting "control-url-protocol" "${CONTROL_URL_PREPEND}" "Control URL (protocol)"
+                    AddSetting "control-url-protocol" "${CONTROL_URL_PREPEND}" "控制 URL（协议）"
                 ;;
 
                 # Append something to URL for control information (only applies to CUST-*)
                 custom-url-append | custom_url_append)
                     CUSTOM_URL_APPEND="${VALUE}"
-                    AddSetting "custom-url-append" "${CUSTOM_URL_APPEND}" "Custom URL (append)"
+                    AddSetting "custom-url-append" "${CUSTOM_URL_APPEND}" "自定义 URL（追加内容）"
                 ;;
 
                 # Prepend an URL before control information link (only applies to CUST-*)
                 custom-url-prepend | custom_url_prepend)
                     CUSTOM_URL_PREPEND="${VALUE}"
-                    AddSetting "custom-url-prepend" "${CUSTOM_URL_PREPEND}" "Custom URL (prepend)"
+                    AddSetting "custom-url-prepend" "${CUSTOM_URL_PREPEND}" "自定义 URL（前置内容）"
                 ;;
 
                 # Protocol to use for control information link
                 custom-url-protocol | custom_url_protocol)
                     CUSTOM_URL_PROTOCOL="${VALUE}"
-                    AddSetting "custom-url-protocol" "${CUSTOM_URL_PREPEND}" "Custom URL (protocol)"
+                    AddSetting "custom-url-protocol" "${CUSTOM_URL_PREPEND}" "自定义 URL（协议）"
                 ;;
 
                 # Do not check security repository in sources.list (Debian/Ubuntu)
                 debian-skip-security-repository | debian_skip_security_repository)
                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)") && OPTION_DEBIAN_SKIP_SECURITY_REPOSITORY=1 
-                    AddSetting "debian-skip-security-repository" "OPTION_DEBIAN_SKIP_SECURITY_REPOSITORY" "Skip checking for a security repository (Debian and others)"
+                    AddSetting "debian-skip-security-repository" "OPTION_DEBIAN_SKIP_SECURITY_REPOSITORY" "跳过安全软件仓库检查（Debian 等系统）"
                 ;;
 
                 # Debug status to show more details while running program
                 debug)
                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)") && DEBUG=1
                     Debug "Debug mode set to '${DEBUG}'"
-                    AddSetting "debug" "${DEBUG}" "Debugging mode"
+                    AddSetting "debug" "${DEBUG}" "调试模式"
                 ;;
 
                 # Development mode (--developer)
                 developer-mode)
                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)") && DEVELOPER_MODE=1
                     Debug "Developer mode set to ${DEVELOPER_MODE}"
-                    AddSetting "developer" "${DEVELOPER_MODE}" "Developer mode"
+                    AddSetting "developer" "${DEVELOPER_MODE}" "开发者模式"
                 ;;
 
                 # Show non-zero exit code when errors are found
                 error-on-warnings)
                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)") && ERROR_ON_WARNINGS=1
                     Debug "Exit with different code on warnings is set to ${ERROR_ON_WARNINGS}"
-                    AddSetting "error-on-warnings" "${ERROR_ON_WARNINGS}" "Use non-zero exit code if one or more warnings were found"
+                    AddSetting "error-on-warnings" "${ERROR_ON_WARNINGS}" "发现一个或多个警告时使用非零退出码"
                 ;;
 
                 # Skip FreeBSD port audit
@@ -207,7 +207,7 @@
                 # Lynis Enterprise: group name - deprecated option
                 group)
                     GROUP_NAME="${VALUE}"
-                    AddSetting "group" "${GROUP_NAME}" "Group"
+                    AddSetting "group" "${GROUP_NAME}" "组"
                     DEPRECATED_OPTION="group"
                 ;;
 
@@ -232,7 +232,7 @@
                 language | lang)
                     LogText "通过配置文件将语言设置为 '${VALUE}'"
                     if [ -n "${VALUE}" ]; then LANGUAGE="${VALUE}"; fi
-                    AddSetting "language" "${LANGUAGE}" "Language"
+                    AddSetting "language" "${LANGUAGE}" "语言"
                 ;;
 
                 # Lynis Enterprise license key
@@ -241,7 +241,7 @@
                         LICENSE_KEY="${VALUE}"
                         Report "license_key=${VALUE}"
                     fi
-                    AddSetting "license-key" "${VALUE}" "License key"
+                    AddSetting "license-key" "${VALUE}" "许可证密钥"
                 ;;
 
                 # Do (not) log tests if they have an different operating system
@@ -254,19 +254,19 @@
                 # What type of machine we are scanning (eg. personal, workstation or server)
                 machine-role | machine_role)
                     MACHINE_ROLE="${VALUE}"
-                    AddSetting "machine-role" "${MACHINE_ROLE}" "Machine role (personal, workstation or server)"
+                    AddSetting "machine-role" "${MACHINE_ROLE}" "机器角色（个人设备、工作站或服务器）"
                 ;;
 
                 # Define if any found NTP daemon instance is configured as a server or client
                 ntpd-role | ntpd_role)
                     NTPD_ROLE="${VALUE}"
-                    AddSetting "ntpd-role" "${NTPD_ROLE}" "NTP role (server or client)"
+                    AddSetting "ntpd-role" "${NTPD_ROLE}" "NTP 角色（服务器或客户端）"
                 ;;
 
                 # How much seconds to wait between tests
                 pause_between_tests | pause-between-tests)
                     TEST_PAUSE_TIME="${VALUE}"
-                    AddSetting "pause-between-tests" "${TEST_PAUSE_TIME}" "Pause between tests (in seconds)"
+                    AddSetting "pause-between-tests" "${TEST_PAUSE_TIME}" "检查之间的暂停时间（秒）"
                 ;;
 
                 # Plugin
@@ -286,7 +286,7 @@
                     else
                         LogText "插件目录此前已设置为 ${PLUGINDIR}（很可能通过程序参数设置），不进行覆盖"
                     fi
-                    AddSetting "plugin-dir" "${PLUGINDIR}" "Plugin directory"
+                    AddSetting "plugin-dir" "${PLUGINDIR}" "插件目录"
                 ;;
 
                 # Profile name
@@ -301,7 +301,7 @@
                     FIND=$(echo "${VALUE}" | grep -E "^(0|false|no)$") && QUICKMODE=0
                     if [ -n "${FIND}" ]; then SETTING_QUICK_MODE=1; fi
                     Debug "Quickmode set to ${SETTING_QUICK_MODE}"
-                    AddSetting "quick" "${SETTING_QUICK_MODE}" "Quick mode (non-interactive)"
+                    AddSetting "quick" "${SETTING_QUICK_MODE}" "快速模式（非交互）"
                 ;;
 
                 # Refresh software repositories
@@ -310,7 +310,7 @@
                     FIND=$(echo "${VALUE}" | grep -E "^(0|false|no)$") && REFRESH_REPOSITORIES=0
                     if [ -n "${FIND}" ]; then SETTING_REFRESH_REPOSITORIES=0; fi
                     Debug "Refreshing repositories set to ${SETTING_REFRESH_REPOSITORIES}"
-                    AddSetting "refresh-repositories" "${SETTING_REFRESH_REPOSITORIES}" "Refresh repositories (for vulnerable package detection)"
+                    AddSetting "refresh-repositories" "${SETTING_REFRESH_REPOSITORIES}" "刷新软件仓库（用于检测存在漏洞的软件包）"
                 ;;
 
                 # Show more details in report
@@ -327,7 +327,7 @@
                     FIND=$(echo "${VALUE}" | grep -E "^(0|false|no)$") && SHOW_TOOL_TIPS=0
                     if [ -n "${FIND}" ]; then SETTING_SHOW_TOOL_TIPS=0; fi
                     Debug "Show tool tips set to ${SETTING_SHOW_TOOL_TIPS}"
-                    AddSetting "show-tool-tips" "${SETTING_SHOW_TOOL_TIPS}" "Show tool tips"
+                    AddSetting "show-tool-tips" "${SETTING_SHOW_TOOL_TIPS}" "显示工具提示"
                 ;;
 
                 # Show warnings only
@@ -336,7 +336,7 @@
                     QUICKMODE=1
                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)$") && SHOW_WARNINGS_ONLY=1
                     Debug "Show warnings only set to ${SHOW_WARNINGS_ONLY}"
-                    AddSetting "show-warnings-only" "${SHOW_WARNINGS_ONLY}" "Show only warnings"
+                    AddSetting "show-warnings-only" "${SHOW_WARNINGS_ONLY}" "仅显示警告"
                 ;;
 
                 # Skip plugins
@@ -346,7 +346,7 @@
                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)$") && SKIP_PLUGINS=1
                     if [ -n "${FIND}" ]; then SETTING_SKIP_PLUGINS=1; fi
                     Debug "Skip plugins is set to ${SETTING_SKIP_PLUGINS}"
-                    AddSetting "skip-plugins" "${SETTING_SKIP_PLUGINS}" "Skip plugins"
+                    AddSetting "skip-plugins" "${SETTING_SKIP_PLUGINS}" "跳过插件"
                 ;;
 
                 # Which tests to skip (skip-test=ABCD-1234 or skip-test=ABCD-1234:subtest)
@@ -365,14 +365,14 @@
                 ssl-certificate-paths)
                     SSL_CERTIFICATE_PATHS="${VALUE}"
                     Debug "SSL paths set to ${SSL_CERTIFICATE_PATHS}"
-                    AddSetting "ssl-certificate-paths" "${SSL_CERTIFICATE_PATHS}" "Paths for SSL certificates"
+                    AddSetting "ssl-certificate-paths" "${SSL_CERTIFICATE_PATHS}" "SSL 证书路径"
                 ;;
 
                 ssl-certificate-paths-to-ignore)
                     # Retrieve paths to ignore when searching for certificates. Strip special characters, replace possible spaces
                     SSL_CERTIFICATE_PATHS_TO_IGNORE=$(echo ${VALUE} | tr -d '[\001-\037]' | sed 's/ /__space__/g' | tr ':' ' ')
                     Debug "SSL paths to ignore: ${SSL_CERTIFICATE_PATHS_TO_IGNORE}"
-                    AddSetting "ssl-certificate-paths-to-ignore" "${SSL_CERTIFICATE_PATHS_TO_IGNORE}" "Paths that should be ignored for SSL certificates"
+                    AddSetting "ssl-certificate-paths-to-ignore" "${SSL_CERTIFICATE_PATHS_TO_IGNORE}" "搜索 SSL 证书时要忽略的路径"
                 ;;
 
                 # Check also certificates provided by packages?
@@ -407,7 +407,7 @@
                     if [ "${VALUE}" = "light" ]; then   SCAN_TEST_LIGHT="YES"; SCAN_TEST_MEDIUM="NO";  SCAN_TEST_HEAVY="NO";  fi
                     if [ "${VALUE}" = "normal" ]; then  SCAN_TEST_LIGHT="YES"; SCAN_TEST_MEDIUM="YES"; SCAN_TEST_HEAVY="NO";  fi
                     if [ "${VALUE}" = "full" ]; then    SCAN_TEST_LIGHT="YES"; SCAN_TEST_MEDIUM="YES"; SCAN_TEST_HEAVY="YES"; fi
-                    AddSetting "test-scan-mode" "${VALUE}" "Scan mode"
+                    AddSetting "test-scan-mode" "${VALUE}" "扫描模式"
                 ;;
 
                 # Perform upload
@@ -416,7 +416,7 @@
                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)$") && UPLOAD_DATA=1
                     if [ -n "${FIND}" ]; then SETTING_UPLOAD=1; fi
                     Debug "Upload set to ${SETTING_UPLOAD}"
-                    AddSetting "upload" "${SETTING_UPLOAD}" "Data upload after scanning"
+                    AddSetting "upload" "${SETTING_UPLOAD}" "扫描后上传数据"
                     unset SETTING_UPLOAD
                 ;;
 
@@ -424,52 +424,52 @@
                 # Compression of uploads (enabled by default)
                 upload_compressed | compressed-uploads)
                     if [ "${VALUE}" = "0" ]; then COMPRESSED_UPLOADS=0; fi
-                    AddSetting "compressed-uploads" "${COMPRESSED_UPLOADS}" "Compressed uploads"
+                    AddSetting "compressed-uploads" "${COMPRESSED_UPLOADS}" "压缩上传数据"
                 ;;
 
                 # Options during upload of data
                 upload_options | upload-options)
                     UPLOAD_OPTIONS="${VALUE}"
-                    AddSetting "upload-options" "${UPLOAD_OPTIONS}" "Upload options"
+                    AddSetting "upload-options" "${UPLOAD_OPTIONS}" "上传选项"
                 ;;
 
                 # Proxy settings
                 upload_proxy_port | proxy-port | upload-proxy-port)
                     UPLOAD_PROXY_PORT="${VALUE}"
-                    AddSetting "upload-proxy-port" "${UPLOAD_PROXY_PORT}" "Proxy port"
+                    AddSetting "upload-proxy-port" "${UPLOAD_PROXY_PORT}" "代理端口"
                 ;;
                 upload_proxy_protocol | proxy-protocol)
                     UPLOAD_PROXY_PROTOCOL="${VALUE}"
-                    AddSetting "upload-proxy-protocol" "${UPLOAD_PROXY_PROTOCOL}" "Proxy protocol"
+                    AddSetting "upload-proxy-protocol" "${UPLOAD_PROXY_PROTOCOL}" "代理协议"
                 ;;
                 upload_proxy_server | proxy-server)
                     UPLOAD_PROXY_SERVER="${VALUE}"
-                    AddSetting "upload-proxy-server" "${UPLOAD_PROXY_PORT}" "Proxy server"
+                    AddSetting "upload-proxy-server" "${UPLOAD_PROXY_PORT}" "代理服务器"
                 ;;
 
                 # Receiving system (IP address or hostname)
                 upload-server)
                     UPLOAD_SERVER="${VALUE}"
-                    AddSetting "upload-server" "${UPLOAD_SERVER}" "Upload server (ip or hostname)"
+                    AddSetting "upload-server" "${UPLOAD_SERVER}" "上传服务器（IP 或主机名）"
                 ;;
 
                 # Specify an alternative upload tool
                 upload-tool)
                     if [ -f "${VALUE}" ]; then UPLOAD_TOOL="${VALUE}"; fi
-                    AddSetting "upload-tool" "${UPLOAD_TOOL}" "Upload tool"
+                    AddSetting "upload-tool" "${UPLOAD_TOOL}" "上传工具"
                 ;;
 
                 # Specify arguments for an alternative upload tool
                 upload-tool-arguments)
                     UPLOAD_TOOL_ARGS="${VALUE}"
-                    AddSetting "upload-tool-arguments" "${UPLOAD_TOOL_ARGS}" "Upload tool (arguments)"
+                    AddSetting "upload-tool-arguments" "${UPLOAD_TOOL_ARGS}" "上传工具（参数）"
                 ;;
 
                 # Verbose output (--verbose)
                 verbose)
                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)") && VERBOSE=1
                     Debug "Verbose set to ${VERBOSE}"
-                    AddSetting "verbose" "${VERBOSE}" "Verbose output"
+                    AddSetting "verbose" "${VERBOSE}" "详细输出"
                 ;;
 
                 ########################################################################################################
@@ -481,14 +481,14 @@
                     STRING=$(echo ${VALUE} | awk '{print toupper($0)}')
                     SKIP_TESTS="${SKIP_TESTS} ${STRING}"
                     LogText "[已弃用的选项] 要跳过的检查：${VALUE}"
-                    DisplayToolTip "Replace deprecated option 'test_skip_always' and replace with 'skip-test' (add to custom.prf)"
+                    DisplayToolTip "将已弃用的选项 'test_skip_always' 替换为 'skip-test'（添加到 custom.prf）"
                 ;;
 
                 # Deprecated: receiving system (IP address or hostname)
                 upload_server)
                     UPLOAD_SERVER="${VALUE}"
-                    AddSetting "upload-server" "${UPLOAD_SERVER}" "Upload server (ip or hostname)"
-                    DisplayToolTip "Replace deprecated option 'upload_server' and replace with 'upload-server' (add to custom.prf)"
+                    AddSetting "upload-server" "${UPLOAD_SERVER}" "上传服务器（IP 或主机名）"
+                    DisplayToolTip "将已弃用的选项 'upload_server' 替换为 'upload-server'（添加到 custom.prf）"
                 ;;
 
 
@@ -497,11 +497,11 @@
                     LogText "未知选项 ${OPTION}（值为：${VALUE}）"
 
                     ${ECHOCMD:-echo} ""
-                    ${ECHOCMD:-echo} "${RED}Error${NORMAL}: found one or more errors in profile ${PROFILE}"
+                    ${ECHOCMD:-echo} "${RED}错误${NORMAL}：配置文件 ${PROFILE} 中发现一个或多个错误"
                     ${ECHOCMD:-echo} ""
                     ${ECHOCMD:-echo} ""
-                    ${ECHOCMD:-echo} "Full line: ${CONFIGOPTION}"
-                    ${ECHOCMD:-echo} "${WHITE}Details${NORMAL}: Unknown option '${YELLOW}${OPTION}${NORMAL}' found (with value: ${VALUE})"
+                    ${ECHOCMD:-echo} "完整配置行：${CONFIGOPTION}"
+                    ${ECHOCMD:-echo} "${WHITE}详情${NORMAL}：发现未知选项 '${YELLOW}${OPTION}${NORMAL}'（值：${VALUE}）"
                     ${ECHOCMD:-echo} ""
                     ExitFatal
                 ;;
@@ -537,23 +537,23 @@
 #################################################################################
 #
     # Register the discovered settings
-    AddSetting "log-tests-incorrect-os" "${SETTING_LOG_TESTS_INCORRECT_OS}" "Logging of tests that have a different OS"
-    AddSetting "show-report-solution" "${SETTING_SHOW_REPORT_SOLUTION}" "Show more details in report (solution)"
-    AddSetting "skip-upgrade-test" "${SKIP_UPGRADE_TEST}" "Skip upgrade test"
-    AddSetting "strict" "${SET_STRICT}" "Perform strict code test of scripts"
+    AddSetting "log-tests-incorrect-os" "${SETTING_LOG_TESTS_INCORRECT_OS}" "记录适用于其他操作系统的检查"
+    AddSetting "show-report-solution" "${SETTING_SHOW_REPORT_SOLUTION}" "在报告中显示更多详情（解决方案）"
+    AddSetting "skip-upgrade-test" "${SKIP_UPGRADE_TEST}" "跳过升级检查"
+    AddSetting "strict" "${SET_STRICT}" "对脚本执行严格代码检查"
 
     unset SETTING_LOG_TESTS_INCORRECT_OS SETTING_SHOW_REPORT_SOLUTION
 #
 #################################################################################
 #
     if [ -n "${DEPRECATED_OPTION}" ]; then
-        ReportWarning "GEN-0030" "配置文件中使用的一个或多个已弃用的选项" "${DEPRECATED_OPTION}" "更新您的个人资料"
+        ReportWarning "GEN-0030" "配置文件中使用的一个或多个已弃用的选项" "${DEPRECATED_OPTION}" "更新配置文件"
     fi
 #
 #################################################################################
 #
 
-    Display --indent 2 --text "- 检查个人资料..." --result "DONE" --color GREEN
+    Display --indent 2 --text "- 检查配置文件……" --result "DONE" --color GREEN
 
 
 #================================================================================
