@@ -1,0 +1,143 @@
+name: One-time complete localization cleanup
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/complete-localization-cleanup.yml]
+permissions:
+  contents: write
+jobs:
+  complete:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: master, fetch-depth: 0}
+      - name: Restore commands and finish visible translations
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          fixes={
+            '"主机名 -s"':'"hostname -s"',
+            '"添加 安装 MODULENAME /bin/true（不含引号）"':'"添加 install MODULENAME /bin/true（不含引号）"',
+            '"/vmlinuz 或 /boot/vmlinuz"':'"/vmlinuz or /boot/vmlinuz"',
+            '"禁用_vrfy_命令=没有"':'"disable_vrfy_command=no"',
+            '"主机名"':'"hostname"',
+            '"pkg 审计"':'"pkg audit"',
+            '"${NTPCTLBINARY} -s 状态"':'"${NTPCTLBINARY} -s status"',
+            'https：//':'https://','http：//':'http://','ftp：//':'ftp://',
+            'text：':'text:','file：':'file:','url：':'url:','manual：':'manual:','command：':'command:','details：':'details:','solution：':'solution:',
+            'INVALID OPTION (Display)： $1':'无效选项（Display）：$1',
+            'INVALID OPTION (Register)： $1':'无效选项（Register）：$1',
+            'INVALID OPTION (ReportDetails)： $1':'无效选项（ReportDetails）：$1',
+            'INVALID OPTION (ShowComplianceFinding)： $1':'无效选项（ShowComplianceFinding）：$1',
+            'INVALID OPTION (StoreNginxSettings)： $1 $2':'无效选项（StoreNginxSettings）：$1 $2',
+            'INVALID OPTION USED (TestValue)： $1':'使用了无效选项（TestValue）：$1',
+            '- Testing /proc mount (hidepid)':'- 测试 /proc 挂载选项（hidepid）',
+            'UPDATE AVAILABLE':'有可用更新','NON-ACTIVE':'未激活',
+            'Permissive SELinux object types： ${PERMISSIVE}':'宽容模式 SELinux 对象类型：${PERMISSIVE}',
+            '- Postfix banner':'- Postfix 横幅','CONFIG ERROR':'配置错误','NONE FOUND':'未找到','NOT OK':'不正常',
+            '- PowerDNS authoritative master： YES':'- PowerDNS 权威主服务器：是',
+            '- PowerDNS authoritative master： NO':'- PowerDNS 权威主服务器：否',
+            '- PowerDNS authoritative slave： YES':'- PowerDNS 权威从服务器：是',
+            '- PowerDNS authoritative slave： NO':'- PowerDNS 权威从服务器：否',
+            '- Ansible artifact':'- Ansible 配置痕迹','- Cfengine (cfagent)':'- Cfengine（cfagent）',
+            '- CFEngine (cf-agent)':'- CFEngine（cf-agent）','- CFEngine (cf-server)':'- CFEngine（cf-server）',
+            '- Puppet (agent)':'- Puppet（客户端）','- Puppet (master)':'- Puppet（主服务器）',
+            '- SaltStack minion':'- SaltStack 客户端','- SaltStack master (salt-master)':'- SaltStack 主服务器（salt-master）',
+            '- Automation tooling':'- 自动化工具','NO MATCH':'无匹配项',
+            'mod_evasive： anti-DoS/brute force':'mod_evasive：抗 DoS/暴力破解','SKIPPED (NOT READABLE)':'已跳过（不可读）',
+            'OS： Linux':'操作系统：Linux','OS： *BSD':'操作系统：*BSD','url：https://cisofy.com/support/':'网址：https://cisofy.com/support/'
+          }
+          files=[Path('lynis')]+sorted(p for p in Path('include').iterdir() if p.is_file())
+          changed=[]
+          for p in files:
+            try:t=p.read_text(encoding='utf-8')
+            except UnicodeDecodeError:continue
+            o=t
+            for a,b in fixes.items():t=t.replace(a,b)
+            if t!=o:p.write_text(t,encoding='utf-8');changed.append(str(p))
+          bad=[]
+          for p in files:
+            try:t=p.read_text(encoding='utf-8')
+            except UnicodeDecodeError:continue
+            for x in ('https：//','http：//','ftp：//','text：','file：','url：','manual：','command：','details：','solution：'):
+              if x in t:bad.append(f'{p}: {x}')
+          required={
+            'lynis':'"hostname -s"','include/tests_filesystems':'"添加 install MODULENAME /bin/true（不含引号）"',
+            'include/tests_kernel':'"/vmlinuz or /boot/vmlinuz"','include/tests_mail_messaging':'"disable_vrfy_command=no"',
+            'include/tests_networking':'"hostname"','include/tests_ports_packages':'"pkg audit"','include/tests_time':'"${NTPCTLBINARY} -s status"'
+          }
+          for f,s in required.items():
+            if s not in Path(f).read_text(encoding='utf-8'):bad.append(f'{f}: missing {s}')
+          if bad:raise SystemExit('\n'.join(bad))
+          Path('/tmp/complete-localization-files').write_text('\n'.join(changed),encoding='utf-8')
+          PY
+          while IFS= read -r file; do [ -n "$file" ] && sh -n "$file"; done < /tmp/complete-localization-files
+      - name: Verify remaining visible strings
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          q=re.compile(r'"((?:\\.|[^"\\])*)"');cjk=re.compile(r'[\u3400-\u9fff]');w=re.compile(r'[A-Za-z]{2,}')
+          commands={'hostname','pkg','postconf','sysctl','grep','awk','sed','find','chmod','chown','systemctl','service','ntpq','ntpctl','mount','umount','modprobe','apt','apt-get','dpkg','rpm','yum','dnf','pacman','apk','openssl','ssh','sshd','ss','netstat','ifconfig','ip','auditctl','sestatus','semanage','timedatectl','resolvectl','journalctl','logrotate','newsyslog','squid','nginx','apachectl','httpd','php','python','perl','ruby','docker','podman'}
+          products={'Rootkit Hunter','LMD（Linux Malware Detect）','falcon-sensor','Synology Antivirus Essential','Trend Micro Anti Malware','Wazuh Agent','OSSEC（syscheck）','lfd（CSF）','Wazuh（syscheck）','arch-audit','mod_reqtimeout/mod_qos','expose_php = Off'}
+          def ids(line,sp):
+            s=line.lstrip();o=set()
+            if not s or s.startswith('#'):return o
+            if 'Register ' in line and '--description' in line:
+              p=line.find('--description');
+              for i,m in enumerate(sp):
+                if m.start()>p:o.add(i);break
+            if 'Display ' in line:
+              for f in ('--text','--result'):
+                p=line.find(f)
+                if p>=0:
+                  for i,m in enumerate(sp):
+                    if m.start()>p:o.add(i);break
+            if any(x in line for x in ('DisplayError ','DisplayWarning ','DisplaySuggestion ')) and sp:o.add(0)
+            if 'LogText ' in line:
+              p=line.find('LogText ')
+              for i,m in enumerate(sp):
+                if m.start()>p:o.add(i);break
+            for fn in ('ReportWarning ','ReportSuggestion ','ReportException '):
+              p=line.find(fn)
+              if p>=0:
+                a=[i for i,m in enumerate(sp) if m.start()>p];o.update(a[1:])
+            if 'SKIPREASON=' in line:
+              p=line.find('SKIPREASON=')
+              for i,m in enumerate(sp):
+                if m.start()>p:o.add(i);break
+            if s.startswith(('echo ','printf ')) or re.match(r'^(?:if .*; then )?(?:echo|printf) ',s):o.update(range(len(sp)))
+            return o
+          def ok(x):
+            z=x.strip()
+            if cjk.search(z) or z in products or '${GEN_CHECKING}' in z:return True
+            if z.startswith(('http://','https://')):return True
+            if re.fullmatch(r'[.A-Za-z0-9_$*|?+^\\/{}-]+',z):return True
+            if re.fullmatch(r'[A-Za-z0-9_.-]+\s*=\s*\S+',z):return True
+            if re.search(r'[|><;&]|\$\(|/|--|(^|\s)-[A-Za-z0-9]|=',z):return True
+            if z.split() and z.split()[0].lower() in commands:return True
+            z=re.sub(r'\$\{[^}]+\}|\$[A-Za-z_][A-Za-z0-9_]*',' ',z)
+            return len(w.findall(z))<2
+          errors=[]
+          for p in [Path('lynis')]+sorted(x for x in Path('include').iterdir() if x.is_file()):
+            try:ls=p.read_text(encoding='utf-8').splitlines()
+            except UnicodeDecodeError:continue
+            for n,line in enumerate(ls,1):
+              sp=list(q.finditer(line))
+              for i in ids(line,sp):
+                if not ok(sp[i].group(1)):errors.append(f'{p}:{n}: {sp[i].group(1)}')
+          if errors:raise SystemExit('\n'.join(errors[:100]))
+          print('remaining untranslated visible strings: 0')
+          PY
+      - name: Remove temporary artifacts and commit
+        shell: bash
+        run: |
+          rm -f VISIBLE_ENGLISH_REPORT.txt VISIBLE_ENGLISH_SUMMARY.txt VISIBLE_ENGLISH_STRICT.txt FINAL_COMMAND_DRIFT.txt
+          rm -f .github/workflows/final-localization-cleanup.yml .github/workflows/complete-localization-cleanup.yml
+          git config user.name 'AshFog Localization Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A
+          git commit -m 'i18n: complete Chinese localization of user output'
+          git push origin HEAD:master
