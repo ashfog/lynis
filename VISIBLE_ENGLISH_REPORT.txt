@@ -1,0 +1,896 @@
+# Remaining active user-visible English candidates
+# Count: 892
+# Generated automatically; comments and Debug-only lines are excluded.
+
+lynis:74:     if [ -u "$0" ]; then echo "当前脚本设置了 set-user-id 位，此情况并不常见，程序将停止运行。"; exit 1; fi
+lynis:166:             ISSUE=1; ISSUE_TYPE="perms"; echo "[!] 请将 ${INCLUDEDIR}/${FILE} 的文件权限修改为 640。"; echo "    命令：chmod 640 ${INCLUDEDIR}/${FILE}"
+lynis:170:                 ISSUE=1; ISSUE_TYPE="perms"; echo "[!] 请将 ${INCLUDEDIR}/${FILE} 的文件权限修改为 640。"; echo "    命令：chmod 640 ${INCLUDEDIR}/${FILE}"
+lynis:196:             printf "\n    选项 2）修改相关文件的权限。\n\n       命令（整个目录）：\n         # chmod 640 include/*\n         # ./lynis audit system"
+lynis:198:             printf "\n    选项 2）修改相关文件或整个目录的所有者。\n\n       命令（整个目录）：\n         # cd ..\n         # chown -R 0:0 lynis\n         # cd lynis\n         # ./lynis audit system"
+lynis:242:         echo "找不到语言目录 (file: ${DBDIR}/languages/en)"
+lynis:303:     PROGRAM_AC=$(echo ${PROGRAM_VERSION} | awk '{ print $1 }' | sed 's/[.]//g')
+lynis:314:         printf "\n${WHITE}[ ${PROGRAM_NAME} ${PROGRAM_VERSION} ]${NORMAL}\n\n################################################################################\n  ${PROGRAM_LICENSE}\n\n  ${PROGRAM_COPYRIGHT}\n  ${PROGRAM_EXTRAINFO}\n################################################################################\n\n"
+lynis:355:     MYHOMEDIR=$(echo ~ 2> /dev/null)
+lynis:471:                 echo ""
+lynis:474:         echo ""
+lynis:541:     if [ ${LOGTEXT} -eq 1 ]; then echo "${CDATE} Starting ${PROGRAM_NAME} ${PROGRAM_VERSION} with PID ${OURPID}, build date ${PROGRAM_RELEASE_DATE}" > ${LOGFILE}; fi
+lynis:544:         echo "${WARNING}致命错误${NORMAL}：写入日志文件时出现问题，请检查路径和权限。"
+lynis:549:     LogText "### ${PROGRAM_COPYRIGHT} ###"
+lynis:552:     if [ ${CREATE_REPORT_FILE} -eq 1 ]; then echo "# ${PROGRAM_NAME} Report" > ${REPORTFILE}; fi
+lynis:571:         LogText "Info: could not find a hostname, using 'no-hostname' instead"
+lynis:598:             Display --indent 4 --text "${YELLOW}Notice:${NORMAL} no language file found for '${LANGUAGE}' (tried: ${DBDIR}/languages/${LANGUAGE})"
+lynis:614:                         Display --indent 4 --text "2) Translate (some of) the lines starting with a hash (#) and remove the leading hash"
+lynis:616:                         Display --indent 4 --text "Thank you!"
+lynis:617:                         Display --indent 4 --text "Note: no lines with a hash? Look if the file recently has been changed by another translator."
+lynis:657:         echo "Fatal error: can't find plugin directory ${PLUGINDIR}"
+lynis:670:         echo ""
+lynis:684:             LogText "Note: the end-of-life of '${OS_FULLNAME}' could not be checked. Entry is missing in db/software-eol.db?"
+lynis:754:         LogText "Result: Update check failed. No network connection?"
+lynis:755:         LogText "Info: to perform an automatic update check, outbound DNS connections should be allowed (TXT record)."
+lynis:767:                 LogText "Result: This version is VERY outdated. Newer ${PROGRAM_NAME} release available!"
+lynis:773:                 LogText "Result: newer ${PROGRAM_NAME} release available!"
+lynis:774:                 ReportSuggestion "LYNIS" "Version of Lynis outdated, consider upgrading to the latest version"
+lynis:803:             echo ""
+lynis:807:             echo ""
+lynis:810:                 echo ""
+lynis:813:             echo "        New releases include additional features, bug fixes, and tests.${NORMAL}"
+lynis:815:             echo ""
+lynis:819:             echo ""
+lynis:822:             echo ""
+lynis:826:             echo ""
+lynis:828:             echo ""
+lynis:832:             echo ""
+lynis:834:             echo ""
+lynis:951:                                 PLUGIN_VERSION_NODOTS=$(echo ${PLUGIN_VERSION} | sed 's/.//g')
+lynis:963:                                     LogText "Plugin ${FIND2}: Skipped (bad file permissions, should be 644, 640, 600 or 400)"
+lynis:1046:                     LogText "Exception: skipping test category ${INCLUDE_TEST}, file ${INCLUDE_FILE} has bad permissions (should be 640, 600 or 400)"
+lynis:1053:                 echo "Error: Can't find file (category: ${INCLUDE_TEST})"
+lynis:1070:                 LogText "Result: file permissions fine, running custom tests"
+lynis:1073:                 LogText "Exception: skipping custom tests, file has bad permissions (should be 640, 600 or 400)"
+lynis:1097:                 echo "Error, could not find helper"
+lynis:1148:             echo "Fatal error: can't find upload_data script"
+include/binaries:52:             PATH_REVERSED=$(echo "${PATH}" | sed 's/ /!!space!!/g' | awk -F: '{ for (i=NF; i>1; i--) printf("%s ",$i); print $1; }')
+include/binaries:88:                     LogText "Result: directory exists, but is actually a symlink"
+include/binaries:93:                             LogText "Result: found the path behind this symlink (${SCANDIR} --> ${sFILE})"
+include/binaries:97:                             SKIPDIR=1; LogText "Result: Symlink variable empty, or directory to symlink is non-existing"
+include/binaries:100:                         SKIPDIR=1; LogText "Result: Could not find the location of this symlink, or is not a directory"
+include/binaries:106:                 FIND=$(echo ${BINARY_PATHS_FOUND} | grep ", ${SCANDIR}" | grep -v ", ${SCANDIR}/")
+include/binaries:159:                             curl)                   CURLBINARY="${BINARY}";            CURLVERSION=$(${BINARY} --version | grep "^curl" | awk '{ if ($1=="curl") { print $2 }}'); LogText "  Found known binary: curl (browser, download utility) - ${BINARY}" ;;
+include/binaries:220:                             lynx)                   LYNXBINARY="${BINARY}";            LYNXVERSION=$(${BINARY} -version | grep "^Lynx Version" | cut -d ' ' -f3); LogText "Found known binary: lynx (browser) - ${BINARY} (version ${LYNXVERSION})" ;;
+include/binaries:221:                             maldet)                 LMDBINARY="${BINARY}";             MALWARE_SCANNER_INSTALLED=1;           LogText "  Found known binary: maldet (Linux Malware Detect, malware scanner) - ${BINARY}" ;;
+include/binaries:224:                             mdatp)                  MDATPBINARY="${BINARY}";           MALWARE_SCANNER_INSTALLED=1;           LogText "  Found known binary: mdatp (Microsoft Defender ATP, malware scanner) - ${BINARY}" ;;
+include/binaries:232:                             nmap)                   NMAPBINARY="${BINARY}";            NMAPVERSION=$(${BINARY} -V | grep "^Nmap version" | awk '{ print $3 }'); LogText "Found ${BINARY} (version ${NMAPVERSION})" ;;
+include/binaries:238:                                 if [ -z "$(echo "${BINARY}" | grep -E "/usr(/local)?/games")" ]; then
+include/binaries:275:                             smbd)                   SMBDBINARY="${BINARY}";            if [ "${OS}" = "macOS" ]; then SMBDVERSION="unknown"; else SMBDVERSION=$(${BINARY} -V | grep "^Version" | awk '{ print $2 }'); fi; LogText "Found ${BINARY} (version ${SMBDVERSION})" ;;
+include/binaries:295:                             syslog-ng)              SYSLOGNGBINARY="${BINARY}";        SYSLOGNGVERSION=$(${BINARY} -V 2>&1 | grep "^syslog-ng" | awk '{ print $2 }'); LogText "Found ${BINARY} (version ${SYSLOGNGVERSION})" ;;
+include/binaries:312:                             wget)                   WGETBINARY="${BINARY}";            WGETVERSION=$(${BINARY} -V 2> /dev/null | grep "^GNU Wget" | awk '{ print $3 }'); LogText "Found ${BINARY} (version ${WGETVERSION})" ;;
+include/binaries:330:         BINARY_PATHS_FOUND=$(echo ${BINARY_PATHS_FOUND} | sed 's/^, //g' | sed 's/, /,/g')
+include/consts:292:     SKIPREASON=""
+include/consts:395:     BG_BLUE="$(printf '\033[0;44m')"
+include/consts:396:     CYAN="$(printf '\033[0;36m')"
+include/consts:397:     BLUE="$(printf '\033[0;34m')"
+include/consts:398:     BROWN="$(printf '\033[0;33m')"
+include/consts:399:     DARKGRAY="$(printf '\033[0;30m')"
+include/consts:400:     GRAY="$(printf '\033[0;37m')"
+include/consts:401:     GREEN="$(printf '\033[1;32m')"
+include/consts:402:     LIGHTBLUE="$(printf '\033[0;94m')"
+include/consts:403:     MAGENTA="$(printf '\033[1;35m')"
+include/consts:404:     PURPLE="$(printf '\033[0;35m')"
+include/consts:405:     RED="$(printf '\033[1;31m')"
+include/consts:406:     YELLOW="$(printf '\033[1;33m')"
+include/consts:407:     WHITE="$(printf '\033[1;37m')"
+include/consts:411:     NORMAL="$(printf '\033[0m')"
+include/consts:414:     BG_WARNING="$(printf '\033[30;43m')"  # Yellow background with grey text
+include/data_upload:144:             echo ""
+include/data_upload:191:             echo ""
+include/data_upload:194:             echo ""
+include/data_upload:211:             echo ""
+include/data_upload:217:             echo ""
+include/data_upload:218:             echo "需要技术支持时，请联系 support@cisofy.com，并附上本屏幕输出。"
+include/data_upload:219:             echo ""
+include/data_upload:241:                 echo ""
+include/data_upload:244:                 echo ""
+include/data_upload:254:                 echo ""
+include/data_upload:263:             echo ""
+include/functions:154:                 echo "${SETTING};${VALUE};${DESCRIPTION};" >> ${SETTINGS_FILE}
+include/functions:163:                 echo "${SETTING};${VALUE};${DESCRIPTION};" >> ${SETTINGS_FILE}
+include/functions:239:                 LogText "Skipping search, as /dev/null is being used"
+include/functions:275:                         LogText "Result: dig, drill or host not installed, update check skipped"
+include/functions:413:             VALUE=$(echo ${VALUE} | grep -Eo '[0-9]{1,}')
+include/functions:472:             echo "Search paths used --> ${tPROFILE_TARGETS}"
+include/functions:475:             PROFILES=$(echo ${PROFILES} | sed 's/^ //')
+include/functions:686:         INPUT1=$(echo $1 | tr -d '[:cntrl:]<>' | ${SEDBINARY} 's/__space__/ /g' | ${SEDBINARY} 's/:space:/ /g')
+include/functions:687:         INPUT2=$(echo $2 | tr -d '[:cntrl:]<>' | ${SEDBINARY} 's/__space__/ /g' | ${SEDBINARY} 's/:space:/ /g')
+include/functions:796:             LogText "Result: file '${file}' belongs to package (${find})"
+include/functions:799:             LogText "Result: file '${file}' does most likely not belong to a package"
+include/functions:842:         escaped_file=$(echo ${sFILE} | sed 's/\*/\\*/; s/?/\\?/')
+include/functions:854:             LogText "Result: unclear if we can read this file, as this is a symlink"
+include/functions:867:             LogText "Result: file is owned by our current user ID (${MYID}), checking if it is readable"
+include/functions:869:                 LogText "Result: unclear if we can read this file, as this is a symlink"
+include/functions:877:             LogText "Result: file is not owned by current user ID (${MYID}), but UID ${FILEOWNER}"
+include/functions:887:             LogText "Result: file ${escaped_file} is NOT readable (or directory accessible), symlink, or does not exist. (OTHERPERMS: ${OTHERPERMS})"
+include/functions:937:                 if echo "${OPENSSL_HASHLIST}" | grep "^-${OPENSSL_HASHTYPE} " >/dev/null ; then
+include/functions:944:             LogText "Info: found hashing tool, start generation of HostID"
+include/functions:956:                             HOSTID=$(echo ${FIND} | ${SHA1SUMBINARY} | awk '{ print $1 }')
+include/functions:958:                             HOSTID=$(echo ${FIND} | ${CSUMBINARY} -h SHA1 - | awk '{ print $1 }')
+include/functions:960:                             HOSTID=$(echo ${FIND} | ${OPENSSLBINARY} sha -sha1 | awk '{ print $2 }')
+include/functions:962:                             ReportException "GetHostID" "No sha1, sha1sum, csum or openssl binary available on AIX"
+include/functions:965:                         ReportException "GetHostID" "No output from entstat on interfaces: en0, ent0"
+include/functions:972:                         HOSTID=$(echo ${FIND} | sha1)
+include/functions:982:                             HOSTID=$(echo ${FIND} | ${OPENSSLBINARY} sha -sha1 | awk '{ print $2 }')
+include/functions:997:                                 LogText "Interface '${INTERFACE}' is up, fetching MAC address"
+include/functions:1009:                         LogText "Info: trying output from 'ip' to generate HostID"
+include/functions:1026:                                 ReportException "GetHostID" "Can't create hostid (no MAC addresses found)"
+include/functions:1033:                         LogText "Info: no information found from 'ip' or in /sys, trying output from 'ifconfig'"
+include/functions:1056:                                         LogText "Result: No eth0 found (but ether found), using first network interface to determine hostid (with ifconfig)"
+include/functions:1070:                         LogText "Info: using hardware address '${FIND}' to create HostID"
+include/functions:1072:                             HOSTID=$(echo ${FIND} | ${SHA1SUMBINARY} | awk '{ print $1 }')
+include/functions:1075:                             HOSTID=$(echo ${FIND} | ${SHA256SUMBINARY} | awk '{ print $1 }' | head -c 40)
+include/functions:1086:                         HOSTID=$(echo ${FIND} | shasum | awk '{ print $1 }')
+include/functions:1108:                         HOSTID=$(echo ${FIND} | sha1)
+include/functions:1117:                         HOSTID=$(echo ${FIND} | sha1)
+include/functions:1136:                             HOSTID=$(echo ${FIND} | ${SHA1SUMBINARY} | awk '{ print $1 }')
+include/functions:1138:                             HOSTID=$(echo ${FIND} | ${OPENSSLBINARY} sha -sha1 | awk '{ print $2 }')
+include/functions:1148:                         ReportException "GetHostID" "Can't create HOSTID as OS is not supported yet by this function"
+include/functions:1163:             ReportException "GetHostID" "Can't create HOSTID as there is no hash tool available (sha1, sha1sum, openssl, truncated sha256sum)"
+include/functions:1178:             LogText "Result: no HOSTID available, trying to use SSH key as unique source"
+include/functions:1191:                                 ReportException "GetHostID" "Can't create HOSTID with SSH key, as sha1sum binary is missing"
+include/functions:1197:                 LogText "Result: no /etc/ssh directory found, skipping"
+include/functions:1211:                             LogText "Result: found file ${I} in /etc/ssh, using that as candidate to create hostid2"
+include/functions:1222:                             LogText "Result: found file ${I} in /etc/dropbear, using that as candidate to create hostid2"
+include/functions:1230:                 LogText "Result: no /etc/ssh nor /etc/dropbear directory found, skipping"
+include/functions:1249:                     HASH2=$(echo ${STRING_TO_HASH} | ${SHA256SUMBINARY} | awk '{ print $1 }')
+include/functions:1250:                     HASH_HOSTNAME=$(echo ${HOSTNAME} | ${SHA256SUMBINARY} | awk '{ print $1 }')
+include/functions:1252:                     HASH2=$(echo ${STRING_TO_HASH} | ${OPENSSLBINARY} dgst -${OPENSSL_HASHTYPE} | awk '{ print $2 }')
+include/functions:1253:                     HASH_HOSTNAME=$(echo ${HOSTNAME} | ${OPENSSLBINARY} dgst -${OPENSSL_HASHTYPE} | awk '{ print $2 }')
+include/functions:1336:                     CHECK_PERMISSION=$(echo "-${CHECK_PERMISSION}" | ${AWKBINARY} '{k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/)*2^(8-i));if(k)printf("%0o",k)}')
+include/functions:1340:                 CHECK_PERMISSION=$(echo "${CHECK_PERMISSION}" | ${AWKBINARY} '{printf "%03d",$1}')
+include/functions:1365:                             Debug "Skipping find command, as this operating system does not support -printf parameter"
+include/functions:1376:                                 DATA=$(${FINDBINARY} "${CHECKFILE}" ${MAXDEPTH} -printf "%m")
+include/functions:1399:                         DATA=$(echo "-${DATA}" | ${AWKBINARY} '{k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/)*2^(8-i));if(k)printf("%0o",k)}')
+include/functions:1404:                 DATA=$(echo "${DATA}" | ${AWKBINARY} '{printf "%03d",$1}')
+include/functions:1412:                     ReportException "HasCorrectFilePermissions:02" "No data value found, which is unexpected"
+include/functions:1416:             LogText "Outcome: permissions of file ${CHECKFILE} are not matching expected value (${DATA} != ${CHECK_PERMISSION})"
+include/functions:1450:             echo ""
+include/functions:1469:             echo ""
+include/functions:1492:                 LogText "Result: found Docker in control groups (/proc/1/cgroup), so we are running in Docker container"
+include/functions:1500:                 LogText "Result: found LXC in environment (/proc/1/environ), so we are running in LXC container"
+include/functions:1669:             LogText "IsRunning: process '${search}' found (${FIND})"
+include/functions:1672:             LogText "IsRunning: process '${search}' not found"
+include/functions:1777:             LogText "Result: skipped lxc environ detection test, as we already found machine type"
+include/functions:1796:             LogText "Result: skipped facter test, as we already found machine type"
+include/functions:1812:             LogText "Result: skipped systemd test, as we already found machine type"
+include/functions:1825:                     LogText "Result: can't find hypervisor vendor with lscpu"
+include/functions:1831:             LogText "Result: skipped lscpu test, as we already found machine type"
+include/functions:1846:                     LogText "Result: can't find product name with dmidecode"
+include/functions:1852:             LogText "Result: skipped dmidecode test, as we already found machine type"
+include/functions:1874:             LogText "Result: skipped processes test, as we already found platform"
+include/functions:1886:             LogText "Result: skipped Amazon EC2 test, as we already found platform"
+include/functions:1901:             LogText "Result: skipped sysctl test, as we already found platform"
+include/functions:1918:                 LogText "Result: skipped lshw test, as we are non-privileged and need more permissions to run lshw"
+include/functions:1921:             LogText "Result: skipped lshw test, as we already found machine type"
+include/functions:1927:             SHORT=$(echo ${SHORT} | awk '{ print $1 }' | tr '[:upper:]' '[:lower:]')
+include/functions:1946:                     *)                  LogText "Result: Unknown virtualization type, so most likely system is physical"                   ;;
+include/functions:1952:             LogText "Result: found virtual machine (type: ${VMTYPE}, ${VMFULLTYPE})"
+include/functions:2056:         if [ ! "${LOGFILE}" = "" -a ${LOGTEXT} -eq 1 ]; then CDATE=$(date "+%Y-%m-%d %H:%M:%S"); echo "${CDATE} $1" >> ${LOGFILE}; fi
+include/functions:2179:                 SPLIT=$(echo ${I} | sed 's/,/\n/g')
+include/functions:2185:                     ITEM_KEY=$(echo ${ITEM} | awk -F: '{print $1}')
+include/functions:2186:                     ITEM_VALUE=$(echo ${ITEM} | awk -F: '{print $2}')
+include/functions:2250:             I=$(echo ${I} | sed 's/:space:/ /g' | sed 's/;$//' | sed 's/ #.*$//')
+include/functions:2251:             OPTION=$(echo ${I} | awk '{ print $1 }')
+include/functions:2254:             LogText "Result: found option ${OPTION} in ${CONFIG_FILE} with value '${VALUE}'"
+include/functions:2282:                     BREADCRUMB=$(echo ${BREADCRUMB} | awk -F/ 'sub(FS $NF,x)')
+include/functions:2293:                             VALUE=$(echo ${VALUE} | awk '{ print $1 }')
+include/functions:2304:                     HEADER=$(echo ${VALUE} | awk '{ print $1 }')
+include/functions:2305:                     HEADER_VALUE=$(echo ${VALUE} | cut -d' ' -f2-)
+include/functions:2330:                     FILE=$(echo ${VALUE} | awk '{ print $1 }')
+include/functions:2358:                             if [ "${CONF}" = "${VALUE}" ]; then FOUND=1; LogText "Found this file already in our configuration files array, not adding to queue"; fi
+include/functions:2361:                             if [ "${CONF}" = "${VALUE}" ]; then FOUND=1; LogText "Found this file already in our configuration files array (additions), not adding to queue"; fi
+include/functions:2369:                             if [ "${CONF}" = "${VALUE}" ]; then FOUND=1; LogText "Found this file already in our configuration files array, not adding to queue"; fi
+include/functions:2372:                             if [ "${CONF}" = "${VALUE}" ]; then FOUND=1; LogText "Found this file already in our configuration files array (additions), not adding to queue"; fi
+include/functions:2378:                     elif [ $(echo "${VALUE}" | grep -F -c "*.conf") -gt 0 ]; then
+include/functions:2397:                                 if [ "${CONF}" = "${FOUND_CONF}" ]; then FOUND=1; LogText "Found this file already in our configuration files array, not adding to queue"; fi
+include/functions:2400:                                 if [ "${CONF}" = "${FOUND_CONF}" ]; then FOUND=1; LogText "Found this file already in our configuration files array (additions), not adding to queue"; fi
+include/functions:2415:                     FIND_SSL=$(echo ${VALUE} | grep ssl)
+include/functions:2445:                     VALUE=$(echo ${VALUE} | sed 's/;$//' | tr '[:upper:]' '[:lower:]')
+include/functions:2551:           Display "Can not use RandomString function, as there is no random device to be used"
+include/functions:2712:             VALUE=$(echo ${TEST_NO} | tr '[:lower:]' '[:upper:]')
+include/functions:2760:         if [ ${SKIPTEST} -eq 0 -a "${PREQS_MET}" = "NO" ]; then SKIPTEST=1; if [ -z "${SKIPREASON}" ]; then SKIPREASON="Prerequisites not met (ie missing tool, other type of Linux distribution)"; fi; fi
+include/functions:2866:                 TMPFILE=$(echo ${FILE} | grep -E "^/tmp/lynis" | grep -v "\.\.")
+include/functions:2875:                     LogText "Found invalid temporary file (${FILE}), not removed. Check your /tmp directory."
+include/functions:3132:                     LogText "Security alert: file is not owned by active user, but can write to it"
+include/functions:3192:                             echo "Fatal error: file $1 should be owned by user 'root' when running it as root (found: ${OWNER})."
+include/functions:3202:                             echo "Fatal error: group owner of directory $1 should be owned by root group, wheel or similar (found: ${GROUP})."
+include/functions:3208:                     OWNER_PERMS=$(echo ${PERMS} | cut -c2-4)
+include/functions:3210:                         echo "Fatal error: permissions of file $1 are not strict enough. Access to 'owner' should be read-write, or read. Change with: chmod u=rw $1"
+include/functions:3216:                     GROUP_PERMS=$(echo ${PERMS} | cut -c5-7)
+include/functions:3218:                         echo "Fatal error: permissions of file $1 are not strict enough. Access to 'group' should be read-write, read, or none. Change with: chmod g=r $1"
+include/functions:3223:                     OTHER_PERMS=$(echo ${PERMS} | cut -c8-10)
+include/functions:3225:                         echo "Fatal error: permissions of file $1 are not strict enough. Access to 'other' should be denied or read-only. Change with: chmod o=r $1"
+include/functions:3286:                     LogText "Result: found search string '${STRING}'"
+include/functions:3290:                     LogText "Result: search search string '${STRING}' NOT found"
+include/functions:3294:                 LogText "Skipping search, file (${FILE}) does not exist"
+include/functions:3298:             ReportException "${TEST_NO}" "Search test is skipped, which is unexpected"
+include/functions:3441:                 LogText "Result: symlink found, pointing to file ${sFILE}"
+include/functions:3445:                 LogText "Result: symlink found, pointing to block device ${sFILE}"
+include/functions:3449:                 LogText "Result: symlink found, pointing to character device ${sFILE}"
+include/functions:3453:                 LogText "Result: symlink found, pointing to directory ${sFILE}"
+include/functions:3470:                         LogText "Result: symlink finally found, seems to be file ${sFILE}"
+include/functions:3474:                         LogText "Result: symlink finally found, seems to be directory ${sFILE}"
+include/functions:3477:                        LogText "Result: could not find file ${tFILE}, most likely too complicated symlink or too often linked"
+include/functions:3481:                     LogText "Result: symlink found, seems to be file ${sFILE}"
+include/functions:3485:                     LogText "Result: symlink found, seems to be directory ${sFILE}"
+include/functions:3496:             LogText "Result: unable to determine symlink, or location ${sFILE} is just another symlink"
+include/functions:3523:                 STRING=$(echo $1 | tr '[:lower:]' '[:upper:]')
+include/functions:3542:         echo ""
+include/functions:3545:         echo ""
+include/functions:3656:                   CMP1=$(echo ${SEARCH} | tr '[:upper:]' '[:lower:'])
+include/functions:3657:                   CMP2=$(echo ${VALUE} | tr '[:upper:]' '[:lower:'])
+include/functions:3662:               *) echo "INVALID OPTION USED (TestValue, parameter of function: $1)"; exit 1 ;;
+include/functions:3719:             echo ""; echo "[ Press [ENTER] to continue, or [CTRL]+C to stop ]"
+include/helper_audit_dockerfile:25:     FILE=$(echo $1 | grep -E "^http|https")
+include/helper_audit_dockerfile:52:         TAG=$(echo ${IMAGE} | cut -d':' -f2)
+include/helper_audit_dockerfile:55:         IS_DEBIAN=$(echo ${IMAGE} | grep -i debian)
+include/helper_audit_dockerfile:56:         IS_FEDORA=$(echo ${IMAGE} | grep -i fedora)
+include/helper_audit_dockerfile:57:         IS_UBUNTU=$(echo ${IMAGE} | grep -i ubuntu)
+include/helper_audit_dockerfile:58:         IS_ALPINE=$(echo ${IMAGE} | grep -i alpine)
+include/helper_audit_dockerfile:59:         IS_LATEST=$(echo ${TAG} | grep -i latest)
+include/helper_audit_dockerfile:124:         Display --indent 2 --text "运行用户" --result "${USER}"
+include/helper_configure:74:         CONFIGURE_SETTINGS=$(echo $2 | sed 's/:/ /g')
+include/helper_configure:76:             SETTING=$(echo ${I} | awk -F= '{print $1}')
+include/helper_configure:77:             VALUE=$(echo ${I} | awk -F= '{print $2}')
+include/helper_generate:74:                         echo "# generated using 'lynis generate hostids --save'" > ${FILE}
+include/helper_show:145:             PROGRAM_NAME_LOWER=$( echo ${PROGRAM_NAME} | tr '[:upper:]' '[:lower:]')
+include/helper_show:173:                             SEARCH=$(echo ${LINE} | sed 's/^## //' | grep -E "^${PROGRAM_NAME} ${SEARCH_VERSION}")
+include/helper_show:177:                             SEARCH=$(echo ${LINE} | sed 's/^## //' | grep -E "^${PROGRAM_NAME} [0-9]\.[0-9]\.[0-9]")
+include/helper_show:242:                 DisplayError "此命令需要一个检查编号，例如 CORE-1000。请先完成扫描（lynis audit system），再使用此命令查询。执行 'lynis show tests' 可以查看全部检查项目。"
+include/helper_show:357:                 SETTING=$(echo ${LINE} | awk -F';' '{print $1}')
+include/helper_show:358:                 VALUE=$(echo ${LINE} | awk -F';' '{print $2}')
+include/helper_show:359:                 DESCRIPTION=$(echo ${LINE} | awk -F';' '{print $3}' | sed 's/:space:/ /g')
+include/helper_show:398:                                     TEST=$(echo ${ITEM} | awk -F: '{print $1}')
+include/helper_show:399:                                     TEST_TYPE=$(echo ${ITEM} | awk -F: '{print $2}')
+include/helper_show:400:                                     TEST_CATEGORY=$(echo ${ITEM} | awk -F: '{print $3}')
+include/helper_show:401:                                     TEST_GROUP=$(echo ${ITEM} | awk -F: '{print $4}')
+include/helper_show:402:                                     TEST_OS=$(echo ${ITEM} | awk -F: '{print $5}')
+include/helper_system_remote_scan:57:     echo ""
+include/helper_system_remote_scan:59:     printf "%s\n\n" "    mkdir -p ./files && cd .. && tar czf ./lynis/files/${LYNIS_TARBALL} --exclude=files/${LYNIS_TARBALL} ./lynis && cd lynis"
+include/helper_system_remote_scan:63:     printf "%s\n\n" "    scp -q ${LYNIS_TARBALL} ${REMOTE_TARGET}:~/tmp-lynis-remote.tgz"
+include/helper_system_remote_scan:68:     printf "%s\n\n" "    ssh ${REMOTE_TARGET} \"mkdir -p ~/tmp-lynis && cd ~/tmp-lynis && tar xzf ../tmp-lynis-remote.tgz && rm ../tmp-lynis-remote.tgz && cd lynis && ${REMOTE_COMMAND}\""
+include/helper_system_remote_scan:72:     printf "%s\n\n" "    ssh ${REMOTE_TARGET} \"rm -rf ~/tmp-lynis\""
+include/helper_system_remote_scan:75:     printf "%s\n" "    scp -q ${REMOTE_TARGET}:/tmp/lynis.log ./files/${REMOTE_TARGET}-lynis.log"
+include/helper_system_remote_scan:76:     printf "%s\n\n" "    scp -q ${REMOTE_TARGET}:/tmp/lynis-report.dat ./files/${REMOTE_TARGET}-lynis-report.dat"
+include/helper_system_remote_scan:79:     printf "%s\n\n" "    ssh ${REMOTE_TARGET} \"rm /tmp/lynis.log /tmp/lynis-report.dat\""
+include/helper_update:53:         PROGRAM_AC=$(echo ${PROGRAM_VERSION} | awk '{ print $1 }' | sed 's/[.]//g')
+include/helper_update:66:         echo ""
+include/helper_update:84:         echo ""
+include/helper_update:89:         PROGRAM_CV=$(echo ${PROGRAM_VERSION} | awk '{ print $1 }' | sed 's/[.]//g')
+include/osdetection:150:             OS_KERNELVERSION=$(echo ${OS_KERNELVERSION_FULL} | sed 's/-.*//')
+include/osdetection:848:                 OS_VERSION="$(echo "$OS_FULLNAME" | cut -d '-' -f 2)"
+include/osdetection:906:             echo "[ ${WARNING}警告${NORMAL} ]"
+include/osdetection:907:             echo "${WARNING}错误${NORMAL}：${WHITE}检测到未知操作系统，目前尚不支持此操作系统或平台……${NORMAL}"
+include/parameters:53:                                 echo "示例：$0 audit dockerfile /path/to/Dockerfile"
+include/parameters:69:                                         echo "示例：$0 audit system remote 192.168.1.100"
+include/parameters:77:                                         echo ""
+include/parameters:297:                     echo "请指定配置文件，例如：lynis audit system --profile /home/michael/myprofile.prf"
+include/parameters:307:                     LASTCHAR=$(echo $1 | awk '{ print substr($0, length($0))}')
+include/parameters:317:                     echo "请指定插件目录，例如：lynis audit system --plugindir /home/michael/plugins"
+include/parameters:452:                 echo "请使用：lynis audit system [选项]"
+include/profiles:44:             Display --indent 2 --text "* ${RED}ISSUE${NORMAL}"
+include/profiles:47:             Display --indent 2 --text "* ${GREEN}HOW TO RESOLVE${NORMAL}"
+include/profiles:48:             Display --indent 2 --text "Use grep to see the relevant matches (grep -E \"^[a-z-]{1,}:\" custom.prf)"
+include/profiles:52:             LogText "Insight: Profile '${PROFILE}' contains one or more old-style configuration entries"
+include/profiles:60:             DisplayWarning "Your profile '${PROFILE}' contains unexpected characters. See the log file for more information."
+include/profiles:61:             LogText "Found unexpected or possibly harmful characters in profile '${PROFILE}'. See which characters matched in the output below and compare them with your profile."
+include/profiles:62:             for I in $(printf ${DATA} | od -An -ta); do
+include/profiles:65:             LogText "Suggestion: comment incorrect lines with a '#' and try again. Open a GitHub issue if valid characters are blocked"
+include/profiles:74:                 OPTION=$(echo ${CONFIGOPTION} | cut -d ':' -f2)
+include/profiles:75:                 VALUE=$(echo ${CONFIGOPTION} | cut -d ':' -f3 | sed 's/!space!/ /g')
+include/profiles:78:                 OPTION=$(echo ${CONFIGOPTION} | cut -d '=' -f1)
+include/profiles:79:                 VALUE=$(echo ${CONFIGOPTION} | cut -d '=' -f2 | sed 's/!space!/ /g')
+include/profiles:87:                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)$")
+include/profiles:98:                     COMPLIANCE_STANDARDS_ENABLED=$(echo ${VALUE} | tr ',' ' ')
+include/profiles:120:                     FIND=$(echo "${VALUE}" | grep -E "^(0|false|no)$") && COLORS=0
+include/profiles:176:                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)") && OPTION_DEBIAN_SKIP_SECURITY_REPOSITORY=1 
+include/profiles:182:                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)") && DEBUG=1
+include/profiles:189:                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)") && DEVELOPER_MODE=1
+include/profiles:196:                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)") && ERROR_ON_WARNINGS=1
+include/profiles:233:                     LogText "Language set via profile to '${VALUE}'"
+include/profiles:249:                     FIND=$(echo "${VALUE}" | grep -E "^(0|false|no)") && SETTING_LOG_TESTS_INCORRECT_OS=0
+include/profiles:274:                     LogText "Plugin '${VALUE}' enabled according profile (${PROFILE})"
+include/profiles:278:                     LogText "Plugin '${VALUE}' disabled according profile (${PROFILE})"
+include/profiles:287:                         LogText "Plugin directory was already set to ${PLUGINDIR} before (most likely as a program argument), not overwriting"
+include/profiles:301:                     FIND=$(echo "${VALUE}" | grep -E "^(0|false|no)$") && QUICKMODE=0
+include/profiles:310:                     FIND=$(echo "${VALUE}" | grep -E "^(0|false|no)$") && REFRESH_REPOSITORIES=0
+include/profiles:319:                     FIND=$(echo "${VALUE}" | grep -E "^(0|false|no)$") && SHOW_REPORT_SOLUTION=0
+include/profiles:327:                     FIND=$(echo "${VALUE}" | grep -E "^(0|false|no)$") && SHOW_TOOL_TIPS=0
+include/profiles:337:                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)$") && SHOW_WARNINGS_ONLY=1
+include/profiles:346:                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)$") && SKIP_PLUGINS=1
+include/profiles:354:                     STRING=$(echo ${VALUE} | awk '{print toupper($0)}')
+include/profiles:360:                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)") && SKIP_UPGRADE_TEST=1
+include/profiles:373:                     SSL_CERTIFICATE_PATHS_TO_IGNORE=$(echo ${VALUE} | tr -d '[\001-\037]' | sed 's/ /__space__/g' | tr ':' ' ')
+include/profiles:380:                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)") && SSL_CERTIFICATE_INCLUDE_PACKAGES=1
+include/profiles:387:                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)") && SET_STRICT=1
+include/profiles:416:                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)$") && UPLOAD_DATA=1
+include/profiles:470:                     FIND=$(echo "${VALUE}" | grep -E "^(1|true|yes)") && VERBOSE=1
+include/profiles:481:                     STRING=$(echo ${VALUE} | awk '{print toupper($0)}')
+include/profiles:529:         LogText "Set option to default value: MACHINE_ROLE --> ${MACHINE_ROLE}"
+include/profiles:534:         LogText "Set option to default value: NTPD_ROLE --> ${NTPD_ROLE}"
+include/report:104:         echo "";
+include/report:125:                 echo "  ${WARNING}警告${NORMAL}（${TOTAL_WARNINGS} 项）："
+include/report:129:                     SHOWWARNING=$(echo ${WARNING} | sed 's/!space!/ /g' | sed 's/^.* Warning: //' | sed 's/\[details:\(.*\)\] \[solution:\(.*\)\]//' | sed 's/test://')
+include/report:130:                     ADDLINK=$(echo ${WARNING} | sed 's/!space!/ /g' | sed 's/^.* Warning: \(.*\)\[test://' | sed 's/\]\(.*\)]//' | ${AWKBINARY} -F: '{print $1}')
+include/report:131:                     DETAILS=$(echo ${WARNING} | sed 's/!space!/ /g' | sed 's/^.* Warning: \(.*\)\[details://' | sed 's/\]\(.*\)]//')
+include/report:132:                     SUGGESTION_PIECES=$(echo ${WARNING} | sed 's/\[/ [/g')
+include/report:135:                             SEARCH=$(echo ${PIECE} | grep "^\[solution:")
+include/report:136:                             if [ $? -eq 0 ]; then SOLUTION=$(echo ${SEARCH} | sed 's/!space!/ /g' | sed 's/solution://' | sed 's/text://' | tr -d '[]'); fi
+include/report:139:                     IS_CUSTOM=$(echo ${ADDLINK} | grep "^CUST")
+include/report:140:                     echo "  ${RED}!${NORMAL} ${SHOWWARNING}"
+include/report:148:                     echo ""
+include/report:162:                     SHOWSUGGESTION=$(echo ${SUGGESTION} | sed 's/!space!/ /g' | sed 's/^.* Suggestion: //' | sed 's/\[details:\(.*\)\] \[solution:\(.*\)\]//' | sed 's/test://')
+include/report:163:                     RELATED_CONTROL=$(echo ${SUGGESTION} | sed 's/!space!/ /g' | sed 's/^.* Suggestion: \(.*\)\[test://' | sed 's/\]\(.*\)]//' | ${AWKBINARY} -F: '{print $1}')
+include/report:165:                     DETAILS=$(echo ${SUGGESTION} | sed 's/!space!/ /g' | sed 's/^.* Suggestion: \(.*\)\[details://' | sed 's/\]\(.*\)]//')
+include/report:166:                     SUGGESTION_PIECES=$(echo ${SUGGESTION} | sed 's/\[/ [/g')
+include/report:169:                             SEARCH=$(echo ${PIECE} | grep "^\[solution:")
+include/report:170:                             if [ $? -eq 0 ]; then SOLUTION=$(echo ${SEARCH} | sed 's/!space!/ /g' | sed 's/solution://' | sed 's/text://' | tr -d '[]'); fi
+include/report:173:                     IS_CUSTOM=$(echo ${ADDLINK} | grep "^CUST")
+include/report:174:                     echo "  ${YELLOW}*${NORMAL} ${SHOWSUGGESTION}"
+include/report:183:                                 ITEM=$(echo ${ITEM} | sed 's/!space!/ /g')
+include/report:184:                                 ARTICLE=$(echo ${ITEM} | awk -F\; '{print $2}')
+include/report:185:                                 ARTICLE_LINK=$(echo ${ITEM} | awk -F\; '{print $3}')
+include/report:195:                     echo ""
+include/report:206:                 echo ""
+include/report:209:             echo ""
+include/report:211:             echo ""
+include/report:226:             echo ""
+include/report:237:             echo ""
+include/report:246:             echo ""
+include/report:257:             echo ""
+include/report:261:             echo ""
+include/report:269:                     echo ""
+include/report:271:                     echo ""
+include/report:286:                         echo ""
+include/report:288:                         echo "  ${WHITE}${NOTE_EXCEPTIONS_FOUND_DETAILED}!${NORMAL}"
+include/report:289:                         echo ""
+include/report:293:                         echo ""
+include/report:300:                     echo ""
+include/report:302:                     echo ""
+include/report:306:                     echo ""
+include/report:313:                 echo ""
+include/report:315:                 echo ""
+include/report:316:                 FIND=$(echo ${SKIPPED_TESTS_ROOTONLY} | sed 's/ /:space:/g')
+include/report:318:                 FIND=$(echo ${FIND} | sed 's/====/ /g')
+include/report:321:                     OUTPUT=$(echo ${ITEM} | sed 's/:space:/ /g')
+include/report:324:                 echo ""
+include/report:328:             echo ""
+include/report:338:         echo ""
+include/report:341:         echo ""
+include/report:344:         echo ""
+include/tests_accounting:194:                 RULE=$(echo ${RULE} | ${SEDBINARY} 's/!space!/ /g')
+include/tests_accounting:205:     Register --test-no ACCT-9632 --os Linux --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 auditd configuration file"
+include/tests_accounting:231:     Register --test-no ACCT-9634 --os Linux --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 auditd log file"
+include/tests_accounting:247:             Display --indent 4 --text "- 检查 auditd log file" --result "${STATUS_FOUND}" --color GREEN
+include/tests_accounting:251:             Display --indent 4 --text "- 检查 auditd log file" --result "${STATUS_SUGGESTION}" --color RED
+include/tests_accounting:264:             LogText "结果：发现 ${FILE}"
+include/tests_accounting:328:     Register --test-no ACCT-9654 --os Solaris --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 ${ROOTDIR}etc/system 中的 BSM 审计"
+include/tests_accounting:330:         LogText "检查：确认 ${ROOTDIR}etc/system 中是否启用了 BSM"
+include/tests_accounting:334:                 LogText "结果：${ROOTDIR}etc/system 中已启用 BSM"
+include/tests_accounting:335:                 Display --indent 4 --text "- 检查 Solaris BSM（${ROOTDIR}etc/system）" --result "${STATUS_ENABLED}" --color GREEN
+include/tests_accounting:337:                 Display --indent 4 --text "- 检查 Solaris BSM（${ROOTDIR}etc/system）" --result "${STATUS_NOT_FOUND}" --color YELLOW
+include/tests_accounting:340:             LogText "结果：${ROOTDIR}etc/system 不存在"
+include/tests_accounting:374:         LogText "检查：在 ${ROOTDIR}etc/security/audit_control 中检查事件日志位置"
+include/tests_accounting:376:             LogText "结果：发现文件 ${ROOTDIR}etc/security/audit_control"
+include/tests_accounting:395:             LogText "结果：找不到 ${ROOTDIR}etc/security/audit_control"
+include/tests_accounting:452:     Register --test-no ACCT-9672 --os Linux --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 cmd configuration file"
+include/tests_accounting:465:             Display --indent 4 --text "- 检查 cmd configuration file" --result "${STATUS_OK}" --color GREEN
+include/tests_accounting:468:             Display --indent 4 --text "- 检查 cmd configuration file" --result "${STATUS_FOUND}" --color RED
+include/tests_authentication:53:                 LogText "管理员账户：${USER}"
+include/tests_authentication:108:         LogText "检查：验证 /etc/group 文件一致性"
+include/tests_authentication:111:             Display --indent 4 --text "- 检查 /etc/group 文件一致性" --result "${STATUS_OK}" --color GREEN
+include/tests_authentication:114:             Display --indent 4 --text "- 检查 /etc/group 文件一致性" --result "${STATUS_WARNING}" --color RED
+include/tests_authentication:117:             ReportWarning "${TEST_NO}" "chkgrp 报告 /etc/group 文件存在不一致"
+include/tests_authentication:127:     Register --test-no AUTH-9216 --preqs-met ${PREQS_MET} --weight L --network NO --root-only YES --category security --description "检查 group 和 shadow group 文件"
+include/tests_authentication:135:                     FIND=$(${GRPCKBINARY} -q -r > /dev/null ; echo $?)
+include/tests_authentication:137:                     FIND=$(${GRPCKBINARY} -r 2> /dev/null ; echo $?)
+include/tests_authentication:140:             *)      FIND=$(${GRPCKBINARY} 2> /dev/null ; echo $?) ;;
+include/tests_authentication:171:                     LINE=$(echo ${LINE} | ${SEDBINARY} 's/!space!/ /g')
+include/tests_authentication:172:                     SHELL=$(echo ${LINE} | ${AWKBINARY} -F: '{ print $10 }')
+include/tests_authentication:204:         LogText "检查：查找 /etc/group 中重复的组 ID"
+include/tests_authentication:217:             ReportSuggestion "${TEST_NO}" "检查 /etc/group 文件并修正所有不一致"
+include/tests_authentication:228:         LogText "检查：查找 ${ROOTDIR}etc/group 中重复的组名"
+include/tests_authentication:241:             ReportSuggestion "${TEST_NO}" "检查 ${ROOTDIR}etc/group 文件并修正所有不一致"
+include/tests_authentication:257:                 FIND=$(${ROOTDIR}usr/sbin/pwck -q -r 2> /dev/null; echo $?)
+include/tests_authentication:261:                 FIND=$(${ROOTDIR}usr/sbin/pwck 2> /dev/null; echo $?)
+include/tests_authentication:299:                     echo 'sha256crypt/sha512crypt(default=5000rounds)'
+include/tests_authentication:301:                     echo 'sha256crypt/sha512crypt(<5000rounds)'
+include/tests_authentication:456:                     UID_MIN=$(echo $UID_RANGE | ${AWKBINARY} -F- '{ print $1 }')
+include/tests_authentication:457:                     UID_MAX=$(echo $UID_RANGE | ${AWKBINARY} -F- '{ print $2 }')
+include/tests_authentication:745:                     LINE=$(echo ${LINE} | ${SEDBINARY} 's/:space:/ /g')
+include/tests_authentication:768:                 LogText "发现文件：${FILE}"
+include/tests_authentication:799:                     LogText "发现文件：${FILE}"
+include/tests_authentication:824:             LogText "检查：确认 ${FILE} 是否存在"
+include/tests_authentication:826:                 LogText "结果：文件 ${FILE} 存在"
+include/tests_authentication:838:                 LogText "结果：未找到文件 ${FILE}，跳过检查"
+include/tests_authentication:1075:         LogText "检查：搜索 /tcb/files/auth/system/default"
+include/tests_authentication:1077:             LogText "结果：文件 ${ROOTDIR}tcb/files/auth/system/default 存在"
+include/tests_authentication:1091:             LogText "结果：文件 ${ROOTDIR}tcb/files/auth/system/default 不存在"
+include/tests_authentication:1144:                 LogText "检查：确认目标 ${I} 是否可用（${FILE}）"
+include/tests_authentication:1203:                             LogText "结果：文件 ${FILE} 设置了较严格的 umask '${MASK}'"
+include/tests_authentication:1206:                             LogText "结果：文件 ${FILE} 设置了较宽松的 umask '${MASK}'"
+include/tests_authentication:1437:             LogText "结果：发现 ${ROOTDIR}etc/security/policy.conf"
+include/tests_authentication:1449:             LogText "结果：${ROOTDIR}etc/security/policy.conf 不存在"
+include/tests_authentication:1509:             LogText "检查：检查 ${FILE}"
+include/tests_authentication:1511:                 LogText "结果：文件 ${FILE} 存在，正在使用 LDAP"
+include/tests_authentication:1513:                 LogText "检查：检查文件 ${FILE} 中的 LDAP 服务器"
+include/tests_authentication:1521:                 LogText "结果：${FILE} 不存在"
+include/tests_authentication:1585:                 LogText "结果：FAILLOG_ENAB 设置为 'yes'"
+include/tests_banners:94:         LogText "检查：在 ${FILE} 中搜索法律警示关键词"
+include/tests_banners:105:             Display --indent 4 --text "- ${FILE} 内容" --result "${STATUS_OK}" --color GREEN
+include/tests_banners:109:             Display --indent 4 --text "- ${FILE} 内容" --result "${STATUS_WEAK}" --color YELLOW
+include/tests_banners:110:             ReportSuggestion "${TEST_NO}" "在 ${FILE} 中添加法律警示横幅，以提醒未授权用户"
+include/tests_boot_services:75:                     LogText "结果：发现命令行 = ${OUTPUT}"
+include/tests_boot_services:90:                         SHORTNAME=$(echo ${FILENAME} | ${AWKBINARY} -F/ '{ print $NF }')
+include/tests_boot_services:237:                             LogText "检查：检查文件 ${FILE}"
+include/tests_boot_services:244:                                 LogText "结果：系统未通过 Secure Boot 启动（文件 ${FILE} 中状态为 0）"
+include/tests_boot_services:357:                 LogText "发现文件 ${FILE}，继续执行检查。"
+include/tests_boot_services:374:                     LogText "结果：无法读取 '${FILE}'（权限不足？）"
+include/tests_boot_services:377:                 LogText "结果：文件 '${FILE}' 不存在"
+include/tests_boot_services:467:                         ReportSuggestion "${TEST_NO}" "为 LILO 添加密码：在 lilo.conf 中第一个 'image=<name>' 行之前添加 password=<password>"
+include/tests_boot_services:473:                         ReportSuggestion "${TEST_NO}" "LILO 启动加载器未设置密码。为 LILO 添加密码：在 lilo.conf 中第一个 'image=<name>' 行之前添加 password=<password>"
+include/tests_boot_services:602:             LogText "搜索启动时运行的服务（service）"
+include/tests_boot_services:611:             LogText "发现服务（service/rc.conf）：${ITEM}"
+include/tests_boot_services:615:         Display --indent 2 --text "- 检查启动服务（service/rc.conf）" --result "${STATUS_DONE}" --color GREEN
+include/tests_boot_services:682:             LogText "搜索正在运行的服务（仅 systemctl service 单元）"
+include/tests_boot_services:691:             LogText "提示：运行 systemctl --full --type=service 查看所有服务"
+include/tests_boot_services:697:             LogText "搜索已启用的服务（仅 systemctl service 单元）"
+include/tests_boot_services:706:             LogText "提示：运行 systemctl list-unit-files --type=service 查看所有服务"
+include/tests_boot_services:758:                     LogText "发现启动服务（运行级别 2）：${SERVICE}"
+include/tests_boot_services:791:                         LogText "检查：检查文件 ${FILE} 的权限"
+include/tests_boot_services:794:                             LogText "结果：警告，文件 ${FILE} 可被所有用户写入"
+include/tests_boot_services:796:                             LogText "结果：正常，文件 ${FILE} 不可被所有用户写入"
+include/tests_boot_services:945:         LogText "检查：查找 /usr/lib/systemd/system/rescue.service"
+include/tests_boot_services:947:             LogText "结果：发现 /usr/lib/systemd/system/rescue.service 文件"
+include/tests_boot_services:955:                 LogText "结果：rescue.service 中未找到 sulogin"
+include/tests_boot_services:957:                 Display --indent 2 --text "- 检查 rescue.service 中的 sulogin" --result "${STATUS_NOT_FOUND}" --color YELLOW
+include/tests_boot_services:958:                 ReportSuggestion "${TEST_NO}" "使用 sulogin 保护 rescue.service"
+include/tests_boot_services:961:             LogText "结果：文件 ${ROOTDIR}usr/lib/systemd/system/rescue.service 不存在"
+include/tests_boot_services:1023:                     LogText "检查：检查文件 ${FILE} 的权限"
+include/tests_boot_services:1027:                         LogText "结果：发现符号链接指向的路径（${CHECKFILE} --> ${FILE}）"
+include/tests_boot_services:1086:         if [ "${SYSTEMD_VERSION}" -ge 240 ]; then PREQS_MET="YES"; else SKIPREASON="systemd-analyze 版本过旧（v${SYSTEMD_VERSION}），至少需要 v240"; PREQS_MET="NO"; fi
+include/tests_boot_services:1088:     Register --test-no BOOT-5264 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --os Linux --weight L --network NO --category security --description "运行 systemd-analyze security"
+include/tests_boot_services:1090:         LogText "检查：运行 systemd-analyze security"
+include/tests_boot_services:1091:         Display --indent 2 --text "- 运行 'systemd-analyze security'"
+include/tests_boot_services:1118:             Display --indent 4 --text "- ${UNIT}（值=${EXPOSURE}）" --result "${STATUS}" --color "${COLOR}"
+include/tests_boot_services:1119:             LogText "结果：${UNIT} 的暴露值为 ${EXPOSURE}，安全等级为 '${STATUS}'"
+include/tests_boot_services:1121:         ReportSuggestion "${TEST_NO}" "考虑加强系统服务的安全配置" "对每个服务运行 '${SYSTEMDANALYZEBINARY} security SERVICE'"
+include/tests_containers:46:                 ZONEID=$(echo ${ITEM} | ${CUTBINARY} -d ':' -f1)
+include/tests_containers:47:                 ZONENAME=$(echo ${ITEM} | ${CUTBINARY} -d ':' -f2)
+include/tests_containers:113:                 J=$(echo ${I} | ${SEDBINARY} 's/:space:/ /g')
+include/tests_containers:200:             LogText "检查：${FILE}"
+include/tests_containers:202:                 LogText "结果：发现文件 ${FILE}，将检查其权限"
+include/tests_containers:205:                     ReportWarning "${TEST_NO}" "Docker 文件允许所有用户写入" "${FILE}" "-"
+include/tests_containers:208:                     LogText "结果：文件 ${FILE} 不允许其他用户写入，权限正常"
+include/tests_crypto:41:         sSSL_PATHS=$(echo ${SSL_CERTIFICATE_PATHS} | ${SEDBINARY} 's/:space:/__space__/g' | ${SEDBINARY} 's/:/ /g')
+include/tests_crypto:42:         sSSL_PATHS=$(echo ${sSSL_PATHS} | ${SEDBINARY} 's/^ //' | ${SORTBINARY} -u)
+include/tests_crypto:45:         IGNORE_PATHS_PRINT=$(echo ${SSL_CERTIFICATE_PATHS_TO_IGNORE} | ${SEDBINARY} 's/:/, /g' | ${SEDBINARY} 's/__space__/ /g' | ${SEDBINARY} 's/^ //' | ${SORTBINARY} -u)
+include/tests_crypto:58:                         FILE=$(echo ${FILE} | ${SEDBINARY} 's/__space__/ /g')
+include/tests_crypto:60:                         SUBDIR=$(echo ${FILE} | ${AWKBINARY} -F/ 'sub(FS $NF,x)' | ${SEDBINARY} 's/__space__/ /g')
+include/tests_crypto:82:                                     echo ${FILE} | ${GREPBINARY} -E -q ".cer$|.der$"
+include/tests_crypto:101:                                                 LogText "结果：证书 ${FILE} 正常且仍在有效期内"
+include/tests_crypto:105:                                                 LogText "结果：证书 ${FILE} 已过期"
+include/tests_crypto:108:                                             LogText "结果：文件 ${FILE} 可能不是证书（是否为密钥文件？），跳过检查"
+include/tests_crypto:111:                                         LogText "结果：文件 ${FILE} 中未找到 BEGIN CERT，跳过检查"
+include/tests_crypto:115:                                 LogText "结果：无法读取文件 ${FILE}（权限不足）"
+include/tests_crypto:168:                 LINE=$(echo ${LINE} | ${SEDBINARY} 's/__space__/ /g')
+include/tests_crypto:170:                     PARTITION=$(echo ${LINE} | ${AWKBINARY} '{print $1}' | ${AWKBINARY} -F_ '{print $1}')
+include/tests_crypto:180:             Display --indent 2 --text "- 发现 ${FOUND} 个 LUKS 加密块设备" --result OK --color WHITE
+include/tests_crypto:316:             LogText "结果：发现正在运行的服务：${FOUND}"
+include/tests_custom.template:93:                 Display --indent 2 --text "OS: *BSD" --result "${STATUS_OK}" --color GREEN
+include/tests_custom.template:129:             LogText "Result: directory ${DIR} was not found!"
+include/tests_databases:81:     if [ -n "${MYSQLCLIENTBINARY}" -a ${MYSQL_RUNNING} -eq 1 ]; then PREQS_MET="YES"; SKIPREASON=""; else PREQS_MET="NO"; SKIPREASON="未安装 MySQL 或 MySQL 未运行"; fi
+include/tests_databases:88:         FIND=$(${MYSQLCLIENTBINARY} --default-auth=mysql_native_password  --no-defaults -u root --password= --silent --batch --execute="SELECT count(*) FROM mysql.user WHERE user = 'root' AND plugin = 'mysql_native_password' AND authentication_string = ''" mysql > /dev/null 2>&1; echo $?)
+include/tests_databases:128:                     LogText "结果：发现 MongoDB 配置文件（${FILE}）"
+include/tests_databases:159:                     LogText "结果：未找到配置文件 ${FILE}"
+include/tests_databases:166:                     AUTH_ON_CMDLINE=$(for I in $(${PGREPBINARY} mongo); do cat /proc/${I}/cmdline | xargs -0 echo | ${GREPBINARY} -E "\-\-auth( |$)"; done)
+include/tests_databases:218:     if [ "${POSTGRESQL_RUNNING}" -eq 1 ]; then PREQS_MET="YES"; SKIPREASON=""; else PREQS_MET="NO"; SKIPREASON="未安装 PostgreSQL 或 PostgreSQL 未运行"; fi
+include/tests_databases:224:         CONFIG_FILES=$(${FINDBINARY} -L ${FIND_PATHS} -type f -name "*.conf" -print0 2> /dev/null | ${TRBINARY} -cd '[:print:]\0' | ${TRBINARY} -d '\n' | ${TRBINARY} '\0' '\n' | xargs -I'{}' sh -c 'test -r "{}" && echo "{}"' | ${SEDBINARY} "s/ /:space:/g")
+include/tests_databases:315:     if [ ${REDIS_RUNNING} -eq 1 ]; then PREQS_METS="YES"; else PREQS_MET="NO"; SKIPREASON="Redis 未运行"; fi
+include/tests_databases:362:         REDIS_CONFIGURATION_FILES=$(echo ${REDIS_CONFIGURATION_FILES} | ${SEDBINARY} 's/^ //' | ${TRBINARY} ' ' '\n' | ${SORTBINARY} -u | ${TRBINARY} '\n' ' ')
+include/tests_databases:365:                 LogText "结果：配置文件 ${FILE} 可被所有用户读取，可能泄露敏感信息！"
+include/tests_databases:366:                 ReportWarning "${TEST_NO}" "Redis 配置文件 ${FILE} 可被所有用户读取，可能泄露敏感信息" "${FILE}" "使用 chmod 640 修改文件权限"
+include/tests_databases:368:                 LogText "结果：配置文件 ${FILE} 不可被所有用户读取，状态正常"
+include/tests_databases:378:     if [ ${REDIS_RUNNING} -eq 1 -a ${REDIS_CONFIGURATION_FOUND} -eq 1 ]; then PREQS_METS="YES"; else PREQS_MET="NO"; SKIPREASON="Redis 未运行或未找到配置文件"; fi
+include/tests_databases:391:                     ReportSuggestion "${TEST_NO}" "为 Redis 配置 'requirepass' 设置" "${FILE}" "text:在 ${FILE} 中配置 'requirepass' 设置"
+include/tests_databases:404:     if [ ${REDIS_RUNNING} -eq 1 -a ${REDIS_CONFIGURATION_FOUND} -eq 1 ]; then PREQS_METS="YES"; else PREQS_MET="NO"; SKIPREASON="Redis 未运行或未找到配置"; fi
+include/tests_databases:417:                     ReportSuggestion "${TEST_NO}" "为 Redis 使用 'rename-command CONFIG' 设置" "${FILE}" "text:在 ${FILE} 中配置 'rename-command CONFIG'"
+include/tests_databases:430:     if [ ${REDIS_RUNNING} -eq 1 -a ${REDIS_CONFIGURATION_FOUND} -eq 1 ]; then PREQS_METS="YES"; else PREQS_MET="NO"; SKIPREASON="Redis 未运行或未找到配置"; fi
+include/tests_databases:443:                     ReportSuggestion "${TEST_NO}" "使用 'bind' 设置让 Redis 实例仅监听本地主机" "${FILE}" "text:在 ${FILE} 中配置 'bind localhost'"
+include/tests_file_integrity:200:             Display --indent 4 --text "- OSSEC（syscheck）" --result "${STATUS_FOUND}" --color GREEN
+include/tests_file_integrity:234:         Display --indent 4 --text "- lfd（CSF）" --result "${STATUS_FOUND}" --color GREEN
+include/tests_file_integrity:302:     if [ ! -z "${EVMCTLBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; SKIPREASON="未找到 evmctl 可执行文件"; fi
+include/tests_file_integrity:324:     if [ ! -z "${INTEGRITYSETUPBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; SKIPREASON="未找到 integritysetup 可执行文件"; fi
+include/tests_file_integrity:364:     if [ ! -z "${VERITYSETUPBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; SKIPREASON="未找到 veritysetup 可执行文件"; fi
+include/tests_file_integrity:411:             Display --indent 4 --text "- Wazuh（syscheck）" --result "${STATUS_FOUND}" --color GREEN
+include/tests_filesystems:37:     Register --test-no FILE-6310 --weight L --network NO --category security --description "Checking /tmp, /home and /var directory"
+include/tests_filesystems:59:                     ReportSuggestion "${TEST_NO}" "To decrease the impact of a full ${I} file system, place ${I} on a separate partition"
+include/tests_filesystems:89:                  ReportException "${TEST_NO}:1" "Don't know this specific operating system yet, while volume group manager was found"
+include/tests_filesystems:158:                 FILESYSTEM=$(echo ${I} | ${CUTBINARY} -d ',' -f1)
+include/tests_filesystems:159:                 FILETYPE=$(echo ${I} | ${CUTBINARY} -d ',' -f2)
+include/tests_filesystems:179:                 FILESYSTEM=$(echo ${I} | ${CUTBINARY} -d ',' -f1)
+include/tests_filesystems:180:                 FILETYPE=$(echo ${I} | ${CUTBINARY} -d ',' -f2)
+include/tests_filesystems:275:             HAS_UUID=$(echo ${I} | ${GREPBINARY} "^UUID=")
+include/tests_filesystems:277:                 UUID=$(echo ${HAS_UUID} | ${AWKBINARY} -F= '{ print $2 }')
+include/tests_filesystems:285:                     LogText "Result: blkid binary not found, trying by checking device listing"
+include/tests_filesystems:333:             LogText "Notes: usually swap partition have 'sw' or 'swap' in the options field (4th)"
+include/tests_filesystems:345:         LINUX_KERNEL_MAJOR=$(echo $OS_KERNELVERSION | ${AWKBINARY} -F. '{print $1}')
+include/tests_filesystems:346:         LINUX_KERNEL_MINOR=$(echo $OS_KERNELVERSION | ${AWKBINARY} -F. '{print $2}')
+include/tests_filesystems:403:                 FILE=$(echo ${ITEM} | ${SEDBINARY} 's/!space!/ /g')
+include/tests_filesystems:407:             LogText "Result: found old files in ${ROOTDIR}tmp, which were not modified in the last ${TMP_OLD_DAYS} days"
+include/tests_filesystems:431:             ReportSuggestion "${TEST_NO}" "Set the sticky bit on ${ROOTDIR}tmp, to prevent users deleting (by other owned) files in the /tmp directory." "/tmp" "text:Set sticky bit"
+include/tests_filesystems:436:         LogText "Result: Sticky bit test (on /tmp) skipped. Possible reason: missing directory, or symlinked directory, or test skipped."
+include/tests_filesystems:454:             ReportSuggestion "${TEST_NO}" "Set the sticky bit on ${ROOTDIR}var/tmp, to prevent users deleting (by other owned) files in the /var/tmp directory." "/var/tmp" "text:Set sticky bit"
+include/tests_filesystems:459:         LogText "Result: Sticky bit test (on /var/tmp) skipped. Possible reason: missing directory, or symlinked directory, or test skipped."
+include/tests_filesystems:520:             LogText "Additional information: if file access need to be more restricted, ACLs could be used. Install the acl utilities and remount the file system with the acl option"
+include/tests_filesystems:521:             LogText "Activate acl support on and active file system with mount -o remount,acl / and add the acl option to the fstab file"
+include/tests_filesystems:586:                 FILESYSTEM=$(echo ${I} | ${CUTBINARY} -d: -f1)
+include/tests_filesystems:587:                 EXPECTED_FLAGS=$(echo ${I} | ${CUTBINARY} -d: -f2 | ${SEDBINARY} 's/,/ /g')
+include/tests_filesystems:590:                     EXPECTED_FLAGS=$(echo ${EXPECTED_FLAGS} | ${SEDBINARY} 's/\<\(nodev\|nosuid\)\> *//g')
+include/tests_filesystems:609:                         FLAG_AVAILABLE=$(echo ${FOUND_FLAGS} | ${GREPBINARY} ${FLAG})
+include/tests_filesystems:614:                             LogText "Result: GOOD, found mount option ${FLAG} on file system ${FILESYSTEM}"
+include/tests_filesystems:647:         LogText "Result: Total without nodev:${NDEVMOUNTS} noexec:${NEXECMOUNTS} nosuid:${NSUIDMOUNTS} ro or noexec (W^X): ${NWRITEANDEXECMOUNTS}, of total ${NMOUNTS}"
+include/tests_filesystems:648:         Display --indent 2 --text "- Total without nodev:${NDEVMOUNTS} noexec:${NEXECMOUNTS} nosuid:${NSUIDMOUNTS} ro or noexec (W^X): ${NWRITEANDEXECMOUNTS} of total ${NMOUNTS}"
+include/tests_filesystems:714:                     ReportSuggestion "${TEST_NO}" "vm.swappiness set to: ${SWAPLEVEL} > 60 (default) - consider installing an SSD for swap partition for better performance."
+include/tests_filesystems:719:             ReportSuggestion "${TEST_NO}" "vm.swappiness set to: ${SWAPLEVEL}. Consider setting value to minimum of 1 for minimizing swappiness, but not quite disabling it. Will prevent OOM killer from killing processes when running out of physical memory."
+include/tests_filesystems:808:             ReportSuggestion "${TEST_NO}" "The database required for 'locate' could not be found. Run 'updatedb' or 'locate.updatedb' to create this file."
+include/tests_filesystems:902:                 ReportSuggestion "${TEST_NO}" "Consider disabling unused kernel modules" "/etc/modprobe.d/blacklist.conf" "Add 'install MODULENAME /bin/true' (without quotes)"
+include/tests_firewalls:80:                         HAVEMOD=$(echo ${FIND} | ${CUTBINARY} -d '=' -f2)
+include/tests_firewalls:117:                 while IFS="$(printf '\n')" read -r IPTABLES_LINES
+include/tests_firewalls:155:                         IPTABLES_OUTPUT="$(printf '%b' "${IPTABLES_OUTPUT_QUEUE}" | ${SORTBINARY} -u )"
+include/tests_firewalls:157:                         IPTABLES_OUTPUT="$(printf '%b' "${IPTABLES_OUTPUT_QUEUE}")"
+include/tests_firewalls:159:                     printf '%b\n' "${IPTABLES_OUTPUT}" | while IFS="$(printf '\n')" read -r IPTABLES_OUTPUT_LINE
+include/tests_firewalls:241:     if [ -e /dev/pf ]; then PREQS_MET="YES"; SKIPREASON=""; else PREQS_MET="NO"; SKIPREASON="系统中没有 /dev/pf 设备"; fi
+include/tests_firewalls:283:                 Display --indent 4 --text "- 正在检查 pflogd 状态" --result "ACTIVE" --color GREEN
+include/tests_firewalls:337:         LogText "检查：${FILE}"
+include/tests_firewalls:339:             LogText "结果：${FILE} 存在"
+include/tests_firewalls:359:             LogText "结果：${FILE} 不存在"
+include/tests_firewalls:598:         LogText "检查：${FILE}"
+include/tests_firewalls:600:             LogText "结果：${FILE} 存在"
+include/tests_firewalls:621:             LogText "结果：${FILE} 不存在"
+include/tests_hardening:66:                     LogText "可执行文件：发现 ${FILE}（所有用户均可执行）"
+include/tests_hardening:122:             FORMATS=$(${FINDBINARY} /proc/sys/fs/binfmt_misc -type f -not -name register -not -name status -printf '%f ')
+include/tests_homedirs:61:             USER=$(echo ${LINE} | ${CUTBINARY} -d: -f1)
+include/tests_homedirs:62:             DIR=$(echo ${LINE} | ${CUTBINARY} -d: -f6)
+include/tests_homedirs:63:             LogText "检查：用户 ${USER} 的目录 '${DIR}'"
+include/tests_homedirs:68:                     LogText "结果：用户 ${USER} 的主目录 ${DIR} 权限不够严格，应为 750 或更严格。可执行：chmod 750 ${DIR}"
+include/tests_homedirs:71:                     LogText "结果：用户 ${USER} 的主目录 ${DIR} 权限正常"
+include/tests_homedirs:97:             USER=$(echo ${LINE} | ${CUTBINARY} -d: -f1)
+include/tests_homedirs:98:             DIR=$(echo ${LINE} | ${CUTBINARY} -d: -f6)
+include/tests_homedirs:99:             LogText "检查：用户 ${USER} 的目录 '${DIR}'"
+include/tests_homedirs:103:                     LogText "结果：用户 ${USER} 的主目录 ${DIR} 当前属于 ${OWNER}。可执行：chown ${USER} ${DIR}"
+include/tests_homedirs:106:                     LogText "结果：用户 ${USER} 的主目录 ${DIR} 所有权正确"
+include/tests_insecure_services:218:             LogText "检查：服务 ${SERVICE}"
+include/tests_insecure_services:222:                     LogText "检查：xinetd 配置文件中的状态（${FILE}）"
+include/tests_insecure_services:225:                         LogText "结果：发现已启用的不安全服务：${SERVICE}"
+include/tests_insecure_services:227:                         ReportSuggestion "${TEST_NO}" "禁用或移除 xinetd 配置中的不安全服务" "${SERVICE}" "text:详情请查看日志文件"
+include/tests_insecure_services:258:             if PackageIsInstalled "${PACKAGE}"; then LogText "软件包 '${PACKAGE}' 已安装"; FOUND=1; fi
+include/tests_insecure_services:280:             if PackageIsInstalled "${PACKAGE}"; then LogText "软件包 '${PACKAGE}' 已安装"; FOUND=1; fi
+include/tests_insecure_services:337:             if PackageIsInstalled "${PACKAGE}"; then LogText "软件包 '${PACKAGE}' 已安装"; FOUND=1; fi
+include/tests_insecure_services:358:         if PackageIsInstalled "${PACKAGE}"; then LogText "软件包 '${PACKAGE}' 已安装"; FOUND=1; fi
+include/tests_insecure_services:382:             if PackageIsInstalled "${PACKAGE}"; then LogText "软件包 '${PACKAGE}' 已安装"; FOUND=1; fi
+include/tests_insecure_services:437:             ReportSuggestion "${TEST_NO}" "移除 ${FOUND} 软件包可降低意外或人为启用 NIS/NIS+ 服务的风险"
+include/tests_insecure_services:485:             ReportSuggestion "${TEST_NO}" "移除 ${FOUND} 软件包可降低意外或人为启用 TFTP 服务的风险"
+include/tests_kerberos:174:             ReportSuggestion "${TEST_NO}" "Remove weak (des|arcfour|cbc|sha1) cryptographic keys from principals"
+include/tests_kernel:51:                 LogText "Result: No match found on runlevel, defaulting to runlevel 3"
+include/tests_kernel:56:             LogText "Result: no systemd found, so trying inittab"
+include/tests_kernel:64:                     LogText "Result: Can't determine default run level from ${ROOTDIR}etc/inittab"
+include/tests_kernel:67:                     LogText "Found default run level '${FIND}'"
+include/tests_kernel:73:                     LogText "Test: Checking run level with who -r, for Debian based systems"
+include/tests_kernel:76:                         LogText "Result: Found default run level '${FIND}'"
+include/tests_kernel:80:                         LogText "Result: Can't determine default run level from who -r"
+include/tests_kernel:189:             LogText "Test skipped, lsmod binary not found or /proc/modules can not be opened"
+include/tests_kernel:213:                 LogText "Notice: No loaded kernel modules could indicate a broken/malformed lsmod, or a (custom) monolithic kernel"
+include/tests_kernel:216:             LogText "Test skipped, lsmod binary not found or /proc/modules can not be opened"
+include/tests_kernel:263:                 LogText "Result: found IO scheduler '${LINUX_KERNEL_IOSCHED}'"
+include/tests_kernel:301:             LogText "Result: no results, can't find /sbin/kldstat"
+include/tests_kernel:332:             LogText "Result: no results, can NOT find /sbin/kldstat"
+include/tests_kernel:369:         LogText "Test: Searching apt-cache, to determine if a newer kernel is available"
+include/tests_kernel:389:                 LogText "Result: ${ROOTDIR}vmlinuz missing due to grsecurity; assuming ${FINDKERNEL}"
+include/tests_kernel:404:                 LogText "Result: found kernel '${FINDKERNEL}' which will be used for further testing"
+include/tests_kernel:412:                     LogText "Result: Exception occurred, no output from apt-cache policy"
+include/tests_kernel:422:                             LogText "Result: Grsecurity is installed; unable to determine if there's a newer kernel available"
+include/tests_kernel:430:                         LogText "Result: kernel update available according 'apt-cache policy'."
+include/tests_kernel:436:             LogText "Result: could NOT find ${ROOTDIR}usr/bin/apt-cache, skipped other tests."
+include/tests_kernel:452:             LogText "Test: Checking if core dumps are disabled in ${ROOTDIR}etc/systemd/coredump.conf and ${ROOTDIR}etc/systemd/coredump.conf.d/*.conf"
+include/tests_kernel:471:                 LogText "Result: core dumps are disabled by 'ProcessSizeMax=0' and 'Storage=none' in systemd configuration files"
+include/tests_kernel:475:                     LogText "Result: 'ProcessSizeMax=0' and 'Storage=none' are set multiple times in systemd configuration files. Check config!"
+include/tests_kernel:481:                 LogText "Result: 'ProcessSizeMax=0' and 'Storage=none' are set in ${ROOTDIR}etc/systemd/coredump.conf but overwritten in subdir config files"
+include/tests_kernel:490:                 ReportSuggestion "${TEST_NO}" "If not required, consider explicit disabling of core dump in ${ROOTDIR}etc/systemd/coredump.conf ('ProcessSizeMax=0', 'Storage=none')"
+include/tests_kernel:494:                 LogText "Result: core dumps are not disabled in systemd configuration. Didn't find settings 'ProcessSizeMax=0' and 'Storage=none'"
+include/tests_kernel:502:             LogText "Test: Checking if 'ulimit -c 0' exists in ${ROOTDIR}etc/profile or ${ROOTDIR}etc/profile.d/*.sh"
+include/tests_kernel:507:                 LogText "Result: core dumps are disabled by 'ulimit -c 0' in ${ROOTDIR}etc/profile or ${ROOTDIR}etc/profile.d/*.sh"
+include/tests_kernel:511:                 LogText "Result: core dumps are not disabled in ${ROOTDIR}etc/profile or ${ROOTDIR}etc/profile.d/*.sh config files. Didn't find setting 'ulimit -c 0'"
+include/tests_kernel:515:                 LogText "Result: core dumps are enabled in ${ROOTDIR}etc/profile or ${ROOTDIR}etc/profile.d/*.sh config files. A value higher than 0 is configured for 'ulimit -c'"
+include/tests_kernel:519:                 LogText "Result: ERROR - something went wrong. Unexpected result during check of ${ROOTDIR}etc/profile and ${ROOTDIR}etc/profile.d/*.sh config files. Please report on Github!"
+include/tests_kernel:529:                 LogText "Test: Checking if core dumps are disabled in ${DIR}etc/security/limits.conf and ${LIMITS_DIRECTORY}/*"
+include/tests_kernel:549:                     Display --indent 4 --text "- 'hard' configuration in ${DIR}etc/security/limits.conf" --result "${IS_HARDCORE_DISABLED}" --color "GREEN"
+include/tests_kernel:551:                         Display --indent 4 --text "- 'soft' configuration in ${DIR}etc/security/limits.conf" --result "${IS_SOFTCORE_DISABLED}" --color "GREEN"
+include/tests_kernel:553:                         Display --indent 4 --text "- 'soft' config in ${DIR}etc/security/limits.conf (implicit)" --result "${STATUS_DISABLED}" --color "GREEN"
+include/tests_kernel:558:                     Display --indent 4 --text "- 'hard' configuration in ${DIR}etc/security/limits.conf" --result "${STATUS_ENABLED}" --color "RED"
+include/tests_kernel:559:                     Display --indent 4 --text "- 'soft' configuration in ${DIR}etc/security/limits.conf" --result "${STATUS_ENABLED}" --color "RED"
+include/tests_kernel:560:                     ReportSuggestion "${TEST_NO}" "If not required, consider explicit disabling of core dump in /etc/security/limits.conf file"
+include/tests_kernel:563:                     LogText "Result: core dumps are disabled for 'soft' ('hard'=${IS_HARDCORE_DISABLED})"
+include/tests_kernel:564:                     Display --indent 4 --text "- 'hard' configuration in ${DIR}etc/security/limits.conf" --result "${IS_HARDCORE_DISABLED}" --color "$(if [ "${IS_HARDCORE_DISABLED}" = "ENABLED" ]; then ${ECHOCMD} RED; elif [ "${IS_HARDCORE_DISABLED}" = "DISABLED" ]; then ${ECHOCMD} GREEN; else ${ECHOCMD} WHITE; fi)"
+include/tests_kernel:565:                     Display --indent 4 --text "- 'soft' configuration in ${DIR}etc/security/limits.conf" --result "${IS_SOFTCORE_DISABLED}" --color "GREEN"
+include/tests_kernel:568:                     LogText "Result: core dumps are partially enabled ('hard'=${IS_HARDCORE_DISABLED}, 'soft'=${IS_SOFTCORE_DISABLED})"
+include/tests_kernel:569:                     Display --indent 4 --text "- 'hard' configuration in ${DIR}etc/security/limits.conf" --result "${IS_HARDCORE_DISABLED}" --color "$(if [ "${IS_HARDCORE_DISABLED}" = "ENABLED" ]; then ${ECHOCMD} RED; elif [ "${IS_HARDCORE_DISABLED}" = "DISABLED" ]; then ${ECHOCMD} GREEN; else ${ECHOCMD} WHITE; fi)"
+include/tests_kernel:570:                     Display --indent 4 --text "- 'soft' configuration in ${DIR}etc/security/limits.conf" --result "${IS_SOFTCORE_DISABLED}" --color "$(if [ "${IS_SOFTCORE_DISABLED}" = "ENABLED" ]; then ${ECHOCMD} RED; elif [ "${IS_SOFTCORE_DISABLED}" = "DISABLED" ]; then ${ECHOCMD} GREEN; else ${ECHOCMD} WHITE; fi)"
+include/tests_kernel:574:                     Display --indent 4 --text "- 'hard' configuration in ${DIR}etc/security/limits.conf" --result "${IS_HARDCORE_DISABLED}" --color "WHITE"
+include/tests_kernel:575:                     Display --indent 4 --text "- 'soft' configuration in ${DIR}etc/security/limits.conf" --result "${IS_HARDCORE_DISABLED}" --color "WHITE"
+include/tests_kernel:576:                     ReportSuggestion "${TEST_NO}" "If not required, consider explicit disabling of core dump in ${DIR}etc/security/limits.conf file"
+include/tests_kernel:580:                 LogText "Result: file ${DIR}etc/security/limits.conf does not exist, skipping test for this file"
+include/tests_kernel:593:             LogText "Result: programs can dump core dump, but only readable by root (value 2, for debugging with file protection)"
+include/tests_kernel:597:             LogText "Result: all programs can perform core dumps (value 1, for debugging)"
+include/tests_kernel:604:             LogText "Result: found default option (0), no execute only program or program with changed privilege levels can dump"
+include/tests_kernel:629:                     LogText "Result: reboot is needed, related to ${PKGSCOUNT} packages"
+include/tests_kernel:643:             LogText "Result: /boot exists, performing more tests from here"
+include/tests_kernel:662:                             LogText "Result: reboot needed, as current kernel is different than the one loaded"
+include/tests_kernel:666:                         ReportException "${TEST_NO}:1" "Can't determine kernel version on disk, need debug data"
+include/tests_kernel:690:                         LogText "Result: found a symlink, retrieving destination"
+include/tests_kernel:693:                         VERSION_ON_DISK=$(echo ${FOUND_VMLINUZ} | ${SEDBINARY} 's#^/boot/##' | ${SEDBINARY} 's/^vmlinuz-//')
+include/tests_kernel:694:                         LogText "Result: version derived from file name is '${VERSION_ON_DISK}'"
+include/tests_kernel:696:                         VERSION_ON_DISK=$(echo ${FOUND_VMLINUZ} | ${SEDBINARY} 's#^/boot/##' | ${SEDBINARY} 's/^vmlinuz-//' | ${SEDBINARY} '$s/-\?\(linux\)\?-\?\(lts\)\?//')
+include/tests_kernel:697:                         LogText "Result: version derived from file name is '${VERSION_ON_DISK}'"
+include/tests_kernel:736:                             LogText "Result: no reboot needed, active kernel is the same version as the one on disk"
+include/tests_kernel:739:                             LogText "Result: reboot needed, as there is a difference between active kernel and the one on disk"
+include/tests_kernel:744:                         LogText "Result: found symlink of ${ROOTDIR}boot/vmlinuz, skipping file"
+include/tests_kernel:746:                         LogText "Result: ${ROOTDIR}boot/vmlinuz not on disk, trying to find ${ROOTDIR}boot/vmlinuz*"
+include/tests_kernel:771:                         ReportException "${TEST_NO}:2" "Can not find any vmlinuz or kernel files in /boot, which is unexpected"
+include/tests_kernel:790:                             ReportException "${TEST_NO}:3" "Could not find our running kernel on disk, which is unexpected"
+include/tests_kernel:794:                                 LogText "Result: found the running kernel on disk being the last entry, so it looks up-to-date"
+include/tests_kernel:802:                 LogText "Result: Skipping this test, as there are no files in /boot"
+include/tests_kernel:814:             LogText "Result: found folder ${APT_ARCHIVE_DIRECTORY}; assuming this is a debian based distribution"
+include/tests_kernel:817:             FOUND_KERNEL_DATE=$(${FINDBINARY} ${APT_ARCHIVE_DIRECTORY} -name "raspberrypi-kernel*" -printf "%T@ %Tc %p\n" 2> /dev/null \
+include/tests_kernel:823:                 LogText "Result: Skipping this test, as there was no package date to extract"
+include/tests_kernel:830:                 LogText "Result: Skipping this test, as extracting the seconds of package date failed"
+include/tests_kernel:834:                 LogText "Result: Got an output from 'uname -v'"
+include/tests_kernel:835:                 LogText "Check: Trying to extract kernel build date from 'uname -v' output"
+include/tests_kernel:868:                         LogText "Result: package creation date is older than running kernel. Hence, this check should be valid."
+include/tests_kernel:895:                         LogText "Result: Package's create date is older than running kernel, which is unexpected. Might not be a valid test. Skipping..."
+include/tests_kernel:898:                     LogText "Result: Could not extract Day, Month and Year from 'uname -v' output"
+include/tests_kernel:901:                 LogText "Result: Did not get output from 'uname -v'. Skipping test."
+include/tests_kernel_hardening:41:             FILE=$(echo ${PROFILE} | ${AWKBINARY} -F/ '{print $NF}')
+include/tests_kernel_hardening:52:                 SYSCTLKEY=$(echo ${LINE} | ${AWKBINARY} -F\; '{ print $2 }')
+include/tests_kernel_hardening:53:                 HAS_KEY=$(echo ${DATA_TO_SCAN} | ${GREPBINARY} ";${SYSCTLKEY};")
+include/tests_kernel_hardening:62:                 SYSCTLKEY=$(echo ${LINE} | ${AWKBINARY} -F\; '{ print $2 }')
+include/tests_kernel_hardening:63:                 HAS_KEY=$(echo ${DATA_TO_SCAN} | ${GREPBINARY} ";${SYSCTLKEY};")
+include/tests_kernel_hardening:69:         DATA_TO_SCAN=$(echo ${DATA_TO_SCAN} | ${TRBINARY} ' ' '\n' | sort)
+include/tests_kernel_hardening:72:             tFINDkey=$(echo ${line} | ${AWKBINARY} -F\; '{ print $2 }')
+include/tests_kernel_hardening:74:                 tFINDexpvalue=$(echo ${line} | ${AWKBINARY} -F\; '{ print $3 }' | ${TRBINARY} '|' ' ')
+include/tests_kernel_hardening:76:                 tFINDdesc=$(echo ${line} | ${AWKBINARY} -F\; '{ print $5 }' | ${SEDBINARY} 's/-space-/ /g')
+include/tests_kernel_hardening:108:             ReportSuggestion "${TEST_NO}" "一个或多个 sysctl 值与扫描配置文件不同，可以进行调整" "" "修改 sysctl 值，或禁用此检查（skip-test=${TEST_NO}:<sysctl-key>）"
+include/tests_logging:90:         FIND=$(${SYSLOGNGBINARY} -s; echo $?)
+include/tests_logging:231:             Display --indent 4 --text "- 检查 wazuh-agent status" --result "${STATUS_FOUND}" --color GREEN
+include/tests_logging:235:             Display --indent 4 --text "- 检查 wazuh-agent daemon status" --result "${STATUS_NOT_FOUND}" --color WHITE
+include/tests_logging:365:         FIND=$(echo "${SOLARIS_LOGHOST}" | ${AWKBINARY} '{ print $1 }' | ${GREPBINARY} -E "::1|127.0.0.1|127.1")
+include/tests_logging:399:                             D=$(echo ${D} | ${SEDBINARY} 's/:space:/ /g')
+include/tests_logging:409:                     F=$(echo ${F} | ${SEDBINARY} 's/:space:/ /g')
+include/tests_logging:417:                                 D=$(echo ${D} | ${SEDBINARY} 's/:space:/ /g')
+include/tests_logging:446:                 FIND2=$(echo "${FIND}" | ${GREPBINARY} -v "@loghost")
+include/tests_logging:607:         FIND=$(${LSOFBINARY}${LSOF_EXTRA_OPTIONS} -n +L 1 2>&1 | ${GREPBINARY} -E -vw "${LSOF_GREP}" | ${GREPBINARY} -E -v '/dev/zero|/\[aio\]' | ${AWKBINARY} '{ if ($5=="REG") { printf "%s(%s)\n", $10, $1 } }' | ${GREPBINARY} -v "^$" | ${SORTBINARY} -u)
+include/tests_mac_frameworks:36:             LogText "Result: aa-status binary not found, AppArmor not installed"
+include/tests_mac_frameworks:40:             LogText "Result: aa-status binary found, AppArmor is installed"
+include/tests_mac_frameworks:84:                     LogText "Result: Can not determine status, most likely due to lacking permissions"
+include/tests_mac_frameworks:90:                     LogText "Result: AppArmor is enabled, but no policy is loaded"
+include/tests_mac_frameworks:156:                 ReportWarning "${TEST_NO}" "Current SELinux mode is different from config file (current: ${FIND}, config file: ${FIND2})"
+include/tests_mac_frameworks:166:                 LogText "Result: semanage binary NOT found, can't analyse permissive domains"
+include/tests_mail_messaging:187:                     LogText "Result: Verify Certificates set to \"${EXIM_CERTIFICATES}\""
+include/tests_mail_messaging:288:             ReportSuggestion "${TEST_NO}" "Found a configuration error in Postfix" "${POSTFIX_CONFIGFILE}" "text:run postconf > /dev/null"
+include/tests_mail_messaging:328:             LogText "Result: found OS, or mail_name in SMTP banner, and/or mail_name contains 'Postfix'."
+include/tests_mail_messaging:344:                     ReportSuggestion "${TEST_NO}:disable_vrfy_command" "Disable the 'VRFY' command" "disable_vrfy_command=no" "text:run postconf -e disable_vrfy_command=yes to change the value"
+include/tests_malware:108:             Display --indent 2 --text "- ${GEN_CHECKING} LMD（Linux Malware Detect）" --result "${STATUS_FOUND}" --color GREEN
+include/tests_memory_processes:36:             MEMORY_SIZE=$(echo ${FIND} | ${AWKBINARY} '{ print $1 }')
+include/tests_memory_processes:37:             MEMORY_UNITS=$(echo ${FIND} | ${AWKBINARY} '{ print $2 }')
+include/tests_nameservices:75:                 LogText "Result: no search domains found, default domain is being used"
+include/tests_nameservices:86:                     ReportWarning "${TEST_NO}" "Found more than 6 search domains, which is usually more than the maximum allowed number in most resolvers"
+include/tests_nameservices:97:                 ReportWarning "${TEST_NO}" "Found more than 1 search lines in /etc/resolv.conf, which is probably a misconfiguration"
+include/tests_nameservices:102:             LogText "Result: ${ROOTDIR}etc/resolv.conf does not exist, skipping test"
+include/tests_nameservices:131:             LogText "Result: /etc/resolv.conf not found, test skipped"
+include/tests_nameservices:143:         LogText "Result: 'uname -n' returned ${FIND}"
+include/tests_nameservices:185:             LogText "Result: dnsdomainname binary not found, skip specific test"
+include/tests_nameservices:195:                 DOMAINNAME=$(echo ${FQDN} | ${AWKBINARY} -F. '{print $2}')
+include/tests_nameservices:267:             LogText "Result: skipped, can't find unbound-checkconf utility"
+include/tests_nameservices:319:             FIND=$(${NAMEDCHECKCONFBINARY} ${BIND_CONFIG_LOCATION}; echo $?)
+include/tests_nameservices:329:             LogText "Result: named-checkconf not found, skipping test"
+include/tests_nameservices:350:             ReportSuggestion "${TEST_NO}" "The version in BIND can be masked by defining 'version none' in the configuration file"
+include/tests_nameservices:575:             LogText "Result: OK, no duplicate lines found"
+include/tests_nameservices:605:             LogText "Result: Skipping test, no hostname configured"
+include/tests_networking:101:                 SYSCTL_KEY=$(echo ${I} | ${AWKBINARY} -F= '{ print $1 }')
+include/tests_networking:102:                 SYSCTL_VALUE=$(echo ${I} | ${AWKBINARY} -F= '{ print $2 }')
+include/tests_networking:140:             STATUS=$(echo ${IPV6_MODE} | ${TRBINARY} '[:lower:]' '[:upper:]')
+include/tests_networking:141:             Display --indent 6 --text "配置方式" --result "${STATUS}" --color WHITE
+include/tests_networking:143:             LogText "结果：仅 IPv6 配置：${STATUS}"
+include/tests_networking:144:             Display --indent 6 --text "仅 IPv6" --result "${STATUS}" --color WHITE
+include/tests_networking:188:                         DNSRESPONSE=$(${DIGBINARY} +noall +time=3 +retry=0 @${I} ${FQDN} > /dev/null ; echo $?)
+include/tests_networking:786:                 Display --indent 2 --text "- 非常用网络协议" --result "${FOUND}" --color YELLOW
+include/tests_php:252:                 LogText "Result: found files in location ${DIR}, checking"
+include/tests_php:255:                         LogText "Result: file ${FILE} exists, adding to php.ini array"
+include/tests_php:303:             LogText "Functions of interest to research/disable: chown, diskfreespace, disk_free_space, disk_total_space, dl, exec, escapeshellarg, escapeshellcmd, fileinode, highlight_file, max_execution_time, passthru, pclose, phpinfo, popen, proc_close, proc_open, proc_get_status, proc_nice, proc_open, proc_terminate, set_time_limit, shell_exec, show_source, system)"
+include/tests_php:340:             ReportWarning "${TEST_NO}" "PHP option register_globals option is turned on, which can be a risk for variable value overwriting"
+include/tests_php:342:             LogText "Result: register_globals option is turned on, which can be a risk for variable value overwriting."
+include/tests_php:346:             LogText "Result: No 'register_globals' found. Most likely it is in disabled state (0, no, or off), which is the default nowadays and considered the safe value."
+include/tests_php:385:             LogText "Result: Found 'expose_php' in disabled state (0, no, or off)"
+include/tests_php:403:             ReportSuggestion "${TEST_NO}" "Change the enable_dl line to: enable_dl = Off, to disable dynamically loading new modules"
+include/tests_php:407:             LogText "Result: Found 'enable_dl' in disabled state (not present, 0, no, or off)"
+include/tests_php:424:             LogText "Result: allow_url_fopen option is turned on, which can be used for downloads via PHP and is a security risk"
+include/tests_php:425:             ReportSuggestion "${TEST_NO}" "Change the allow_url_fopen line to: allow_url_fopen = Off, to disable downloads via PHP"
+include/tests_php:429:             LogText "Result: Found 'allow_url_fopen' in disabled state (0, no, or off)"
+include/tests_php:448:             ReportSuggestion "${TEST_NO}" "Change the allow_url_include line to: allow_url_include = Off, to disable downloads via PHP"
+include/tests_php:452:             LogText "Result: Found 'allow_url_include' in disabled state (0, no, or off)"
+include/tests_php:555:                 LogText "Note: when possible, limit access to just localhost, so it can't be accessed from outside"
+include/tests_ports_packages:53:             PACKAGE_NAME=$(echo ${J} | ${CUTBINARY} -d ',' -f1)
+include/tests_ports_packages:54:             PACKAGE_VERSION=$(echo ${J} | ${CUTBINARY} -d ',' -f2)
+include/tests_ports_packages:70:         FIND=$(pkg -N 2>&1; echo $?)
+include/tests_ports_packages:81:                 sPKG_NAME=$(echo ${ITEM} | ${CUTBINARY} -d ',' -f1)
+include/tests_ports_packages:82:                 sPKG_VERSION=$(echo ${ITEM} | ${CUTBINARY} -d ',' -f2)
+include/tests_ports_packages:106:             sPKG_NAME=$(echo ${ITEM} | ${CUTBINARY} -d ',' -f1)
+include/tests_ports_packages:107:             sPKG_VERSION=$(echo ${ITEM} | ${CUTBINARY} -d ',' -f2)
+include/tests_ports_packages:131:             PACKAGE_NAME=$(echo ${PKG} | ${CUTBINARY} -d ' ' -f1)
+include/tests_ports_packages:132:             PACKAGE_VERSION=$(echo ${PKG} | ${CUTBINARY} -d ' ' -f2)
+include/tests_ports_packages:234:                 PACKAGE_NAME=$(echo ${PKG} | ${AWKBINARY} -F, '{print $1}')
+include/tests_ports_packages:235:                 PACKAGE_VERSION=$(echo ${PKG} | ${AWKBINARY} -F, '{print $2}')
+include/tests_ports_packages:267:                 PACKAGE_NAME=$(echo ${PKG} | ${AWKBINARY} -F, '{ print $1 }')
+include/tests_ports_packages:268:                 PACKAGE_VERSION=$(echo ${PKG} | ${AWKBINARY} -F, '{ print $2 }')
+include/tests_ports_packages:317:             PMOPTION=$(echo ${I} | ${SEDBINARY} 's/:space:/ /g' | ${AWKBINARY} -F= '{ print $1 }')
+include/tests_ports_packages:318:             PMVALUE=$(echo ${I} | ${SEDBINARY} 's/:space:/ /g' | ${AWKBINARY} -F= '{ print $2 }')
+include/tests_ports_packages:353:     if [ "${OS_FULLNAME}" = "Arch Linux" ] || [ "${OS_FULLNAME}" = "Arch Linux 32" ] || [ "${OS_FULLNAME}" = "Garuda Linux" ]; then PREQS_MET="YES"; SKIPREASON=""; else PREQS_MET="NO"; SKIPREASON="此检查仅适用于 Arch Linux 和 Garuda Linux"; fi
+include/tests_ports_packages:354:     Register --test-no PKGS-7320 --os "Linux" --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "检查 arch-audit 工具"
+include/tests_ports_packages:357:             LogText "结果：未找到 arch-audit 可执行文件"
+include/tests_ports_packages:359:             ReportSuggestion "${TEST_NO}" "建议安装 arch-audit，以检测存在漏洞的软件包" "arch-audit" "text:安装 arch-audit"
+include/tests_ports_packages:363:             LogText "结果：发现 arch-audit 可执行文件（${ARCH_AUDIT_BINARY}）"
+include/tests_ports_packages:372:     if [ -n "${ARCH_AUDIT_BINARY}" ]; then PREQS_MET="YES"; SKIPREASON=""; else PREQS_MET="NO"; SKIPREASON="未找到 arch-audit"; fi
+include/tests_ports_packages:373:     Register --test-no PKGS-7322 --os "Linux" --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "使用 arch-audit 检测存在漏洞的软件包"
+include/tests_ports_packages:375:         LogText "检查：分析 arch-audit 输出中的漏洞软件包"
+include/tests_ports_packages:378:             LogText "结果：arch-audit 未发现存在漏洞的软件包"
+include/tests_ports_packages:388:             ReportWarning "${TEST_NO}" "发现存在漏洞的软件包" "arch-audit 返回了结果" "text:运行 arch-audit 查看结果，并在需要时使用 pacman -Suy 更新软件包"
+include/tests_ports_packages:451:         FIND=$(${ROOTDIR}opt/local/bin/port installed 2>&1 | ${GREPBINARY} active | ${SORTBINARY}; ${ROOTDIR}bin/echo $?)
+include/tests_ports_packages:453:             Display --indent 4 --text "- 使用 port 搜索软件包" --result "{STATUS_FOUND}" --color GREEN
+include/tests_ports_packages:456:             LogText "结果：发现 port 工具"
+include/tests_ports_packages:457:             LogText "检查：查询 port 获取软件包列表"
+include/tests_ports_packages:458:             Display --indent 6 --text "- 使用 port 查询已安装的软件包"
+include/tests_ports_packages:462:                 SPORT_NAME=$(echo ${ITEM} | ${CUTBINARY} -d@ -f1)
+include/tests_ports_packages:463:                 SPORT_VERSION=$(echo ${ITEM} | ${CUTBINARY} -d@ -f2 | ${CUTBINARY} -d' ' -f1)
+include/tests_ports_packages:475:     Register --test-no PKGS-7334 --os "macOS" --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "使用 port 查询可用升级"
+include/tests_ports_packages:513:             PACKAGE_NAME=$(echo ${J} | ${CUTBINARY} -d ',' -f2)
+include/tests_ports_packages:514:             PACKAGE_VERSION=$(echo ${J} | ${CUTBINARY} -d ',' -f3)
+include/tests_ports_packages:592:             PACKAGE_NAME=$(echo ${PKG} | ${CUTBINARY} -d ',' -f1)
+include/tests_ports_packages:593:             PACKAGE_VERSION=$(echo ${PKG} | ${CUTBINARY} -d ',' -f2)
+include/tests_ports_packages:733:     Register --test-no PKGS-7378 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "使用 portmaster 查询 port 升级"
+include/tests_ports_packages:765:                     LogText "结果：pkg_admin audit 检查结果正常"
+include/tests_ports_packages:766:                     Display --indent 2 --text "- 使用 pkg_admin audit 检查漏洞软件包" --result "${STATUS_NONE}" --color GREEN
+include/tests_ports_packages:769:                     Display --indent 2 --text "- 使用 pkg_admin audit 检查漏洞软件包" --result "${STATUS_WARNING}" --color RED
+include/tests_ports_packages:770:                     LogText "结果：pkg_admin audit 发现一个或多个已安装软件包存在漏洞。"
+include/tests_ports_packages:786:             Display --indent 2 --text "- 未安装 pkg_admin audit" --result "${STATUS_NOT_FOUND}" --color WHITE
+include/tests_ports_packages:787:             LogText "结果：未安装 pkg_admin audit，跳过此漏洞检查。"
+include/tests_ports_packages:797:     if [ -n "${PKG_BINARY}" ]; then PREQS_MET="YES"; SKIPREASON=""; else PREQS_MET="NO"; SKIPREASON="pkg 工具不可用"; fi
+include/tests_ports_packages:811:                 LogText "结果：pkg audit 检查结果正常"
+include/tests_ports_packages:812:                 Display --indent 2 --text "- 使用 pkg audit 检查漏洞软件包" --result "${STATUS_NONE}" --color GREEN
+include/tests_ports_packages:817:                     Display --indent 2 --text "- 使用 pkg audit 检查漏洞软件包" --result "${STATUS_FOUND}" --color YELLOW
+include/tests_ports_packages:824:                     ReportWarning "${TEST_NO}" "发现存在漏洞的软件包" "${COUNT} 个存在漏洞的软件包" "text:运行 pkg audit"
+include/tests_ports_packages:830:                 ReportException "${TEST_NO}" "pkg audit 返回未知退出码，请在 ${PROJECT_SOURCE} 提交问题"
+include/tests_ports_packages:834:             ReportWarning "${TEST_NO}" "没有可用的漏洞数据库" "pkg audit" "text:运行 pkg audit -F"
+include/tests_ports_packages:897:             LogText "结果：发现 YUM utils 软件包（package-cleanup）"
+include/tests_ports_packages:900:             FIND=$(package-cleanup -q --dupes > /dev/null; echo $?)
+include/tests_ports_packages:908:                 ReportSuggestion "${TEST_NO}" "运行 package-cleanup 解决重复软件包问题"
+include/tests_ports_packages:913:             FIND=$(package-cleanup --problems > /dev/null; echo $?)
+include/tests_ports_packages:921:                 ReportSuggestion "${TEST_NO}" "运行 package-cleanup 解决软件包问题"
+include/tests_ports_packages:939:     Register --test-no PKGS-7386 --preqs-met ${PREQS_MET} --os Linux --weight L --network NO --category security --description "检查 YUM security 软件包"
+include/tests_ports_packages:942:         LogText "检查：确认是否安装 yum-security 软件包"
+include/tests_ports_packages:950:                     LogText "结果：发现 yum 内置的 security 支持"
+include/tests_ports_packages:952:                     LogText "结果：在 ${ROOTDIR}usr/share/yum-cli/cli.py 中未找到 --security"
+include/tests_ports_packages:964:                     LogText "结果：${ROOTDIR}etc/yum/pluginconf.d/security.conf 中的插件未启用"
+include/tests_ports_packages:973:                 LogText "结果：发现 yum-plugin-security 软件包"
+include/tests_ports_packages:999:             LogText "结果：未找到 yum-security 软件包"
+include/tests_ports_packages:1001:             ReportSuggestion "${TEST_NO}" "尽可能安装 yum-plugin-security，以便更容易维护安全更新（yum install yum-plugin-security）"
+include/tests_ports_packages:1017:                 REPO=$(echo ${I} | ${AWKBINARY} -F= '{print $1}')
+include/tests_ports_packages:1018:                 GPGSIGNED=$(echo ${I} | ${AWKBINARY} -F= '{print $2}')
+include/tests_ports_packages:1070:                 LogText "在 /etc/apt/sources.list 中搜索 security.debian.org、security.ubuntu.com 或其他安全仓库"
+include/tests_ports_packages:1077:                         REPO=$(echo ${REPO} | ${SEDBINARY} 's/!space!/ /g')
+include/tests_ports_packages:1083:                 LogText "在 /etc/apt/sources.list.d 目录中搜索 security.debian.org、security.ubuntu.com 或其他安全仓库"
+include/tests_ports_packages:1090:                         REPO=$(echo ${REPO} | ${SEDBINARY} 's/!space!/ /g')
+include/tests_ports_packages:1099:                 Display --indent 2 --text "- 检查 sources.list 中的安全仓库 or directory" --result "${STATUS_WARNING}" --color RED
+include/tests_ports_packages:1122:         LogText "检查：运行 apt-get check 检查软件包数据库一致性"
+include/tests_ports_packages:1123:         FIND=$(${ROOTDIR}usr/bin/apt-get -q=2 check 2> /dev/null; echo $?)
+include/tests_ports_packages:1130:             ReportWarning "${TEST_NO}" "apt-get check 返回了非成功退出码。"
+include/tests_ports_packages:1157:         LogText "检查：确认 ${ROOTDIR}usr/lib/update-notifier/apt-check 是否存在"
+include/tests_ports_packages:1160:             LogText "结果：发现 ${ROOTDIR}usr/lib/update-notifier/apt-check"
+include/tests_ports_packages:1169:                 ReportSuggestion "${TEST_NO}" "检查系统是否为最新状态；安全更新检查 apt-check 返回了异常结果"
+include/tests_ports_packages:1170:                 ReportException "${TEST_NO}:1" "apt-check 未返回任何结果"
+include/tests_ports_packages:1173:                     LogText "结果：apt-check 未发现存在漏洞的软件包"
+include/tests_ports_packages:1178:                     LogText "结果：apt-check 发现 ${FIND} 个安全更新"
+include/tests_ports_packages:1183:             LogText "结果：未找到 apt-check（update-notifier-common）"
+include/tests_ports_packages:1192:             LogText "结果：apt-get 在 -security 渠道中发现存在漏洞的软件包"
+include/tests_ports_packages:1211:             LogText "结果：检查未完整执行（缺少 apt-check 输出）"
+include/tests_ports_packages:1235:         LogText "检查：确认 ${ROOTDIR}usr/bin/glsa-check 是否存在"
+include/tests_ports_packages:1239:             LogText "结果：发现 ${ROOTDIR}usr/bin/glsa-check"
+include/tests_ports_packages:1245:                 LogText "说明：检查系统是否为最新状态；glsa-check 返回了异常结果"
+include/tests_ports_packages:1246:                 ReportException "${TEST_NO}:1" "glsa-check 未返回结果，情况异常"
+include/tests_ports_packages:1249:                     LogText "结果：glsa-check 未发现存在漏洞的软件包"
+include/tests_ports_packages:1250:                     Display --indent 2 --text "- 检查存在漏洞的软件包 (glsa-check)" --result "${STATUS_OK}" --color GREEN
+include/tests_ports_packages:1253:                     Display --indent 2 --text "- 检查存在漏洞的软件包 (glsa-check)" --result "${STATUS_FOUND}" --color RED
+include/tests_ports_packages:1254:                     LogText "结果：glsa-check 发现 ${FIND} 个安全更新"
+include/tests_ports_packages:1255:                     ReportWarning "${TEST_NO}" "glsa-check 发现 ${FIND} 个安全更新。"
+include/tests_ports_packages:1256:                     LogText "说明：运行 glsa-check -t all 查看识别出的 GLSA。"
+include/tests_ports_packages:1261:             LogText "结果：未找到 glsa-check 工具"
+include/tests_ports_packages:1262:             ReportSuggestion "${TEST_NO}" "使用 Emerge 安装 gentoolkit 软件包，其中包含 glsa-check，可执行额外的安全检查。"
+include/tests_ports_packages:1293:                     ITEM=$(echo ${ITEM} | ${SEDBINARY} 's/!space!/ /g')
+include/tests_ports_packages:1334:                 ITEM=$(echo ${ITEM} | ${SEDBINARY}  -r -e 's/([a-z,A-Z,0-9,_,-,.]{1,250})-([a-z,A-Z,0-9,.]+-r[a-z,A-Z,0-9]+)<([a-z,A-Z,0-9,-,.]+)/\1 from \2 to \3/')
+include/tests_ports_packages:1398:                 ReportSuggestion "${TEST_NO}" "使用 package-cleanup --old-kernels 删除不需要的内核软件包"
+include/tests_printers_spoolers:47:             LogText "Result: ${ROOTDIR}usr/sbin/chkprintcap NOT found, test skipped"
+include/tests_printers_spoolers:50:             FIND=$(${ROOTDIR}usr/sbin/chkprintcap > /dev/null ; echo $?)
+include/tests_printers_spoolers:77:             LogText "Result: cups daemon not running, cups daemon tests skipped"
+include/tests_printers_spoolers:274:                     FILE=$(echo ${ITEM} | ${SEDBINARY} 's/!space!/ /g')
+include/tests_printers_spoolers:281:                 LogText "Risk: Failed or defunct print jobs can occupy a lot of space and in some cases, prevent new jobs from being processed"
+include/tests_scheduling:87:                             FILENAME=$(echo ${FILE} | ${AWKBINARY} -F/ '{print $NF}')
+include/tests_scheduling:92:                                     LogText "结果：发现 Cron 任务（${FILE}）：${K}"
+include/tests_scheduling:120:                             if IsWorldWritable ${FILE}; then LogText "结果：Cron 任务文件 ${FILE} 的权限不安全"; Report "insecure_fileperms_cronjob[]=${FILE}"; BAD_FILE_PERMISSIONS=1; AddHP 0 5; fi
+include/tests_scheduling:121:                             if ! IsOwnedByRoot ${FILE}; then LogText "结果：Cron 任务文件 ${FILE} 的所有者不正确"; Report "bad_fileowner_cronjob[]=${FILE}"; BAD_FILE_OWNERSHIP=1; AddHP 0 5; fi
+include/tests_scheduling:122:                             FILENAME=$(echo ${FILE} | ${AWKBINARY} -F/ '{print $NF}')
+include/tests_scheduling:124:                             LogText "结果：发现 Cron 任务（${I}）：${FILE}"
+include/tests_scheduling:146:                         LogText "发现 Cron 任务（/var/spool/cron/crontabs）：${I}（${FILE}）"
+include/tests_scheduling:159:                             LogText "在 ${ROOTDIR}var/spool/cron 中发现 Cron 任务：${I}（${FILE}）"
+include/tests_scheduling:293:                 VALUE=$(echo ${ITEM} | ${SEDBINARY} 's/!space!/ /g')
+include/tests_shells:241:                 LogText "结果：文件 ${FILE} 存在"
+include/tests_shells:245:                     LogText "结果：在 ${FILE} 中未找到 umask 配置"
+include/tests_shells:246:                     Display --indent 4 --text "- 正在检查 ${FILE} 中的默认 umask" --result "${STATUS_NONE}" --color YELLOW
+include/tests_shells:249:                         LogText "结果：在 ${FILE} 中发现 umask ${UMASKVALUE}"
+include/tests_shells:261:                         Display --indent 4 --text "- 正在检查 ${FILE} 中的默认 umask" --result "${STATUS_OK}" --color GREEN
+include/tests_shells:264:                         Display --indent 4 --text "- 正在检查 ${FILE} 中的默认 umask" --result "${STATUS_WEAK}" --color YELLOW
+include/tests_shells:269:                 LogText "结果：未找到文件 ${FILE}"
+include/tests_squid:118:             I=$(echo ${I} | ${SEDBINARY} 's/!space!/ /g')
+include/tests_squid:212:                 ITEM=$(echo ${ITEM} | ${SEDBINARY} 's/!space!/ /g')
+include/tests_ssh:107:             OPENSSHD_VERSION_MAJOR=$(echo ${OPENSSHD_VERSION%%p*} | ${AWKBINARY} -F. '{print $1}')
+include/tests_ssh:109:             OPENSSHD_VERSION_MINOR=$(echo ${OPENSSHD_VERSION%%p*} | ${AWKBINARY} -F. '{print $2}')
+include/tests_ssh:175:             OPTIONNAME=$(echo ${I} | ${CUTBINARY} -d ':' -f1)
+include/tests_ssh:176:             OPTIONNAME_LOWER=$(echo ${I} | ${CUTBINARY} -d ':' -f1 | ${AWKBINARY} '{ print tolower($1) }')
+include/tests_ssh:177:             EXPECTEDVALUE=$(echo ${I} | ${CUTBINARY} -d ':' -f2 | ${CUTBINARY} -d',' -f1)
+include/tests_ssh:178:             MEDIUMSCOREDVALUE=$(echo ${I} | ${CUTBINARY} -d ':' -f2 | ${CUTBINARY} -d',' -f2)
+include/tests_ssh:179:             WEAKVALUE=$(echo ${I} | ${CUTBINARY} -d ':' -f2 | ${CUTBINARY} -d',' -f3)
+include/tests_ssh:180:             TESTTYPE=$(echo ${I} | ${CUTBINARY} -d ':' -f3)
+include/tests_storage_nfs:127:                     I=$(echo ${I} | ${SEDBINARY} 's/!space!/ /g')
+include/tests_system_integrity:34:     if [ -x ${ROOTDIR}/usr/bin/csrutil ]; then PREQS_MET="YES"; else PREQS_MET="NO"; SKIPREASON="未找到 csrutil 可执行文件"; fi
+include/tests_time:49:     elif [ -f /sbin/sysctl ] && [ "$(/sbin/sysctl -n security.jail.jailed 2>/dev/null || echo 0)" -eq 1 ]; then
+include/tests_time:63:             if [ -f ${FILE} ]; then LogText "结果：发现 chrony 配置文件 ${FILE}"; CHRONY_CONF_FILE="${FILE}"; fi
+include/tests_time:183:         LogText "检查：确认文件 /etc/network/if-up.d/ntpdate 是否存在"
+include/tests_time:190:             LogText "结果：文件 /etc/network/if-up.d/ntpdate 不存在"
+include/tests_time:332:             FIND2=$(echo ${FIND2} | ${SEDBINARY} 's/*//g')
+include/tests_time:359:                 I=$(echo ${I} | ${SEDBINARY} 's/+//g')
+include/tests_time:381:                 I=$(echo ${I} | ${SEDBINARY} 's/x//g')
+include/tests_time:447:                 LogText "结果：${FILE} 存在但为空；在 Red Hat 系统上，初始时间同步将使用 ntp.conf 中列出的服务器。"
+include/tests_time:450:                 LogText "结果：${FILE} 为空，step-tickers 中没有配置 NTP 服务器"
+include/tests_time:455:             LogText "结果：${FILE} 不为空，状态正常"
+include/tests_time:461:                     LogText "结果：${I} 存在于 ${FILE}"
+include/tests_time:463:                     LogText "结果：${I} 不存在于 ${FILE}"
+include/tests_time:497:                 LogText "结果：发现 ${FILE}"
+include/tests_time:499:                     ReportWarning "${TEST_NO}" "发现所有用户均可写的配置文件" "${FILE}" ""
+include/tests_time:519:             ReportWarning "${TEST_NO}" "发现 OpenNTPD，但 ntpctl 无法与其通信" "${NTPCTLBINARY} -s status" "重启 OpenNTPD"
+include/tests_time:537:             ReportWarning "${TEST_NO}" "OpenNTPD 未同步系统时间" "${NTPCTLBINARY} -s status" "text:手动设置一次时间，或检查网络连接。"
+include/tests_time:557:             ReportWarning "${TEST_NO}" "OpenNTPD 没有可用的对等节点" "${NTPCTLBINARY} -s status"
+include/tests_time:575:     Register --test-no TIME-3185 --preqs-met "${PREQS_MET}" --weight L --network NO --category "security" --description "检查 systemd-timesyncd 时间同步"
+include/tests_tooling:238:                 LogText "Result: service '${F2BSERVICE}' enabled"
+include/tests_webservers:102:             LogText "Result: Can't find the configuration file, so skipping some Apache related tests"
+include/tests_webservers:118:                     Display --indent 6 --text "[Notice] possible directory/file parts found, but still unsure what the real configuration file is. Skipping some Apache related tests"
+include/tests_webservers:120:                     LogText "Note: if only the Apache binary package has been installed, then the configuration might be missing. Is the Apache package really needed?"
+include/tests_webservers:239:             Display --indent 4 --text "* Loadable modules" --result "${STATUS_NONE}" --color WHITE
+include/tests_webservers:242:             Display --indent 4 --text "* Loadable modules" --result "${STATUS_FOUND} (${COUNT})" --color GREEN
+include/tests_webservers:317:             Display --indent 2 --text '- Checking TraceEnable setting in:'
+include/tests_webservers:324:                     TRACEENABLED_SETTING=$( echo ${TRACEENABLE} | tr 'A-Z' 'a-z' )
+include/tests_webservers:326:                         LogText "Result: found TraceEnable setting set to 'off' in ${APACHE_CONFFILE}"
+include/tests_webservers:330:                         LogText "Result: found TraceEnable setting set to '"${TRACEENABLE}"' in ${APACHE_CONFFILE}"
+include/tests_webservers:333:                         ReportSuggestion "${TEST_NO}" "Consider setting 'TraceEnable Off' in ${APACHE_CONFFILE}" "Set TraceEnable to 'On' or 'extended' for testing and diagnostic purposes only."
+include/tests_webservers:412:                         ReportException "${TEST_NO}:1" "Can not parse file ${J}, as it is not readable"
+include/tests_webservers:421:             I=$(echo ${I} | ${SEDBINARY} 's/:space:/ /g')
+include/tests_webservers:446:             FILENAME=$(echo ${FILE} | ${AWKBINARY} -F/ '{print $NF}')
+include/tests_webservers:455:                 LogText "Result: this configuration file is skipped, as it contains usually no interesting details"
+include/tests_webservers:460:                 FILENAME=$(echo ${I} | ${AWKBINARY} -F/ '{print $NF}')
+include/tests_webservers:469:                     LogText "Result: this configuration file is skipped, as it contains usually no interesting details"
+include/tests_webservers:619:                 LogText "Result: Directory ${DIR} exists, so will be used as search path"
+include/tests_webservers:635:                 LogText "Result: directory ${DIR} not found, skipping search in this directory."
