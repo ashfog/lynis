@@ -1,0 +1,55 @@
+name: Clean remaining boot service localization
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/clean-boot-services-localization.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+      - name: Clean mixed messages
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('include/tests_boot_services')
+          text = path.read_text(encoding='utf-8')
+          replacements = [
+              ('Display --indent 2 --text "- Checking ${ROOTDIR}etc/boot.conf"', 'Display --indent 2 --text "- 检查 ${ROOTDIR}etc/boot.conf"'),
+              ('LogText "Result: checking ${ROOTDIR}etc/rc.d scripts for writable bit"', 'LogText "结果：检查 ${ROOTDIR}etc/rc.d 脚本的可写权限"'),
+              ('LogText "Result: directory ${CHECKDIR} not found. Skipping.."', 'LogText "结果：未找到目录 ${CHECKDIR}，跳过。"'),
+              ('LogText "Test: 运行 systemd-analyze security"', 'LogText "检查：运行 systemd-analyze security"'),
+              ('LILO 启动加载器未设置密码. 为 LILO 添加密码', 'LILO 启动加载器未设置密码。为 LILO 添加密码'),
+              ('# Description : Check OpenBSD world writable startup scripts', '# Description : 检查 OpenBSD 可被所有用户写入的启动脚本'),
+          ]
+          changed = 0
+          for old, new in replacements:
+              if old in text:
+                  text = text.replace(old, new)
+                  changed += 1
+          if changed < 5:
+              raise SystemExit(f'too few cleanup replacements: {changed}')
+          for forbidden in ['LogText "Result:', 'LogText "Test:', '--text "- Checking ${ROOTDIR}etc/boot.conf"']:
+              if forbidden in text:
+                  raise SystemExit(f'remaining English marker: {forbidden}')
+          path.write_text(text, encoding='utf-8')
+          PY
+          sh -n include/tests_boot_services
+      - name: Commit cleanup and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/clean-boot-services-localization.yml
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add include/tests_boot_services .github/workflows/clean-boot-services-localization.yml
+          git commit -m "i18n: clean remaining boot service messages"
+          git push origin HEAD:master
