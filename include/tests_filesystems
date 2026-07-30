@@ -661,14 +661,14 @@
                 LogText "结果：安装系统 /var/tmp 配置了选项：${FIND}"
                 if [ "${BIND}" = "YES" ]; then
                     Display --indent 2 --text "- /var/tmp 绑定到 /tmp" --result "${STATUS_OK}" --color GREEN
-                    LogText "结果：/var/tmp 是 bind 到 /tmp"
+                    LogText "结果：/var/tmp 已绑定到 /tmp"
                 else
                     Display --indent 2 --text "- /var/tmp 不绑定到 /tmp" --result "${STATUS_NON_DEFAULT}" --color YELLOW
-                    LogText "结果：/var/tmp 不是 bind 到 /tmp"
+                    LogText "结果：/var/tmp 未绑定到 /tmp"
                 fi
             else
-                LogText "结果：未找到安装点 /var/tmp 或预期选项"
-                if IsVerbose; then Display --indent 2 --text "- /var/tmp 不绑定到 /tmp" --result "INFO" --color WHITE; fi
+                LogText "结果：未找到挂载点 /var/tmp 或预期选项"
+                if IsVerbose; then Display --indent 2 --text "- /var/tmp 不绑定到 /tmp" --result "信息" --color WHITE; fi
             fi
         fi
     fi
@@ -700,10 +700,10 @@
 #
     # Test        : FILE-6394
     # Description : Check vm.swappiness (Linux)
-    Register --test-no FILE-6394 --os Linux --weight L --network NO --category security --description "确定 swappiness 的电平。"
+    Register --test-no FILE-6394 --os Linux --weight L --network NO --category security --description "确定 swappiness 级别"
     if [ ${SKIPTEST} -eq 0 ]; then
         SWAPLEVEL=$(${CAT_BINARY} /proc/sys/vm/swappiness)
-        LogText "检查：检查vm.swappiness的级别：${SWAPLEVEL}"
+        LogText "检查：检查 vm.swappiness 级别：${SWAPLEVEL}"
         PHYSDISK=$(${LSBLKBINARY} | ${GREPBINARY} -E 'disk|SWAP' | ${GREPBINARY} -B1 SWAP | ${HEADBINARY} -n1 | ${AWKBINARY} '{print $1}')
         if [ ${SWAPLEVEL} -gt 60 ]; then
             LogText "结果：vm.swappiness=${SWAPLEVEL} 表示交换比默认更频繁。"
@@ -724,9 +724,9 @@
         elif [ ${SWAPLEVEL} -lt 60 ]; then
             LogText "结果：vm.swappiness=${SWAPLEVEL} 表示交换频率低于默认值。仅建议服务器使用此方法。"
         else
-            LogText "结果：vm.swappiness=${SWAPLEVEL}，这是swappiness的标准级别，适用于桌面系统。"
+            LogText "结果：vm.swappiness=${SWAPLEVEL}，这是 swappiness 的标准级别，适用于桌面系统。"
         fi
-        if IsVerbose; then Display --indent 2 --text "- Swappiness: ${SWAPLEVEL}" --result "INFO" --color WHITE; fi
+        if IsVerbose; then Display --indent 2 --text "- Swappiness：${SWAPLEVEL}" --result "信息" --color WHITE; fi
     fi
 #
 #################################################################################
@@ -872,7 +872,7 @@
                         if IsDebug; then Display --indent 6 --text "- 模块 ${FS} 未加载 (lsmod)" --result OK --color GREEN; fi
                     else
                         LogText "结果：模块 ${FS} 被加载到内核中"
-                        Display --indent 4 --text "- 模块 $FS 加载到内核中（lsmod）" --result "FOUND" --color WHITE
+                        Display --indent 4 --text "- 模块 $FS 加载到内核中（lsmod）" --result "已发现" --color WHITE
                         FOUND=1
                         AVAILABLE_MODPROBE_FS="${AVAILABLE_MODPROBE_FS}${FS} "
                     fi

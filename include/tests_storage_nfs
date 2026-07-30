@@ -38,7 +38,7 @@
         LogText "检查：rpcinfo 注册的程序"
         FIND=$(${RPCINFOBINARY} -p 2> /dev/null | ${TRBINARY} -s ' ' ',')
         for I in ${FIND}; do
-            LogText "rpcinfo: ${I}"
+            LogText "rpcinfo：${I}"
         done
         Display --indent 2 --text "- 查询 RPC 注册程序" --result "${STATUS_DONE}" --color GREEN
     fi

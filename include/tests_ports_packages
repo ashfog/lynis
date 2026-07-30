@@ -890,11 +890,11 @@ EOF
     # Test        : PKGS-7384
     # Description : Search for YUM utils package
     if [ -n "${YUMBINARY}" -a -z "${DNFBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PKGS-7384 --preqs-met ${PREQS_MET} --os Linux --weight L --network NO --category security --description "检查 YUM utils 软件包"
+    Register --test-no PKGS-7384 --preqs-met ${PREQS_MET} --os Linux --weight L --network NO --category security --description "检查 YUM utilities 软件包"
     if [ ${SKIPTEST} -eq 0 ]; then
         # package-cleanup tool can be found in different locations
         if [ -x ${ROOTDIR}bin/package-cleanup -o -x ${ROOTDIR}usr/bin/package-cleanup ]; then
-            LogText "结果：发现 YUM utils 软件包（package-cleanup）"
+            LogText "结果：发现 YUM utilities 软件包（package-cleanup）"
             # Check for duplicates
             LogText "检查：检查重复软件包"
             FIND=$(package-cleanup -q --dupes > /dev/null; echo $?)
@@ -922,7 +922,7 @@ EOF
             fi
         else
             Display --indent 2 --text "- 未安装 yum-utils 软件包" --result "${STATUS_SUGGESTION}" --color YELLOW
-            LogText "结果：未找到 YUM utils 软件包"
+            LogText "结果：未找到 YUM utilities 软件包"
             ReportSuggestion "${TEST_NO}" "安装 yum-utils 软件包，以更好地检查软件包数据库一致性"
         fi
     fi
@@ -1247,10 +1247,10 @@ EOF
             else
                 if [ "${FIND}" = "0" ]; then
                     LogText "结果：glsa-check 未发现存在漏洞的软件包"
-                    Display --indent 2 --text "- 检查存在漏洞的软件包 (glsa-check)" --result "${STATUS_OK}" --color GREEN
+                    Display --indent 2 --text "- 检查存在漏洞的软件包（glsa-check）" --result "${STATUS_OK}" --color GREEN
                 else
                     VULNERABLE_PACKAGES_FOUND=1
-                    Display --indent 2 --text "- 检查存在漏洞的软件包 (glsa-check)" --result "${STATUS_FOUND}" --color RED
+                    Display --indent 2 --text "- 检查存在漏洞的软件包（glsa-check）" --result "${STATUS_FOUND}" --color RED
                     LogText "结果：glsa-check 发现 ${FIND} 个安全更新"
                     ReportWarning "${TEST_NO}" "glsa-check 发现 ${FIND} 个安全更新。"
                     LogText "说明：运行 glsa-check -t all 查看识别出的 GLSA。"
@@ -1259,7 +1259,7 @@ EOF
             fi
         else
             LogText "结果：未找到 glsa-check 工具"
-            ReportSuggestion "${TEST_NO}" "使用 Emerge 安装 gentoolkit 软件包，其中包含 glsa-check，可执行额外的安全检查。"
+            ReportSuggestion "${TEST_NO}" "使用 emerge 安装 gentoolkit 软件包，其中包含 glsa-check，可执行额外的安全检查。"
         fi
     fi
 #

@@ -1998,7 +1998,7 @@
 
     # Function IsWorldExecutable
     IsWorldExecutable() {
-        if [ $# -eq 0 ]; then ExitFatal "Missing parameter when calling IsWorldExecutable function"; fi
+        if [ $# -eq 0 ]; then ExitFatal "调用 IsWorldExecutable 函数时缺少参数"; fi
         sFILE=$1
         # Check for symlink
         if [ -L ${sFILE} ]; then
@@ -2232,9 +2232,9 @@
         CONFIG_FILE=$1
 
         # Create temporary files
-        CreateTempFile || ExitFatal "Could not create temporary file"
+        CreateTempFile || ExitFatal "无法创建临时文件"
         TMP_NGINX_FILE_RAW="${TEMP_FILE}"
-        CreateTempFile || ExitFatal "Could not create temporary file"
+        CreateTempFile || ExitFatal "无法创建临时文件"
         TMP_NGINX_FILE="${TEMP_FILE}"
 
         # Strip out spaces, tabs and line breaks

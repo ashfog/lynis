@@ -1152,14 +1152,14 @@ ${NORMAL}
     LogText "${PROGRAM_NAME} ${PROGRAM_VERSION}"
     LogText "${PROGRAM_COPYRIGHT}"
     LogText "${PROGRAM_EXTRAINFO}"
-    LogText "节目顺利结束"
+    LogText "程序已成功结束"
     LogText "================================================================================"
 
     # Tool tips
 
     if [ ${QUIET} -eq 0 ]; then
 
-        if [ -z "${CUSTOM_PROFILE}" ]; then DisplayToolTip "Enhance ${PROGRAM_NAME} audits by adding your settings to custom.prf (see ${DEFAULT_PROFILE} for all settings)"; fi
+        if [ -z "${CUSTOM_PROFILE}" ]; then DisplayToolTip "通过在 custom.prf 中添加设置来增强 ${PROGRAM_NAME} 审计（所有设置请参阅 ${DEFAULT_PROFILE}）"; fi
     fi
 
     # Clean exit (Delete PID file)

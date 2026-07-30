@@ -541,8 +541,8 @@
                     FIND2="hard core enabled"
                 fi
 
-                IS_SOFTCORE_DISABLED="$(if [ "${FIND1}" = "soft core disabled" ]; then ${ECHOCMD} DISABLED; elif [ "${FIND1}" = "soft core enabled" ]; then ${ECHOCMD} ENABLED; else ${ECHOCMD} ${STATUS_DEFAULT}; fi)"
-                IS_HARDCORE_DISABLED="$(if [ "${FIND2}" = "hard core disabled" ]; then ${ECHOCMD} DISABLED; elif [ "${FIND2}" = "hard core enabled" ]; then ${ECHOCMD} ENABLED; else ${ECHOCMD} ${STATUS_DEFAULT}; fi)"
+                IS_SOFTCORE_DISABLED="$(if [ "${FIND1}" = "soft core disabled" ]; then ${ECHOCMD} 已禁用; elif [ "${FIND1}" = "soft core enabled" ]; then ${ECHOCMD} 已启用; else ${ECHOCMD} ${STATUS_DEFAULT}; fi)"
+                IS_HARDCORE_DISABLED="$(if [ "${FIND2}" = "hard core disabled" ]; then ${ECHOCMD} 已禁用; elif [ "${FIND2}" = "hard core enabled" ]; then ${ECHOCMD} 已启用; else ${ECHOCMD} ${STATUS_DEFAULT}; fi)"
 
                 if [ "${FIND2}" = "hard core disabled" ]; then
                     LogText "结果：核心转储被硬禁用"
