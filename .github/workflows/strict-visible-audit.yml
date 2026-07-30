@@ -1,0 +1,104 @@
+name: One-time strict visible English audit
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/strict-visible-audit.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+      - name: Extract untranslated visible string arguments
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from collections import Counter
+          import re
+
+          q = re.compile(r'"((?:\\.|[^"\\])*)"')
+          cjk = re.compile(r'[\u3400-\u9fff]')
+          word = re.compile(r'[A-Za-z]{2,}')
+          ignore_exact = {
+            'Linux','FreeBSD','OpenBSD','NetBSD','Solaris','AIX','macOS','DragonFly','YES','NO','OK','NONE','ACTIVE',
+            'ENABLED','DISABLED','FOUND','UNKNOWN','RUNNING','NOT FOUND','NOT ACTIVE','DONE','SKIPPED','WARNING',
+            'security','basics','performance','privacy','systemd','auditd','root','hostname -s','-','',
+          }
+
+          def indexes(line, spans):
+              s=line.lstrip(); out=set()
+              if not s or s.startswith('#'): return out
+              if 'Register ' in line and '--description' in line:
+                  p=line.find('--description');
+                  for i,m in enumerate(spans):
+                      if m.start()>p: out.add(i); break
+              if 'Display ' in line:
+                  for flag in ('--text','--result'):
+                      p=line.find(flag)
+                      if p>=0:
+                          for i,m in enumerate(spans):
+                              if m.start()>p: out.add(i); break
+              if any(x in line for x in ('DisplayError ','DisplayWarning ','DisplaySuggestion ')) and spans: out.add(0)
+              if 'LogText ' in line:
+                  p=line.find('LogText ')
+                  for i,m in enumerate(spans):
+                      if m.start()>p: out.add(i); break
+              for fn in ('ReportWarning ','ReportSuggestion ','ReportException '):
+                  p=line.find(fn)
+                  if p>=0:
+                      arr=[i for i,m in enumerate(spans) if m.start()>p]
+                      out.update(arr[1:])
+              if 'SKIPREASON=' in line:
+                  p=line.find('SKIPREASON=')
+                  for i,m in enumerate(spans):
+                      if m.start()>p: out.add(i); break
+              if s.startswith(('echo ','printf ')) or re.match(r'^(?:if .*; then )?(?:echo|printf) ',s):
+                  if not re.search(r'>\s*\$?\{?(?:LOGFILE|REPORTFILE|SETTINGS_FILE|TMPFILE)',line): out.update(range(len(spans)))
+              return out
+
+          def candidate(x):
+              if cjk.search(x): return False
+              x=x.strip()
+              if x in ignore_exact: return False
+              if x.startswith(('http://','https://')): return False
+              if re.fullmatch(r'[${}A-Za-z0-9_./:*+?=,;()\[\]<>| -]+',x) and len(word.findall(x))<2: return False
+              # report/data schema and commands only
+              if '=' in x and ' ' not in x: return False
+              words=word.findall(re.sub(r'\$\{[^}]+\}|/\S+|--\S+|\[[^]]+\]',' ',x))
+              return len(words)>=2
+
+          rows=[]; counts=Counter()
+          files=[Path('lynis')]+sorted(p for p in Path('include').iterdir() if p.is_file())
+          for path in files:
+              try: lines=path.read_text(encoding='utf-8').splitlines()
+              except UnicodeDecodeError: continue
+              for n,line in enumerate(lines,1):
+                  spans=list(q.finditer(line))
+                  for i in indexes(line,spans):
+                      x=spans[i].group(1)
+                      if candidate(x):
+                          rows.append(f'{path}:{n}: {x}')
+                          counts[str(path)]+=1
+          out=['# Strict untranslated visible strings',f'# Count: {len(rows)}','', '# Counts by file']
+          out += [f'# {v:4d} {k}' for k,v in sorted(counts.items(),key=lambda z:(-z[1],z[0]))]
+          out += ['',*rows,'']
+          Path('VISIBLE_ENGLISH_STRICT.txt').write_text('\n'.join(out),encoding='utf-8')
+          print(f'{len(rows)} strict candidates')
+          PY
+      - name: Commit report and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/strict-visible-audit.yml
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add VISIBLE_ENGLISH_STRICT.txt .github/workflows/strict-visible-audit.yml
+          git commit -m "chore: add strict visible English audit"
+          git push origin HEAD:master
