@@ -1508,7 +1508,7 @@
         for FILE in ${LDAP_CONF_LOCATIONS}; do
             LogText "检查：检查 ${FILE}"
             if [ -f ${FILE} ]; then
-                LogText "结果：文件 ${FILE} 存在, LDAP being used"
+                LogText "结果：文件 ${FILE} 存在，正在使用 LDAP"
                 LDAP_CLIENT_CONFIG_FILE="${FILE}"
                 LogText "检查：检查文件 ${FILE} 中的 LDAP 服务器"
                 FIND=$(${GREPBINARY} -E "^host " ${FILE} | ${AWKBINARY} '{ print $2 }')
