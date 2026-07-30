@@ -96,7 +96,7 @@
 
     # Drop out if our include directory can't be found
     if [ -z "${INCLUDEDIR}" ]; then
-        printf "%s" "\n致命错误：找不到 include 目录\n请确认从完整解压后的目录运行 ${PROGRAM_NAME}，或检查安装是否正确。"
+        printf "%s" "\n致命错误：找不到 包含 目录\n请确认从完整解压后的目录运行 ${PROGRAM_NAME}，或检查安装是否正确。"
         exit 1
     fi
 
@@ -191,11 +191,11 @@
 
     # Now if there is an issue with permissions, show it to the user and let them decide how to continue.
     if [ ${ISSUE} -eq 1 ]; then
-        printf "\n[X] 安全检查失败\n\n    为什么会看到此错误？\n    -------------------------------\n    这是一个保护机制，用于防止 root 用户执行普通用户创建的文件。这些文件可能已被修改，或包含恶意脚本片段。\n\n    我应该怎么处理？\n    ---------------------\n    选项 1）确认这些文件是否由可信用户创建（例如通过 Git、Homebrew 或类似工具生成）。\n              如果你信任这些文件，可以按 ENTER 继续本次运行。\n"
+        printf "\n[X] 安全检查失败\n\n 为什么会看到此错误？\n -------------------------------\n 这是一个保护机制，用于防止 根 用户执行普通用户创建的文件。这些文件可能已被修改，或包含恶意脚本片段。\n\n 我应该怎么处理？\n ---------------------\n 选项 1）确认这些文件是否由可信用户创建（例如通过 Git、Homebrew 或类似工具生成）。\n 如果你信任这些文件，可以按 ENTER 继续本次运行。\n"
         if [ "${ISSUE_TYPE}" = "perms" ]; then
-            printf "\n    选项 2）修改相关文件的权限。\n\n       命令（整个目录）：\n         # chmod 640 include/*\n         # ./lynis audit system"
+            printf "\n 选项 2）修改相关文件的权限。\n\n 命令（整个目录）：\n # chmod 640 包含/*\n # ./lynis 审计 系统"
         elif [ "${ISSUE_TYPE}" = "owner" ]; then
-            printf "\n    选项 2）修改相关文件或整个目录的所有者。\n\n       命令（整个目录）：\n         # cd ..\n         # chown -R 0:0 lynis\n         # cd lynis\n         # ./lynis audit system"
+            printf "\n 选项 2）修改相关文件或整个目录的所有者。\n\n 命令（整个目录）：\n # cd ..\n # chown -R 0:0 lynis\n # cd lynis\n # ./lynis 审计 系统"
         fi
         printf "\n\n[ 按 ENTER 继续，或按 CTRL+C 取消 ]"
         IGNORE_FILE_PERMISSION_ISSUES=1
@@ -239,7 +239,7 @@
             ExitFatal "语言文件的所有者或权限不正确 (${DBDIR}/languages/en)"
         fi
     else
-        echo "找不到语言目录 (file: ${DBDIR}/languages/en)"
+        echo "找不到语言目录 (文件： ${DBDIR}/languages/en)"
         exit 1
     fi
 
@@ -311,7 +311,7 @@
 #
 
     if [ ${QUIET} -eq 0 ]; then
-        printf "\n${WHITE}[ ${PROGRAM_NAME} ${PROGRAM_VERSION} ]${NORMAL}\n\n################################################################################\n  ${PROGRAM_LICENSE}\n\n  ${PROGRAM_COPYRIGHT}\n  ${PROGRAM_EXTRAINFO}\n################################################################################\n\n"
+        printf "\n${WHITE}[ ${PROGRAM_NAME} ${PROGRAM_VERSION} ]${NORMAL}\n\n################################################################################\n ${PROGRAM_LICENSE}\n\n ${PROGRAM_COPYRIGHT}\n ${PROGRAM_EXTRAINFO}\n################################################################################\n\n"
     fi
 
     if [ "${PROGRAM_RELEASE_TYPE}" = "beta" ]; then
@@ -464,10 +464,10 @@ ${YELLOW}注意：${WHITE}取消程序可能会留下临时文件${NORMAL}
 "
 
         if [ ${WRONGOPTION} -eq 1 ]; then
-            echo "  ${RED}错误${NORMAL}：${WHITE}无效选项 '${WRONGOPTION_value}'${NORMAL}"
+            echo " ${RED}错误${NORMAL}：${WHITE}无效选项 '${WRONGOPTION_value}'${NORMAL}"
         else
             if [ ${VIEWHELP} -eq 0 ]; then
-                echo "  ${RED}未提供命令。${WHITE} 正在退出……${NORMAL}"
+                echo " ${RED}未提供命令。${WHITE} 正在退出……${NORMAL}"
                 echo ""
             fi
         fi
@@ -540,7 +540,7 @@ ${NORMAL}
     CDATE=$(date "+%Y-%m-%d %H:%M:%S")
     if [ ${LOGTEXT} -eq 1 ]; then echo "${CDATE} 正在启动 ${PROGRAM_NAME} ${PROGRAM_VERSION}，PID ${OURPID}，构建日期 ${PROGRAM_RELEASE_DATE}" > ${LOGFILE}; fi
     if [ $? -gt 0 ]; then
-        Display --indent 2 --text "- Clearing log file (${LOGFILE})... " --result "${STATUS_WARNING}" --color RED
+        Display --indent 2 --text "- 清空日志文件（${LOGFILE}）…… " --result "${STATUS_WARNING}" --color RED
         echo "${WARNING}致命错误${NORMAL}：写入日志文件时出现问题，请检查路径和权限。"
         RemovePIDFile
         exit 1
@@ -569,7 +569,7 @@ ${NORMAL}
     if [ -z "${HOSTNAME}" ]; then
         HOSTNAME="no-hostname"
         LogText "信息：未找到主机名，改用 'no-hostname'"
-        ReportSuggestion "LYNIS" "Check your hostname configuration" "hostname -s"
+        ReportSuggestion "LYNIS" "检查主机名配置" "主机名 -s"
     fi
     Report "test_category=${TEST_CATEGORY_TO_CHECK}"
     Report "test_group=${TEST_GROUP_TO_CHECK}"
@@ -592,27 +592,27 @@ ${NORMAL}
 
     # Import a different language when configured
     if [ ! "${LANGUAGE}" = "en" ]; then
-        LogText "Language is set to ${LANGUAGE}"
-        Display --indent 2 --text "- Detecting language and localization" --result "${LANGUAGE}" --color WHITE
+        LogText "语言已设置为 ${LANGUAGE}"
+        Display --indent 2 --text "- 检测语言和本地化设置" --result "${LANGUAGE}" --color WHITE
         if [ ! -f ${DBDIR}/languages/${LANGUAGE} ]; then
             Display --indent 4 --text "${YELLOW}注意：${NORMAL}未找到语言 '${LANGUAGE}' 的语言文件（已尝试：${DBDIR}/languages/${LANGUAGE}）"
-            if IsDeveloperVersion; then Display --indent 4 --text "See https://github.com/CISOfy/lynis-sdk/blob/master/documentation/10-translations.md for more details to help translate Lynis"; fi
+            if IsDeveloperVersion; then Display --indent 4 --text "有关协助翻译 Lynis 的更多信息，请参阅 https://github.com/CISOfy/lynis-sdk/blob/master/documentation/10-translations.md"; fi
             sleep 5
         else
             if SafeFile "${DBDIR}/languages/${LANGUAGE}"; then
-                LogText "Importing language file (${DBDIR}/languages/${LANGUAGE})"
+                LogText "正在导入语言文件（${DBDIR}/languages/${LANGUAGE}）"
                 . ${DBDIR}/languages/${LANGUAGE}
                 # Check for missing translations if we are a pre-release or less than a week old
                 if grep -E -q -s "^#" ${DBDIR}/languages/${LANGUAGE}; then
                     TIME_DIFFERENCE_CHECK=604800 # 1 week
                     RELEASE_PLUS_TIMEDIFF=$((PROGRAM_RELEASE_TIMESTAMP + TIME_DIFFERENCE_CHECK))
                     if IsDeveloperVersion || [ ${NOW} -lt ${RELEASE_PLUS_TIMEDIFF} ]; then
-                        Display --indent 4 --text "Translation file (db/languages/${LANGUAGE}) needs an update" --result "OUTDATED" --color RED
+                        Display --indent 4 --text "翻译文件（db/languages/${LANGUAGE}）需要更新" --result "OUTDATED" --color RED
                         Display --indent 4 --text "======================================================================="
-                        Display --indent 4 --text "Help other users and translate the missing lines:"
-                        Display --indent 4 --text "1) Go to: https://github.com/CISOfy/lynis/edit/master/db/languages/${LANGUAGE}"
+                        Display --indent 4 --text "请帮助其他用户翻译缺失的内容："
+                        Display --indent 4 --text "1）打开：https://github.com/CISOfy/lynis/edit/master/db/languages/${LANGUAGE}"
                         Display --indent 4 --text "2）翻译部分以井号（#）开头的行，并移除行首井号"
-                        Display --indent 4 --text "3) Commit the changes"
+                        Display --indent 4 --text "3）提交更改"
                         Display --indent 4 --text "谢谢！"
                         Display --indent 4 --text "注意：没有以井号开头的行？请检查该文件近期是否已被其他翻译者修改。"
                         Display --indent 4 --text "======================================================================="
@@ -620,7 +620,7 @@ ${NORMAL}
                     fi
                 fi
             else
-                LogText "Could not import language file due to incorrect permissions"
+                LogText "由于权限不正确，无法导入语言文件"
             fi
 
         fi
@@ -669,65 +669,65 @@ ${NORMAL}
     if [ ${QUIET} -eq 0 -a ${SHOW_PROGRAM_DETAILS} -eq 1 ]; then
         echo ""
         echo "  ---------------------------------------------------"
-        echo "  Program version:           ${PROGRAM_VERSION}"
-        echo "  Operating system:          ${OS}"
-        echo "  Operating system name:     ${OS_NAME}"
-        echo "  Operating system version:  ${OS_VERSION}"
-        LogText "EOL check: ${EOL}"
+        echo " 程序版本： ${PROGRAM_VERSION}"
+        echo " 操作系统： ${OS}"
+        echo " 操作系统 name： ${OS_NAME}"
+        echo " 操作系统 版本： ${OS_VERSION}"
+        LogText "生命周期检查： ${EOL}"
         if [ ${EOL} -eq 0 ]; then
-            echo "  End-of-life:               ${STATUS_NO}"
+            echo " 生命周期结束： ${STATUS_NO}"
         elif [ ${EOL} -eq 1 ]; then
-            echo "  End-of-life:               ${WARNING}${STATUS_YES}${NORMAL}"
-            ReportWarning "GEN-0010" "This version ${OS_VERSION} is marked end-of-life as of ${EOL_DATE}"
+            echo " 生命周期结束： ${WARNING}${STATUS_YES}${NORMAL}"
+            ReportWarning "GEN-0010" "版本 ${OS_VERSION} 已于 ${EOL_DATE} 结束生命周期"
         elif [ ${EOL} -eq 255 ]; then
-            echo "  End-of-life:               ${WARNING}${STATUS_UNKNOWN}${NORMAL}"
+            echo " 生命周期结束： ${WARNING}${STATUS_UNKNOWN}${NORMAL}"
             LogText "注意：无法检查 '${OS_FULLNAME}' 的生命周期结束日期，db/software-eol.db 中可能缺少对应条目。"
         fi
 
-        if [ -n "${OS_MODE}" ]; then echo "  Operating system mode:     ${OS_MODE}"; fi
-        echo "  Kernel version:            ${OS_KERNELVERSION}"
-        echo "  Hardware platform:         ${HARDWARE}"
-        echo "  Hostname:                  ${HOSTNAME}"
+        if [ -n "${OS_MODE}" ]; then echo " 操作系统 模式： ${OS_MODE}"; fi
+        echo " 内核版本： ${OS_KERNELVERSION}"
+        echo " 硬件平台： ${HARDWARE}"
+        echo " 主机名： ${HOSTNAME}"
         echo "  ---------------------------------------------------"
-        echo "  Profiles:                  ${PROFILES}"
-        echo "  Log file:                  ${LOGFILE}"
-        echo "  Report file:               ${REPORTFILE}"
-        echo "  Report version:            ${REPORT_version}"
-        echo "  Plugin directory:          ${PLUGINDIR}"
+        echo " Profiles： ${PROFILES}"
+        echo " 日志文件： ${LOGFILE}"
+        echo " 报告文件： ${REPORTFILE}"
+        echo " 报告版本： ${REPORT_version}"
+        echo " 插件目录： ${PLUGINDIR}"
         echo "  ---------------------------------------------------"
-        echo "  Auditor:                   ${AUDITORNAME}"
-        echo "  Language:                  ${LANGUAGE}"
-        echo "  Test category:             ${TEST_CATEGORY_TO_CHECK}"
-        echo "  Test group:                ${TEST_GROUP_TO_CHECK}"
-        if [ ! "${ROOTDIR}" = "/" ]; then echo "  Root directory (custom):   ${ROOTDIR}"; fi
+        echo " Auditor： ${AUDITORNAME}"
+        echo " 语言： ${LANGUAGE}"
+        echo " 检查类别： ${TEST_CATEGORY_TO_CHECK}"
+        echo " 检查组： ${TEST_GROUP_TO_CHECK}"
+        if [ ! "${ROOTDIR}" = "/" ]; then echo " 根目录 (自定义)： ${ROOTDIR}"; fi
         echo "  ---------------------------------------------------"
     fi
 
-    LogText "Program version:           ${PROGRAM_VERSION}"
-    LogText "Operating system:          ${OS}"
-    LogText "Operating system name:     ${OS_NAME}"
-    LogText "Operating system version:  ${OS_VERSION}"
-    if [ -n "${OS_MODE}" ]; then LogText "Operating system mode:     ${OS_MODE}"; fi
-    LogText "Kernel version:            ${OS_KERNELVERSION}"
+    LogText "程序版本： ${PROGRAM_VERSION}"
+    LogText "操作系统： ${OS}"
+    LogText "操作系统 name： ${OS_NAME}"
+    LogText "操作系统 版本： ${OS_VERSION}"
+    if [ -n "${OS_MODE}" ]; then LogText "操作系统 模式： ${OS_MODE}"; fi
+    LogText "内核版本： ${OS_KERNELVERSION}"
     if [ -n "${OS_KERNELVERSION_FULL}" ]; then
-        LogText "Kernel version (full):     ${OS_KERNELVERSION_FULL}"
+        LogText "内核版本 (完整)： ${OS_KERNELVERSION_FULL}"
     fi
-    LogText "Hardware platform:         ${HARDWARE}"
+    LogText "硬件平台： ${HARDWARE}"
     LogText "-----------------------------------------------------"
-    LogText "Hostname:                  ${HOSTNAME}"
-    LogText "Auditor:                   ${AUDITORNAME}"
-    LogText "Profiles:                  ${PROFILES}"
-    LogText "Work directory:            ${WORKDIR}"
-    LogText "Include directory:         ${INCLUDEDIR}"
-    LogText "Plugin directory:          ${PLUGINDIR}"
+    LogText "主机名： ${HOSTNAME}"
+    LogText "Auditor： ${AUDITORNAME}"
+    LogText "Profiles： ${PROFILES}"
+    LogText "工作目录： ${WORKDIR}"
+    LogText "包含目录： ${INCLUDEDIR}"
+    LogText "插件目录： ${PLUGINDIR}"
     LogText "-----------------------------------------------------"
-    LogText "Log file:                  ${LOGFILE}"
-    LogText "Report file:               ${REPORTFILE}"
-    LogText "Report version:            ${REPORT_version}"
+    LogText "日志文件： ${LOGFILE}"
+    LogText "报告文件： ${REPORTFILE}"
+    LogText "报告版本： ${REPORT_version}"
     LogText "-----------------------------------------------------"
-    LogText "Test category:             ${TEST_CATEGORY_TO_CHECK}"
-    LogText "Test group:                ${TEST_GROUP_TO_CHECK}"
-    LogText "BusyBox used:              ${SHELL_IS_BUSYBOX}"
+    LogText "检查类别： ${TEST_CATEGORY_TO_CHECK}"
+    LogText "检查组： ${TEST_GROUP_TO_CHECK}"
+    LogText "使用 BusyBox： ${SHELL_IS_BUSYBOX}"
 
     Report "plugin_directory=${PLUGINDIR}"
 
@@ -739,37 +739,37 @@ ${NORMAL}
 #
 #################################################################################
 #
-    LogText "Test: Checking for program update..."
+    LogText "检查：检查程序更新……"
     UPDATE_AVAILABLE=0
 
     if [ ${SKIP_UPGRADE_TEST} -eq 1 ]; then
-        LogText "Upgrade test skipped due profile option set (skip_upgrade_test)"
+        LogText "由于配置文件启用了 skip_upgrade_test，跳过升级检查"
         PROGRAM_LV="${PROGRAM_AC}"
     else
         CheckUpdates
     fi
 
     if [ -z "${PROGRAM_AC}" -o -z "${PROGRAM_LV}" ]; then
-        Display --indent 2 --text "- Program update status... " --result "${STATUS_UNKNOWN}" --color YELLOW
+        Display --indent 2 --text "- 程序更新状态…… " --result "${STATUS_UNKNOWN}" --color YELLOW
         LogText "结果：更新检查失败，可能没有网络连接。"
         LogText "信息：要执行自动更新检查，需要允许出站 DNS 连接（TXT 记录）。"
         # Set both to safe values
         PROGRAM_AC=0; PROGRAM_LV=0
     else
-        LogText "Current installed version  : ${PROGRAM_AC}"
-        LogText "Latest stable version      : ${PROGRAM_LV}"
+        LogText "当前安装版本 ： ${PROGRAM_AC}"
+        LogText "最新稳定版本 ： ${PROGRAM_LV}"
         if [ ${PROGRAM_LV} -gt ${PROGRAM_AC} ]; then
             # Check if current version is REALLY outdated (10 versions ago)
             PROGRAM_MINVERSION=$((PROGRAM_LV - 10))
-            LogText "Minimum required version   : ${PROGRAM_MINVERSION}"
+            LogText "最低要求版本 ： ${PROGRAM_MINVERSION}"
             if [ ${PROGRAM_MINVERSION} -gt ${PROGRAM_AC} ]; then
-                Display --indent 2 --text "- Program update status... " --result "${STATUS_WARNING}" --color RED
+                Display --indent 2 --text "- 程序更新状态…… " --result "${STATUS_WARNING}" --color RED
                 LogText "结果：当前版本已严重过时，有新版 ${PROGRAM_NAME} 可用！"
-                ReportWarning "LYNIS" "Version of Lynis is very old and should be updated"
+                ReportWarning "LYNIS" "Lynis 版本非常旧，应进行更新"
                 Report "lynis_update_available=1"
                 UPDATE_AVAILABLE=1
             else
-                Display --indent 2 --text "- Program update status... " --result "${STATUS_UPDATE_AVAILABLE}" --color YELLOW
+                Display --indent 2 --text "- 程序更新状态…… " --result "${STATUS_UPDATE_AVAILABLE}" --color YELLOW
                 LogText "结果：有新版 ${PROGRAM_NAME} 可用！"
                 ReportSuggestion "LYNIS" "Lynis 版本已过时，建议升级到最新版本"
                 Report "lynis_update_available=1"
@@ -777,12 +777,12 @@ ${NORMAL}
             fi
         else
             if [ ${UPDATE_CHECK_SKIPPED} -eq 0 ]; then
-                Display --indent 2 --text "- Program update status... " --result "${STATUS_NO_UPDATE}" --color GREEN
-                LogText "No ${PROGRAM_NAME} update available."
+                Display --indent 2 --text "- 程序更新状态…… " --result "${STATUS_NO_UPDATE}" --color GREEN
+                LogText "没有可用的 ${PROGRAM_NAME} 更新。"
                 Report "lynis_update_available=0"
             else
-                Display --indent 2 --text "- Program update status... " --result "${STATUS_SKIPPED}" --color YELLOW
-                LogText "Update check skipped due to constraints (e.g. missing dig binary)"
+                Display --indent 2 --text "- 程序更新状态…… " --result "${STATUS_SKIPPED}" --color YELLOW
+                LogText "由于条件受限（例如缺少 dig 程序），跳过更新检查"
                 Report "lynis_update_available=-1"
             fi
         fi
@@ -802,33 +802,33 @@ ${NORMAL}
         if [ ${UPDATE_AVAILABLE} -eq 1 ]; then
             echo ""
             echo "      ==============================================================================="
-            echo "        ${CYAN}${PROGRAM_NAME} ${TEXT_UPDATE_AVAILABLE}${NORMAL}"
+            echo " ${CYAN}${PROGRAM_NAME} ${TEXT_UPDATE_AVAILABLE}${NORMAL}"
             echo "      ==============================================================================="
             echo ""
             if [ ${PROGRAM_LV} -gt 0 ]; then
-                echo "        Current version : ${YELLOW}${PROGRAM_AC}${NORMAL}   Latest version : ${GREEN}${PROGRAM_LV}${NORMAL}"
+                echo " 当前版本 ： ${YELLOW}${PROGRAM_AC}${NORMAL} 最新版本 ： ${GREEN}${PROGRAM_LV}${NORMAL}"
                 echo ""
             fi
-            echo "        ${WHITE}Please update to the latest version.${NORMAL}"
-            echo "        新版本包含更多功能、错误修复和检查项目。${NORMAL}"
+            echo " ${WHITE}Please 更新 到 最新 版本.${NORMAL}"
+            echo " 新版本包含更多功能、错误修复和检查项目。${NORMAL}"
         elif [ ${OLD_RELEASE} -eq 1 ]; then
             echo ""
             echo "      ==============================================================================="
-            echo "        ${CYAN}${PROGRAM_NAME} might be outdated${NORMAL}"
+            echo " ${CYAN}${PROGRAM_NAME} 可能 为 outdated${NORMAL}"
             echo "      ==============================================================================="
             echo ""
-            echo "        ${YELLOW}Current version is more than 6 months old${NORMAL}"
-            echo "        This version might be ${WHITE}Please check if there is a more recent version available.${NORMAL}"
+            echo " ${YELLOW}当前版本 是 更多 比 6 个月 old${NORMAL}"
+            echo " 此 版本 可能 为 ${WHITE}Please 检查 如果 那里 是 一个 更多 recent 版本 可用.${NORMAL}"
             echo ""
-            echo "        ${WHITE}Please check if there is a more recent version available.${NORMAL}"
+            echo " ${WHITE}Please 检查 如果 那里 是 一个 更多 recent 版本 可用.${NORMAL}"
         fi
         if [ ${OLD_RELEASE} -eq 1 -o ${UPDATE_AVAILABLE} -eq 1 ]; then
             echo ""
-            echo "        Download locations:"
+            echo " 下载位置："
             echo ""
-            echo "        Packages (DEB/RPM) -  https://packages.cisofy.com/"
-            echo "        Website (TAR)      -  https://cisofy.com/downloads/"
-            echo "        GitHub             -  https://github.com/CISOfy/lynis"
+            echo " 软件包 (DEB/RPM) - https://packages.cisofy.com/"
+            echo " Website (TAR) - https：//cisofy.com/downloads/"
+            echo " GitHub - https：//github.com/CISOfy/lynis"
             echo ""
             echo "      ==============================================================================="
             echo ""
@@ -852,19 +852,19 @@ ${NORMAL}
     # Test if we have a package manager available by testing for a dummy package (should not exist)
     if PackageIsInstalled "__dummy__"; then
         HAS_PACKAGE_MANAGER=1
-        LogText "Informational: package manager is used"
+        LogText "信息： 软件包管理器 是 已使用"
     else
-        LogText "Informational: no known package manager for this system"
+        LogText "信息： 没有 已知 软件包管理器 用于 此 系统"
     fi
 
     # Use hardware detection capabilities
     IsVirtualMachine
     if IsContainer; then
-        LogText "Result: ${PROGRAM_NAME} is running in container (${CONTAINER_TYPE})"
+        LogText "结果： ${PROGRAM_NAME} 是 运行中 在 容器 (${CONTAINER_TYPE})"
         Report "container=1"
         Report "container_type=${CONTAINER_TYPE}"
     else
-        LogText "Result: ${PROGRAM_NAME} is not running in container"
+        LogText "结果： ${PROGRAM_NAME} 是 不 运行中 在 容器"
         Report "container=0"
     fi
     IsNotebook
@@ -873,11 +873,11 @@ ${NORMAL}
 #
     # Check for systemd active
     if [ -d /run/systemd/system ]; then
-        LogText "Result: system is using systemd"
+        LogText "结果： 系统 是 使用 systemd"
         HAS_SYSTEMD=1
         Report "systemd=1"
     else
-        LogText "Result: systemd not found"
+        LogText "结果： systemd 未找到"
         HAS_SYSTEMD=0
         Report "systemd=0"
     fi
@@ -904,21 +904,21 @@ ${NORMAL}
 
         # Plugins function
         RunPlugins() {
-            if [ $# -eq 0 ]; then echo "RunPlugins should be started with phase number"; ExitFatal; fi
+            if [ $# -eq 0 ]; then echo "RunPlugins 应 为 started 使用 阶段 数量"; ExitFatal; fi
             PLUGIN_PHASE=$1
-            if [ ${PLUGIN_PHASE} -eq 0 -o ${PLUGIN_PHASE} -gt 2 ]; then echo "Incorrect phase number when calling RunPlugins"; ExitFatal; fi
+            if [ ${PLUGIN_PHASE} -eq 0 -o ${PLUGIN_PHASE} -gt 2 ]; then echo "不正确 阶段 数量 当 calling RunPlugins"; ExitFatal; fi
             LogTextBreak
             InsertPluginSection "Plugins (${GEN_PHASE} ${PLUGIN_PHASE})"
             if [ ${PLUGIN_PHASE} -eq 1 ]; then
                 Display --text "${NOTE_PLUGINS_TAKE_TIME}"
                 Display --text " "
-                LogText "Searching plugins..."
+                LogText "搜索 插件..."
             fi
 
             # Search plugins
             FIND_PLUGINS=$(find ${PLUGINDIR} -type f -name "plugin_[a-z]*_phase${PLUGIN_PHASE}" | sort)
             for PLUGIN_FILE in ${FIND_PLUGINS}; do
-                LogText "Found plugin file: ${PLUGIN_FILE}"
+                LogText "发现 插件 文件： ${PLUGIN_FILE}"
                 # Double check if output is a valid file name
                 if [ -f ${PLUGIN_FILE} ]; then
                     FIND2=$(grep "^# PLUGIN_NAME=" ${PLUGIN_FILE} | awk -F= '{ print $2 }')
@@ -927,30 +927,30 @@ ${NORMAL}
                         # Check if the plugin is enabled in any of the profiles
                         PLUGIN_ENABLED_STATE=0
                         for PROFILE in ${PROFILES}; do
-                            LogText "Action: checking plugin status in profile: ${PROFILE}"
+                            LogText "操作： 检查 插件 状态 在 配置文件： ${PROFILE}"
                             FIND3=$(grep "^plugin=${FIND2}" ${PROFILE})
                             if [ -n "${FIND3}" ]; then
                                 FOUND=0
                                 for I in ${DISABLED_PLUGINS}; do
                                     if [ "${I}" = "${FIND2}" ]; then
                                         FOUND=1
-                                        LogText "Result: plugin ${FIND2} is specifically disabled"
+                                        LogText "结果： 插件 ${FIND2} 是 specifically 已禁用"
                                     fi
                                 done
                                 if [ ${FOUND} -eq 0 ]; then
-                                    LogText "Result: plugin enabled in profile (${PROFILE})"
+                                    LogText "结果： 插件 已启用 在 配置文件 (${PROFILE})"
                                     PLUGIN_ENABLED_STATE=1
                                 fi
                             fi
                         done
                         if [ ${PLUGIN_ENABLED_STATE} -eq 1 ]; then
-                            LogText "Result: plugin ${FIND2} is enabled"
+                            LogText "结果： 插件 ${FIND2} 是 已启用"
                             PLUGINFILE="${PLUGINDIR}/plugin_${FIND2}_phase${PLUGIN_PHASE}"
                             if [ -f ${PLUGINFILE} ]; then
                                 PLUGIN_VERSION=$(grep "^# PLUGIN_VERSION=" ${PLUGIN_FILE} | awk -F= '{ print $2 }')
                                 PLUGIN_VERSION_NODOTS=$(echo ${PLUGIN_VERSION} | sed 's/.//g')
                                 if SafePerms ${PLUGINFILE}; then
-                                    LogText "Including plugin file: ${PLUGINFILE} (version: ${PLUGIN_VERSION})"
+                                    LogText "包括 插件 文件： ${PLUGINFILE} (版本： ${PLUGIN_VERSION})"
                                     Report "plugin_enabled_phase${PLUGIN_PHASE}[]=${FIND2}|${PLUGIN_VERSION}|"
                                     if [ ${PLUGIN_PHASE} -eq 1 ]; then N_PLUGIN_ENABLED=$((N_PLUGIN_ENABLED + 1)); fi
                                     Display --indent 2 --text "- ${CYAN}Plugin${NORMAL}: ${WHITE}${FIND2}${NORMAL}"
@@ -958,24 +958,24 @@ ${NORMAL}
                                     . ${PLUGINFILE}
                                     if [ ${PLUGIN_PHASE} -eq 1 ]; then Progress "]"; Progress --finish; fi
                                     LogTextBreak
-                                    LogText "Result: ${FIND2} plugin (phase ${PLUGIN_PHASE}) finished"
+                                    LogText "结果： ${FIND2} 插件 (阶段 ${PLUGIN_PHASE}) 完成"
                                 else
                                     LogText "插件 ${FIND2}：已跳过（文件权限不安全，应为 644、640、600 或 400）"
                                 fi
                             else
-                                LogText "Plugin ${FIND2}: Skipped for phase ${PLUGIN_PHASE} (no file found: ${PLUGINFILE})"
+                                LogText "插件 ${FIND2}: 已跳过 用于 阶段 ${PLUGIN_PHASE} (没有 文件 发现: ${PLUGINFILE})"
                             fi
                         else
-                            LogText "Plugin ${FIND2}: Skipped (not enabled)"
+                            LogText "插件 ${FIND2}: 已跳过 (不 已启用)"
                         fi
                     else
-                        LogText "Skipping plugin file ${PLUGIN_FILE} (no valid plugin name found)"
+                        LogText "跳过 插件 文件 ${PLUGIN_FILE} (没有 有效 插件 name 发现)"
                     fi
                 fi
                 LogText "--"
             done
-            LogText "Result: Found ${N_PLUGIN} plugins of which ${N_PLUGIN_ENABLED} are enabled"
-            LogText "Result: Plugins phase ${PLUGIN_PHASE} finished"
+            LogText "结果： 发现 ${N_PLUGIN} 插件 的 which ${N_PLUGIN_ENABLED} 是 已启用"
+            LogText "结果： 插件 阶段 ${PLUGIN_PHASE} 完成"
         }
         RunPlugins 1
 
@@ -992,15 +992,15 @@ ${NORMAL}
     # Get host ID
     LogTextBreak
     GetHostID
-    LogText "hostid-generation: method ${HOSTID_GEN}"
-    LogText "hostid2-generation: method ${HOSTID2_GEN}"
+    LogText "hostid-generation： 方法 ${HOSTID_GEN}"
+    LogText "hostid2-generation： 方法 ${HOSTID2_GEN}"
     # Check if result is not empty (no blank, or hash of blank value, or minus, or zeros)
     case ${HOSTID} in
         "" | "-" | "adc83b19e793491b1c6ea0fd8b46cd9f32e592fc" | "6ef1338f520d075957424741d7ed35ab5966ae97")
-            LogText "Info: no HostID found or invalid one"
+            LogText "信息： 没有 HostID 发现 或 无效 一个"
         ;;
         *)
-            LogText "Info: HostID ${HOSTID} looks to be valid"
+            LogText "信息： HostID ${HOSTID} 看起来 到 为 有效"
             Report "hostid=${HOSTID}"
         ;;
     esac
@@ -1009,10 +1009,10 @@ ${NORMAL}
         Report "hostid2=${HOSTID2}"
     fi
     if [ -n "${MACHINEID}" ]; then
-        LogText "Info: found a machine ID ${MACHINEID}"
+        LogText "信息： 发现 一个 机器 ID ${MACHINEID}"
         Report "machineid=${MACHINEID}"
     else
-        LogText "Info: no machine ID found"
+        LogText "信息： 没有 机器 ID 发现"
     fi
 #
 #################################################################################
@@ -1023,7 +1023,7 @@ ${NORMAL}
         LogTextBreak
         # Test sections
         if [ "${TEST_GROUP_TO_CHECK}" = "all" ]; then
-            LogText "Info: perform tests from all categories"
+            LogText "信息： 执行 检查 从 所有 categories"
 
             INCLUDE_TESTS="boot_services kernel memory_processes authentication kerberos shells \
                            filesystems usb storage storage_nfs nameservices dns ports_packages networking printers_spoolers \
@@ -1033,7 +1033,7 @@ ${NORMAL}
                            kernel_hardening hardening"
         else
             INCLUDE_TESTS="${TEST_GROUP_TO_CHECK}"
-            LogText "Info: only performing tests from groups: ${TEST_GROUP_TO_CHECK}"
+            LogText "信息： 仅 performing 检查 从 组： ${TEST_GROUP_TO_CHECK}"
         fi
 
         # Include available tests
@@ -1044,10 +1044,10 @@ ${NORMAL}
                     . ${INCLUDE_FILE}
                 else
                     LogText "异常：跳过检查类别 ${INCLUDE_TEST}，文件 ${INCLUDE_FILE} 权限不安全（应为 640、600 或 400）"
-                    ReportWarning "NONE" "Invalid permissions on tests file tests_${INCLUDE_TEST}"
+                    ReportWarning "NONE" "权限无效 在 检查 文件 检查_${INCLUDE_TEST}"
                     # Insert a section and warn user also on screen
                     InsertSection "${SECTION_GENERAL}"
-                    Display --indent 2 --text "- Running test category ${INCLUDE_TEST}... " --result "${STATUS_SKIPPED}" --color RED
+                    Display --indent 2 --text "- 运行中 检查 类别 ${INCLUDE_TEST}... " --result "${STATUS_SKIPPED}" --color RED
                 fi
             else
                 echo "错误：找不到文件（类别：${INCLUDE_TEST}）"
@@ -1061,21 +1061,21 @@ ${NORMAL}
     if [ ${RUN_TESTS} -eq 1 ]; then
 
         InsertSection "${SECTION_CUSTOM_TESTS}"
-        LogText "Test: Checking for tests_custom file"
+        LogText "检查： 检查 用于 检查_自定义 文件"
         # Custom tests
         if [ -f ${INCLUDEDIR}/tests_custom ]; then
-            LogText "Result: tests_custom file found in include directory"
+            LogText "结果： 检查_自定义 文件 发现 在 包含 目录"
             if SafePerms ${INCLUDEDIR}/tests_custom; then
-                Display --indent 2 --text "- Start custom tests... "
+                Display --indent 2 --text "- 开始 自定义 检查... "
                 LogText "结果：文件权限正常，正在运行自定义检查"
                 . ${INCLUDEDIR}/tests_custom
             else
                 LogText "异常：跳过自定义检查，文件权限不安全（应为 640、600 或 400）"
-                ReportWarning "NONE" "Invalid permissions on custom tests file"
-                Display --indent 2 --text "- Running custom tests... " --result "${STATUS_WARNING}" --color RED
+                ReportWarning "NONE" "权限无效 在 自定义 检查 文件"
+                Display --indent 2 --text "- 运行中 自定义 检查... " --result "${STATUS_WARNING}" --color RED
             fi
         else
-            Display --indent 2 --text "- Running custom tests... " --result "${STATUS_NONE}" --color WHITE
+            Display --indent 2 --text "- 运行中 自定义 检查... " --result "${STATUS_NONE}" --color WHITE
         fi
     fi
 #
@@ -1087,10 +1087,10 @@ ${NORMAL}
 #
     if [ ${RUN_HELPERS} -eq 1 ]; then
         if [ ! "${HELPER}" = "" ]; then
-            LogText "Helper tool is $HELPER"
+            LogText "Helper 工具 是 $HELPER"
             if [ -f ${INCLUDEDIR}/helper_${HELPER} ]; then
                 SafePerms ${INCLUDEDIR}/helper_${HELPER}
-                LogText "Running helper tool ${HELPER} with params: ${HELPER_PARAMS}"
+                LogText "运行中 helper 工具 ${HELPER} 使用 params: ${HELPER_PARAMS}"
                 InsertPluginSection "Helper: ${HELPER}"
                 . ${INCLUDEDIR}/helper_${HELPER} ${HELPER_PARAMS}
             else
@@ -1108,7 +1108,7 @@ ${NORMAL}
     if [ ${SKIP_PLUGINS} -eq 0 ]; then
         RunPlugins 2
         if [ ${N_PLUGIN_ENABLED} -gt 1 ]; then
-            Display --indent 2 --text "- Plugins (phase 2)" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 2 --text "- 插件 (阶段 2)" --result "${STATUS_DONE}" --color GREEN
         fi
     fi
 #
@@ -1130,10 +1130,10 @@ ${NORMAL}
     if [ -f ${INCLUDEDIR}/tool_tips ]; then SafePerms ${INCLUDEDIR}/tool_tips; . ${INCLUDEDIR}/tool_tips; fi
 
     LogText "================================================================================"
-    LogText "Tests performed:     ${CTESTS_PERFORMED}"
-    LogText "Total tests:         ${TOTAL_TESTS}"
-    LogText "Active plugins:      ${N_PLUGIN_ENABLED}"
-    LogText "Total plugins:       ${N_PLUGIN}"
+    LogText "检查 已执行： ${CTESTS_PERFORMED}"
+    LogText "总计 检查： ${TOTAL_TESTS}"
+    LogText "当前 插件： ${N_PLUGIN_ENABLED}"
+    LogText "总计 插件： ${N_PLUGIN}"
     LogText "================================================================================"
     Report "tests_executed=${TESTS_EXECUTED}"
     Report "tests_skipped=${TESTS_SKIPPED}"
@@ -1145,14 +1145,14 @@ ${NORMAL}
             SafePerms ${INCLUDEDIR}/data_upload
             . ${INCLUDEDIR}/data_upload
         else
-            echo "致命错误：找不到 upload_data 脚本"
+            echo "致命错误：找不到 upload_数据 脚本"
         fi
     fi
 
     LogText "${PROGRAM_NAME} ${PROGRAM_VERSION}"
     LogText "${PROGRAM_COPYRIGHT}"
     LogText "${PROGRAM_EXTRAINFO}"
-    LogText "Program ended successfully"
+    LogText "程序已成功结束"
     LogText "================================================================================"
 
     # Tool tips

@@ -33,32 +33,32 @@
     # --test-no   unique ID
     # --weight    L/M/H
     # --category  category (e.g. performance, privacy, security)
-    Register --test-no CUST-0010 --weight L --network NO --category security --description "A test for displaying things on screen"
+    Register --test-no CUST-0010 --weight L --network NO --category security --description "一个 检查 用于 displaying things 在 screen"
     if [ ${SKIPTEST} -eq 0 ]; then
         # The Display function makes it easy to show something on screen, with colors.
         # --indent  defines amount of spaces
         # --text    text to be displayed on screen
         # --result  text at end of line
         # --color   color of result text
-        Display --indent 2 --text "- Checking if everything is OK..." --result "${STATUS_OK}" --color GREEN
-        Display --indent 4 --text "This shows one level deeper " --result "${STATUS_NO}" --color YELLOW
-        Display --indent 6 --text "And even deeper" --result "${STATUS_WARNING}" --color RED
+        Display --indent 2 --text "- 检查 如果 everything 是 OK..." --result "${STATUS_OK}" --color GREEN
+        Display --indent 4 --text "此 shows 一个 level deeper " --result "${STATUS_NO}" --color YELLOW
+        Display --indent 6 --text "和 even deeper" --result "${STATUS_WARNING}" --color RED
     fi
 #
 #################################################################################
 #
     # Test        : CUST-0020
     # Description : We show some lines on the screen
-    Register --test-no CUST-0020 --weight L --network NO --category security --description "Dealing with files and directories"
+    Register --test-no CUST-0020 --weight L --network NO --category security --description "Dealing 使用 文件 和 目录"
     if [ ${SKIPTEST} -eq 0 ]; then
 
         # With -d we can test for directories, -f is for files, -L for symlinks.
 
         # Most tests use the "if-then-else". If something is true, take one step, otherwise the other.
         if DirectoryExists /tmp; then
-            LogText "Result: we have a temporary directory"
+            LogText "结果： we 有 一个 临时 目录"
         else
-            LogText "Result: no temporary directory found"
+            LogText "结果： 没有 临时 目录 发现"
         fi
 
         # Instead of ready-to-use functions, you can use normal shell script tests, like:
@@ -70,13 +70,13 @@
 
         # Let's test for a file. We like to find at least one file (file1 or file2)
         if FileExists /etc/file1; then
-            LogText "Result: Found file /etc/file1"
+            LogText "结果： 发现 文件 /etc/file1"
         elif FileExists /etc/file2; then
-            LogText "Result: Found file /etc/file2"
+            LogText "结果： 发现 文件 /etc/file2"
         else
-            LogText "Result: both /etc/file1 and /etc/file2 were not found"
+            LogText "结果： both /etc/file1 和 /etc/file2 是 未找到"
             # Show a warning on screen and in the report. We can specify a detail and how to solve it.
-            ReportWarning "${TEST_NO}" "No file /etc/file1 or /etc/file2 available"
+            ReportWarning "${TEST_NO}" "没有 文件 /etc/file1 或 /etc/file2 可用"
         fi
 
         # If a single value is stored in a variable, using 'case' is very effective.
@@ -84,18 +84,18 @@
         case ${OS} in
             # Only match one value
             "Linux")
-                LogText "Found Linux"
-                Display --indent 2 --text "OS: Linux" --result "${STATUS_OK}" --color GREEN
+                LogText "发现 Linux"
+                Display --indent 2 --text "OS： Linux" --result "${STATUS_OK}" --color GREEN
             ;;
             # Matching several platforms
             "FreeBSD" | "NetBSD" | "OpenBSD")
-                LogText "Found an operating system based on BSD"
-                Display --indent 2 --text "OS: *BSD" --result "${STATUS_OK}" --color GREEN
+                LogText "发现 一个 操作系统 based 在 BSD"
+                Display --indent 2 --text "OS： *BSD" --result "${STATUS_OK}" --color GREEN
             ;;
             # Catch-all for other values
             *)
-                LogText "Found another operating system"
-                ReportSuggestion "${TEST_NO}" "Check if this process is running" "apache" "url:https://cisofy.com/support/"
+                LogText "发现 another 操作系统"
+                ReportSuggestion "${TEST_NO}" "检查 如果 此 进程 是 运行中" "apache" "url：https：//cisofy.com/support/"
             ;;
         esac
 
@@ -114,27 +114,27 @@
     # First check if OPENSSLBINARY is known as a prerequisite for this test
     # ! means "not". So if the binary is known, the prerequisite is matched. Otherwise we set it to NO and define a reason why we skipped this test
 
-    if [ ! "${OPENSSLBINARY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; SKIPREASON="No OpenSSL binary found"; fi
-    Register --test-no CUST-0040 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight M --network NO --category security --description "Description of custom test"
+    if [ ! "${OPENSSLBINARY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; SKIPREASON="没有 OpenSSL 程序 发现"; fi
+    Register --test-no CUST-0040 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight M --network NO --category security --description "Description 的 自定义 检查"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Set variable to zero, to indicate that we have no problems found (yet)
         FOUNDPROBLEM=0
         DIR="/my/path"
-        LogText "Test: we are going to check if we can find a particular directory (${DIR})"
+        LogText "检查： we 是 going 到 检查 如果 we 可以 find 一个 particular 目录 (${DIR})"
         # Check if a directory exists
         if DirectoryExists ${DIR}; then
-            LogText "Result: log entry for easier debugging or additional information"
+            LogText "结果： 日志 条目 用于 easier debugging 或 additional 信息"
         else
             FOUNDPROBLEM=1
             LogText "结果：未找到目录 ${DIR}！"
-            ReportWarning "${TEST_NO}" "This is a test warning line" "${DIR}" "text:Create directory ${DIR}"
+            ReportWarning "${TEST_NO}" "此 是 一个 检查 警告 行" "${DIR}" "text：创建 目录 ${DIR}"
         fi
 
         if [ ${FOUNDPROBLEM} -eq 0 ]; then
-            Display --indent 2 --text "- Checking if everything is OK..." --result "${STATUS_OK}" --color GREEN
+            Display --indent 2 --text "- 检查 如果 everything 是 OK..." --result "${STATUS_OK}" --color GREEN
         else
-            Display --indent 2 --text "- Checking if everything is OK..." --result "${STATUS_WARNING}" --color RED
-            ReportSuggestion "${TEST_NO}" "This is a suggestion"
+            Display --indent 2 --text "- 检查 如果 everything 是 OK..." --result "${STATUS_WARNING}" --color RED
+            ReportSuggestion "${TEST_NO}" "此 是 一个 建议"
         fi
     fi
 #

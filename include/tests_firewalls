@@ -315,7 +315,7 @@
             else
                 Display --indent 4 --text "- 正在检查 pf 配置一致性" --result "${STATUS_WARNING}" --color RED
                 LogText "结果：pf 过滤规则中发现一个或多个警告"
-                ReportWarning "${TEST_NO}" "pf 配置文件中发现一个或多个警告" "/etc/pf.conf" "text:执行 'pfctl -n -f /etc/pf.conf -vvv' 查看 pf 警告"
+                ReportWarning "${TEST_NO}" "pf 配置文件中发现一个或多个警告" "/etc/pf.conf" "text：执行 'pfctl -n -f /etc/pf.conf -vvv' 查看 pf 警告"
             fi
         else
             LogText "结果：/etc/pf.conf 不存在"
@@ -443,9 +443,9 @@
         FOUND=0
 
         # Little Snitch Daemon (macOS)
-        LogText "检查：Little Snitch Daemon 进程"
+        LogText "检查：Little Snitch 守护进程 进程"
         if IsRunning --full "Little Snitch Daemon"; then
-            Display --indent 2 --text "- 正在检查 Little Snitch Daemon" --result "${STATUS_ENABLED}" --color GREEN
+            Display --indent 2 --text "- 正在检查 Little Snitch 守护进程" --result "${STATUS_ENABLED}" --color GREEN
             LogText "结果：发现 Little Snitch"
             FOUND=1
             FIREWALL_ACTIVE=1
@@ -457,7 +457,7 @@
         # HandsOff! Daemon (macOS)
         LogText "检查：HandsOffDaemon 进程"
         if IsRunning "HandsOffDaemon"; then
-            Display --indent 2 --text "- 正在检查 Hands Off! Daemon" --result "${STATUS_ENABLED}" --color GREEN
+            Display --indent 2 --text "- 正在检查 Hands Off! 守护进程" --result "${STATUS_ENABLED}" --color GREEN
             LogText "结果：发现 Hands Off!"
             FOUND=1
             FIREWALL_ACTIVE=1
@@ -469,7 +469,7 @@
         # LuLu Daemon (macOS)
         LogText "检查：LuLu 进程"
         if IsRunning "LuLu"; then
-            Display --indent 2 --text "- 正在检查 LuLu Daemon" --result "${STATUS_ENABLED}" --color GREEN
+            Display --indent 2 --text "- 正在检查 LuLu 守护进程" --result "${STATUS_ENABLED}" --color GREEN
             LogText "结果：发现 LuLu"
             FOUND=1
             FIREWALL_ACTIVE=1

@@ -82,15 +82,15 @@
             AddHP 3 3
         elif [ -f ${ROOTDIR}var/log/account/pacct ]; then
             Display --indent 2 --text "- 检查进程记账信息" --result "${STATUS_OK}" --color GREEN
-            LogText "结果：${ROOTDIR}var/log/account/pacct 可用"
+            LogText "结果：${ROOTDIR}var/日志/account/pacct 可用"
             AddHP 3 3
         elif [ -f ${ROOTDIR}var/log/pacct ]; then
             Display --indent 2 --text "- 检查进程记账信息" --result "${STATUS_OK}" --color GREEN
-            LogText "结果：${ROOTDIR}var/log/pacct 可用"
+            LogText "结果：${ROOTDIR}var/日志/pacct 可用"
             AddHP 3 3
         else
             Display --indent 2 --text "- 检查进程记账信息" --result "${STATUS_NOT_FOUND}" --color YELLOW
-            LogText "结果：没有可用的进程记账信息 (${ROOTDIR}var/account/pacct, ${ROOTDIR}var/log/account/pacct nor ${ROOTDIR}var/log/pacct exist)"
+            LogText "结果：没有可用的进程记账信息 (${ROOTDIR}var/account/pacct, ${ROOTDIR}var/日志/account/pacct nor ${ROOTDIR}var/日志/pacct 存在)"
             LogText "说明：进程记账数据可能存储在其他位置"
             ReportSuggestion "${TEST_NO}" "启用进程记账"
             AddHP 2 3
@@ -325,19 +325,19 @@
     # Test        : ACCT-9654
     # Description : Check Solaris Basic Security Mode (BSM) in /etc/system
     if [ ${SOLARIS_AUDITD_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no ACCT-9654 --os Solaris --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 ${ROOTDIR}etc/system 中的 BSM 审计"
+    Register --test-no ACCT-9654 --os Solaris --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 ${ROOTDIR}etc/系统 中的 BSM 审计"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查：确认 ${ROOTDIR}etc/system 中是否启用了 BSM"
+        LogText "检查：确认 ${ROOTDIR}etc/系统 中是否启用了 BSM"
         if [ -f ${ROOTDIR}etc/system ]; then
             FIND=$(${GREPBINARY} 'set c2audit:audit_load = 1' ${ROOTDIR}etc/system)
             if [ -n "${FIND}" ]; then
-                LogText "结果：${ROOTDIR}etc/system 中已启用 BSM"
-                Display --indent 4 --text "- 检查 Solaris BSM（${ROOTDIR}etc/system）" --result "${STATUS_ENABLED}" --color GREEN
+                LogText "结果：${ROOTDIR}etc/系统 中已启用 BSM"
+                Display --indent 4 --text "- 检查 Solaris BSM（${ROOTDIR}etc/系统）" --result "${STATUS_ENABLED}" --color GREEN
             else
-                Display --indent 4 --text "- 检查 Solaris BSM（${ROOTDIR}etc/system）" --result "${STATUS_NOT_FOUND}" --color YELLOW
+                Display --indent 4 --text "- 检查 Solaris BSM（${ROOTDIR}etc/系统）" --result "${STATUS_NOT_FOUND}" --color YELLOW
             fi
         else
-            LogText "结果：${ROOTDIR}etc/system 不存在"
+            LogText "结果：${ROOTDIR}etc/系统 不存在"
         fi
     fi
 #
@@ -349,14 +349,14 @@
     if [ ${SOLARIS_AUDITD_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no ACCT-9656 --os Solaris --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查模块列表中的 BSM 审计"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查：确认 c2audit 模块是否处于活动状态"
+        LogText "检查：确认 c2审计 模块是否处于活动状态"
         if [ -x ${ROOTDIR}usr/sbin/modinfo ]; then
             FIND=$(${ROOTDIR}usr/sbin/modinfo | ${GREPBINARY} c2audit)
             if [ -n "${FIND}" ]; then
-                LogText "结果：在 modinfo 输出中发现 c2audit"
+                LogText "结果：在 modinfo 输出中发现 c2审计"
                 Display --indent 4 --text "- 检查 Solaris BSM（模块列表）" --result "${STATUS_ENABLED}" --color GREEN
             else
-                LogText "结果：在 modinfo 输出中未发现 c2audit"
+                LogText "结果：在 modinfo 输出中未发现 c2审计"
                 Display --indent 4 --text "- 检查 Solaris BSM（模块列表）" --result "${STATUS_NOT_FOUND}" --color YELLOW
             fi
         else
@@ -371,9 +371,9 @@
     if [ ${SOLARIS_AUDITD_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
     Register --test-no ACCT-9660 --os Solaris --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查审计事件存储位置"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查：在 ${ROOTDIR}etc/security/audit_control 中检查事件日志位置"
+        LogText "检查：在 ${ROOTDIR}etc/安全/审计_控制 中检查事件日志位置"
         if [ -f ${ROOTDIR}etc/security/audit_control ]; then
-            LogText "结果：发现文件 ${ROOTDIR}etc/security/audit_control"
+            LogText "结果：发现文件 ${ROOTDIR}etc/安全/审计_控制"
             FIND=$(${GREPBINARY} "^dir" ${ROOTDIR}etc/security/audit_control | ${AWKBINARY} -F: '{ print $2 }')
             if [ -n "${FIND}" ]; then
                 LogText "结果：发现位置 ${FIND}"
@@ -392,7 +392,7 @@
                 ReportSuggestion "${TEST_NO}" "检查 Solaris 审计目录是否配置正确"
             fi
         else
-            LogText "结果：找不到 ${ROOTDIR}etc/security/audit_control"
+            LogText "结果：找不到 ${ROOTDIR}etc/安全/审计_控制"
             Display --indent 4 --text "- 检查 Solaris 审计位置" --result "${STATUS_SKIPPED}" --color YELLOW
         fi
     fi

@@ -147,7 +147,7 @@
                     2)
                         LogText "结果：无法初始化"
                         LogText "可能原因：cURL 版本过旧，不支持 --data-urlencode 选项。"
-                        LogText "建议：将数据复制到其他服务器并使用新版 cURL 上传，或使用 Lynis Collector。"
+                        LogText "建议：将数据复制到其他服务器并使用新版 cURL 上传，或使用 Lynis 收集器。"
                         echo "${RED}错误（2）${NORMAL}：无法初始化 cURL。"
                         ;;
                     5)
@@ -171,7 +171,7 @@
                     60)
                         echo "${RED}错误（60）${NORMAL}：Lynis Enterprise 节点使用了自签名证书${NORMAL}"
                         echo "需要接受自签名证书时，请在配置文件的 upload-options 中加入 -k 选项。"
-                        echo "示例：${WHITE}$0 configure settings upload-options=-k${NORMAL}"
+                        echo "示例：${WHITE}$0 configure 设置 upload-options=-k${NORMAL}"
                         LogText "结果：发现自签名证书，但未使用 cURL 的 -k 选项。"
                         ;;
                     77)
@@ -213,7 +213,7 @@
             echo "- 无法连接许可证服务器（可在浏览器中尝试打开该地址）"
             echo "- 配置文件中设置了错误的服务器地址"
             echo "- 许可证已过期，或账户可用额度已经用完"
-            echo "- Lynis 或 Lynis Collector 版本过旧，请升级到最新版本"
+            echo "- Lynis 或 Lynis 收集器 版本过旧，请升级到最新版本"
             echo ""
             echo "需要技术支持时，请联系 support@cisofy.com，并附上本屏幕输出。"
             echo ""
@@ -229,8 +229,8 @@
             Output "${WHITE}已找到 hostid：${HOSTID}${NORMAL}"
             # Try to connect
             Output "正在上传数据……"
-            LogText "执行的命令：${CURLBINARY}${CURL_OPTIONS} -s -S --data-urlencode \"data@${REPORTFILE}\" --data-urlencode \"licensekey@${LICENSE_KEY_FILE}\" --data-urlencode \"hostid=${HOSTID}\" ${UPLOAD_URL}"
-            LogText "提示：可尝试执行 ${CURLBINARY}${CURL_OPTIONS} --data-urlencode \"data@${REPORTFILE}\" --data-urlencode \"licensekey@${LICENSE_KEY_FILE}\" --data-urlencode \"hostid=${HOSTID}\" ${UPLOAD_URL}"
+            LogText "执行的命令：${CURLBINARY}${CURL_OPTIONS} -s -S --data-urlencode \\"数据@${REPORTFILE}\\" --data-urlencode \\"licensekey@${LICENSE_KEY_FILE}\\" --data-urlencode \\"hostid=${HOSTID}\\" ${UPLOAD_URL}"
+            LogText "提示：可尝试执行 ${CURLBINARY}${CURL_OPTIONS} --data-urlencode \\"数据@${REPORTFILE}\\" --data-urlencode \\"licensekey@${LICENSE_KEY_FILE}\\" --data-urlencode \\"hostid=${HOSTID}\\" ${UPLOAD_URL}"
             LogText "提示：仅重试上传时，请执行：lynis upload-only"
             UPLOAD=$(${CURLBINARY}${CURL_OPTIONS} -s -S --data-urlencode "data@${REPORTFILE}" --data-urlencode "licensekey@${LICENSE_KEY_FILE}" --data-urlencode "hostid=${HOSTID}" --data-urlencode "hostid2=${HOSTID2}" ${UPLOAD_URL} 2> /dev/null)
             EXITCODE=$?
@@ -259,7 +259,7 @@
             fi
         else
             echo "${RED}错误${NORMAL}：未找到 hostid 或 hostid2，无法上传报告文件。"
-            echo "建议执行：lynis generate hostids --save"
+            echo "建议执行：lynis 生成 hostids --save"
             echo ""
             echo "注意：不要将这些标识复制到其他系统，每台系统都必须使用唯一值。"
 

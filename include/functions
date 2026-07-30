@@ -122,9 +122,9 @@
         HPPOINTS=$((HPPOINTS + HPADD))
         HPTOTAL=$((HPTOTAL + HPADDMAX))
         if [ ${HPADD} -eq ${HPADDMAX} ]; then
-            LogText "Hardening: assigned maximum number of hardening points for this item (${HPADDMAX}). Currently having ${HPPOINTS} points (out of ${HPTOTAL})"
+            LogText "加固： 已分配 最大 数量 的 加固 分 用于 此 项目 (${HPADDMAX}). 当前 具有 ${HPPOINTS} 分 (满分 的 ${HPTOTAL})"
         else
-            LogText "Hardening: assigned partial number of hardening points (${HPADD} of ${HPADDMAX}). Currently having ${HPPOINTS} points (out of ${HPTOTAL})"
+            LogText "加固： 已分配 部分 数量 的 加固 分 (${HPADD} 的 ${HPADDMAX}). 当前 具有 ${HPPOINTS} 分 (满分 的 ${HPTOTAL})"
         fi
     }
 
@@ -163,7 +163,7 @@
                 echo "${SETTING};${VALUE};${DESCRIPTION};" >> ${SETTINGS_FILE}
             fi
         else
-            echo "Error: incorrect call to AddSetting. Needs 3 arguments."
+            echo "错误： 不正确 调用 到 AddSetting. Needs 3 参数."
         fi
     }
 
@@ -226,13 +226,13 @@
             # Don't search in /dev/null, it's too empty there
             if [ ! "${REPORTFILE}" = "/dev/null" ]; then
                 # Check if we can find the main type (with or without brackets)
-                LogText "Test: search string $2 in earlier discovered results"
+                LogText "检查： 搜索 字符串 $2 在 earlier 发现 results"
                 FIND=$(grep -E "^$1(\[\])?=" ${REPORTFILE} | grep -E "$2")
                 if HasData "${FIND}"; then
                     RETVAL=0
-                    LogText "Result: found search string (result: $FIND)"
+                    LogText "结果： 发现 搜索 字符串 (结果： $FIND)"
                 else
-                    LogText "Result: search string NOT found"
+                    LogText "结果： 搜索 字符串 未找到"
                     RETVAL=1
                 fi
             else
@@ -272,7 +272,7 @@
                         PROGRAM_LV=$(drill txt ${LYNIS_LV_RECORD} | awk '{ if ($1=="lynis-latest-version.cisofy.com." && $4=="TXT") { print $5 }}' | tr -d '"' | grep "^[1-9][0-9][0-9]$")
                         if [ -z "${PROGRAM_LV}" ]; then PROGRAM_LV=0; fi
                     else
-                        LogText "结果：未安装 dig、drill 或 host，跳过更新检查"
+                        LogText "结果：未安装 dig、drill 或 主机，跳过更新检查"
                         UPDATE_CHECK_SKIPPED=1
                     fi
                 fi
@@ -291,10 +291,10 @@
     ################################################################################
 
     CleanUp() {
-        echo ""; echo "Interrupt detected."
+        echo ""; echo "检测到中断."
         RemovePIDFile
         RemoveTempFiles
-        Display --text "Cleaning up..." --result DONE --color GREEN
+        Display --text "正在清理..." --result DONE --color GREEN
         ExitFatal
     }
 
@@ -309,7 +309,7 @@
 
     ContainsString() {
         RETVAL=1
-        if [ $# -ne 2 ]; then ReportException "ContainsString" "Incorrect number of arguments for ContainsStrings function"; fi
+        if [ $# -ne 2 ]; then ReportException "ContainsString" "参数数量不正确 用于 ContainsStrings 函数"; fi
         FIND=$(echo "$2" | grep -E "$1")
         if [ ! "${FIND}" = "" ]; then RETVAL=0; fi
         return ${RETVAL}
@@ -352,7 +352,7 @@
             TEMP_FILE=$(mktemp /tmp/lynis.XXXXXXXXXX) || exit 1
         fi
         if [ ! "${TEMP_FILE}" = "" ]; then
-            LogText "Action: created temporary file ${TEMP_FILE}"
+            LogText "操作： 已创建 临时文件 ${TEMP_FILE}"
         else
             Fatal "Could not create a temporary file"
         fi
@@ -373,13 +373,13 @@
     DirectoryExists() {
         if [ $# -eq 0 ]; then ExitFatal "Missing parameter when calling DirectoryExists function"; fi
         DIRECTORY_FOUND=0
-        LogText "Test: checking if directory $1 exists"
+        LogText "检查： 检查 如果 目录 $1 存在"
         if [ -d $1 ]; then
-            LogText "Result: directory $1 exists"
+            LogText "结果： 目录 $1 存在"
             DIRECTORY_FOUND=1
             return 0
         else
-            LogText "Result: directory $1 NOT found"
+            LogText "结果： 目录 $1 未找到"
             return 1
         fi
     }
@@ -408,11 +408,11 @@
 
     DigitsOnly() {
         VALUE=$1
-        LogText "Value is now: ${VALUE}"
+        LogText "值 是 现在： ${VALUE}"
         if [ ! "${AWKBINARY}" = "" ]; then
             VALUE=$(echo ${VALUE} | grep -Eo '[0-9]{1,}')
         fi
-        LogText "Returning value: ${VALUE}"
+        LogText "正在返回 值： ${VALUE}"
     }
 
 
@@ -468,7 +468,7 @@
             done
         fi
         if [ "${PROFILES}" = "" ]; then
-            echo "${RED}Fatal error: ${WHITE}No profile defined and could not find default profile${NORMAL}"
+            echo "${RED}致命错误: ${WHITE}No 配置文件 defined 和 无法找到 default profile${NORMAL}"
             echo "使用的搜索路径 --> ${tPROFILE_TARGETS}"
             ExitCustom 66
         else
@@ -514,7 +514,7 @@
                     TEXT=$1
                 ;;
                 *)
-                    echo "INVALID OPTION (Display): $1"
+                    echo "INVALID OPTION (Display)： $1"
                     ExitFatal
                 ;;
             esac
@@ -680,7 +680,7 @@
 
     Equals() {
         RETVAL=1
-        if [ $# -ne 2 ]; then ReportException "Equals" "Incorrect number of arguments for $0 function"; fi
+        if [ $# -ne 2 ]; then ReportException "Equals" "参数数量不正确 用于 $0 函数"; fi
 
         # Strip any strange control characters
         INPUT1=$(echo $1 | tr -d '[:cntrl:]<>' | ${SEDBINARY} 's/__space__/ /g' | ${SEDBINARY} 's/:space:/ /g')
@@ -703,7 +703,7 @@
     ExitClean() {
         RemovePIDFile
         RemoveTempFiles
-        LogText "${PROGRAM_NAME} ended successfully."
+        LogText "${PROGRAM_NAME} 已成功结束。"
         exit 0
     }
 
@@ -722,10 +722,10 @@
         RemoveTempFiles
         # Exit with the exit code given, otherwise use 1
         if [ $# -eq 1 ]; then
-            LogText "${PROGRAM_NAME} ended with exit code $1."
+            LogText "${PROGRAM_NAME} 已结束，退出码为 $1。"
             exit $1
         else
-            LogText "${PROGRAM_NAME} ended with exit code 1."
+            LogText "${PROGRAM_NAME} 已结束，退出码为 1。"
             exit 1
         fi
     }
@@ -743,7 +743,7 @@
     ExitFatal() {
         RemovePIDFile
         RemoveTempFiles
-        LogText "${PROGRAM_NAME} ended with exit code 1."
+        LogText "${PROGRAM_NAME} 已结束，退出码为 1。"
         if [ $# -eq 1 ]; then
             ${ECHOCMD:-echo} ""
             ${ECHOCMD:-echo} "${RED}Fatal error${NORMAL}: ${WHITE}$1${NORMAL}"
@@ -765,13 +765,13 @@
     FileExists() {
         if [ $# -eq 0 ]; then ExitFatal "Missing parameter when calling FileExists function"; fi
         FILE_FOUND=0
-        LogText "Test: checking if file $1 exists"
+        LogText "检查： 检查 如果 文件 $1 存在"
         if [ -f $1 ]; then
-            LogText "Result: file $1 exists"
+            LogText "结果： 文件 $1 存在"
             FILE_FOUND=1
             return 0
         else
-            LogText "Result: file $1 NOT found"
+            LogText "结果： 文件 $1 未找到"
             return 1
         fi
     }
@@ -814,13 +814,13 @@
     FileIsEmpty() {
         if [ $# -eq 0 ]; then ExitFatal "Missing parameter when calling FileIsEmpty function"; fi
         EMPTY=0
-        LogText "Test: checking if file $1 is empty"
+        LogText "检查： 检查 如果 文件 $1 是 为空"
         if [ ! -s "$1" ]; then
-            LogText "Result: file $1 is empty"
+            LogText "结果： 文件 $1 是 为空"
             EMPTY=1
             return 0
         else
-            LogText "Result: file $1 is NOT empty"
+            LogText "结果： 文件 $1 是 NOT 为空"
             return 1
         fi
     }
@@ -840,7 +840,7 @@
         CANREAD=0
         RETVAL=1
         escaped_file=$(echo ${sFILE} | sed 's/\*/\\*/; s/?/\\?/')
-        LogText "Test: check if we can access ${sFILE} (escaped: ${escaped_file})"
+        LogText "检查： 检查 如果 we 可以 access ${sFILE} (escaped: ${escaped_file})"
 
         # Check for symlink
         if [ -L "${escaped_file}" ]; then
@@ -852,7 +852,7 @@
         if [ -L "${escaped_file}" ]; then
             OTHERPERMS="-"
             LogText "结果：该文件是符号链接，无法确定是否可读"
-            ReportException "FileIsReadable" "Can not determine symlink ${sFILE}"
+            ReportException "FileIsReadable" "无法确定 符号链接 ${sFILE}"
         elif [ -d "${escaped_file}" ]; then
             OTHERPERMS=$(${LSBINARY} -d -l "${escaped_file}" 2> /dev/null | ${CUTBINARY} -c 8)
         elif [ -f "${escaped_file}" ]; then
@@ -867,7 +867,7 @@
             LogText "结果：文件属于当前用户 ID（${MYID}），正在检查是否可读"
             if [ -L "${sFILE}" ]; then
                 LogText "结果：该文件是符号链接，无法确定是否可读"
-                ReportException "FileIsReadable" "Can not determine symlink ${escaped_file}"
+                ReportException "FileIsReadable" "无法确定 符号链接 ${escaped_file}"
             elif [ -d "${escaped_file}" ]; then
                 OTHERPERMS=$(${LSBINARY} -d -l "${escaped_file}" 2> /dev/null | ${CUTBINARY} -c 2)
             elif [ -f "${escaped_file}" ]; then
@@ -880,7 +880,7 @@
         # Check if we are root, or have the read bit
         if [ "${MYID}" = "0" -o "${OTHERPERMS}" = "r" ]; then
             CANREAD=1
-            LogText "Result: file ${escaped_file} is readable (or directory accessible)."
+            LogText "结果： 文件 ${escaped_file} 是 可读 (或 目录 可访问)."
             return 0
         else
             return 1
@@ -971,7 +971,7 @@
                     if HasData "${FIND}"; then
                         HOSTID=$(echo ${FIND} | sha1)
                     else
-                        ReportException "GetHostID" "No MAC address returned on DragonFly or FreeBSD"
+                        ReportException "GetHostID" "没有 MAC 地址 已返回 在 DragonFly 或 FreeBSD"
                     fi
                 ;;
 
@@ -981,10 +981,10 @@
                         if [ -n "${OPENSSLBINARY}" ]; then
                             HOSTID=$(echo ${FIND} | ${OPENSSLBINARY} sha -sha1 | awk '{ print $2 }')
                         else
-                            ReportException "GetHostID" "No openssl binary available on this HP-UX system"
+                            ReportException "GetHostID" "没有 openssl 程序 可用 在 此 HP-UX 系统"
                         fi
                     else
-                        ReportException "GetHostID" "No MAC address found by using nwmgr"
+                        ReportException "GetHostID" "没有 MAC 地址 发现 由 使用 nwmgr"
                     fi
                 ;;
 
@@ -1050,7 +1050,7 @@
                                 else
                                     FIND=$(${IFCONFIGBINARY} 2> /dev/null | grep "ether " | awk '{ print $2 }' | head -n 1 | tr '[:upper:]' '[:lower:]')
                                     if IsEmpty "${FIND}"; then
-                                        ReportException "GetHostID" "No eth0 found (and no ether was found with ifconfig)"
+                                        ReportException "GetHostID" "没有 eth0 发现 (和 没有 ether 是 发现 使用 ifconfig)"
                                     else
                                         HOSTID_GEN="linux-ifconfig-interface-first-ether"
                                         LogText "结果：未找到 eth0（但发现 ether），使用第一个网络接口通过 ifconfig 确定 hostid"
@@ -1074,9 +1074,9 @@
                             # Truncate hash to match SHA1 length
                             HOSTID=$(echo ${FIND} | ${SHA256SUMBINARY} | awk '{ print $1 }' | head -c 40)
                         fi
-                        LogText "Result: Found HostID: ${HOSTID}"
+                        LogText "结果： 发现 HostID： ${HOSTID}"
                     else
-                        ReportException "GetHostID" "HostID could not be generated"
+                        ReportException "GetHostID" "HostID 可以 不 为 生成"
                     fi
                 ;;
 
@@ -1085,20 +1085,20 @@
                     if [ ! "${FIND}" = "" ]; then
                         HOSTID=$(echo ${FIND} | shasum | awk '{ print $1 }')
                     else
-                        ReportException "GetHostID" "No MAC address returned on macOS"
+                        ReportException "GetHostID" "没有 MAC 地址 已返回 在 macOS"
                     fi
                     LYNIS_HOSTID2_PART1=$(hostname -s)
                     if [ -n "${LYNIS_HOSTID2_PART1}" ]; then
-                        LogText "Info: using hostname ${LYNIS_HOSTID2_PART1}"
+                        LogText "信息： 使用 主机名 ${LYNIS_HOSTID2_PART1}"
                         LYNIS_HOSTID2_PART2=$(sysctl -n kern.uuid 2> /dev/null)
                         if [ -n "${LYNIS_HOSTID2_PART2}" ]; then
-                            LogText "Info: using UUID ${LYNIS_HOSTID2_PART2}"
+                            LogText "信息： 使用 UUID ${LYNIS_HOSTID2_PART2}"
                         else
-                            LogText "Info: could not create HOSTID2 as kern.uuid sysctl key is missing"
+                            LogText "信息： 可以 不 创建 HOSTID2 作为 kern.uuid sysctl 键 是 缺少"
                         fi
                         HOSTID2=$(echo "${LYNIS_HOSTID2_PART1}${LYNIS_HOSTID2_PART2}" | shasum -a 256 | awk '{ print $1 }')
                     else
-                        LogText "Info: could not create HOSTID2 as hostname is missing"
+                        LogText "信息： 可以 不 创建 HOSTID2 作为 主机名 是 缺少"
                     fi
                 ;;
 
@@ -1107,7 +1107,7 @@
                     if HasData "${FIND}"; then
                         HOSTID=$(echo ${FIND} | sha1)
                     else
-                        ReportException "GetHostID" "No MAC address returned on NetBSD"
+                        ReportException "GetHostID" "没有 MAC 地址 已返回 在 NetBSD"
                     fi
                 ;;
 
@@ -1116,7 +1116,7 @@
                     if HasData "${FIND}"; then
                         HOSTID=$(echo ${FIND} | sha1)
                     else
-                        ReportException "GetHostID" "No MAC address returned on OpenBSD"
+                        ReportException "GetHostID" "没有 MAC 地址 已返回 在 OpenBSD"
                     fi
                 ;;
 
@@ -1126,7 +1126,7 @@
                     for I in ${INTERFACES_TO_TEST}; do
                          FIND=$(${IFCONFIGBINARY} -a | grep "^${I}")
                          if [ ! "${FIND}" = "" ]; then
-                             FOUND=1; LogText "Found interface ${I} on Solaris"
+                             FOUND=1; LogText "发现 接口 ${I} 在 Solaris"
                              break
                          fi
                     done
@@ -1137,10 +1137,10 @@
                         elif [ -n "${OPENSSLBINARY}" ]; then
                             HOSTID=$(echo ${FIND} | ${OPENSSLBINARY} sha -sha1 | awk '{ print $2 }')
                         else
-                            ReportException "GetHostID" "Can not find sha1/sha1sum or openssl"
+                            ReportException "GetHostID" "无法找到 sha1/sha1sum 或 openssl"
                         fi
                     else
-                        ReportException "GetHostID" "No interface found on Solaris to create HostID"
+                        ReportException "GetHostID" "没有 接口 发现 在 Solaris 到 创建 HostID"
                     fi
                 ;;
 
@@ -1153,7 +1153,7 @@
             if [ -n "${HOSTID}" ]; then
                 for CHECKHASH in ${BLACKLISTED_HASHES}; do
                     if [ "${CHECKHASH}" = "${HOSTID}" ]; then
-                        LogText "Result: hostid is a blacklisted value"
+                        LogText "结果： hostid 是 一个 blacklisted 值"
                         HOSTID=""
                     fi
                 done
@@ -1182,10 +1182,10 @@
                 for I in ${SSH_KEY_FILES}; do
                     if [ -z "${HOSTID}" ]; then
                         if [ -f /etc/ssh/${I} ]; then
-                            LogText "Result: found ${I} in /etc/ssh"
+                            LogText "结果： 发现 ${I} 在 /etc/ssh"
                             if [ -n "${SHA1SUMBINARY}" ]; then
                                 HOSTID=$(${SHA1SUMBINARY} /etc/ssh/${I} | awk '{ print $1 }')
-                                LogText "result: Created HostID with SSH key ($I): ${HOSTID}"
+                                LogText "结果： 已创建 HostID 使用 SSH 键 ($I): ${HOSTID}"
                                 HOSTID_GEN="fallback-ssh-public-key"
                             else
                                 ReportException "GetHostID" "缺少 sha1sum 程序，无法使用 SSH 密钥创建 HOSTID"
@@ -1200,7 +1200,7 @@
 
         # Generation of HostID version 2
         if [ -z "${HOSTID2}" ]; then
-            LogText "Info: start generation of HostID (version 2)"
+            LogText "信息： 开始 生成 的 HostID (版本 2)"
             FOUND=0
             DATA_SSH=""
             if [ -d /etc/ssh ]; then
@@ -1232,12 +1232,12 @@
 
             STRING_TO_HASH=""
             if [ ${FOUND} -eq 1 -a -n "${DATA_SSH}" ]; then
-                LogText "Using SSH public key to create hostid2"
+                LogText "使用 SSH public 键 到 创建 hostid2"
                 STRING_TO_HASH="${DATA_SSH}"
                 HOSTID2_GEN="ssh-public-key"
             else
                 if [ -n "${MACHINEID}" ]; then
-                    LogText "Using the machine ID to create hostid2"
+                    LogText "使用 机器 ID 到 创建 hostid2"
                     STRING_TO_HASH="${MACHINEID}"
                     HOSTID2_GEN="machine-id"
                 fi
@@ -1252,15 +1252,15 @@
                     HASH2=$(echo ${STRING_TO_HASH} | ${OPENSSLBINARY} dgst -${OPENSSL_HASHTYPE} | awk '{ print $2 }')
                     HASH_HOSTNAME=$(echo ${HOSTNAME} | ${OPENSSLBINARY} dgst -${OPENSSL_HASHTYPE} | awk '{ print $2 }')
                 fi
-                LogText "Hash (hostname): ${HASH_HOSTNAME}"
-                LogText "Hash (ssh or machineid): ${HASH2}"
+                LogText "哈希 (主机名)： ${HASH_HOSTNAME}"
+                LogText "哈希 (ssh 或 machineid)： ${HASH2}"
                 HOSTID2="${HASH2}"
             fi
         fi
 
         # Show an exception if no HostID could be created, to ensure each system (and scan) has one
         if [ -z "${HOSTID}" ]; then
-            ReportException "GetHostID" "No unique host identifier could be created."
+            ReportException "GetHostID" "没有 唯一 主机 identifier 可以 为 已创建."
             return 1
         elif [ -n "${HOSTID2}" ]; then
             return 0
@@ -1340,7 +1340,7 @@
                 CHECK_PERMISSION=$(echo "${CHECK_PERMISSION}" | ${AWKBINARY} '{printf "%03d",$1}')
 
                 # First try stat command
-                LogText "Test: checking if file ${CHECKFILE} has the permissions set to ${CHECK_PERMISSION} (${CHECKPERMISSION_FULL}) or more restrictive"
+                LogText "检查： 检查 如果 文件 ${CHECKFILE} 有 权限 设置 到 ${CHECK_PERMISSION} (${CHECKPERMISSION_FULL}) 或 更多 restrictive"
                 if [ -n "${STATBINARY}" ]; then
                     case ${OS} in
                         *BSD | "macOS")
@@ -1394,7 +1394,7 @@
                 # Convert permissions to octal when needed
                 case ${DATA} in
                     [-r][-w][-x][-r][-w][-x][-r][-w][-x] )
-                        LogText "Converting value ${DATA} to octal"
+                        LogText "Converting 值 ${DATA} 到 octal"
                         # add a dummy character as first character so it looks like output is a normal file
                         DATA=$(echo "-${DATA}" | ${AWKBINARY} '{k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/)*2^(8-i));if(k)printf("%0o",k)}')
                     ;;
@@ -1405,7 +1405,7 @@
 
                 if [ -n "${DATA}" ]; then
                     if [ "${DATA}" -le "${CHECK_PERMISSION}" ]; then
-                        LogText "Outcome: correct permissions (${DATA})"
+                        LogText "结果： 正确 权限 (${DATA})"
                         return 0
                     fi
                 else
@@ -1452,7 +1452,7 @@
             echo "------------------------------------"
         fi
         LogTextBreak
-        LogText "Action: Performing tests from category: $1"
+        LogText "操作： Performing 检查 从 类别： $1"
     }
 
 
@@ -1470,7 +1470,7 @@
             echo "[+] ${MAGENTA}$1${NORMAL}"
             echo "------------------------------------"
         fi
-        LogText "Action: Performing plugin tests"
+        LogText "操作： Performing 插件 检查"
     }
 
 
@@ -1615,19 +1615,19 @@
                     # Only perform search if user exists and we had no match yet
                     if [ -n "${user_uid}" ]; then
                         if [ -z "${FIND}" ]; then
-                            LogText "Performing pgrep scan using uid ${user_uid}"
+                            LogText "Performing pgrep 扫描 使用 uid ${user_uid}"
                             FIND=$(${PGREPBINARY:-pgrep} ${pgrep_options} -u "${user_uid}" "${search}" | ${TRBINARY:-tr} '\n' ' ')
                         fi
                     fi
                 done
             else
-                LogText "Performing pgrep scan without uid"
+                LogText "Performing pgrep 扫描 没有 uid"
                 FIND=$(${PGREPBINARY:-pgrep} ${pgrep_options} "${search}" | ${TRBINARY:-tr} '\n' ' ')
             fi
         else
             if [ "${SHELL_IS_BUSYBOX}" -eq 1 ]; then
                 # This search is not foolproof
-                LogText "Performing simple ps scan (busybox)"
+                LogText "Performing simple ps 扫描 (BusyBox)"
                 PSOPTIONS=" -o args="
                 FIND=$(${PSBINARY:-ps} ${PSOPTIONS} | ${GREPBINARY:-grep} -E "( |/)${search}" | ${GREPBINARY:-grep} -v "grep")
             else
@@ -1638,10 +1638,10 @@
                         if [ -n "${user_uid}" ]; then
                             if [ -z "${FIND}" ]; then
                                 if [ ${PARTIAL_SEARCH} -eq 1 ]; then
-                                    LogText "Performing ps scan using partial match and for uid ${user_uid}"
+                                    LogText "Performing ps 扫描 使用 部分 match 和 用于 uid ${user_uid}"
                                     FIND=$(${PSBINARY:-ps} -u "${user_uid}" -o comm= "${search}" | ${AWKBINARY:-awk} -v pattern="${search}" '$0 ~ pattern {print}')
                                 else
-                                    LogText "Performing ps scan using exact match and for uid ${user_uid}"
+                                    LogText "Performing ps 扫描 使用 exact match 和 用于 uid ${user_uid}"
                                     FIND=$(${PSBINARY:-ps} -u "${user_uid}" -o comm= "${search}" | ${AWKBINARY:-awk} -v pattern="^${search}$" '$0 ~ pattern {print}')
                                 fi
                             fi
@@ -1654,10 +1654,10 @@
                         ;;
                     esac
                     if [ ${PARTIAL_SEARCH} -eq 1 ]; then
-                        LogText "Performing ps scan using partial match and without uid"
+                        LogText "Performing ps 扫描 使用 部分 match 和 没有 uid"
                         FIND=$(${PSBINARY:-ps} ${PSOPTIONS} | ${AWKBINARY:-awk} -v pattern="${search}" '$0 ~ pattern {print}')
                     else
-                        LogText "Performing ps scan using exact match and without uid"
+                        LogText "Performing ps 扫描 使用 exact match 和 没有 uid"
                         FIND=$(${PSBINARY:-ps} ${PSOPTIONS} | ${AWKBINARY:-awk} -v pattern="^${search}$" '$0 ~ pattern {print}')
                     fi
                 fi
@@ -1719,11 +1719,11 @@
                 PERMS=$(ls -n ${FILE} | ${AWKBINARY} '{ print $3":"$4 }')
             fi
         else
-            ReportException "IsOwnedByRoot" "Functions needs 1 argument"
+            ReportException "IsOwnedByRoot" "Functions needs 1 参数"
             return 255
         fi
         if [ "${PERMS}" = "0:0" ]; then
-            if IsDeveloperMode; then LogText "Debug: found incorrect file permissions on ${FILE}"; fi
+            if IsDeveloperMode; then LogText "Debug： 发现 不正确 文件权限 在 ${FILE}"; fi
             return 0
         else
             return 1
@@ -1755,7 +1755,7 @@
     ################################################################################
 
     IsVirtualMachine() {
-        LogText "Test: Determine if this system is a virtual machine"
+        LogText "检查： 确定 如果 此 系统 是 一个 虚拟机"
         # 0 = no, 1 = yes, 2 = unknown
         ISVIRTUALMACHINE=2; VMTYPE="unknown"; VMFULLTYPE="Unknown"
         SHORT=""
@@ -1770,7 +1770,7 @@
                 FIND=$(grep -qa 'container=lxc' /proc/1/environ 2> /dev/null)
                 if [ $? -eq 0 ]; then
                     SHORT=lxc
-                    LogText "Result: found ${SHORT}"
+                    LogText "结果： 发现 ${SHORT}"
                 fi
             fi
         else
@@ -1783,14 +1783,14 @@
                 case "$(facter is_virtual)" in
                 "true")
                     SHORT=$(facter virtual)
-                    LogText "Result: found ${SHORT}"
+                    LogText "结果： 发现 ${SHORT}"
                 ;;
                 "false")
-                    LogText "Result: facter says this machine is not a virtual"
+                    LogText "结果： facter says 此 机器 是 不 一个 虚拟"
                 ;;
                 esac
             else
-                LogText "Result: facter utility not found"
+                LogText "结果： facter 工具 未找到"
             fi
         else
             LogText "结果：已确定机器类型，跳过 facter 检测"
@@ -1799,14 +1799,14 @@
         # systemd
         if [ -z "${SHORT}" ]; then
             if [ -x /usr/bin/systemd-detect-virt ]; then
-                LogText "Test: trying to guess virtualization technology with systemd-detect-virt"
+                LogText "检查： 正在尝试 到 guess 虚拟化 technology 使用 systemd-detect-virt"
                 FIND=$(/usr/bin/systemd-detect-virt)
                 if [ -n "${FIND}" ]; then
-                    LogText "Result: found ${FIND}"
+                    LogText "结果： 发现 ${FIND}"
                     SHORT="${FIND}"
                 fi
             else
-                LogText "Result: systemd-detect-virt not found"
+                LogText "结果： systemd-detect-virt 未找到"
             fi
         else
             LogText "结果：已确定机器类型，跳过 systemd 检测"
@@ -1816,16 +1816,16 @@
         # Values: VMware
         if [ -z "${SHORT}" ]; then
             if [ -x /usr/bin/lscpu ]; then
-                LogText "Test: trying to guess virtualization with lscpu"
+                LogText "检查： 正在尝试 到 guess 虚拟化 使用 lscpu"
                 FIND=$(lscpu | grep -i "^Hypervisor Vendor" | awk -F: '{ print $2 }' | sed 's/ //g')
                 if [ -n "${FIND}" ]; then
-                    LogText "Result: found ${FIND}"
+                    LogText "结果： 发现 ${FIND}"
                     SHORT="${FIND}"
                 else
                     LogText "结果：无法通过 lscpu 找到虚拟机监控程序厂商"
                 fi
             else
-                LogText "Result: lscpu not found"
+                LogText "结果： lscpu 未找到"
             fi
         else
             LogText "结果：已确定机器类型，跳过 lscpu 检测"
@@ -1837,16 +1837,16 @@
             # Try to find dmidecode in case we did not check binaries (e.g. lynis show environment)
             if [ ${CHECK_BINARIES} -eq 0 ]; then DMIDECODEBINARY=$(command -v dmidecode 2> /dev/null); fi
             if [ -n "${DMIDECODEBINARY}" -a -x "${DMIDECODEBINARY}" -a ${PRIVILEGED} -eq 1 ]; then
-                LogText "Test: trying to guess virtualization with dmidecode"
+                LogText "检查： 正在尝试 到 guess 虚拟化 使用 dmidecode"
                 FIND=$(${DMIDECODEBINARY} -s system-product-name | awk '{ print $1 }')
                 if [ -n "${FIND}" ]; then
-                    LogText "Result: found ${FIND}"
+                    LogText "结果： 发现 ${FIND}"
                     SHORT="${FIND}"
                 else
                     LogText "结果：无法通过 dmidecode 找到产品名称"
                 fi
             else
-                LogText "Result: dmidecode not found (or no access)"
+                LogText "结果： dmidecode 未找到 (或 没有 access)"
             fi
         else
             LogText "结果：已确定机器类型，跳过 dmidecode 检测"
@@ -1858,7 +1858,7 @@
 
         # Try common guest processes
         if [ -z "${SHORT}" ]; then
-            LogText "Test: trying to guess virtual machine type by running processes"
+            LogText "检查： 正在尝试 到 guess 虚拟机 类型 由 运行中 进程"
 
             # VMware
             if IsRunning vmware-guestd; then SHORT="vmware"
@@ -1876,11 +1876,11 @@
 
         # Amazon EC2
         if [ -z "${SHORT}" ]; then
-            LogText "Test: checking specific files for Amazon"
+            LogText "检查： 检查 specific 文件 用于 Amazon"
             if [ -f /etc/ec2_version -a -s /etc/ec2_version ]; then
                 SHORT="amazon-ec2"
             else
-                LogText "Result: system not hosted on Amazon"
+                LogText "结果： 系统 不 hosted 在 Amazon"
             fi
         else
             LogText "结果：已确定平台，跳过 Amazon EC2 检测"
@@ -1888,7 +1888,7 @@
 
         # sysctl values
         if [ -z "${SHORT}" ]; then
-            LogText "Test: trying to guess virtual machine type by sysctl keys"
+            LogText "检查： 正在尝试 到 guess 虚拟机 类型 由 sysctl 键"
 
             # FreeBSD: hw.hv_vendor (remains empty for VirtualBox)
             # NetBSD: machdep.dmi.system-product
@@ -1905,14 +1905,14 @@
         if [ -z "${SHORT}" ]; then
             if [ ${PRIVILEGED} -eq 1 ]; then
                 if [ -x /usr/bin/lshw ]; then
-                    LogText "Test: trying to guess virtualization with lshw"
+                    LogText "检查： 正在尝试 到 guess 虚拟化 使用 lshw"
                     FIND=$(lshw -quiet -class system 2> /dev/null | awk '{ if ($1=="product:") { print $2 }}')
                     if HasData "${FIND}"; then
-                        LogText "Result: found ${FIND}"
+                        LogText "结果： 发现 ${FIND}"
                         SHORT="${FIND}"
                     fi
                 else
-                    LogText "Result: lshw not found"
+                    LogText "结果： lshw 未找到"
                 fi
             else
                 LogText "结果：当前为非特权模式，运行 lshw 需要更多权限，因此跳过"
@@ -1953,10 +1953,10 @@
             Report "vm=1"
             Report "vmtype=${VMTYPE}"
         elif [ ${ISVIRTUALMACHINE} -eq 2 ]; then
-            LogText "Result: unknown if this system is a virtual machine"
+            LogText "结果： 未知 如果 此 系统 是 一个 虚拟机"
             Report "vm=2"
         else
-            LogText "Result: system seems to be non-virtual"
+            LogText "结果： 系统 似乎 到 为 non-virtual"
         fi
     }
 
@@ -2202,7 +2202,7 @@
                             VALUE="${ITEM_VALUE}"
                         ;;
                         *)
-                            echo "Incorrect call to function ParseTestValues"; ExitFatal
+                            echo "不正确 调用 到 函数 ParseTestValues"; ExitFatal
                         ;;
                     esac
                     if [ ${FOUND} -eq 1 ]; then
@@ -2242,7 +2242,7 @@
         # Now clean up the file further (combine lines, remove commented lines and empty lines)
         sed 's#\\$##g' ${TMP_NGINX_FILE_RAW} | grep -v "^#" | grep -v "^$" > ${TMP_NGINX_FILE}
 
-        LogText "Action: parsing configuration file ${CONFIG_FILE}"
+        LogText "操作： parsing 配置文件 ${CONFIG_FILE}"
         COUNT=$(( COUNT + 1))
         FIND=$(sed 's/ /:space:/g' ${TMP_NGINX_FILE})
         DEPTH=0
@@ -2285,7 +2285,7 @@
                 ;;
                 access_log)
                     if [ "${VALUE}" = "off" ]; then
-                        LogText "Result: found logging disabled for one virtual host"
+                        LogText "结果： 发现 logging 已禁用 用于 一个 虚拟 主机"
                         NGINX_ACCESS_LOG_DISABLED=1
                     else
                         if [ ! "${VALUE}" = "" ]; then
@@ -2293,7 +2293,7 @@
                             VALUE=$(echo ${VALUE} | awk '{ print $1 }')
                             # Find both, log files provided with full or relative path
                             if [ ! -f ${VALUE} -a ! -f "${CONFIG_FILE%nginx.conf}${VALUE}" ]; then
-                                LogText "Result: could not find log file ${VALUE} referenced in nginx configuration"
+                                LogText "结果： 无法找到 日志 文件 ${VALUE} referenced 在 nginx 配置"
                                 NGINX_ACCESS_LOG_MISSING=1
                             fi
                         fi
@@ -2303,7 +2303,7 @@
                 add_header)
                     HEADER=$(echo ${VALUE} | awk '{ print $1 }')
                     HEADER_VALUE=$(echo ${VALUE} | cut -d' ' -f2-)
-                    LogText "Result: found header ${HEADER} with value ${HEADER_VALUE}"
+                    LogText "结果： 发现 header ${HEADER} 使用 值 ${HEADER_VALUE}"
                     #Report "nginx_header[]=${HEADER}|${HEADER_VALUE}|"
                 ;;
                 alias)
@@ -2334,7 +2334,7 @@
                             NGINX_ERROR_LOG_MISSING=1
                         fi
                     else
-                        LogText "Warning: did not find a filename after error_log in nginx configuration"
+                        LogText "警告： 不 find 一个 filename 之后 错误_日志 在 nginx 配置"
                     fi
                 ;;
                 error_page)
@@ -2389,7 +2389,7 @@
                         esac
                         for FOUND_CONF in ${CONF_WILDCARD}; do
                             if [ "${FOUND_CONF}" = "${CONF_WILDCARD}" ]; then
-                                LogText "Found no match for wildcard pattern: ${CONF_WILDCARD}"
+                                LogText "发现 没有 match 用于 wildcard pattern： ${CONF_WILDCARD}"
                                 break
                             fi
                             FOUND=0
@@ -2402,7 +2402,7 @@
                             if [ ${FOUND} -eq 0 ]; then NGINX_CONF_FILES_ADDITIONS="${NGINX_CONF_FILES_ADDITIONS} ${FOUND_CONF}"; fi
                         done
                     else
-                        LogText "Result: this include does not point to a file"
+                        LogText "结果： 此 包含 不 得分 到 一个 文件"
                     fi
                 ;;
                 index)
@@ -2430,7 +2430,7 @@
                     if [ "${VALUE}" = "on" ]; then NGINX_SSL_ON=1; fi
                 ;;
                 ssl_certificate)
-                    LogText "Found SSL certificate in nginx configuration"
+                    LogText "发现 SSL 证书 在 nginx 配置"
                 ;;
                 ssl_certificate_key)
                 ;;
@@ -2444,7 +2444,7 @@
                     NGINX_SSL_PROTOCOLS=1
                     VALUE=$(echo ${VALUE} | sed 's/;$//' | tr '[:upper:]' '[:lower:]')
                     for ITEM in ${VALUE}; do
-                        LogText "Result: found protocol ${ITEM}"
+                        LogText "结果： 发现 协议 ${ITEM}"
                         case ${ITEM} in
                             "sslv2" | "sslv3" | "tlsv1")
                                 NGINX_WEAK_SSL_PROTOCOL_FOUND=1
@@ -2461,7 +2461,7 @@
                 types)
                 ;;
                 *)
-                    LogText "Found unknown option ${OPTION} in nginx configuration"
+                    LogText "发现 未知 选项 ${OPTION} 在 nginx 配置"
                 ;;
             esac
             if [ ${STORE_SETTING} -eq 1 ]; then
@@ -2490,13 +2490,13 @@
             return 255
         else
             if [ $# -eq 2 ] && [ $1 = "TCP" -o $1 = "UDP" ]; then
-                LogText "Test: find service listening on $1:$2"
+                LogText "检查： find 服务 listening 在 $1:$2"
                 if [ $1 = "TCP" ]; then FIND=$(${LSOFBINARY}${LSOF_EXTRA_OPTIONS} -i${1} -s${1}:LISTEN -P -n | grep ":${2} "); else FIND=$(${LSOFBINARY}${LSOF_EXTRA_OPTIONS} -i${1} -P -n | grep ":${2} "); fi
                 if [ ! "${FIND}" = "" ]; then
-                    LogText "Result: found service listening on port $2 ($1)"
+                    LogText "结果： 发现 服务 listening 在 端口 $2 ($1)"
                     return 0
                 else
-                    LogText "Result: did not find service listening on port $2 ($1)"
+                    LogText "结果： 不 find 服务 listening 在 端口 $2 ($1)"
                     return 1
                 fi
             else
@@ -2664,7 +2664,7 @@
                 ;;
 
                 *)
-                    echo "INVALID OPTION (Register): $1"
+                    echo "INVALID OPTION (Register)： $1"
                     exit 1
                 ;;
             esac
@@ -2696,7 +2696,7 @@
                 fi
             fi
             if [ ${SLOW_TEST} -eq 1 ]; then
-                DisplayWarning "Test ${PREVIOUS_TEST} had a long execution: ${TIME_DIFF} ${TIME_DIFF_FORMAT}"
+                DisplayWarning "检查 ${PREVIOUS_TEST} 有 一个 long execution: ${TIME_DIFF} ${TIME_DIFF_FORMAT}"
                 Report "slow_test[]=${PREVIOUS_TEST},${TIME_DIFF}"
             fi
         fi
@@ -2704,26 +2704,26 @@
         # Skip test if it's configured in profile (old style)
         if [ ${SKIPTEST} -eq 0 ]; then
             FIND=$(echo "${TEST_SKIP_ALWAYS}" | grep "${TEST_NO}" | tr '[:lower:]' '[:upper:]')
-            if [ ! "${FIND}" = "" ]; then SKIPTEST=1; SKIPREASON="Skipped by configuration"; fi
+            if [ ! "${FIND}" = "" ]; then SKIPTEST=1; SKIPREASON="已跳过 由 配置"; fi
         fi
 
         # Check if this test is on the list to skip
         if [ ${SKIPTEST} -eq 0 ]; then
             VALUE=$(echo ${TEST_NO} | tr '[:lower:]' '[:upper:]')
             for I in ${SKIP_TESTS}; do
-                if [ "${I}" = "${VALUE}" ]; then SKIPTEST=1; SKIPREASON="Skipped by profile setting (skip-test)"; fi
+                if [ "${I}" = "${VALUE}" ]; then SKIPTEST=1; SKIPREASON="已跳过 由 配置文件 设置 (skip-test)"; fi
             done
         fi
 
         # Skip if test is not in the list
         if [ ${SKIPTEST} -eq 0 -a ! "${TESTS_TO_PERFORM}" = "" ]; then
             FIND=$(echo "${TESTS_TO_PERFORM}" | grep "${TEST_NO}")
-            if [ "${FIND}" = "" ]; then SKIPTEST=1; SKIPREASON="Test not in list of tests to perform"; fi
+            if [ "${FIND}" = "" ]; then SKIPTEST=1; SKIPREASON="检查 不 在 列表 的 检查 到 执行"; fi
         fi
 
         # Do not run scans which have a higher intensity than what we prefer
-        if [ ${SKIPTEST} -eq 0 -a "${TEST_WEIGHT}" = "H" -a "${SCAN_TEST_HEAVY}" = "NO" ]; then SKIPTEST=1; SKIPREASON="Test to system intensive for scan mode (H)"; fi
-        if [ ${SKIPTEST} -eq 0 -a "${TEST_WEIGHT}" = "M" -a "${SCAN_TEST_MEDIUM}" = "NO" ]; then SKIPTEST=1; SKIPREASON="Test to system intensive for scan mode (M)"; fi
+        if [ ${SKIPTEST} -eq 0 -a "${TEST_WEIGHT}" = "H" -a "${SCAN_TEST_HEAVY}" = "NO" ]; then SKIPTEST=1; SKIPREASON="检查 到 系统 intensive 用于 扫描 模式 (H)"; fi
+        if [ ${SKIPTEST} -eq 0 -a "${TEST_WEIGHT}" = "M" -a "${SCAN_TEST_MEDIUM}" = "NO" ]; then SKIPTEST=1; SKIPREASON="检查 到 系统 intensive 用于 扫描 模式 (M)"; fi
 
         # Test if our OS is the same as the requested OS (can be multiple values)
         if [ ${SKIPTEST} -eq 0 -a -n "${TEST_NEED_OS}" ]; then
@@ -2732,14 +2732,14 @@
                 if [ "${I}" = "${OS}" ]; then HASMATCH=1; fi
             done
             if [ ${HASMATCH} -eq 0 ]; then
-                SKIPTEST=1; SKIPREASON="Incorrect guest OS (${TEST_NEED_OS} only)"
+                SKIPTEST=1; SKIPREASON="不正确 guest OS (${TEST_NEED_OS} 仅)"
                 if [ ${LOG_INCORRECT_OS} -eq 0 ]; then SKIPLOGTEST=1; fi
             fi
         fi
 
         # Skip test when it belongs to another category (default is 'all')
         if [ ${SKIPTEST} -eq 0 -a -n "${TEST_CATEGORY_TO_CHECK}" -a ! "${TEST_CATEGORY_TO_CHECK}" = "all" -a ! "${TEST_CATEGORY}" = "${TEST_CATEGORY_TO_CHECK}" ]; then
-            SKIPTEST=1; SKIPREASON="Incorrect category (${TEST_CATEGORY_TO_CHECK} only)"
+            SKIPTEST=1; SKIPREASON="不正确 类别 (${TEST_CATEGORY_TO_CHECK} 仅)"
         fi
 
         # Check for correct hardware platform
@@ -2749,19 +2749,19 @@
                 if [ "${I}" = "${HARDWARE}" ]; then HASMATCH=1; fi
             done
             if [ ${HASMATCH} -eq 0 ]; then
-                SKIPTEST=1; SKIPREASON="Incorrect hardware platform (${TEST_NEED_PLATFORM} only)"
+                SKIPTEST=1; SKIPREASON="不正确 硬件平台 (${TEST_NEED_PLATFORM} 仅)"
             fi
         fi
 
         # Check for required (and discovered) package manager
-        if [ ${SKIPTEST} -eq 0 -a ${TEST_NEED_PKG_MGR} -eq 1 -a ${HAS_PACKAGE_MANAGER} -eq 0 ]; then SKIPTEST=1; SKIPREASON="Requires a known package manager to test presence of a particular package"; fi
+        if [ ${SKIPTEST} -eq 0 -a ${TEST_NEED_PKG_MGR} -eq 1 -a ${HAS_PACKAGE_MANAGER} -eq 0 ]; then SKIPTEST=1; SKIPREASON="Requires 一个 已知 软件包管理器 到 检查 presence 的 一个 particular 软件包"; fi
 
         # Not all prerequisites met, like missing tool
         if [ ${SKIPTEST} -eq 0 -a "${PREQS_MET}" = "NO" ]; then SKIPTEST=1; if [ -z "${SKIPREASON}" ]; then SKIPREASON="未满足前置条件（例如缺少工具或 Linux 发行版类型不同）"; fi; fi
 
         # Skip if a test is root only and we are running a non-privileged test
         if [ ${SKIPTEST} -eq 0 -a ${ROOT_ONLY} -eq 1 -a ! ${MYID} = "0" ]; then
-            SKIPTEST=1; SKIPREASON="This test needs root permissions"
+            SKIPTEST=1; SKIPREASON="此 检查 needs 根 权限"
             SKIPPED_TESTS_ROOTONLY="${SKIPPED_TESTS_ROOTONLY}====${TEST_NO}:space:-:space:${TEST_DESCRIPTION}"
             #SkipTest "${TEST_NO}:Test:space:requires:space:root:space:permissions:-:-:"
         fi
@@ -2774,13 +2774,13 @@
             # Increase counter for every registered test which is performed
             CountTests
             if [ ${SKIPLOGTEST} -eq 0 ]; then
-                LogText "Performing test ID ${TEST_NO} (${TEST_DESCRIPTION})"
+                LogText "Performing 检查 ID ${TEST_NO} (${TEST_DESCRIPTION})"
                 if IsVerbose; then Debug "Performing test ID ${TEST_NO} (${TEST_DESCRIPTION})"; fi
             fi
             TESTS_EXECUTED="${TEST_NO}|${TESTS_EXECUTED}"
         else
-            if [ ${SKIPLOGTEST} -eq 0 ]; then LogText "Skipped test ${TEST_NO} (${TEST_DESCRIPTION})"; fi
-            if [ ${SKIPLOGTEST} -eq 0 ]; then LogText "Reason to skip: ${SKIPREASON}"; fi
+            if [ ${SKIPLOGTEST} -eq 0 ]; then LogText "已跳过 检查 ${TEST_NO} (${TEST_DESCRIPTION})"; fi
+            if [ ${SKIPLOGTEST} -eq 0 ]; then LogText "Reason 到 跳过： ${SKIPREASON}"; fi
             TESTS_SKIPPED="${TEST_NO}|${TESTS_SKIPPED}"
         fi
 
@@ -2843,9 +2843,9 @@
         if [ -n "${PIDFILE}" ]; then
             if [ -f "${PIDFILE}" ]; then
                 rm -f "${PIDFILE}"
-                LogText "PID file removed (${PIDFILE})"
+                LogText "PID 文件 已删除 (${PIDFILE})"
             else
-                LogText "PID file not found (${PIDFILE})"
+                LogText "PID 文件 未找到 (${PIDFILE})"
             fi
         fi
     }
@@ -2859,24 +2859,24 @@
     # Remove any temporary files
     RemoveTempFiles() {
         if [ ! "${TEMP_FILES}" = "" ]; then
-            LogText "Temporary files: ${TEMP_FILES}"
+            LogText "临时 文件： ${TEMP_FILES}"
             # Clean up temp files
             for FILE in ${TEMP_FILES}; do
                 # Temporary files should be in /tmp
                 TMPFILE=$(echo ${FILE} | grep -E "^/tmp/lynis" | grep -v "\.\.")
                 if [ -n "${TMPFILE}" ]; then
                     if [ -f "${TMPFILE}" ]; then
-                        LogText "Action: removing temporary file ${TMPFILE}"
+                        LogText "操作： removing 临时文件 ${TMPFILE}"
                         rm -f "${TMPFILE}"
                     else
-                        LogText "Info: temporary file ${TMPFILE} was already removed"
+                        LogText "信息： 临时文件 ${TMPFILE} 是 已 已删除"
                     fi
                 else
                     LogText "发现无效的临时文件（${FILE}），未将其删除。请检查 /tmp 目录。"
                 fi
             done
         else
-            LogText "No temporary files to be deleted"
+            LogText "没有 临时文件s 到 为 deleted"
         fi
       }
 
@@ -2947,7 +2947,7 @@
                     TEST_VALUE="value:$1;"
                 ;;
                 *)
-                    echo "INVALID OPTION (ReportDetails): $1"
+                    echo "INVALID OPTION (ReportDetails)： $1"
                     ExitFatal
                 ;;
             esac
@@ -2970,7 +2970,7 @@
 
     ReportException() {
         Report "exception_event[]=$1|${2-NoInfo}|"
-        LogText "Exception: test has an exceptional event ($1) with text ${2-NoText}"
+        LogText "异常： 检查 有 一个 exceptional event ($1) 使用 text ${2-NoText}"
         if [ ${QUIET} -eq 0 ]; then
             DisplayException "$1" "$2"
         fi
@@ -2986,7 +2986,7 @@
 
     ReportManual() {
         Report "manual_event[]=$1"
-        LogText "Manual: one or more manual actions are required for further testing of this control/plugin"
+        LogText "Manual： 一个 或 更多 manual actions 是 必需 用于 further testing 的 此 控制/插件"
     }
 
 
@@ -3007,14 +3007,14 @@
 
     ReportSuggestion() {
         TOTAL_SUGGESTIONS=$((TOTAL_SUGGESTIONS + 1))
-        if [ $# -eq 0 ]; then echo "Not enough arguments provided for function ReportSuggestion"; ExitFatal; fi
+        if [ $# -eq 0 ]; then echo "不 足够 参数 provided 用于 函数 ReportSuggestion"; ExitFatal; fi
         if [ $# -ge 1 ]; then TEST="$1"; else TEST="UNKNOWN"; fi
         if [ $# -ge 2 ]; then MESSAGE="$2"; else MESSAGE="UNKNOWN"; fi
         if [ $# -ge 3 ]; then DETAILS="$3"; else DETAILS="-"; fi
         if [ $# -ge 4 ]; then SOLUTION="$4"; else SOLUTION="-"; fi
-        if [ $# -ge 5 ]; then echo "Too many arguments for function ReportSuggestion"; ExitFatal; fi
+        if [ $# -ge 5 ]; then echo "Too 多个 参数 用于 函数 ReportSuggestion"; ExitFatal; fi
         Report "suggestion[]=${TEST}|${MESSAGE}|${DETAILS}|${SOLUTION}|"
-        LogText "Suggestion: ${MESSAGE} [test:${TEST}] [details:${DETAILS}] [solution:${SOLUTION}]"
+        LogText "建议： ${MESSAGE} [检查:${TEST}] [详情:${DETAILS}] [solution:${SOLUTION}]"
     }
 
 
@@ -3045,15 +3045,15 @@
             #              * url:http://site/link
             #              * text:Additional explanation
             #              * - for none
-            if [ $# -eq 0 ]; then echo "Not enough arguments provided for function ReportWarning"; ExitFatal; fi
+            if [ $# -eq 0 ]; then echo "不 足够 参数 provided 用于 函数 ReportWarning"; ExitFatal; fi
             if [ $# -ge 1 ]; then TEST="$1"; else TEST="UNKNOWN"; fi
             if [ $# -ge 2 ]; then MESSAGE="$2"; else MESSAGE="UNKNOWN"; fi
             if [ $# -ge 3 ]; then DETAILS="$3"; else DETAILS="-"; fi
             if [ $# -ge 4 ]; then SOLUTION="$4"; else SOLUTION="-"; fi
-            if [ $# -ge 5 ]; then echo "Too many arguments for function ReportWarning"; ExitFatal; fi
+            if [ $# -ge 5 ]; then echo "Too 多个 参数 用于 函数 ReportWarning"; ExitFatal; fi
         fi
         Report "warning[]=${TEST}|${MESSAGE}|${DETAILS}|${SOLUTION}|"
-        LogText "Warning: ${MESSAGE} [test:${TEST}] [details:${DETAILS}] [solution:${SOLUTION}]"
+        LogText "警告： ${MESSAGE} [检查:${TEST}] [详情:${DETAILS}] [solution:${SOLUTION}]"
     }
 
 
@@ -3108,18 +3108,18 @@
 
             # Generic checks
             if [ -g "${FILE}" ]; then
-                LogText "Security alert: file has setgid attribute"
+                LogText "安全警报： 文件 有 setgid attribute"
                 unsafe=1
             # sticky bit
             elif [ -k "${FILE}" ]; then
-                LogText "Security alert: file has sticky bit"
+                LogText "安全警报： 文件 有 sticky bit"
                 unsafe=1
             # symbolic link
             elif [ -L "${FILE}" ]; then
-                LogText "Security alert: file is a symbolic link"
+                LogText "安全警报： 文件 是 一个 符号链接"
                 unsafe=1
             elif [ -f "${FILE}" ]; then
-                LogText "Security check: file is normal"
+                LogText "安全 检查： 文件 是 normal"
             else
                 unsafe=1
             fi
@@ -3160,7 +3160,7 @@
 
         if [ ${IGNORE_FILE_PERMISSION_ISSUES} -eq 0 ]; then
             PERMS_OK=0
-            LogText "Checking permissions of $1"
+            LogText "检查 权限 的 $1"
 
             if [ $# -gt 0 ]; then
 
@@ -3179,7 +3179,7 @@
                 fi
                 # Check file permissions
                 if [ ! -f "$1" ]; then
-                    LogText "Fatal error: file $1 does not exist."
+                    LogText "致命错误： 文件 $1 不存在."
                     ExitFatal "Fatal error: file $1 does not exist"
                 else
                     PERMS=$(ls -l $1)
@@ -3189,7 +3189,7 @@
                     OWNERID=$(ls -n $1 | awk -F" " '{ print $3 }')
                     if [ ${PENTESTINGMODE} -eq 0 -a ${IS_PARAMETERS} -eq 0 ]; then
                         if [ ! "${OWNER}" = "root" -a ! "${OWNERID}" = "0" ]; then
-                            echo "致命错误：以 root 运行时，文件 $1 应由用户 'root' 所有（当前：${OWNER}）。"
+                            echo "致命错误：以 根 运行时，文件 $1 应由用户 'root' 所有（当前：${OWNER}）。"
                             ExitFatal
                         fi
                     fi
@@ -3199,7 +3199,7 @@
 
                     if [ ${PENTESTINGMODE} -eq 0 -a ${IS_PARAMETERS} -eq 0 ]; then
                         if [ ! "${GROUP}" = "root" -a ! "${GROUP}" = "wheel" -a ! "${GROUPID}" = "0" ]; then
-                            echo "致命错误：目录 $1 的所属组应为 root、wheel 或类似特权组（当前：${GROUP}）。"
+                            echo "致命错误：目录 $1 的所属组应为 根、wheel 或类似特权组（当前：${GROUP}）。"
                             ExitFatal
                         fi
                     fi
@@ -3227,11 +3227,11 @@
                     fi
                     # Set PERMS_OK to 1 if no fatal errors occurred
                     PERMS_OK=1
-                    LogText "File permissions are OK"
+                    LogText "文件 权限 是 OK"
                     exitcode=0
                 fi
             else
-                ReportException "SafePerms()" "Invalid number of arguments for function"
+                ReportException "SafePerms()" "无效 数量 的 参数 用于 函数"
             fi
         else
             PERMS_OK=1
@@ -3280,11 +3280,11 @@
             # Don't search in /dev/null, it's too empty there
             if [ -f ${FILE} ]; then
                 # Check if we can find the main type (with or without brackets)
-                LogText "Test: search string ${STRING} in file ${FILE}"
+                LogText "检查： 搜索 字符串 ${STRING} 在 文件 ${FILE}"
                 FIND=$(grep -E "${STRING}" ${FILE})
                 if [ -n "${FIND}" ]; then
                     LogText "结果：发现搜索字符串 '${STRING}'"
-                    if [ ${MASK_LOG} -eq 0 ]; then LogText "Full string returned: ${FIND}"; fi
+                    if [ ${MASK_LOG} -eq 0 ]; then LogText "完整 字符串 已返回： ${FIND}"; fi
                     RETVAL=0
                 else
                     LogText "结果：未找到搜索字符串 '${STRING}'"
@@ -3292,7 +3292,7 @@
                 fi
             else
                 LogText "文件（${FILE}）不存在，跳过搜索"
-                ReportException "${TEST_NO}" "Test is trying to search for a string in nonexistent file"
+                ReportException "${TEST_NO}" "检查 是 正在尝试 到 搜索 用于 一个 字符串 在 nonexistent 文件"
             fi
         else
             ReportException "${TEST_NO}" "搜索检查被跳过，情况异常"
@@ -3351,7 +3351,7 @@
                 ;;
 
                 *)
-                    echo "INVALID OPTION (ShowComplianceFinding): $1"
+                    echo "INVALID OPTION (ShowComplianceFinding)： $1"
                     exit 1
                 ;;
             esac
@@ -3403,7 +3403,7 @@
         FOUNDPATH=0
         SYMLINK_USE_PYTHON=0
         SYMLINK_USE_READLINK=0
-        LogText "Action: checking symlink for file ${sFILE}"
+        LogText "操作： 检查 符号链接 用于 文件 ${sFILE}"
         # Check for symlink
         if [ -L ${sFILE} ]; then
 
@@ -3412,30 +3412,30 @@
                 # If a Python binary is found, use the one in path
                 if [ ${BINARY_SCAN_FINISHED} -eq 0 -a "${PYTHONBINARY}" = "" ]; then
                     FIND=$(which python 2> /dev/null | grep -v "no [^ ]* in ")
-                    if [ ! "${FIND}" = "" ]; then LogText "Setting temporary pythonbinary variable"; PYTHONBINARY="${FIND}"; fi
+                    if [ ! "${FIND}" = "" ]; then LogText "设置 临时 pythonbinary variable"; PYTHONBINARY="${FIND}"; fi
                 fi
 
                 if [ ! "${PYTHONBINARY}" = "" ]; then
                     SYMLINK_USE_PYTHON=1
-                    LogText "Note: using Python to determine symlinks"
+                    LogText "说明： 使用 Python 到 确定 符号链接s"
                     tFILE=$(python -c "import os,sys; print(os.path.realpath(os.path.expanduser(sys.argv[1])))" $1)
                 fi
             else
                 if [ ${BINARY_SCAN_FINISHED} -eq 0 -a "${READLINKBINARY}" = "" ]; then
                     FIND=$(which readlink 2> /dev/null | grep -v "no [^ ]* in ")
-                    if [ ! "${FIND}" = "" ]; then LogText "Setting temporary readlinkbinary variable"; READLINKBINARY="${FIND}"; fi
+                    if [ ! "${FIND}" = "" ]; then LogText "设置 临时 readlinkbinary variable"; READLINKBINARY="${FIND}"; fi
                 fi
 
                 if [ ! "${READLINKBINARY}" = "" ]; then
                     SYMLINK_USE_READLINK=1
-                    LogText "Note: Using real readlink binary to determine symlink on ${sFILE}"
+                    LogText "说明： 使用 real readlink 程序 到 确定 符号链接 在 ${sFILE}"
                     tFILE=$(${READLINKBINARY} -f ${sFILE})
-                    LogText "Result: readlink shows ${tFILE} as output"
+                    LogText "结果： readlink shows ${tFILE} 作为 输出"
                 fi
             fi
             # Check if we can find the file now
             if [ "${tFILE}" = "" ]; then
-                LogText "Result: command did not return any value"
+                LogText "结果： 命令 不 返回 任何 值"
             elif [ -f ${tFILE} ]; then
                 sFILE="${tFILE}"
                 LogText "结果：发现符号链接，指向文件 ${sFILE}"
@@ -3457,7 +3457,7 @@
                 tDIR=$(echo ${sFILE} | awk '{match($1, "^.*/"); print substr($1, 1, RLENGTH-1)}')
                 tFILE="${tDIR}/${tFILE}"
                 if [ -L ${tFILE} ]; then
-                    LogText "Result: this symlink links to another symlink"
+                    LogText "结果： 此 符号链接 links 到 another 符号链接"
                     # Ensure that we use a second try with the right tool as well
                     if [ ${SYMLINK_USE_PYTHON} -eq 1 ]; then
                         tFILE=$(python -c "import os,sys; print(os.path.realpath(os.path.expanduser(sys.argv[1])))" ${tFILE})
@@ -3485,11 +3485,11 @@
                     LogText "结果：发现符号链接，目标似乎是目录 ${sFILE}"
                     FOUNDPATH=1
                 else
-                    LogText "Result: file ${tFILE} in ${tDIR} not found"
+                    LogText "结果： 文件 ${tFILE} 在 ${tDIR} 未找到"
                 fi
             fi
         else
-            LogText "Result: file ${sFILE} is not a symlink"
+            LogText "结果： 文件 ${sFILE} 是 不 一个 符号链接"
         fi
         # Now check if our new location is actually a file or directory destination
         if [ -L ${sFILE} ]; then
@@ -3521,10 +3521,10 @@
             # Check if this test is on the list to skip
             for item in ${SKIP_TESTS}; do
                 STRING=$(echo $1 | tr '[:lower:]' '[:upper:]')
-                if [ "${item}" = "${STRING}" ]; then RETVAL=0; LogText "Atomic test ($1) skipped by configuration (skip-test)"; fi
+                if [ "${item}" = "${STRING}" ]; then RETVAL=0; LogText "Atomic 检查 ($1) 已跳过 由 配置 (skip-test)"; fi
             done
         else
-            ReportException "SkipAtomicTest()" "Function called without right number of arguments (1)"
+            ReportException "SkipAtomicTest()" "函数 已调用 没有 right 数量 的 参数 (1)"
         fi
         return $RETVAL
     }
@@ -3540,8 +3540,8 @@
 
     Status() {
         echo ""
-        echo "Date / time : $(date "+%Y-%m-%d %H:%M:%S")"
-        echo "Active test : ${TEST_NO:-NONE}"
+        echo "日期 / 时间 : $(日期 "+%Y-%m-%d %H:%M:%S")"
+        echo "当前 检查 ： ${TEST_NO：-NONE}"
         echo ""
     }
 
@@ -3589,7 +3589,7 @@
                     CONFIG_VALUE=$1
                 ;;
                 *)
-                    echo "INVALID OPTION (StoreNginxSettings): $1 $2"
+                    echo "INVALID OPTION (StoreNginxSettings)： $1 $2"
                     #ExitFatal
                 ;;
             esac
@@ -3635,7 +3635,7 @@
                     SEARCH=$1
                 ;;
                 *)
-                    echo "INVALID OPTION USED (TestValue): $1"
+                    echo "INVALID OPTION USED (TestValue)： $1"
                     exit 1
                 ;;
             esac
@@ -3643,7 +3643,7 @@
             shift
         done
 
-        if [ "${VALUE}" = "" ]; then echo "No value provided to function (TestValue)"; fi
+        if [ "${VALUE}" = "" ]; then echo "没有 值 provided 到 函数 (TestValue)"; fi
 
         # Apply the related function
         case ${FUNCTION} in
@@ -3732,37 +3732,37 @@
     ################################################################################
 
     counttests() {
-        DisplayWarning "Deprecated function used (counttests)"
+        DisplayWarning "Deprecated 函数 已使用 (counttests)"
         if IsDeveloperMode; then Debug "Warning: old counttests function is used. Please replace any reference with CountTests."; fi
         CountTests
     }
 
      logtext() {
-        DisplayWarning "Deprecated function used (logtext)"
+        DisplayWarning "Deprecated 函数 已使用 (logtext)"
         if IsDeveloperMode; then Debug "Warning: old logtext function is used. Please replace any reference with LogText."; fi
         LogText "$1"
     }
 
      logtextbreak() {
-        DisplayWarning "Deprecated function used (logtextbreak)"
+        DisplayWarning "Deprecated 函数 已使用 (logtextbreak)"
         if IsDeveloperMode; then Debug "Warning: old logtextbreak function is used. Please replace any reference with LogTextBreak."; fi
         LogTextBreak "$1"
     }
 
      report() {
-        DisplayWarning "Deprecated function used (report)"
+        DisplayWarning "Deprecated 函数 已使用 (报告)"
         if IsDeveloperMode; then Debug "Warning: old report function is used. Please replace any reference with Report."; fi
         Report "$1"
     }
 
      wait_for_keypress() {
-        DisplayWarning "Deprecated function used (wait_for_keypress)"
+        DisplayWarning "Deprecated 函数 已使用 (wait_用于_keypress)"
         if IsDeveloperMode; then Debug "Warning: old wait_for_keypress function is used. Please replace any reference with WaitForKeyPress."; fi
         WaitForKeyPress
     }
 
      ShowResult() {
-        DisplayWarning "Deprecated function used (ShowResult)"
+        DisplayWarning "Deprecated 函数 已使用 (ShowResult)"
         if IsDeveloperMode; then Debug "Warning: old ShowResult() function is used. Please replace any reference with WaitForKeyPress."; fi
     }
 

@@ -103,7 +103,7 @@
         FIND=$(${DOCKERBINARY} version 2>&1)
         if [ $? -gt 0 ]; then
             Display --indent 8 --text "- Docker 状态" --result "${STATUS_ERROR}" --color RED
-            LogText "结果：docker version 返回非零退出码，已停止后续 Docker 检查"
+            LogText "结果：docker 版本 返回非零退出码，已停止后续 Docker 检查"
             RUN_DOCKER_TESTS=0
         fi
         FIND=$(${DOCKERBINARY} info 2>&1 | ${GREPBINARY} -E "^WARNING:|^ERROR:" | ${CUTBINARY} -d " " -f 2- | ${SEDBINARY} 's/ /:space:/g')
@@ -143,7 +143,7 @@
 
         LogText "结果：docker info 显示 ${DOCKER_CONTAINERS_TOTAL} 个容器"
         DOCKER_CONTAINERS_TOTAL2=$(${DOCKERBINARY} ps -a 2> /dev/null | ${GREPBINARY} -c -v "CONTAINER")
-        LogText "结果：docker ps -a 显示 ${DOCKER_CONTAINERS_TOTAL2} 个容器"
+        LogText "结果：docker ps -一个 显示 ${DOCKER_CONTAINERS_TOTAL2} 个容器"
         if [ ! "${DOCKER_CONTAINERS_TOTAL}" = "${DOCKER_CONTAINERS_TOTAL2}" ]; then
             LogText "结果：检测到数量差异，此情况不符合预期"
             ReportSuggestion "${TEST_NO}" "检查 'docker ps -a' 和 'docker info' 的输出，确认二者报告不同容器数量的原因"

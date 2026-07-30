@@ -229,7 +229,7 @@
                 fi
 
                 # Test if Secure Boot is enabled
-                LogText "检查：确定是否使用 Secure Boot"
+                LogText "检查：确定是否使用 Secure 启动"
                 if [ -d ${ROOTDIR}sys/firmware/efi/efivars ]; then
                     FIND=$(${LSBINARY} ${ROOTDIR}sys/firmware/efi/efivars/SecureBoot-* 2> /dev/null)
                     if [ -n "${FIND}" ]; then
@@ -241,12 +241,12 @@
                                 LogText "结果：发现已启用状态的 SecureBoot 文件"
                                 UEFI_BOOTED_SECURE=1
                             else
-                                LogText "结果：系统未通过 Secure Boot 启动（文件 ${FILE} 中状态为 0）"
+                                LogText "结果：系统未通过 Secure 启动 启动（文件 ${FILE} 中状态为 0）"
                             fi
                         done
                     fi
                 else
-                    LogText "结果：系统未通过 Secure Boot 启动（未找到 SecureBoot 文件）"
+                    LogText "结果：系统未通过 Secure 启动 启动（未找到 SecureBoot 文件）"
                 fi
             ;;
             #macOS)
@@ -259,9 +259,9 @@
         if [ ${UEFI_BOOTED} -eq 1 ]; then
             Display --indent 2 --text "- 检查 UEFI 启动" --result "${STATUS_ENABLED}" --color GREEN
             if [ ${UEFI_BOOTED_SECURE} -eq 1 ]; then
-                Display --indent 2 --text "- 检查 Secure Boot" --result "${STATUS_ENABLED}" --color GREEN
+                Display --indent 2 --text "- 检查 Secure 启动" --result "${STATUS_ENABLED}" --color GREEN
             else
-                Display --indent 2 --text "- 检查 Secure Boot" --result "${STATUS_DISABLED}" --color YELLOW
+                Display --indent 2 --text "- 检查 Secure 启动" --result "${STATUS_DISABLED}" --color YELLOW
             fi
         else
             if [ ${UEFI_TESTS_PERFORMED} -eq 1 ]; then
@@ -398,7 +398,7 @@
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         if [ -f ${ROOTDIR}boot/boot1 -a -f ${ROOTDIR}boot/boot2 -a -f ${ROOTDIR}boot/loader ]; then
-            LogText "结果：在 ${ROOTDIR}boot 中发现 boot1、boot2 和 loader 文件"
+            LogText "结果：在 ${ROOTDIR}boot 中发现 启动1、启动2 和 loader 文件"
             Display --indent 2 --text "- 检查 FreeBSD 启动加载器" --result "${STATUS_FOUND}" --color GREEN
             BOOT_LOADER="FreeBSD"
             BOOT_LOADER_FOUND=1
@@ -415,7 +415,7 @@
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         if [ -f ${ROOTDIR}boot/boot1 -a -f ${ROOTDIR}boot/boot2 -a -f ${ROOTDIR}boot/loader ]; then
-            LogText "结果：在 ${ROOTDIR}boot 中发现 boot1、boot2 和 loader 文件"
+            LogText "结果：在 ${ROOTDIR}boot 中发现 启动1、启动2 和 loader 文件"
             Display --indent 2 --text "- 检查 DragonFly 启动加载器" --result "${STATUS_FOUND}" --color GREEN
             BOOT_LOADER="DragonFly"
             BOOT_LOADER_FOUND=1
@@ -464,13 +464,13 @@
                     if [ "${MACHINE_ROLE}" = "server" -o "${MACHINE_ROLE}" = "workstation" ]; then
                         Display --indent 4 --text "- 密码选项 " --result "${STATUS_WARNING}" --color RED
                         LogText "结果：LILO 未设置密码，可能被用于进入单用户模式或未经授权访问设备和数据。"
-                        ReportSuggestion "${TEST_NO}" "为 LILO 添加密码：在 lilo.conf 中第一个 'image=<name>' 行之前添加 password=<password>"
+                        ReportSuggestion "${TEST_NO}" "为 LILO 添加密码：在 lilo.conf 中第一个 'image=<name>' 行之前添加 密码=<密码>"
                         ReportWarning "${TEST_NO}" "LILO 启动加载器未设置密码"
                         AddHP 0 2
                     elif [ "${MACHINE_ROLE}" = "personal" ]; then
                         Display --indent 4 --text "- 密码选项 " --result "${STATUS_WARNING}" --color yellow
                         LogText "结果：LILO 未设置密码，可能被用于进入单用户模式或未经授权访问设备和数据。"
-                        ReportSuggestion "${TEST_NO}" "LILO 启动加载器未设置密码。为 LILO 添加密码：在 lilo.conf 中第一个 'image=<name>' 行之前添加 password=<password>"
+                        ReportSuggestion "${TEST_NO}" "LILO 启动加载器未设置密码。为 LILO 添加密码：在 lilo.conf 中第一个 'image=<name>' 行之前添加 密码=<密码>"
                         AddHP 1 2
                     else
                         LogText "结果：LILO 未设置密码，且计算机角色未知"
@@ -563,12 +563,12 @@
             Display --indent 2 --text "- 检查 ${ROOTDIR}etc/boot.conf" --result "${STATUS_FOUND}" --color GREEN
             FIND=$(${GREPBINARY} '^boot' ${ROOTDIR}etc/boot.conf)
             if [ -z "${FIND}" ]; then
-                Display --indent 4 --text "- 检查 boot 选项" --result "${STATUS_WARNING}" --color RED
+                Display --indent 4 --text "- 检查 启动 选项" --result "${STATUS_WARNING}" --color RED
                 #ReportSuggestion "${TEST_NO}" "Add 'boot' to the ${ROOTDIR}etc/boot.conf file to disable the default 5 seconds waiting time, to disallow booting into single user mode."
                 ReportWarning "${TEST_NO}" "系统可以在无需密码的情况下进入单用户模式"
             else
-                Display --indent 4 --text "- 检查 boot 选项" --result "${STATUS_OK}" --color GREEN
-                LogText "正常，boot 选项已启用。"
+                Display --indent 4 --text "- 检查 启动 选项" --result "${STATUS_OK}" --color GREEN
+                LogText "正常，启动 选项已启用。"
             fi
         else
             Display --indent 2 --text "- 检查 ${ROOTDIR}etc/boot.conf" --result "${STATUS_NOT_FOUND}" --color YELLOW
@@ -599,7 +599,7 @@
     if [ ${SKIPTEST} -eq 0 ]; then
         if HasData "${SERVICEBINARY}"; then
             # FreeBSD (Ask services(8) for enabled services)
-            LogText "搜索启动时运行的服务（service）"
+            LogText "搜索启动时运行的服务（服务）"
             FIND=$(${SERVICEBINARY} -e | ${SEDBINARY} 's|^.*\/||' | ${SORTBINARY})
         else
             # FreeBSD (Read /etc/rc.conf file for enabled services)
@@ -608,11 +608,11 @@
         fi
         COUNT=0
         for ITEM in ${FIND}; do
-            LogText "发现服务（service/rc.conf）：${ITEM}"
+            LogText "发现服务（服务/rc.conf）：${ITEM}"
             Report "boottask[]=${ITEM}"
             COUNT=$((COUNT + 1))
         done
-        Display --indent 2 --text "- 检查启动服务（service/rc.conf）" --result "${STATUS_DONE}" --color GREEN
+        Display --indent 2 --text "- 检查启动服务（服务/rc.conf）" --result "${STATUS_DONE}" --color GREEN
         Display --indent 6 --text "结果：发现 ${COUNT} 个已配置的服务/选项"
         LogText "发现 ${COUNT} 个将在启动时运行的服务/选项"
     fi
@@ -654,7 +654,7 @@
                 Report "boot_service[]=${ITEM}"
                 COUNT=$((COUNT + 1 ))
             done
-            LogText "提示：运行 svcs -a 查看所有服务"
+            LogText "提示：运行 svcs -一个 查看所有服务"
             Display --indent 2 --text "- 检查启动时启用的守护进程（svcs）" --result "${STATUS_DONE}" --color GREEN
             Display --indent 8 --text "结果：发现 ${COUNT} 个启动时启用的守护进程"
             LogText "结果：发现 ${COUNT} 个启动时启用的守护进程"
@@ -679,7 +679,7 @@
         if HasData "${SYSTEMCTLBINARY}"; then
             LogText "结果：发现 systemctl，使用它收集服务信息"
             # Running services
-            LogText "搜索正在运行的服务（仅 systemctl service 单元）"
+            LogText "搜索正在运行的服务（仅 systemctl 服务 单元）"
             FIND=$(${SYSTEMCTLBINARY} --no-legend --full --type=service --state=running | ${AWKBINARY} -F.service '{ print $1 }')
             COUNT=0
             Report "running_service_tool=systemctl"
@@ -694,7 +694,7 @@
             LogText "结果：发现 ${COUNT} 个正在运行的服务"
 
             # Services at boot
-            LogText "搜索已启用的服务（仅 systemctl service 单元）"
+            LogText "搜索已启用的服务（仅 systemctl 服务 单元）"
             FIND=$(${SYSTEMCTLBINARY} list-unit-files --no-legend --type=service --state=enabled | ${SORTBINARY} -u | ${AWKBINARY} -F.service '{ print $1 }')
             COUNT=0
             Report "boot_service_tool=systemctl"
@@ -958,7 +958,7 @@
                 ReportSuggestion "${TEST_NO}" "使用 sulogin 保护 rescue.service"
             fi
         else
-            LogText "结果：文件 ${ROOTDIR}usr/lib/systemd/system/rescue.service 不存在"
+            LogText "结果：文件 ${ROOTDIR}usr/lib/systemd/系统/rescue.service 不存在"
         fi
     fi
 #
@@ -980,7 +980,7 @@
                 Report "running_service[]=${ITEM}"
                 COUNT=$((COUNT + 1 ))
             done
-            LogText "提示：运行 rcctl ls all | grep -E '^(pf|check_quotas|library_aslr)$' 查看所有守护进程"
+            LogText "提示：运行 rcctl ls 所有 | grep -E '^(pf|check_quotas|library_aslr)$' 查看所有守护进程"
             Display --indent 2 --text "- 检查正在运行的守护进程（rcctl）" --result "${STATUS_DONE}" --color GREEN
             Display --indent 8 --text "结果：发现 ${COUNT} 个正在运行的守护进程"
             LogText "结果：发现 ${COUNT} 个正在运行的守护进程"
@@ -995,7 +995,7 @@
                 Report "boot_service[]=${ITEM}"
                 COUNT=$((COUNT + 1 ))
             done
-            LogText "提示：运行 rcctl ls all | grep -E  '^(pf|check_quotas|library_aslr)$' 查看所有守护进程"
+            LogText "提示：运行 rcctl ls 所有 | grep -E '^(pf|check_quotas|library_aslr)$' 查看所有守护进程"
             Display --indent 2 --text "- 检查启动时启用的守护进程（rcctl）" --result "${STATUS_DONE}" --color GREEN
             Display --indent 8 --text "结果：发现 ${COUNT} 个启动时启用的守护进程"
             LogText "结果：发现 ${COUNT} 个启动时启用的守护进程"
@@ -1085,9 +1085,9 @@
         SYSTEMD_VERSION=$("${SYSTEMDANALYZEBINARY}" --version | ${AWKBINARY} '/^systemd / {print $2}')
         if [ "${SYSTEMD_VERSION}" -ge 240 ]; then PREQS_MET="YES"; else SKIPREASON="systemd-analyze 版本过旧（v${SYSTEMD_VERSION}），至少需要 v240"; PREQS_MET="NO"; fi
     fi
-    Register --test-no BOOT-5264 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --os Linux --weight L --network NO --category security --description "运行 systemd-analyze security"
+    Register --test-no BOOT-5264 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --os Linux --weight L --network NO --category security --description "运行 systemd-analyze 安全"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查：运行 systemd-analyze security"
+        LogText "检查：运行 systemd-analyze 安全"
         Display --indent 2 --text "- 运行 'systemd-analyze security'"
         Display --indent 6 --text "单元名称（暴露值）和安全等级"
         Display --indent 6 --text "--------------------------------"

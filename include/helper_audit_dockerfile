@@ -63,7 +63,7 @@ fi
         if [ -n "${IS_UBUNTU}" ]; then IMAGE="ubuntu"; fi
         if [ -n "${IS_ALPINE}" ]; then IMAGE="alpine"; fi
         if [ -n "${IS_LATEST}" ]; then
-            ReportWarning "dockerfile" "使用了 latest 标签。明确指定操作系统镜像及版本，更有利于获得可重复的构建结果。"
+            ReportWarning "dockerfile" "使用了 最新 标签。明确指定操作系统镜像及版本，更有利于获得可重复的构建结果。"
         fi
 
         case ${IMAGE} in
@@ -118,7 +118,7 @@ fi
 
     FIND=$(grep "^USER" ${AUDIT_FILE} | cut -d' ' -f2 )
     if [ -z "${FIND}" ]; then
-        ReportWarning "dockerfile" "Dockerfile 中未声明用户，容器将以 root 身份执行命令。"
+        ReportWarning "dockerfile" "Dockerfile 中未声明用户，容器将以 根 身份执行命令。"
     else
         USER=$(echo ${FIND})
         Display --indent 2 --text "运行用户" --result "${USER}"

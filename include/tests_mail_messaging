@@ -40,18 +40,18 @@
 #
     # Test        : MAIL-8802
     # Description : Check Exim process status
-    Register --test-no MAIL-8802 --weight L --network NO --category security --description "Check Exim status"
+    Register --test-no MAIL-8802 --weight L --network NO --category security --description "检查 Exim 状态"
     if [ ${SKIPTEST} -eq 0  ]; then
-        LogText "Test: check Exim status"
+        LogText "检查： 检查 Exim 状态"
         if IsRunning "exim4" || IsRunning "exim"; then
-            LogText "Result: found running Exim process"
-            Display --indent 2 --text "- Exim status" --result "${STATUS_RUNNING}" --color GREEN
+            LogText "结果： 发现 运行中 Exim 进程"
+            Display --indent 2 --text "- Exim 状态" --result "${STATUS_RUNNING}" --color GREEN
             EXIM_RUNNING=1
             SMTP_DAEMON="exim"
             Report "smtp_daemon[]=exim"
         else
-            LogText "Result: no running Exim processes found"
-            if IsVerbose; then Display --indent 2 --text "- Exim status" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
+            LogText "结果： 没有 运行中 Exim 进程 发现"
+            if IsVerbose; then Display --indent 2 --text "- Exim 状态" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
 #
@@ -60,9 +60,9 @@
     # Test        : MAIL-8804
     # Description : Exim configuration options
     if [ ${EXIM_RUNNING} -eq 1 -a ! "${EXIMBINARY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no MAIL-8804 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Exim configuration options"
+    Register --test-no MAIL-8804 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Exim 配置 选项"
     if [ ${SKIPTEST} -eq 0 -a ${EXIM_RUNNING} -eq 1 ]; then
-        LogText "Test: Exim configuration options"
+        LogText "检查： Exim 配置 选项"
 
         EXIM_ROUTERS=$(${EXIMBINARY} -bP router_list)
 
@@ -89,37 +89,37 @@
         fi
 
         if [ -n "${EXIM_TYPE}" ]; then
-            LogText "Result: Exim Type - ${EXIM_TYPE}"
-            Display --indent 4 --text "- Type" --result "${EXIM_TYPE}" --color GREEN
+            LogText "结果： Exim 类型 - ${EXIM_TYPE}"
+            Display --indent 4 --text "- 类型" --result "${EXIM_TYPE}" --color GREEN
         else
-            LogText "Result: Exim Type - Not Configured"
-            Display --indent 4 --text "- Type" --result "${STATUS_NOT_CONFIGURED}" --color WHITE
+            LogText "结果： Exim 类型 - 不 已配置"
+            Display --indent 4 --text "- 类型" --result "${STATUS_NOT_CONFIGURED}" --color WHITE
         fi
 
         if [ "${EXIM_TYPE}" = "INTERNET HOST" -o "${EXIM_TYPE}" = "SMARTHOST" ]; then
-            LogText "Test: Exim Public Interfaces"
+            LogText "检查： Exim Public 接口"
             EXIM_IP=$(${EXIMBINARY} -bP local_interfaces | ${CUTBINARY} -d '=' -f2 | ${SEDBINARY} -e 's/\s*<\s*\;\?//' -e 's/\s*::0\s*\;\?//' -e 's/\s*127.0.0.1\s*\;\?//' -e 's/^\s*//' -e 's/\s*$//')
             if [ -n "${EXIM_IP}" ]; then
-                LogText "Result: ${EXIM_IP}"
-                Display --indent 4 --text "- Public Interface(s)" --result "${EXIM_IP}" --color GREEN
+                LogText "结果： ${EXIM_IP}"
+                Display --indent 4 --text "- Public 接口(s)" --result "${EXIM_IP}" --color GREEN
             else
-                LogText "Result: None"
-                Display --indent 4 --text "- Public Interface(s)" --result "NONE" --color WHITE
+                LogText "结果： 无"
+                Display --indent 4 --text "- Public 接口(s)" --result "NONE" --color WHITE
             fi
 
-            LogText "Test: Exim TLS State"
+            LogText "检查： Exim TLS State"
             EXIM_TLS=$(${EXIMBINARY} -bP tls_advertise_hosts | ${CUTBINARY} -d '=' -f2 | ${SEDBINARY} -e 's/^\s*//' -e 's/\s*$//')
             if [ -n "${EXIM_TLS}" ]; then
-                LogText "Result: Enabled"
+                LogText "结果： 已启用"
                 Display --indent 4 --text "- TLS" --result "${STATUS_ENABLED}" --color GREEN
             else
-                LogText "Result: Not enabled"
+                LogText "结果： 不 已启用"
                 Display --indent 4 --text "- TLS" --result "${STATUS_DISABLED}" --color WHITE
             fi
         fi
 
         if [ -n "${EXIM_TYPE}" -a "${EXIM_TYPE}" != "LOCAL ONLY" ]; then
-            LogText "Test: Exim Certificate and Private Key"
+            LogText "检查： Exim 证书 和 Private 键"
 
             case "${EXIM_TYPE}" in
                 "INTERNET HOST" | "SMARTHOST" )
@@ -133,34 +133,34 @@
             esac
 
             if [ -n "${EXIM_CERTIFICATE}" ]; then
-                LogText "Result: ${EXIM_CERTIFICATE}"
+                LogText "结果： ${EXIM_CERTIFICATE}"
                 if [ -f "${EXIM_CERTIFICATE}" ]; then
-                    Display --indent 4 --text "- Certificate" --result "${STATUS_FOUND}" --color GREEN
-                    LogText "Result: Certificate found"
+                    Display --indent 4 --text "- 证书" --result "${STATUS_FOUND}" --color GREEN
+                    LogText "结果： 证书 发现"
                 else
-                    Display --indent 4 --text "- Certificate" --result "${STATUS_NOT_FOUND}" --color YELLOW
-                    LogText "Result: Certificate not found"
+                    Display --indent 4 --text "- 证书" --result "${STATUS_NOT_FOUND}" --color YELLOW
+                    LogText "结果： 证书 未找到"
                 fi
             else
-                LogText "Result: Certificate not set"
-                Display --indent 4 --text "- Certificate" --result "${STATUS_NOT_CONFIGURED}" --color WHITE
+                LogText "结果： 证书 不 设置"
+                Display --indent 4 --text "- 证书" --result "${STATUS_NOT_CONFIGURED}" --color WHITE
             fi
 
             if [ -n "${EXIM_PRIVATEKEY}" ]; then
-                LogText "Result: ${EXIM_PRIVATEKEY}"
+                LogText "结果： ${EXIM_PRIVATEKEY}"
                 if [ -f "${EXIM_PRIVATEKEY}" ]; then
-                    LogText "Result: Private Key found"
-                    Display --indent 4 --text "- Private Key" --result "${STATUS_FOUND}" --color GREEN
+                    LogText "结果： Private 键 发现"
+                    Display --indent 4 --text "- Private 键" --result "${STATUS_FOUND}" --color GREEN
                 else
-                    Display --indent 4 --text "- Private Key" --result "${STATUS_NOT_FOUND}" --color YELLOW
-                    LogText "Result: Private Key not found"
+                    Display --indent 4 --text "- Private 键" --result "${STATUS_NOT_FOUND}" --color YELLOW
+                    LogText "结果： Private 键 未找到"
                 fi
             else
-                LogText "Result: Private Key not set"
-                Display --indent 4 --text "- Private Key" --result "${STATUS_NOT_CONFIGURED}" --color WHITE
+                LogText "结果： Private 键 不 设置"
+                Display --indent 4 --text "- Private 键" --result "${STATUS_NOT_CONFIGURED}" --color WHITE
             fi
 
-            LogText "Test: Exim Verify Certificates"
+            LogText "检查： Exim 验证 证书"
 
             case "${EXIM_TYPE}" in
                 "INTERNET HOST" | "SMARTHOST" )
@@ -174,18 +174,18 @@
             case "${EXIM_CERTIFICATES}" in
                 "")
                     # This condition results in a RED warning because it should never be hit
-                    LogText "Result: Verify Certificates not set"
-                    Display --indent 4 --text "- Verify Certificates not set" --result "${STATUS_WARNING}" --color RED
+                    LogText "结果： 验证 证书 不 设置"
+                    Display --indent 4 --text "- 验证 证书 不 设置" --result "${STATUS_WARNING}" --color RED
                     ;;
                 "system")
                     # This is the default setting and should be the most common
-                    LogText "Result: Verify Certificates set to system default"
-                    Display --indent 4 --text "- Verify Certificates" --result "DEFAULT" --color WHITE
+                    LogText "结果： 验证 证书 设置 到 系统 default"
+                    Display --indent 4 --text "- 验证 证书" --result "DEFAULT" --color WHITE
                     ;;
                 *)
                     # This condition should only be hit when it has been set to a custom value
-                    LogText "Result: Verify Certificates set to \"${EXIM_CERTIFICATES}\""
-                    Display --indent 4 --text "- Verify Certificates" --result "CUSTOM" --color GREEN
+                    LogText "结果： 验证 证书 设置 到 \\"${EXIM_CERTIFICATES}\\""
+                    Display --indent 4 --text "- 验证 证书" --result "CUSTOM" --color GREEN
                     ;;
             esac
 
@@ -201,36 +201,36 @@
                     ;;
             esac
 
-            LogText "Test: Exim Try Verify Hosts"
+            LogText "检查： Exim 尝试 验证 主机"
             if [ -n "${EXIM_TRY_VERIFY_HOSTS}" ]; then
-                LogText "Result: Try Verify Hosts enabled"
+                LogText "结果： 尝试 验证 主机 已启用"
                 case "${EXIM_TYPE}" in
                     "INTERNET HOST" )
-                        Display --indent 4 --text "- Try Verify Hosts" --result "${STATUS_ENABLED}" --color GREEN
+                        Display --indent 4 --text "- 尝试 验证 主机" --result "${STATUS_ENABLED}" --color GREEN
                         ;;
                     "SATELLITE" | "SMARTHOST" )
-                        Display --indent 4 --text "- Try Verify Hosts" --result "${STATUS_ENABLED}" --color YELLOW
+                        Display --indent 4 --text "- 尝试 验证 主机" --result "${STATUS_ENABLED}" --color YELLOW
                         ;;
                 esac
             else
-                LogText "Result: Try Verify Hosts not enabled"
-                Display --indent 4 --text "- Try Verify Hosts" --result "${STATUS_DISABLED}" --color WHITE
+                LogText "结果： 尝试 验证 主机 不 已启用"
+                Display --indent 4 --text "- 尝试 验证 主机" --result "${STATUS_DISABLED}" --color WHITE
             fi
 
-            LogText "Test: Exim Verify Hosts"
+            LogText "检查： Exim 验证 主机"
             if [ -n "${EXIM_VERIFY_HOSTS}" ]; then
-                LogText "Result: Verify Hosts enabled"
+                LogText "结果： 验证 主机 已启用"
                 case "${EXIM_TYPE}" in
                     "INTERNET HOST" )
-                        Display --indent 4 --text "- Verify Hosts" --result "${STATUS_ENABLED}" --color YELLOW
+                        Display --indent 4 --text "- 验证 主机" --result "${STATUS_ENABLED}" --color YELLOW
                         ;;
                     "SATELLITE" | "SMARTHOST" )
-                        Display --indent 4 --text "- Verify Hosts" --result "${STATUS_ENABLED}" --color GREEN
+                        Display --indent 4 --text "- 验证 主机" --result "${STATUS_ENABLED}" --color GREEN
                         ;;
                 esac
             else
-                LogText "Result: Verify Hosts not enabled"
-                Display --indent 4 --text "- Verify Hosts" --result "${STATUS_DISABLED}" --color WHITE
+                LogText "结果： 验证 主机 不 已启用"
+                Display --indent 4 --text "- 验证 主机" --result "${STATUS_DISABLED}" --color WHITE
             fi
         fi
     fi
@@ -241,20 +241,20 @@
     # Test        : MAIL-8814
     # Description : Check Postfix process
     # Notes       : qmgr and pickup run under postfix uid, without full path to binary
-    Register --test-no MAIL-8814 --weight L --network NO --category security --description "Check postfix process status"
+    Register --test-no MAIL-8814 --weight L --network NO --category security --description "检查 postfix 进程 状态"
     if [ ${SKIPTEST} -eq 0  ]; then
-        LogText "Test: check Postfix status"
+        LogText "检查： 检查 Postfix 状态"
         # Some other processes also use master, therefore it should include both master and postfix
         FIND1=$(${PSBINARY} ax | ${GREPBINARY} "master" | ${GREPBINARY} "postfix" | ${GREPBINARY} -v "grep")
         if [ -n "${FIND1}" ]; then
-            LogText "Result: found running Postfix process"
-            Display --indent 2 --text "- Postfix status" --result "${STATUS_RUNNING}" --color GREEN
+            LogText "结果： 发现 运行中 Postfix 进程"
+            Display --indent 2 --text "- Postfix 状态" --result "${STATUS_RUNNING}" --color GREEN
             POSTFIX_RUNNING=1
             SMTP_DAEMON="postfix"
             Report "smtp_daemon[]=postfix"
         else
-            LogText "Result: no running Postfix processes found"
-            if IsVerbose; then Display --indent 2 --text "- Postfix status" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
+            LogText "结果： 没有 运行中 Postfix 进程 发现"
+            if IsVerbose; then Display --indent 2 --text "- Postfix 状态" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
 #
@@ -263,13 +263,13 @@
     # Test        : MAIL-8816
     # Description : Check Postfix configuration
     if [ ${POSTFIX_RUNNING} -eq 1 -a ! "${POSTFIXBINARY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no MAIL-8816 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check Postfix configuration"
+    Register --test-no MAIL-8816 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 Postfix 配置"
     if [ ${SKIPTEST} -eq 0  ]; then
-        Display --indent 4 --text "- Postfix configuration" --result "${STATUS_FOUND}" --color GREEN
+        Display --indent 4 --text "- Postfix 配置" --result "${STATUS_FOUND}" --color GREEN
         POSTFIX_CONFIGDIR=$(${POSTCONFBINARY} 2> /dev/null | ${GREPBINARY} '^config_directory' | ${AWKBINARY} '{ print $3 }')
         POSTFIX_CONFIGFILE="${POSTFIX_CONFIGDIR}/main.cf"
-        LogText "Postfix configuration directory: ${POSTFIX_CONFIGDIR}"
-        LogText "Postfix configuration file: ${POSTFIX_CONFIGFILE}"
+        LogText "Postfix 配置 目录： ${POSTFIX_CONFIGDIR}"
+        LogText "Postfix 配置文件： ${POSTFIX_CONFIGFILE}"
     fi
 #
 #################################################################################
@@ -277,18 +277,18 @@
     # Test        : MAIL-8817
     # Description : Check Postfix configuration for error
     if [ ${POSTFIX_RUNNING} -eq 1 -a ! "${POSTFIXBINARY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no MAIL-8817 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check Postfix configuration errors"
+    Register --test-no MAIL-8817 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 Postfix 配置 errors"
     if [ ${SKIPTEST} -eq 0  ]; then
-        LogText "Test: using postconf to see if Postfix configuration has errors"
+        LogText "检查： 使用 postconf 到 see 如果 Postfix 配置 有 errors"
         FIND=$(${POSTCONFBINARY} 2>&1 | ${GREPBINARY} "warning:")
         if [ -n "${FIND}" ]; then
             Report "postfix_config_error=1"
-            Display --indent 6 --text "- Postfix configuration errors" --result "${STATUS_WARNING}" --color RED
-            LogText "Result: found an error or warning in the Postfix configuration. Manual check suggested."
-            ReportSuggestion "${TEST_NO}" "发现 Postfix 配置错误" "${POSTFIX_CONFIGFILE}" "text:运行 postconf > /dev/null"
+            Display --indent 6 --text "- Postfix 配置 errors" --result "${STATUS_WARNING}" --color RED
+            LogText "结果： 发现 一个 错误 或 警告 在 Postfix 配置. Manual 检查 suggested."
+            ReportSuggestion "${TEST_NO}" "发现 Postfix 配置错误" "${POSTFIX_CONFIGFILE}" "text：运行 postconf > /dev/null"
         else
-            LogText "Result: all looks to be fine with Postfix configuration"
-            if IsVerbose; then Display --indent 6 --text "- Postfix configuration errors" --result "${STATUS_OK}" --color GREEN; fi
+            LogText "结果： 所有 看起来 到 为 正常 使用 Postfix 配置"
+            if IsVerbose; then Display --indent 6 --text "- Postfix 配置 errors" --result "${STATUS_OK}" --color GREEN; fi
         fi
     fi
 #
@@ -297,9 +297,9 @@
     # Test        : MAIL-8818
     # Description : Check Postfix configuration
     if [ ${POSTFIX_RUNNING} -eq 1 -a ! "${POSTFIXBINARY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no MAIL-8818 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check Postfix configuration: banner"
+    Register --test-no MAIL-8818 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 Postfix 配置： banner"
     if [ ${SKIPTEST} -eq 0  ]; then
-        LogText "Test: Checking Postfix banner"
+        LogText "检查： 检查 Postfix banner"
         FIND1=$(${POSTCONFBINARY} 2> /dev/null | ${GREPBINARY} '^smtpd_banner' | ${GREPBINARY} 'postfix')
         FIND2=$(${POSTCONFBINARY} 2> /dev/null | ${GREPBINARY} '^smtpd_banner' | ${GREPBINARY} '$mail_name')
         FIND3=$(${POSTCONFBINARY} 2> /dev/null | ${GREPBINARY} '^mail_name' | ${GREPBINARY} -i 'postfix')
@@ -325,9 +325,9 @@
 
         if [ ${SHOWWARNING} -eq 1 ]; then
             Display --indent 6 --text "- Postfix banner" --result "${STATUS_WARNING}" --color RED
-            LogText "结果：SMTP 横幅中发现操作系统或 mail_name，或者 mail_name 包含 'Postfix'。"
-            ReportWarning "${TEST_NO}" "Found some information disclosure in SMTP banner (OS or software name)"
-            ReportSuggestion "${TEST_NO}" "You are advised to hide the mail_name (option: smtpd_banner) from your postfix configuration. Use postconf -e or change your main.cf file (${POSTFIX_CONFIGFILE})"
+            LogText "结果：SMTP 横幅中发现操作系统或 邮件_name，或者 邮件_name 包含 'Postfix'。"
+            ReportWarning "${TEST_NO}" "发现 一些 信息 disclosure 在 SMTP banner (OS 或 software name)"
+            ReportSuggestion "${TEST_NO}" "You 是 advised 到 hide 邮件_name (选项： smtpd_banner) 从 你的 postfix 配置. 使用 postconf -e 或 更改 你的 main.cf 文件 (${POSTFIX_CONFIGFILE})"
         else
             if IsVerbose; then Display --indent 6 --text "- Postfix banner" --result "${STATUS_OK}" --color GREEN; fi
         fi
@@ -336,12 +336,12 @@
 #################################################################################
 #
     # Test        : MAIL-8820
-    Register --test-no MAIL-8820 --weight L --network NO --category security --description "Postfix configuration scan"
+    Register --test-no MAIL-8820 --weight L --network NO --category security --description "Postfix 配置 扫描"
     if [ ${SKIPTEST} -eq 0  ]; then
         if [ "$(postconf -h inet_interfaces 2> /dev/null)" = "all" ]; then
             if ! SkipAtomicTest "${TEST_NO}:disable_vrfy_command"; then
                 if [ "$(postconf -h disable_vrfy_command 2> /dev/null)" = "no" ]; then
-                    ReportSuggestion "${TEST_NO}:disable_vrfy_command" "禁用 'VRFY' 命令" "disable_vrfy_command=no" "text:运行 postconf -e disable_vrfy_command=yes 修改该值"
+                    ReportSuggestion "${TEST_NO}:disable_vrfy_command" "禁用 'VRFY' 命令" "禁用_vrfy_命令=没有" "text：运行 postconf -e 禁用_vrfy_命令=是 修改该值"
                 fi
             fi
         fi
@@ -351,20 +351,20 @@
 #
     # Test        : MAIL-8838
     # Description : Check Dovecot process
-    Register --test-no MAIL-8838 --weight L --network NO --category security --description "Check dovecot process"
+    Register --test-no MAIL-8838 --weight L --network NO --category security --description "检查 dovecot 进程"
     if [ ${SKIPTEST} -eq 0  ]; then
-        LogText "Test: check dovecot status"
+        LogText "检查： 检查 dovecot 状态"
         if IsRunning "dovecot"; then
-            LogText "Result: found running dovecot process"
-            Display --indent 2 --text "- Dovecot status" --result "${STATUS_RUNNING}" --color GREEN
+            LogText "结果： 发现 运行中 dovecot 进程"
+            Display --indent 2 --text "- Dovecot 状态" --result "${STATUS_RUNNING}" --color GREEN
             DOVECOT_RUNNING=1
             IMAP_DAEMON="dovecot"
             POP3_DAEMON="dovecot"
             Report "pop3_daemon[]=dovecot"
             Report "imap_daemon[]=dovecot"
         else
-            LogText "Result: dovecot not found"
-            if IsVerbose; then Display --indent 2 --text "- Dovecot status" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
+            LogText "结果： dovecot 未找到"
+            if IsVerbose; then Display --indent 2 --text "- Dovecot 状态" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
 #
@@ -372,18 +372,18 @@
 #
     # Test        : MAIL-8860
     # Description : Check Qmail process status
-    Register --test-no MAIL-8860 --weight L --network NO --category security --description "Check Qmail status"
+    Register --test-no MAIL-8860 --weight L --network NO --category security --description "检查 Qmail 状态"
     if [ ${SKIPTEST} -eq 0  ]; then
-        LogText "Test: check Qmail status"
+        LogText "检查： 检查 Qmail 状态"
         if IsRunning "qmail-smtpd"; then
-            LogText "Result: found running Qmail process"
-            Display --indent 2 --text "- Qmail status" --result "${STATUS_RUNNING}" --color GREEN
+            LogText "结果： 发现 运行中 Qmail 进程"
+            Display --indent 2 --text "- Qmail 状态" --result "${STATUS_RUNNING}" --color GREEN
             QMAIL_RUNNING=1
             SMTP_DAEMON="qmail"
             Report "smtp_daemon[]=qmail"
         else
-            LogText "Result: no running Qmail processes found"
-            if IsVerbose; then Display --indent 2 --text "- Qmail status" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
+            LogText "结果： 没有 运行中 Qmail 进程 发现"
+            if IsVerbose; then Display --indent 2 --text "- Qmail 状态" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
 #
@@ -391,18 +391,18 @@
 #
     # Test        : MAIL-8880
     # Description : Check Sendmail process status
-    Register --test-no MAIL-8880 --weight L --network NO --category security --description "Check Sendmail status"
+    Register --test-no MAIL-8880 --weight L --network NO --category security --description "检查 Sendmail 状态"
     if [ ${SKIPTEST} -eq 0  ]; then
-        LogText "Test: check sendmail status"
+        LogText "检查： 检查 sendmail 状态"
         if IsRunning "sendmail"; then
-            LogText "Result: found running Sendmail process"
-            Display --indent 2 --text "- Sendmail status" --result "${STATUS_RUNNING}" --color GREEN
+            LogText "结果： 发现 运行中 Sendmail 进程"
+            Display --indent 2 --text "- Sendmail 状态" --result "${STATUS_RUNNING}" --color GREEN
             SENDMAIL_RUNNING=1
             SMTP_DAEMON="sendmail"
             Report "smtp_daemon[]=sendmail"
         else
-            LogText "Result: no running Sendmail processes found"
-            if IsVerbose; then Display --indent 2 --text "- Sendmail status" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
+            LogText "结果： 没有 运行中 Sendmail 进程 发现"
+            if IsVerbose; then Display --indent 2 --text "- Sendmail 状态" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
 #
@@ -411,18 +411,18 @@
     # Test        : MAIL-8920
     # Description : Check OpenSMTPD process status
     if [ -n "${SMTPCTLBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no MAIL-8920 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check OpenSMTPD status"
+    Register --test-no MAIL-8920 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 OpenSMTPD 状态"
     if [ ${SKIPTEST} -eq 0  ]; then
-        LogText "Test: check smtpd status"
+        LogText "检查： 检查 smtpd 状态"
         FIND=$(${PSBINARY} ax | ${GREPBINARY} -E "(/smtpd|smtpd: \[priv\]|smtpd: smtp)" | ${GREPBINARY} -v "grep")
         if [ ! "${FIND}" = "" ]; then
-            LogText "Result: found running smtpd process"
-            Display --indent 2 --text "- OpenSMTPD status" --result "${STATUS_RUNNING}" --color GREEN
+            LogText "结果： 发现 运行中 smtpd 进程"
+            Display --indent 2 --text "- OpenSMTPD 状态" --result "${STATUS_RUNNING}" --color GREEN
             OPENSMTPD_RUNNING=1
             Report "smtp_daemon[]=opensmtpd"
         else
-            LogText "Result: smtpd not found"
-            if IsVerbose; then Display --indent 2 --text "- OpenSMTPD status" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
+            LogText "结果： smtpd 未找到"
+            if IsVerbose; then Display --indent 2 --text "- OpenSMTPD 状态" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
 #

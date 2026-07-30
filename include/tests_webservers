@@ -57,23 +57,23 @@
     # Notes       : Do not run on NetBSD, -v is unknown option for httpd binary
     #               On OpenBSD do not run /usr/sbin/httpd with -v: builtin non-Apache
     if [ ! "${OS}" = "NetBSD" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6622 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Checking Apache presence"
+    Register --test-no HTTP-6622 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 Apache presence"
     if [ ${SKIPTEST} -eq 0 ]; then
         if [ "${OS}" = "OpenBSD" -a "${HTTPDBINARY}" = "/usr/sbin/httpd" ]; then HTTPDBINARY=""; fi
         if IsEmpty "${HTTPDBINARY}"; then
-            Display --indent 2 --text "- Checking Apache" --result "${STATUS_NOT_FOUND}" --color WHITE
+            Display --indent 2 --text "- 检查 Apache" --result "${STATUS_NOT_FOUND}" --color WHITE
         else
-            LogText "Test: Scanning for Apache binary"
+            LogText "检查： 扫描 用于 Apache 程序"
             IS_APACHE=$(${HTTPDBINARY} -v 2> /dev/null | ${GREPBINARY} -E '[aA]pache')
             if IsEmpty "${IS_APACHE}"; then
-                LogText "Result: ${HTTPDBINARY} is not Apache"
-                Display --indent 2 --text "- Checking Apache (binary ${HTTPDBINARY})" --result "NO MATCH" --color WHITE
+                LogText "结果： ${HTTPDBINARY} 是 不 Apache"
+                Display --indent 2 --text "- 检查 Apache (程序 ${HTTPDBINARY})" --result "NO MATCH" --color WHITE
             else
-                Display --indent 2 --text "- Checking Apache (binary ${HTTPDBINARY})" --result "${STATUS_FOUND}" --color GREEN
-                LogText "Result: ${HTTPDBINARY} seems to be Apache HTTP daemon"
+                Display --indent 2 --text "- 检查 Apache (程序 ${HTTPDBINARY})" --result "${STATUS_FOUND}" --color GREEN
+                LogText "结果： ${HTTPDBINARY} 似乎 到 为 Apache HTTP 守护进程"
                 APACHE_INSTALLED=1
                 APACHE_VERSION=$(${HTTPDBINARY} -v 2> /dev/null | ${GREPBINARY} "^Server version:" | ${AWKBINARY} '{ print $3 }' | ${AWKBINARY} -F/ '{ print $2 }')
-                LogText "Apache version: ${APACHE_VERSION}"
+                LogText "Apache 版本： ${APACHE_VERSION}"
                 Report "apache_version=${APACHE_VERSION}"
             fi
         fi
@@ -93,7 +93,7 @@
     else
         PREQS_MET="NO"
     fi
-    Register --test-no HTTP-6624 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Testing main Apache configuration file"
+    Register --test-no HTTP-6624 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Testing main Apache 配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         APACHE_CONFIGFILE=""
         APACHE_TEST=$(${HTTPDBINARY} -V 2> /dev/null | ${GREPBINARY} "\-D SERVER_CONFIG_FILE=" | ${SEDBINARY} 's/[ ]-D SERVER_CONFIG_FILE=//' | ${TRBINARY} -d '"' | ${TRBINARY} -d ' ' | ${TRBINARY} -d '[:cntrl:]')
@@ -104,19 +104,19 @@
             # We found a possible match. Checking if it's valid filename. If not, we need to add a prefix
             if [ -f ${APACHE_TEST} ]; then
                 APACHE_CONFIGFILE="${APACHE_TEST}"
-                Display --indent 6 --text "Info: Configuration file found (${APACHE_CONFIGFILE})"
+                Display --indent 6 --text "信息： 配置 文件 发现 (${APACHE_CONFIGFILE})"
             else
                 # Probably the prefix is missing, so we are going to search that
                 APACHE_HTTPDROOT=$(${HTTPDBINARY} -V 2> /dev/null | ${GREPBINARY} "\-D HTTPD_ROOT=" | ${SEDBINARY} 's/[ ]-D HTTPD_ROOT=//' | ${TRBINARY} -d '"' | ${TRBINARY} -d ' ')
                 APACHE_TESTFILE="${APACHE_HTTPDROOT}/${APACHE_TEST}"
                 if [ -f ${APACHE_TESTFILE} ]; then
                     APACHE_CONFIGFILE="${APACHE_TESTFILE}"
-                    Display --indent 6 --text "Info: Configuration file found (${APACHE_CONFIGFILE})"
-                    LogText "Result: Configuration file found (${APACHE_CONFIGFILE})"
+                    Display --indent 6 --text "信息： 配置 文件 发现 (${APACHE_CONFIGFILE})"
+                    LogText "结果： 配置 文件 发现 (${APACHE_CONFIGFILE})"
                 else
-                    LogText "Result: File or directory ${APACHE_TESTFILE} does not exist"
+                    LogText "结果： 文件 或 目录 ${APACHE_TESTFILE} 不存在"
                     Display --indent 6 --text "[注意] 发现可能的目录或文件片段，但仍无法确定实际配置文件，跳过部分 Apache 相关检查"
-                    ReportException "${TEST_NO}:1" "Found some unknown directory or file references in Apache configuration"
+                    ReportException "${TEST_NO}:1" "发现 一些 未知 目录 或 文件 references 在 Apache 配置"
                     LogText "注意：如果只安装了 Apache 二进制软件包，配置文件可能缺失。请确认是否确实需要 Apache 软件包。"
                 fi
             fi
@@ -128,7 +128,7 @@
     # Test        : HTTP-6626
     # Description : Testing other Apache configuration files
     if [ ${APACHE_INSTALLED} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6626 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Testing other Apache configuration file"
+    Register --test-no HTTP-6626 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Testing other Apache 配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         for DIR in ${sTEST_APACHE_TARGETS}; do
             if [ -d ${DIR} ]; then
@@ -145,7 +145,7 @@
 
         # Check every configuration file
         for I in $(cat ${TMPFILE}); do
-            LogText "Apache config file: ${I}"
+            LogText "Apache config 文件： ${I}"
 
             FileIsReadable ${I}
             if [ ${CANREAD} -eq 1 ]; then
@@ -164,25 +164,25 @@
                     fi
                 done
             else
-                LogText "Result: can not read configuration file with this user ID"
-                ReportException "${TEST_NO}:1" "Can not read configuration file $I"
+                LogText "结果： 可以 不 读取 配置文件 使用 此 用户 ID"
+                ReportException "${TEST_NO}:1" "可以 不 读取 配置文件 $I"
             fi
         done
 
         # Log all virtual hosts we found
             for J in ${tVHOSTS}; do
                 if [ -n "${J}" ]; then
-                    LogText "Virtual host: ${J}"
+                    LogText "虚拟 主机： ${J}"
                     #Report "apache_vhost_name[]=${J}"
                 fi
             done
 
         # Show number of vhosts if we found any
-        LogText "Result: found ${cVHOSTS} virtual hosts"
+        LogText "结果： 发现 ${cVHOSTS} 虚拟 主机"
         if [ ${cVHOSTS} -gt 0 ]; then
-            Display --indent 6 --text "Info: Found ${cVHOSTS} virtual hosts"
+            Display --indent 6 --text "信息： 发现 ${cVHOSTS} 虚拟 主机"
         else
-            Display --indent 6 --text "Info: No virtual hosts found"
+            Display --indent 6 --text "信息： 没有 虚拟 主机 发现"
         fi
     fi
 
@@ -220,9 +220,9 @@
     # Test        : HTTP-6632
     # Description : Search for available Apache modules
     if [ ${APACHE_INSTALLED} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6632 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Determining all available Apache modules"
+    Register --test-no HTTP-6632 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Determining 所有 可用 Apache 模块"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: searching available Apache modules"
+        LogText "检查： 搜索 可用 Apache 模块"
         COUNT=0
         for DIR in ${APACHE_MODULES_LOCS}; do
             DirectoryExists ${DIR}
@@ -230,17 +230,17 @@
                 FIND=$(${FINDBINARY} ${DIR} -name "mod_*" -print | ${SORTBINARY})
                 for ITEM in ${FIND}; do
                     Report "apache_module[]=${ITEM}"
-                    LogText "Result: found Apache module ${ITEM}"
+                    LogText "结果： 发现 Apache 模块 ${ITEM}"
                     COUNT=$((COUNT + 1))
                 done
             fi
         done
         if [ ${COUNT} -eq 0 ]; then
             Display --indent 4 --text "* 可加载模块" --result "${STATUS_NONE}" --color WHITE
-            ReportException "${TEST_NO}:1" "No loadable Apache modules found"
+            ReportException "${TEST_NO}:1" "没有 loadable Apache 模块 发现"
         else
             Display --indent 4 --text "* 可加载模块" --result "${STATUS_FOUND} (${COUNT})" --color GREEN
-            Display --indent 8 --text "- Found ${COUNT} loadable modules"
+            Display --indent 8 --text "- 发现 ${COUNT} loadable 模块"
         fi
     fi
 #
@@ -249,16 +249,16 @@
     # Test        : HTTP-6640
     # Description : Search for special Apache modules: evasive
     if [ ${APACHE_INSTALLED} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6640 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Determining existence of specific Apache modules"
+    Register --test-no HTTP-6640 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Determining existence 的 specific Apache 模块"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check modules, module
         if CheckItem "apache_module" "/mod_evasive([0-9][0-9])?.so"; then
-            Display --indent 10 --text "mod_evasive: anti-DoS/brute force" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 10 --text "mod_evasive： anti-DoS/brute force" --result "${STATUS_FOUND}" --color GREEN
             AddHP 3 3
         else
-            Display --indent 10 --text "mod_evasive: anti-DoS/brute force" --result "${STATUS_NOT_FOUND}" --color WHITE
+            Display --indent 10 --text "mod_evasive： anti-DoS/brute force" --result "${STATUS_NOT_FOUND}" --color WHITE
             AddHP 2 3
-            ReportSuggestion "${TEST_NO}" "Install Apache mod_evasive to guard webserver against DoS/brute force attempts"
+            ReportSuggestion "${TEST_NO}" "安装 Apache mod_evasive 到 guard webserver against DoS/brute force attempts"
         fi
     fi
 #
@@ -268,7 +268,7 @@
     # Description : Search for special Apache modules: Quality of Service
     # Notes       : Was mod_qos before. Since Apache 2.2.15 mod_reqtimeout
     if [ ${APACHE_INSTALLED} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6641 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Determining existence of specific Apache modules"
+    Register --test-no HTTP-6641 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Determining existence 的 specific Apache 模块"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check modules, module
         if CheckItem "apache_module" "/mod_(reqtimeout|qos).so"; then
@@ -277,7 +277,7 @@
         else
             Display --indent 10 --text "mod_reqtimeout/mod_qos" --result "${STATUS_NOT_FOUND}" --color WHITE
             AddHP 2 3
-            ReportSuggestion "${TEST_NO}" "Install Apache mod_reqtimeout or mod_qos to guard webserver against Slowloris attacks"
+            ReportSuggestion "${TEST_NO}" "安装 Apache mod_reqtimeout 或 mod_qos 到 guard webserver against Slowloris attacks"
         fi
     fi
 #
@@ -286,16 +286,16 @@
     # Test        : HTTP-6643
     # Description : Search for special Apache modules: security
     if [ ${APACHE_INSTALLED} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6643 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Determining existence of specific Apache modules"
+    Register --test-no HTTP-6643 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Determining existence 的 specific Apache 模块"
     if [ ${SKIPTEST} -eq 0 ]; then
         # Check modules, module
         if CheckItem "apache_module" "/mod_security(2|3).so" ; then
-            Display --indent 10 --text "ModSecurity: web application firewall" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 10 --text "ModSecurity： Web application 防火墙" --result "${STATUS_FOUND}" --color GREEN
             AddHP 3 3
         else
-            Display --indent 10 --text "ModSecurity: web application firewall" --result "${STATUS_NOT_FOUND}" --color WHITE
+            Display --indent 10 --text "ModSecurity： Web application 防火墙" --result "${STATUS_NOT_FOUND}" --color WHITE
             AddHP 2 3
-            ReportSuggestion "${TEST_NO}" "Install Apache modsecurity to guard webserver against web application attacks"
+            ReportSuggestion "${TEST_NO}" "安装 Apache modsecurity 到 guard webserver against Web application attacks"
         fi
     fi
 #
@@ -304,7 +304,7 @@
     # Test        : HTTP-6660
     # Description : Search for "TraceEnable off" in configuration files
     if [ ${APACHE_INSTALLED} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6660 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Checking Apache security setting: TraceEnable"
+    Register --test-no HTTP-6660 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 Apache 安全 设置： TraceEnable"
     if [ ${SKIPTEST} -eq 0 ]; then
         for DIR in ${sTEST_APACHE_TARGETS}; do
             if [ -d ${DIR} ]; then
@@ -318,18 +318,18 @@
             for APACHE_CONFFILE in $(cat ${TMPFILE3}); do
                 TRACEENABLE=$( ${GREPBINARY} -i -E '^TraceEnable' ${APACHE_CONFFILE} | ${AWKBINARY} '{print $2}' )
                 if [ ! ${TRACEENABLE} ]; then
-                    LogText "Result: no TraceEnable setting found in ${APACHE_CONFFILE}"
-                    Display --indent 4 --text "  ${APACHE_CONFFILE}" --result "${STATUS_NOT_FOUND}" --color WHITE
+                    LogText "结果： 没有 TraceEnable 设置 发现 在 ${APACHE_CONFFILE}"
+                    Display --indent 4 --text " ${APACHE_CONFFILE}" --result "${STATUS_NOT_FOUND}" --color WHITE
                 else
                     TRACEENABLED_SETTING=$( echo ${TRACEENABLE} | tr 'A-Z' 'a-z' )
                     if [ "x${TRACEENABLED_SETTING}" = 'xoff' ]; then
                         LogText "结果：在 ${APACHE_CONFFILE} 中发现 TraceEnable 设置为 'off'"
                         Report "Apache setting: 'TraceEnable Off' in ${APACHE_CONFFILE}"
-                        Display --indent 4 --text "  ${APACHE_CONFFILE}" --result "${STATUS_FOUND}" --color GREEN
+                        Display --indent 4 --text " ${APACHE_CONFFILE}" --result "${STATUS_FOUND}" --color GREEN
                     else
                         LogText "结果：发现 TraceEnable 设置为 '"${TRACEENABLE}"' in ${APACHE_CONFFILE}"
                         Report "Apache setting: 'TraceEnable "${TRACEENABLE}"' in ${APACHE_CONFFILE}"
-                        Display --indent 4 --text "  ${APACHE_CONFFILE}" --result "${STATUS_SUGGESTION}" --color YELLOW
+                        Display --indent 4 --text " ${APACHE_CONFFILE}" --result "${STATUS_SUGGESTION}" --color YELLOW
                         ReportSuggestion "${TEST_NO}" "建议在 ${APACHE_CONFFILE} 中设置 'TraceEnable Off'" "仅在测试和诊断时将 TraceEnable 设置为 'On' 或 'extended'。"
                     fi
                 fi
@@ -342,17 +342,17 @@
 #
     # Test        : HTTP-6702
     # Description : Search for nginx process
-    Register --test-no HTTP-6702 --weight L --network NO --category security --description "Check nginx process"
+    Register --test-no HTTP-6702 --weight L --network NO --category security --description "检查 nginx 进程"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: searching running nginx process"
+        LogText "检查： 搜索 运行中 nginx 进程"
         if IsRunning "nginx"; then
-            LogText "Result: found running nginx process(es)"
-            Display --indent 2 --text "- Checking nginx" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果： 发现 运行中 nginx 进程(es)"
+            Display --indent 2 --text "- 检查 nginx" --result "${STATUS_FOUND}" --color GREEN
             NGINX_RUNNING=1
             Report "nginx_running=1"
         else
-            LogText "Result: no running nginx process found"
-            Display --indent 2 --text "- Checking nginx" --result "${STATUS_NOT_FOUND}" --color WHITE
+            LogText "结果： 没有 运行中 nginx 进程 发现"
+            Display --indent 2 --text "- 检查 nginx" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
 #
@@ -361,23 +361,23 @@
     # Test        : HTTP-6704
     # Description : Search for nginx configuration file
     if [ ${NGINX_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6704 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check nginx configuration file"
+    Register --test-no HTTP-6704 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 nginx 配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: searching nginx configuration file"
+        LogText "检查： 搜索 nginx 配置文件"
         for DIR in ${NGINX_CONF_LOCS}; do
             if [ -f ${DIR}/nginx.conf ]; then
                 NGINX_CONF_LOCATION="${DIR}/nginx.conf"
-                LogText "Found file ${NGINX_CONF_LOCATION}"
+                LogText "发现 文件 ${NGINX_CONF_LOCATION}"
                 NGINX_CONF_FILES="${DIR}/nginx.conf"
             fi
         done
         if HasData "${NGINX_CONF_LOCATION}"; then
-            LogText "Result: found nginx configuration file"
+            LogText "结果： 发现 nginx 配置文件"
             Report "nginx_main_conf_file=${NGINX_CONF_LOCATION}"
-            Display --indent 4 --text "- Searching nginx configuration file" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- 搜索 nginx 配置文件" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: no nginx configuration file found"
-            Display --indent 2 --text "- Searching nginx configuration file" --result "${STATUS_NOT_FOUND}" --color WHITE
+            LogText "结果： 没有 nginx 配置文件 发现"
+            Display --indent 2 --text "- 搜索 nginx 配置文件" --result "${STATUS_NOT_FOUND}" --color WHITE
         fi
     fi
 #
@@ -387,7 +387,7 @@
     # Description : Search for includes within nginx configuration file
     # Notes       : Daemon nginx should be running, nginx.conf should be found
     if [ ${NGINX_RUNNING} -eq 1 -a -n "${NGINX_CONF_LOCATION}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6706 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check for additional nginx configuration files"
+    Register --test-no HTTP-6706 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 用于 additional nginx 配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         CreateTempFile || ExitFatal
         TMPFILE="${TEMP_FILE}"
@@ -402,7 +402,7 @@
                 # Ensure that we are parsing normal files
                 if [ -f ${J} ]; then
                     COUNT=$((COUNT + 1))
-                    LogText "Result: found Nginx configuration file ${J}"
+                    LogText "结果： 发现 Nginx 配置文件 ${J}"
                     Report "nginx_sub_conf_file[]=${J}"
                     FileIsReadable ${J}
                     if [ ${CANREAD} -eq 1 ]; then
@@ -426,9 +426,9 @@
         if [ -f ${TMPFILE} ]; then rm -f ${TMPFILE}; fi
 
         if [ ${COUNT} -eq 0 ]; then
-            LogText "Result: no nginx include statements found"
+            LogText "结果： 没有 nginx 包含 statements 发现"
         else
-            Display --indent 6 --text "- Found nginx includes" --result "${COUNT} FOUND" --color GREEN
+            Display --indent 6 --text "- 发现 nginx includes" --result "${COUNT} FOUND" --color GREEN
         fi
     fi
 #
@@ -438,10 +438,10 @@
     # Description : Check discovered nginx configuration settings for further hardening
     # Notes       : Daemon of nginx should be running, nginx.conf should be found
     if [ ${NGINX_RUNNING} -eq 1 -a -n "${NGINX_CONF_FILES}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6708 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check discovered nginx configuration settings"
+    Register --test-no HTTP-6708 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 发现 nginx 配置 设置"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: start parsing all discovered nginx options"
-        Display --indent 4 --text "- Parsing configuration options"
+        LogText "检查： 开始 parsing 所有 发现 nginx 选项"
+        Display --indent 4 --text "- Parsing 配置 选项"
         for FILE in ${NGINX_CONF_FILES}; do
             FILENAME=$(echo ${FILE} | ${AWKBINARY} -F/ '{print $NF}')
             if [ ! "${FILENAME}" = "mime.types" ]; then
@@ -478,49 +478,49 @@
     # Description : Check SSL configuration of nginx
     # Notes       : Daemon of nginx should be running, nginx.conf should be found
     if [ ${NGINX_RUNNING} -eq 1 -a -n "${NGINX_CONF_LOCATION}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6710 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check nginx SSL configuration settings"
+    Register --test-no HTTP-6710 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 nginx SSL 配置 设置"
     if [ ${SKIPTEST} -eq 0 ]; then
         NGINX_SSL_SUGGESTION=0
         if [ ${NGINX_SSL_ON} -eq 1 ]; then
-            LogText "Result: SSL is configured in nginx on one or more virtual hosts"
-            Display --indent 6 --text "- SSL configured" --result "${STATUS_YES}" --color GREEN
+            LogText "结果： SSL 是 已配置 在 nginx 在 一个 或 更多 虚拟 主机"
+            Display --indent 6 --text "- SSL 已配置" --result "${STATUS_YES}" --color GREEN
             AddHP 5 5
             # Cipher tests
             if [ ${NGINX_SSL_CIPHERS} -eq 1 ]; then
-                Display --indent 8 --text "- Ciphers configured" --result "${STATUS_YES}" --color GREEN
+                Display --indent 8 --text "- Ciphers 已配置" --result "${STATUS_YES}" --color GREEN
             else
-                Display --indent 8 --text "- Ciphers configured" --result "${STATUS_NO}" --color RED
+                Display --indent 8 --text "- Ciphers 已配置" --result "${STATUS_NO}" --color RED
                 NGINX_SSL_SUGGESTION=1
             fi
 
             if [ ${NGINX_SSL_PREFER_SERVER_CIPHERS} -eq 1 ]; then
-                Display --indent 8 --text "- Prefer server ciphers" --result "${STATUS_YES}" --color GREEN
+                Display --indent 8 --text "- Prefer 服务器 ciphers" --result "${STATUS_YES}" --color GREEN
             else
-                Display --indent 8 --text "- Prefer server ciphers" --result "${STATUS_NO}" --color RED
+                Display --indent 8 --text "- Prefer 服务器 ciphers" --result "${STATUS_NO}" --color RED
                 NGINX_SSL_SUGGESTION=1
             fi
 
             if [ ${NGINX_SSL_PROTOCOLS} -eq 1 ]; then
-                Display --indent 8 --text "- Protocols configured" --result "${STATUS_YES}" --color GREEN
+                Display --indent 8 --text "- Protocols 已配置" --result "${STATUS_YES}" --color GREEN
                 if [ ${NGINX_WEAK_SSL_PROTOCOL_FOUND} -eq 0 ]; then
-                    Display --indent 10 --text "- Insecure protocols found" --result "${STATUS_NO}" --color GREEN
+                    Display --indent 10 --text "- Insecure protocols 发现" --result "${STATUS_NO}" --color GREEN
                 else
-                    Display --indent 10 --text "- Insecure protocols found" --result "${STATUS_YES}" --color RED
-                    ReportSuggestion "${TEST_NO}" "Disable weak protocol in nginx configuration"
+                    Display --indent 10 --text "- Insecure protocols 发现" --result "${STATUS_YES}" --color RED
+                    ReportSuggestion "${TEST_NO}" "禁用 较弱 协议 在 nginx 配置"
                 fi
             else
-                Display --indent 8 --text "- Protocols configured" --result "${STATUS_NO}" --color RED
+                Display --indent 8 --text "- Protocols 已配置" --result "${STATUS_NO}" --color RED
                 NGINX_SSL_SUGGESTION=1
             fi
         else
-            LogText "Result: No SSL configuration found"
-            Display --indent 6 --text "- SSL configured" --result "${STATUS_NO}" --color RED
-            ReportSuggestion "${TEST_NO}" "Add HTTPS to nginx virtual hosts for enhanced protection of sensitive data and privacy"
+            LogText "结果： 没有 SSL 配置 发现"
+            Display --indent 6 --text "- SSL 已配置" --result "${STATUS_NO}" --color RED
+            ReportSuggestion "${TEST_NO}" "添加 HTTPS 到 nginx 虚拟 主机 用于 enhanced protection 的 sensitive 数据 和 privacy"
             AddHP 1 5
         fi
         if [ ${NGINX_SSL_SUGGESTION} -eq 1 ]; then
-            LogText "Result: one or more parts of the nginx configuration could be enhanced regarding SSL"
-            ReportSuggestion "${TEST_NO}" "Change the HTTPS and SSL settings for enhanced protection of sensitive data and privacy"
+            LogText "结果： 一个 或 更多 parts 的 nginx 配置 可以 为 enhanced regarding SSL"
+            ReportSuggestion "${TEST_NO}" "更改 HTTPS 和 SSL 设置 用于 enhanced protection 的 sensitive 数据 和 privacy"
         fi
     fi
 #
@@ -530,32 +530,32 @@
     # Description : Check logging configuration of nginx
     # Notes       : Daemon of nginx should be running, nginx.conf should be found
     if [ ${NGINX_RUNNING} -eq 1 -a -n "${NGINX_CONF_LOCATION}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6712 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check nginx access logging"
+    Register --test-no HTTP-6712 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 nginx access logging"
     if [ ${SKIPTEST} -eq 0 ]; then
         NGINX_LOG_SUGGESTION=0
-        Display --indent 6 --text "- Checking log file configuration"
+        Display --indent 6 --text "- 检查 日志 文件 配置"
 
         # Check for missing access log
         if [ ${NGINX_ACCESS_LOG_MISSING} -eq 1 ]; then
             NGINX_LOG_SUGGESTION=1
-            Display --indent 8 --text "- Missing log files (access_log)" --result "${STATUS_YES}" --color RED
+            Display --indent 8 --text "- 缺少 日志 文件 (access_日志)" --result "${STATUS_YES}" --color RED
         else
-            Display --indent 8 --text "- Missing log files (access_log)" --result "${STATUS_NO}" --color GREEN
+            Display --indent 8 --text "- 缺少 日志 文件 (access_日志)" --result "${STATUS_NO}" --color GREEN
         fi
         # Access log disabled
         if [ ${NGINX_ACCESS_LOG_DISABLED} -eq 1 ]; then
             NGINX_LOG_SUGGESTION=1
-            LogText "Result: found one or more virtual hosts which have their access log disabled"
-            Display --indent 8 --text "- Disabled access logging" --result "${STATUS_YES}" --color RED
+            LogText "结果： 发现 一个 或 更多 虚拟 主机 which 有 其 access 日志 已禁用"
+            Display --indent 8 --text "- 已禁用 access logging" --result "${STATUS_YES}" --color RED
             AddHP 2 3
         else
-            LogText "Result: no virtual hosts found which have their access log disabled"
-            Display --indent 8 --text "- Disabled access logging" --result "${STATUS_NO}" --color GREEN
+            LogText "结果： 没有 虚拟 主机 发现 which 有 其 access 日志 已禁用"
+            Display --indent 8 --text "- 已禁用 access logging" --result "${STATUS_NO}" --color GREEN
             AddHP 3 3
         fi
         # Report suggestion
         if [ ${NGINX_LOG_SUGGESTION} -eq 1 ]; then
-            ReportSuggestion "${TEST_NO}" "Check your nginx access log for proper functioning"
+            ReportSuggestion "${TEST_NO}" "检查 你的 nginx access 日志 用于 proper functioning"
         fi
     fi
 #
@@ -564,19 +564,19 @@
     # Test        : HTTP-6714
     # Description : Check missing error logs in nginx
     if [ ${NGINX_RUNNING} -eq 1 -a -n "${NGINX_CONF_LOCATION}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6714 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check for missing error logs in nginx"
+    Register --test-no HTTP-6714 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 用于 缺少 错误 logs 在 nginx"
     if [ ${SKIPTEST} -eq 0 ]; then
         NGINX_LOG_SUGGESTION=0
         # Check for missing access log
         if [ ${NGINX_ERROR_LOG_MISSING} -eq 1 ]; then
             NGINX_LOG_SUGGESTION=1
-            Display --indent 8 --text "- Missing log files (error_log)" --result "${STATUS_YES}" --color RED
+            Display --indent 8 --text "- 缺少 日志 文件 (错误_日志)" --result "${STATUS_YES}" --color RED
         else
-            Display --indent 8 --text "- Missing log files (error_log)" --result "${STATUS_NO}" --color GREEN
+            Display --indent 8 --text "- 缺少 日志 文件 (错误_日志)" --result "${STATUS_NO}" --color GREEN
         fi
         # Report suggestion
         if [ ${NGINX_LOG_SUGGESTION} -eq 1 ]; then
-            ReportSuggestion "${TEST_NO}" "Check your nginx error_log statements"
+            ReportSuggestion "${TEST_NO}" "检查 你的 nginx 错误_日志 statements"
         fi
     fi
 #
@@ -585,23 +585,23 @@
     # Test        : HTTP-6716
     # Description : Check debug mode on error log in nginx
     if [ ${NGINX_RUNNING} -eq 1 -a -n "${NGINX_CONF_LOCATION}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6716 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check for debug mode on error log in nginx"
+    Register --test-no HTTP-6716 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 用于 debug 模式 在 错误 日志 在 nginx"
     if [ ${SKIPTEST} -eq 0 ]; then
         NGINX_LOG_SUGGESTION=0
         # Access log in debug mode
         if [ ${NGINX_ERROR_LOG_DEBUG} -eq 1 ]; then
             NGINX_LOG_SUGGESTION=1
-            LogText "Result: found one or more virtual hosts which have their error log in debug mode"
-            Display --indent 8 --text "- Debugging mode on error_log" --result "${STATUS_YES}" --color RED
+            LogText "结果： 发现 一个 或 更多 虚拟 主机 which 有 其 错误 日志 在 debug 模式"
+            Display --indent 8 --text "- Debugging 模式 在 错误_日志" --result "${STATUS_YES}" --color RED
             AddHP 2 3
         else
-            LogText "Result: no virtual hosts found which have their error log in debug mode"
-            Display --indent 8 --text "- Debugging mode on error_log" --result "${STATUS_NO}" --color GREEN
+            LogText "结果： 没有 虚拟 主机 发现 which 有 其 错误 日志 在 debug 模式"
+            Display --indent 8 --text "- Debugging 模式 在 错误_日志" --result "${STATUS_NO}" --color GREEN
             AddHP 3 3
         fi
         # Report suggestion
         if [ ${NGINX_LOG_SUGGESTION} -eq 1 ]; then
-            ReportSuggestion "${TEST_NO}" "Check your nginx error_log statements and disable debug mode"
+            ReportSuggestion "${TEST_NO}" "检查 你的 nginx 错误_日志 statements 和 禁用 debug 模式"
         fi
     fi
 #
@@ -610,24 +610,24 @@
     # Test        : HTTP-6720
     # Description : Search for nginx log files
     if [ ${NGINX_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no HTTP-6720 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check Nginx log files"
+    Register --test-no HTTP-6720 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 Nginx 日志 文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking directories for files with log file definitions"
+        LogText "检查： 检查 目录 用于 文件 使用 日志 文件 definitions"
         for DIR in ${NGINX_CONF_LOCS}; do
-            LogText "Test: Checking ${DIR}"
+            LogText "检查： 检查 ${DIR}"
             if [ -d ${DIR} ]; then
                 LogText "结果：目录 ${DIR} 存在，将作为搜索路径"
                 FIND=$(find ${DIR} -type f -exec ${GREPBINARY} access_log \{\} \; | ${GREPBINARY} -v "#" | ${AWKBINARY} '{ if($1=="access_log") { print $2 } }' | ${SEDBINARY} 's/;$//g' | ${SORTBINARY} -u)
                 if IsEmpty "${FIND}"; then
-                    LogText "Result: no log files found"
+                    LogText "结果： 没有 日志 文件 发现"
                 else
-                    LogText "Result: found one or more log files"
+                    LogText "结果： 发现 一个 或 更多 日志 文件"
                     for FILE in ${FIND}; do
                         if [ -f ${FILE} ]; then
-                            LogText "Found log file: ${FILE}"
+                            LogText "发现 日志 文件： ${FILE}"
                             Report "log_file=${FILE}"
                         else
-                            LogText "Found non existing log file: ${FILE}"
+                            LogText "发现 non existing 日志 文件： ${FILE}"
                         fi
                     done
                 fi

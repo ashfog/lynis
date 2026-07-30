@@ -40,20 +40,20 @@
 #
     # Test        : NAME-4016
     # Description : Check main domain (domain <domain name> in /etc/resolv.conf)
-    Register --test-no NAME-4016 --weight L --network NO --category security --description "Check /etc/resolv.conf default domain"
+    Register --test-no NAME-4016 --weight L --network NO --category security --description "检查 /etc/resolv.conf default 域"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: check ${ROOTDIR}etc/resolv.conf for default domain"
+        LogText "检查： 检查 ${ROOTDIR}etc/resolv.conf 用于 default 域"
         if [ -f ${ROOTDIR}etc/resolv.conf ]; then
-            LogText "Result: ${ROOTDIR}etc/resolv.conf found"
+            LogText "结果： ${ROOTDIR}etc/resolv.conf 发现"
             FIND=$(${AWKBINARY} '/^domain/ { print $2 }' ${ROOTDIR}etc/resolv.conf)
             if [ -z "${FIND}" ]; then
-                LogText "Result: no default domain found"
-                if IsVerbose; then Display --indent 2 --text "- Checking default DNS search domain" --result "${STATUS_NONE}" --color WHITE; fi
+                LogText "结果： 没有 default 域 发现"
+                if IsVerbose; then Display --indent 2 --text "- 检查 default DNS 搜索域" --result "${STATUS_NONE}" --color WHITE; fi
             else
-                LogText "Result: found default domain"
-                LogText "Output: ${FIND}"
+                LogText "结果： 发现 default 域"
+                LogText "输出： ${FIND}"
                 Report "resolv_conf_domain=${FIND}"
-                Display --indent 2 --text "- Checking default DNS search domain" --result "${STATUS_FOUND}" --color GREEN
+                Display --indent 2 --text "- 检查 default DNS 搜索域" --result "${STATUS_FOUND}" --color GREEN
                 RESOLV_DOMAINNAME="${FIND}"
             fi
         fi
@@ -64,43 +64,43 @@
     # Test        : NAME-4018
     # Description : Check search domains in /etc/resolv.conf
     # Notes       : Maximum of one search keyword is allowed in /etc/resolv.conf
-    Register --test-no NAME-4018 --weight L --network NO --category security --description "Check /etc/resolv.conf search domains"
+    Register --test-no NAME-4018 --weight L --network NO --category security --description "检查 /etc/resolv.conf 搜索域"
     if [ ${SKIPTEST} -eq 0 ]; then
         COUNT=0
-        LogText "Test: check ${ROOTDIR}etc/resolv.conf for search domains"
+        LogText "检查： 检查 ${ROOTDIR}etc/resolv.conf 用于 搜索域"
         if [ -f ${ROOTDIR}etc/resolv.conf ]; then
-            LogText "Result: ${ROOTDIR}etc/resolv.conf found"
+            LogText "结果： ${ROOTDIR}etc/resolv.conf 发现"
             FIND=$(${AWKBINARY} '/^search/ { print $2 }' ${ROOTDIR}etc/resolv.conf)
             if IsEmpty "${FIND}"; then
                 LogText "结果：未找到搜索域，正在使用默认域"
             else
                 for ITEM in ${FIND}; do
-                    LogText "Found search domain: ${ITEM}"
+                    LogText "发现 搜索域： ${ITEM}"
                     Report "resolv_conf_search_domain[]=${ITEM}"
                     COUNT=$((COUNT + 1))
                 done
                 # Warn if we have more than 6 search domains, which is maximum in most resolvers
                 if [ ${COUNT} -gt 6 ]; then
-                    LogText "Result: Found ${COUNT} search domains"
-                    Display --indent 2 --text "- Checking search domains" --result "${STATUS_WARNING}" --color YELLOW
+                    LogText "结果： 发现 ${COUNT} 搜索域"
+                    Display --indent 2 --text "- 检查 搜索域" --result "${STATUS_WARNING}" --color YELLOW
                     ReportWarning "${TEST_NO}" "发现超过 6 个搜索域，通常已超过多数解析器允许的最大数量"
                 else
-                    LogText "Result: Found ${COUNT} search domains"
-                    Display --indent 2 --text "- Checking search domains" --result "${STATUS_FOUND}" --color GREEN
+                    LogText "结果： 发现 ${COUNT} 搜索域"
+                    Display --indent 2 --text "- 检查 搜索域" --result "${STATUS_FOUND}" --color GREEN
                 fi
             fi
             # Check amount of search domains (max 1)
             FIND=$(${GREPBINARY} -c "^search" ${ROOTDIR}etc/resolv.conf)
             if [ ! "${FIND}" = "0" -a ! "${FIND}" = "1" ]; then
-                LogText "Result: found ${FIND} line(s) with a search statement (expecting less than 2 lines)"
-                Display --indent 4 --text "- Checking search domains lines" --result "CONFIG ERROR" --color YELLOW
-                ReportWarning "${TEST_NO}" "在 /etc/resolv.conf 中发现多条 search 配置，可能存在配置错误"
+                LogText "结果： 发现 ${FIND} 行(s) 使用 一个 搜索 statement (expecting 更少 比 2 行)"
+                Display --indent 4 --text "- 检查 搜索域 行" --result "CONFIG ERROR" --color YELLOW
+                ReportWarning "${TEST_NO}" "在 /etc/resolv.conf 中发现多条 搜索 配置，可能存在配置错误"
             else
-                LogText "Result: found ${FIND} line(s) with a search statement (expecting less than 2 lines)"
+                LogText "结果： 发现 ${FIND} 行(s) 使用 一个 搜索 statement (expecting 更少 比 2 行)"
             fi
         else
             LogText "结果：${ROOTDIR}etc/resolv.conf 不存在，跳过检查"
-            Display --indent 2 --text "- Checking search domains" --result "${STATUS_NOT_FOUND}" --color YELLOW
+            Display --indent 2 --text "- 检查 搜索域" --result "${STATUS_NOT_FOUND}" --color YELLOW
         fi
     fi
 #
@@ -108,28 +108,28 @@
 #
     # Test        : NAME-4020
     # Description : Check non default resolv.conf options
-    Register --test-no NAME-4020 --weight L --network NO --category security --description "Check non default options"
+    Register --test-no NAME-4020 --weight L --network NO --category security --description "检查 non 默认选项s"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: check ${ROOTDIR}etc/resolv.conf for non default options"
+        LogText "检查： 检查 ${ROOTDIR}etc/resolv.conf 用于 non 默认选项s"
         if [ -f ${ROOTDIR}etc/resolv.conf ]; then
-            LogText "Result: ${ROOTDIR}etc/resolv.conf found"
+            LogText "结果： ${ROOTDIR}etc/resolv.conf 发现"
             FIND=$(${GREPBINARY} "^options" ${ROOTDIR}etc/resolv.conf | ${AWKBINARY} '{ print $2 }')
             if IsEmpty "${FIND}"; then
-                LogText "Result: no specific other options configured in /etc/resolv.conf"
-                if IsVerbose; then Display --indent 2 --text "- Checking /etc/resolv.conf options" --result "${STATUS_NONE}" --color WHITE; fi
+                LogText "结果： 没有 specific other 选项 已配置 在 /etc/resolv.conf"
+                if IsVerbose; then Display --indent 2 --text "- 检查 /etc/resolv.conf 选项" --result "${STATUS_NONE}" --color WHITE; fi
             else
                 for ITEM in ${FIND}; do
-                    LogText "Found option: ${ITEM}"
+                    LogText "发现 选项： ${ITEM}"
                     Report "resolv_conf_option[]=${ITEM}"
                     # TODO add suggestions for the related options
                     # rotate --> add performance tune point
                     # timeout --> add performance tune point when smaller than 3 seconds
                 done
-                Display --indent 2 --text "- Checking /etc/resolv.conf options" --result "${STATUS_FOUND}" --color GREEN
+                Display --indent 2 --text "- 检查 /etc/resolv.conf 选项" --result "${STATUS_FOUND}" --color GREEN
             fi
         else
             LogText "结果：未找到 /etc/resolv.conf，跳过检查"
-            Display --indent 2 --text "- Checking /etc/resolv.conf options" --result "${STATUS_NOT_FOUND}" --color YELLOW
+            Display --indent 2 --text "- 检查 /etc/resolv.conf 选项" --result "${STATUS_NOT_FOUND}" --color YELLOW
         fi
     fi
 #
@@ -137,11 +137,11 @@
 #
     # Test        : NAME-4024
     # Description : Check Solaris uname -n output
-    Register --test-no NAME-4024 --os Solaris --weight L --network NO --category security --description "Solaris uname -n output"
+    Register --test-no NAME-4024 --os Solaris --weight L --network NO --category security --description "Solaris uname -n 输出"
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=$(${UNAMEBINARY} -n)
         LogText "结果：'uname -n' 返回 ${FIND}"
-        Display --indent 2 --text "- Checking uname -n output" --result "${STATUS_DONE}" --color GREEN
+        Display --indent 2 --text "- 检查 uname -n 输出" --result "${STATUS_DONE}" --color GREEN
     fi
 #
 #################################################################################
@@ -149,17 +149,17 @@
     # Test        : NAME-4026
     # Description : Check Solaris /etc/nodename
     # Notes       : If a system is standalone, /etc/nodename should contain a system name only, not FQDN
-    Register --test-no NAME-4026 --os Solaris --weight L --network NO --category security --description "Check /etc/nodename"
+    Register --test-no NAME-4026 --os Solaris --weight L --network NO --category security --description "检查 /etc/nodename"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: checking /etc/nodename"
+        LogText "检查： 检查 /etc/nodename"
         if [ -f /etc/nodename ]; then
-            LogText "Result: file /etc/nodename exists"
+            LogText "结果： 文件 /etc/nodename 存在"
             FIND=$(cat /etc/nodename)
-            LogText "Output: ${FIND}"
-            Display --indent 2 --text "- Checking /etc/nodename" --result "${STATUS_DONE}" --color GREEN
+            LogText "输出： ${FIND}"
+            Display --indent 2 --text "- 检查 /etc/nodename" --result "${STATUS_DONE}" --color GREEN
         else
-            LogText "Result: file /etc/nodename could not be found"
-            Display --indent 2 --text "- Checking /etc/nodename" --result "NONE FOUND" --color YELLOW
+            LogText "结果： 文件 /etc/nodename 可以 不 为 发现"
+            Display --indent 2 --text "- 检查 /etc/nodename" --result "NONE FOUND" --color YELLOW
         fi
     fi
 #
@@ -168,18 +168,18 @@
     # Test        : NAME-4028
     # Description : Check DNS domain name
     # To Do       : ${GREPBINARY} ^DOMAINNAME /etc/conf.d/domainname (remove "'s)
-    Register --test-no NAME-4028 --weight L --network NO --category security --description "Check domain name"
+    Register --test-no NAME-4028 --weight L --network NO --category security --description "检查 域 name"
     if [ ${SKIPTEST} -eq 0 ]; then
         DOMAINNAME=""
-        LogText "Test: Checking if dnsdomainname command is available"
+        LogText "检查： 检查 如果 dnsdomainname 命令 是 可用"
         if HasData "${DNSDOMAINNAMEBINARY}"; then
             FIND2=$(${DNSDOMAINNAMEBINARY} 2> /dev/null)
             if HasData "${FIND2}"; then
-                LogText "Result: dnsdomainname command returned a value"
-                LogText "Found domain name: ${FIND2}"
+                LogText "结果： dnsdomainname 命令 已返回 一个 值"
+                LogText "发现 域 name： ${FIND2}"
                 DOMAINNAME="${FIND2}"
             else
-                LogText "Result: dnsdomainname command returned no value"
+                LogText "结果： dnsdomainname 命令 已返回 没有 值"
             fi
         else
             LogText "结果：未找到 dnsdomainname 程序，跳过该项检查"
@@ -188,22 +188,22 @@
         # If files and commands can't be found, use defined value from resolv.conf
         if [ -z "${DOMAINNAME}" ]; then
             if [ -n "${RESOLV_DOMAINNAME}" ]; then
-                LogText "Result: using domain name from ${ROOTDIR}etc/resolv.conf"
+                LogText "结果： 使用 域 name 从 ${ROOTDIR}etc/resolv.conf"
                 DOMAINNAME=${RESOLV_DOMAINNAME}
             else
-                LogText "Result: using domain name from FQDN hostname (${FQDN})"
+                LogText "结果： 使用 域 name 从 FQDN 主机名 (${FQDN})"
                 DOMAINNAME=$(echo ${FQDN} | ${AWKBINARY} -F. '{print $2}')
             fi
         fi
 
         if [ -n "${DOMAINNAME}" ]; then
-            LogText "Result: found domain name"
+            LogText "结果： 发现 域 name"
             Report "domainname=${DOMAINNAME}"
-            Display --indent 2 --text "- Searching DNS domain name" --result "${STATUS_FOUND}" --color GREEN
-            Display --indent 6 --text "Domain name: ${DOMAINNAME}"
+            Display --indent 2 --text "- 搜索 DNS 域 name" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 6 --text "域 name： ${DOMAINNAME}"
         else
-            Display --indent 2 --text "- Searching DNS domain name" --result "${STATUS_UNKNOWN}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Check DNS configuration for the dns domain name"
+            Display --indent 2 --text "- 搜索 DNS 域 name" --result "${STATUS_UNKNOWN}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "检查 DNS 配置 用于 dns 域 name"
         fi
     fi
 #
@@ -211,16 +211,16 @@
 #
     # Test        : NAME-4032
     # Description : Check name service caching daemon (NSCD) status
-    Register --test-no NAME-4032 --weight L --network NO --category security --description "Check nscd status"
+    Register --test-no NAME-4032 --weight L --network NO --category security --description "检查 nscd 状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: checking nscd status"
+        LogText "检查： 检查 nscd 状态"
         if IsRunning "nscd"; then
             NAME_CACHE_USED=1
-            LogText "Result: nscd is running"
-            Display --indent 2 --text "- Checking nscd status" --result "${STATUS_RUNNING}" --color GREEN
+            LogText "结果： nscd 是 运行中"
+            Display --indent 2 --text "- 检查 nscd 状态" --result "${STATUS_RUNNING}" --color GREEN
         else
-            LogText "Result: nscd is not running"
-            if IsVerbose; then Display --indent 2 --text "- Checking nscd status" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
+            LogText "结果： nscd 是 不 运行中"
+            if IsVerbose; then Display --indent 2 --text "- 检查 nscd 状态" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
 #
@@ -228,17 +228,17 @@
 #
     # Test        : NAME-4034
     # Description : Check name service caching daemon (Unbound) status
-    Register --test-no NAME-4034 --weight L --network NO --category security --description "Check Unbound status"
+    Register --test-no NAME-4034 --weight L --network NO --category security --description "检查 Unbound 状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: checking Unbound (unbound) status"
+        LogText "检查： 检查 Unbound (unbound) 状态"
         if IsRunning "unbound"; then
             UNBOUND_RUNNING=1
             NAME_CACHE_USED=1
-            LogText "Result: Unbound daemon is running"
-            Display --indent 2 --text "- Checking Unbound status" --result "${STATUS_RUNNING}" --color GREEN
+            LogText "结果： Unbound 守护进程 是 运行中"
+            Display --indent 2 --text "- 检查 Unbound 状态" --result "${STATUS_RUNNING}" --color GREEN
         else
-            LogText "Result: Unbound daemon is not running"
-            if IsVerbose; then Display --indent 2 --text "- Checking Unbound status" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
+            LogText "结果： Unbound 守护进程 是 不 运行中"
+            if IsVerbose; then Display --indent 2 --text "- 检查 Unbound 状态" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
 #
@@ -247,21 +247,21 @@
     # Test        : NAME-4036
     # Description : Checking Unbound configuration file
     if [ ${UNBOUND_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NAME-4036 --preqs-met ${PREQS_MET}  --weight L --network NO --category security --description "Check Unbound configuration file"
+    Register --test-no NAME-4036 --preqs-met ${PREQS_MET}  --weight L --network NO --category security --description "检查 Unbound 配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=$(which unbound-checkconf | grep -v "no [^ ]* in ")
         if [ ! "${FIND}" = "" ]; then
-            LogText "Test: running unbound-checkconf"
+            LogText "检查： 运行中 unbound-checkconf"
             # Don't capture any output, just gather exit code (0 is fine, otherwise bad)
             FIND=$(unbound-checkconf > /dev/null 2>&1)
             if [ $? -eq 0 ]; then
                 UNBOUND_CONFIG_OK=1
-                LogText "Result: Configuration is fine"
-                Display --indent 2 --text "- Checking configuration file" --result "${STATUS_OK}" --color GREEN
+                LogText "结果： 配置 是 正常"
+                Display --indent 2 --text "- 检查 配置文件" --result "${STATUS_OK}" --color GREEN
             else
-                LogText "Result: Unbound daemon is not running"
-                Display --indent 2 --text "- Checking configuration file" --result "NOT OK" --color YELLOW
-                ReportWarning "${TEST_NO}" "Found Unbound configuration file issues (run unbound-checkconf)"
+                LogText "结果： Unbound 守护进程 是 不 运行中"
+                Display --indent 2 --text "- 检查 配置文件" --result "NOT OK" --color YELLOW
+                ReportWarning "${TEST_NO}" "发现 Unbound 配置文件 issues (运行 unbound-checkconf)"
             fi
         else
             LogText "结果：找不到 unbound-checkconf 工具，已跳过"
@@ -272,16 +272,16 @@
 #
     # Test        : NAME-4202
     # Description : Check if BIND is running
-    Register --test-no NAME-4202 --weight L --network NO --category security --description "Check BIND status"
+    Register --test-no NAME-4202 --weight L --network NO --category security --description "检查 BIND 状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking for running BIND instance"
+        LogText "检查： 检查 用于 运行中 BIND instance"
         if IsRunning "named"; then
-            LogText "Result: found BIND process"
-            Display --indent 2 --text "- Checking BIND status" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果： 发现 BIND 进程"
+            Display --indent 2 --text "- 检查 BIND 状态" --result "${STATUS_FOUND}" --color GREEN
             BIND_RUNNING=1
         else
-            LogText "Result: BIND not running"
-            if IsVerbose; then Display --indent 2 --text "- Checking BIND status" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
+            LogText "结果： BIND 不 运行中"
+            if IsVerbose; then Display --indent 2 --text "- 检查 BIND 状态" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
 #
@@ -290,19 +290,19 @@
     # Test        : NAME-4204
     # Description : Check configuration file of BIND
     if [ ${BIND_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NAME-4204 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Search BIND configuration file"
+    Register --test-no NAME-4204 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "搜索 BIND 配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Search BIND configuration file"
+        LogText "检查： 搜索 BIND 配置文件"
         for I in ${BIND_CONFIG_LOCS}; do
             if [ -f ${I}/named.conf ]; then
                 BIND_CONFIG_LOCATION="${I}/named.conf"
-                LogText "Result: found configuration file (${BIND_CONFIG_LOCATION})"
+                LogText "结果： 发现 配置文件 (${BIND_CONFIG_LOCATION})"
             fi
         done
         if [ -n "${BIND_CONFIG_LOCATION}" ]; then
-            Display --indent 4 --text "- Checking BIND configuration file" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- 检查 BIND 配置文件" --result "${STATUS_FOUND}" --color GREEN
         else
-            Display --indent 4 --text "- Checking BIND configuration file" --result "${STATUS_NOT_FOUND}" --color YELLOW
+            Display --indent 4 --text "- 检查 BIND 配置文件" --result "${STATUS_NOT_FOUND}" --color YELLOW
         fi
     fi
 #
@@ -311,19 +311,19 @@
     # Test        : NAME-4206
     # Description : Check BIND configuration file consistency
     if [ ${BIND_RUNNING} -eq 1 -a ! "${BIND_CONFIG_LOCATION}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NAME-4206 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check BIND configuration consistency"
+    Register --test-no NAME-4206 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 BIND 配置 consistency"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: searching for named-checkconf binary"
+        LogText "检查： 搜索 用于 named-checkconf 程序"
         if [ ! "${NAMEDCHECKCONFBINARY}" = "" ]; then
-            LogText "Result: named-checkconf is installed"
+            LogText "结果： named-checkconf 是 已安装"
             FIND=$(${NAMEDCHECKCONFBINARY} ${BIND_CONFIG_LOCATION}; echo $?)
             if [ "${FIND}" = "0" ]; then
-                LogText "Result: configuration file ${BIND_CONFIG_LOCATION} seems to be fine"
-                Display --indent 4 --text "- Checking BIND configuration consistency" --result "${STATUS_OK}" --color GREEN
+                LogText "结果： 配置文件 ${BIND_CONFIG_LOCATION} 似乎 到 为 正常"
+                Display --indent 4 --text "- 检查 BIND 配置 consistency" --result "${STATUS_OK}" --color GREEN
             else
-                LogText "Result: possible errors found in ${BIND_CONFIG_LOCATION}"
-                Display --indent 4 --text "- Checking BIND configuration consistency" --result "${STATUS_WARNING}" --color RED
-                ReportWarning "${TEST_NO}" "Errors discovered in BIND configuration file"
+                LogText "结果： 可能 errors 发现 在 ${BIND_CONFIG_LOCATION}"
+                Display --indent 4 --text "- 检查 BIND 配置 consistency" --result "${STATUS_WARNING}" --color RED
+                ReportWarning "${TEST_NO}" "Errors 发现 在 BIND 配置文件"
             fi
         else
             LogText "结果：未找到 named-checkconf，跳过检查"
@@ -335,18 +335,18 @@
     # Test        : NAME-4210
     # Description : Check if we can determine useful information from banner
     if [ ${BIND_RUNNING} -eq 1 -a ! "${BIND_CONFIG_LOCATION}" = "" -a ! "${DIGBINARY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NAME-4210 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check DNS banner"
+    Register --test-no NAME-4210 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 DNS banner"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Trying to determine version from banner"
+        LogText "检查： 正在尝试 到 确定 版本 从 banner"
         FIND=$(${DIGBINARY} @localhost version.bind chaos txt | ${GREPBINARY} "^version.bind" | ${GREPBINARY} TXT | ${GREPBINARY} -E "[0-9].[0-9].[0-9]*")
         if [ "${FIND}" = "" ]; then
-            LogText "Result: no useful information in banner found"
-            Display --indent 4 --text "- Checking BIND version in banner" --result "${STATUS_OK}" --color GREEN
+            LogText "结果： 没有 useful 信息 在 banner 发现"
+            Display --indent 4 --text "- 检查 BIND 版本 在 banner" --result "${STATUS_OK}" --color GREEN
             AddHP 2 2
         else
-            LogText "Result: possible BIND version available in version banner"
-            Display --indent 4 --text "- Checking BIND version in banner" --result "${STATUS_WARNING}" --color RED
-            ReportWarning "${TEST_NO}" "Found BIND version in banner"
+            LogText "结果： 可能 BIND 版本 可用 在 版本 banner"
+            Display --indent 4 --text "- 检查 BIND 版本 在 banner" --result "${STATUS_WARNING}" --color RED
+            ReportWarning "${TEST_NO}" "发现 BIND 版本 在 banner"
             ReportSuggestion "${TEST_NO}" "可在配置文件中设置 'version none' 隐藏 BIND 版本"
             AddHP 0 2
         fi
@@ -377,16 +377,16 @@
 #
     # Test        : NAME-4230
     # Description : Check if PowerDNS is running
-    Register --test-no NAME-4230 --weight L --network NO --category security --description "Check PowerDNS status"
+    Register --test-no NAME-4230 --weight L --network NO --category security --description "检查 PowerDNS 状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking for running PowerDNS instance"
+        LogText "检查： 检查 用于 运行中 PowerDNS instance"
         if IsRunning "pdns_server"; then
-            LogText "Result: found PowerDNS process"
-            Display --indent 2 --text "- Checking PowerDNS status" --result "${STATUS_RUNNING}" --color GREEN
+            LogText "结果： 发现 PowerDNS 进程"
+            Display --indent 2 --text "- 检查 PowerDNS 状态" --result "${STATUS_RUNNING}" --color GREEN
             POWERDNS_RUNNING=1
         else
-            LogText "Result: PowerDNS not running"
-            if IsVerbose; then Display --indent 2 --text "- Checking PowerDNS status" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
+            LogText "结果： PowerDNS 不 运行中"
+            if IsVerbose; then Display --indent 2 --text "- 检查 PowerDNS 状态" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
 #
@@ -395,19 +395,19 @@
     # Test        : NAME-4232
     # Description : Check PowerDNS configuration file
     if [ ${POWERDNS_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NAME-4232 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Search PowerDNS configuration file"
+    Register --test-no NAME-4232 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "搜索 PowerDNS 配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Search PowerDNS configuration file"
+        LogText "检查： 搜索 PowerDNS 配置文件"
         for DIR in ${POWERDNS_CONFIG_LOCS}; do
             if [ -f ${DIR}/pdns.conf ]; then
                 POWERDNS_AUTH_CONFIG_LOCATION="${DIR}/pdns.conf"
-                LogText "Result: found configuration file (${POWERDNS_AUTH_CONFIG_LOCATION})"
+                LogText "结果： 发现 配置文件 (${POWERDNS_AUTH_CONFIG_LOCATION})"
             fi
         done
         if HasData "${POWERDNS_AUTH_CONFIG_LOCATION}"; then
-            Display --indent 4 --text "- Checking PowerDNS configuration file" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- 检查 PowerDNS 配置文件" --result "${STATUS_FOUND}" --color GREEN
         else
-            Display --indent 4 --text "- Checking PowerDNS configuration file" --result "${STATUS_NOT_FOUND}" --color YELLOW
+            Display --indent 4 --text "- 检查 PowerDNS 配置文件" --result "${STATUS_NOT_FOUND}" --color YELLOW
         fi
     fi
 #
@@ -425,18 +425,18 @@
     # Test        : NAME-4236
     # Description : Check PowerDNS server backends
     if [ ${POWERDNS_RUNNING} -eq 1 -a ! "${POWERDNS_AUTH_CONFIG_LOCATION}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NAME-4236 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check PowerDNS backends"
+    Register --test-no NAME-4236 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 PowerDNS backends"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking for PowerDNS backends"
+        LogText "检查： 检查 用于 PowerDNS backends"
         FIND=$(${AWKBINARY} -F= '/^launch/ { print $2 }' ${POWERDNS_AUTH_CONFIG_LOCATION})
         if HasData "${FIND}"; then
             for ITEM in ${FIND}; do
-                LogText "Found backend: ${ITEM}"
+                LogText "发现 backend： ${ITEM}"
             done
-            Display --indent 4 --text "- Checking PowerDNS backends" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- 检查 PowerDNS backends" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: no PowerDNS backends found"
-            Display --indent 4 --text "- Checking PowerDNS backends" --result "${STATUS_NOT_FOUND}" --color YELLOW
+            LogText "结果： 没有 PowerDNS backends 发现"
+            Display --indent 4 --text "- 检查 PowerDNS backends" --result "${STATUS_NOT_FOUND}" --color YELLOW
         fi
     fi
 #
@@ -445,27 +445,27 @@
     # Test        : NAME-4238
     # Description : Check PowerDNS authoritative status
     if [ ${POWERDNS_RUNNING} -eq 1 -a -n "${POWERDNS_AUTH_CONFIG_LOCATION}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NAME-4238 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check PowerDNS authoritative status"
+    Register --test-no NAME-4238 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 PowerDNS authoritative 状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking for PowerDNS master status"
+        LogText "检查： 检查 用于 PowerDNS master 状态"
         FIND=$(${GREPBINARY} "^master=yes" ${POWERDNS_AUTH_CONFIG_LOCATION})
         if [ -n "${FIND}" ]; then
-            LogText "Found master=yes in configuration file"
-            Display --indent 4 --text "- PowerDNS authoritative master: YES"
+            LogText "发现 master=是 在 配置文件"
+            Display --indent 4 --text "- PowerDNS authoritative master： YES"
             POWERDNS_AUTH_MASTER=1
         else
-            LogText "Result: most likely not master (no master=yes)"
-            Display --indent 4 --text "- PowerDNS authoritative master: NO"
+            LogText "结果： 大多数 很可能 不 master (没有 master=是)"
+            Display --indent 4 --text "- PowerDNS authoritative master： NO"
         fi
-        LogText "Test: Checking for PowerDNS slave status"
+        LogText "检查： 检查 用于 PowerDNS slave 状态"
         FIND=$(${GREPBINARY} "^slave=yes" ${POWERDNS_AUTH_CONFIG_LOCATION})
         if [ -n "${FIND}" ]; then
-            LogText "Found slave=yes in configuration file"
-            Display --indent 4 --text "- PowerDNS authoritative slave: YES"
+            LogText "发现 slave=是 在 配置文件"
+            Display --indent 4 --text "- PowerDNS authoritative slave： YES"
             POWERDNS_AUTH_SLAVE=1
         else
-            LogText "Result: most likely not slave (no slave=yes)"
-            Display --indent 4 --text "- PowerDNS authoritative slave: NO"
+            LogText "结果： 大多数 很可能 不 slave (没有 slave=是)"
+            Display --indent 4 --text "- PowerDNS authoritative slave： NO"
         fi
     fi
 #
@@ -473,22 +473,22 @@
 #
     # Test        : NAME-4304
     # Description : Check NIS ypbind daemon status
-    Register --test-no NAME-4304 --weight L --network NO --category security --description "Check NIS ypbind status"
+    Register --test-no NAME-4304 --weight L --network NO --category security --description "检查 NIS ypbind 状态"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking status of ypbind daemon"
+        LogText "检查： 检查 状态 的 ypbind 守护进程"
         if IsRunning "ypbind"; then
-            LogText "Result: ypbind is running"
-            Display --indent 2 --text "- Checking ypbind status" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果： ypbind 是 运行中"
+            Display --indent 2 --text "- 检查 ypbind 状态" --result "${STATUS_FOUND}" --color GREEN
             YPBIND_RUNNING=1
             if IsRunning "ypldap"; then
-                LogText "Result: ypldap is running"
-                Display --indent 2 --text "- Checking ypldap status" --result "${STATUS_FOUND}" --color GREEN
+                LogText "结果： ypldap 是 运行中"
+                Display --indent 2 --text "- 检查 ypldap 状态" --result "${STATUS_FOUND}" --color GREEN
             else
-                ReportSuggestion "${TEST_NO}" "Disable the usage of NIS/NIS+ and use an alternative like LDAP or Kerberos instead"
+                ReportSuggestion "${TEST_NO}" "禁用 usage 的 NIS/NIS+ 和 使用 一个 alternative like LDAP 或 Kerberos 改为"
             fi
         else
-            LogText "Result: ypbind is not active"
-            if IsVerbose; then Display --indent 2 --text "- Checking ypbind status" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
+            LogText "结果： ypbind 是 不 当前"
+            if IsVerbose; then Display --indent 2 --text "- 检查 ypbind 状态" --result "${STATUS_NOT_FOUND}" --color WHITE; fi
         fi
     fi
 #
@@ -498,87 +498,87 @@
     # Description : Check NIS domain
     # Notes       : FreeBSD: sysctl kern.domainname
     if [ ${YPBIND_RUNNING} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NAME-4306 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check NIS domain"
+    Register --test-no NAME-4306 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 NIS 域"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking $(domainname) for NIS domain value"
+        LogText "检查： 检查 $(domainname) 用于 NIS 域 值"
         FIND=$(${DOMAINNAMEBINARY} | ${GREPBINARY} -v "(none)")
         if [ -n "${FIND}" ]; then
-            LogText "Value: ${FIND}"
+            LogText "值： ${FIND}"
             NISDOMAIN="${FIND}"
         else
-            LogText "Result: no NIS domain found in command output"
+            LogText "结果： 没有 NIS 域 发现 在 命令 输出"
         fi
         # Solaris / Linux style
-        LogText "Test: Checking file ${ROOTDIR}etc/defaultdomain"
+        LogText "检查： 检查 文件 ${ROOTDIR}etc/defaultdomain"
         if [ -f ${ROOTDIR}etc/defaultdomain ]; then
-            LogText "Result: file ${ROOTDIR}etc/defaultdomain exists"
+            LogText "结果： 文件 ${ROOTDIR}etc/defaultdomain 存在"
             FIND2=$(cat ${ROOTDIR}etc/defaultdomain)
             if [ -n "${FIND2}" ]; then
-                LogText "Output: ${FIND2}"
+                LogText "输出： ${FIND2}"
                 NISDOMAIN="${FIND2}"
             else
-                LogText "Result: no NIS domain found in file"
+                LogText "结果： 没有 NIS 域 发现 在 文件"
             fi
         fi
         # Red Hat style
-        LogText "Test: checking ${ROOTDIR}etc/sysconfig/network"
+        LogText "检查： 检查 ${ROOTDIR}etc/sysconfig/网络"
         if [ -f ${ROOTDIR}etc/sysconfig/network ]; then
-            LogText "Result: file ${ROOTDIR}etc/sysconfig/network exists"
-            LogText "Test: checking NISDOMAIN value in file"
+            LogText "结果： 文件 ${ROOTDIR}etc/sysconfig/网络 存在"
+            LogText "检查： 检查 NISDOMAIN 值 在 文件"
             FIND3=$(${GREPBINARY} "^NISDOMAIN" ${ROOTDIR}etc/sysconfig/network | ${AWKBINARY} -F= '{ print $2 }' | ${SEDBINARY} 's/"//g')
             if [ -n "${FIND3}" ]; then
-                LogText "Found NIS domain: ${FIND3}"
+                LogText "发现 NIS 域： ${FIND3}"
                 NISDOMAIN="${FIND3}"
             else
-                LogText "Result: No NIS domain found in file"
+                LogText "结果： 没有 NIS 域 发现 在 文件"
             fi
         else
-            LogText "Result: file ${ROOTDIR}etc/sysconfig/network does not exist"
+            LogText "结果： 文件 ${ROOTDIR}etc/sysconfig/网络 不存在"
         fi
 
         if [ ! "${SYSCTLBINARY}" = "" ]; then
             # Check sysctl (e.g. FreeBSD)
-            LogText "Test: checking sysctl for kern.domainname"
+            LogText "检查： 检查 sysctl 用于 kern.domainname"
             FIND=$(${SYSCTLBINARY} -a 2>&1 | ${GREPBINARY} "^kern.domainname" | ${AWKBINARY} -F: '{ print $2 }' | ${SEDBINARY} 's/ //g' | ${GREPBINARY} -v "^$")
             if [ ! "${FIND}" = "" ]; then
-                LogText "Result: found NIS domain via sysctl"
+                LogText "结果： 发现 NIS 域 通过 sysctl"
                 NISDOMAIN="${FIND}"
             fi
         fi
         # Check if we found any NIS domain
         if [ -n "${NISDOMAIN}" ]; then
-            LogText "Found NIS domain: ${NISDOMAIN}"
+            LogText "发现 NIS 域： ${NISDOMAIN}"
             Report "nisdomain=${NISDOMAIN}"
-            Display --indent 4 --text "- Checking NIS domain" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- 检查 NIS 域" --result "${STATUS_FOUND}" --color GREEN
         else
-            LogText "Result: No NIS domain found"
-            Display --indent 4 --text "- Checking NIS domain" --result "${STATUS_UNKNOWN}" --color YELLOW
+            LogText "结果： 没有 NIS 域 发现"
+            Display --indent 4 --text "- 检查 NIS 域" --result "${STATUS_UNKNOWN}" --color YELLOW
         fi
     fi
 #
 #################################################################################
 #
     if [ -f ${ROOTDIR}etc/hosts ]; then
-        Display --indent 2 --text "- Checking /etc/hosts"
+        Display --indent 2 --text "- 检查 /etc/hosts"
     else
-        LogText "Result: no /etc/hosts file found"
+        LogText "结果： 没有 /etc/hosts 文件 发现"
     fi
 
     # Test        : NAME-4402
     # Description : Check /etc/hosts configuration
     if [ -f ${ROOTDIR}etc/hosts ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NAME-4402 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check duplicate line in /etc/hosts"
+    Register --test-no NAME-4402 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 duplicate 行 在 /etc/hosts"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: check duplicate line in ${ROOTDIR}etc/hosts"
+        LogText "检查： 检查 duplicate 行 在 ${ROOTDIR}etc/主机"
         OUTPUT=$(${AWKBINARY} '{ print $1, $2 }' ${ROOTDIR}etc/hosts | ${GREPBINARY} -E -v '^(#|$)' | ${GREPBINARY} -E "[a-f0-9]" | ${SORTBINARY} | ${UNIQBINARY} -d)
         if [ -z "${OUTPUT}" ]; then
             LogText "结果：正常，未发现重复行"
-            Display --indent 4 --text "- Duplicate entries in hosts file" --result "${STATUS_NONE}" --color GREEN
+            Display --indent 4 --text "- Duplicate 条目 在 主机 文件" --result "${STATUS_NONE}" --color GREEN
         else
-            LogText "Found duplicate line: ${OUTPUT}"
-            LogText "Result: found duplicate line"
-            Display --indent 4 --text "- Duplicate entries in hosts file" --result "${STATUS_FOUND}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Remove duplicate lines in ${ROOTDIR}etc/hosts"
+            LogText "发现 duplicate 行： ${OUTPUT}"
+            LogText "结果： 发现 duplicate 行"
+            Display --indent 4 --text "- Duplicate 条目 在 主机 文件" --result "${STATUS_FOUND}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "移除 duplicate 行 在 ${ROOTDIR}etc/主机"
         fi
     fi
 #
@@ -587,19 +587,19 @@
     # Test        : NAME-4404
     # Description : Check /etc/hosts contains an entry for this server name
     if [ -f ${ROOTDIR}etc/hosts ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NAME-4404 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check /etc/hosts contains an entry for this server name"
+    Register --test-no NAME-4404 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 /etc/hosts contains 一个 条目 用于 此 服务器 name"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Check /etc/hosts contains an entry for this server name"
+        LogText "检查： 检查 /etc/hosts contains 一个 条目 用于 此 服务器 name"
         if [ -n "${HOSTNAME}" ]; then
             DATA=$(${GREPBINARY} -E -v '^(#|$|^::1\s|localhost)' ${ROOTDIR}etc/hosts | ${GREPBINARY} -i ${HOSTNAME})
             if [ -n "${DATA}" ]; then
-                LogText "Result: Found entry for ${HOSTNAME} in ${ROOTDIR}etc/hosts"
-                Display --indent 4 --text "- Presence of configured hostname in /etc/hosts" --result "${STATUS_FOUND}" --color GREEN
+                LogText "结果： 发现 条目 用于 ${HOSTNAME} 在 ${ROOTDIR}etc/主机"
+                Display --indent 4 --text "- Presence 的 已配置 主机名 在 /etc/hosts" --result "${STATUS_FOUND}" --color GREEN
             else
-                LogText "Result: No entry found for ${HOSTNAME} in ${ROOTDIR}etc/hosts"
-                Display --indent 4 --text "- Presence of configured hostname in /etc/hosts" --result "${STATUS_NOT_FOUND}" --color YELLOW
-                ReportSuggestion "${TEST_NO}" "Add the IP name and FQDN to /etc/hosts for proper name resolving"
-                LogText "Risk: No entry for the server name [hostname] in /etc/hosts may cause unexpected performance problems for local connections"
+                LogText "结果： 没有 条目 发现 用于 ${HOSTNAME} 在 ${ROOTDIR}etc/主机"
+                Display --indent 4 --text "- Presence 的 已配置 主机名 在 /etc/hosts" --result "${STATUS_NOT_FOUND}" --color YELLOW
+                ReportSuggestion "${TEST_NO}" "添加 IP name 和 FQDN 到 /etc/hosts 用于 proper name resolving"
+                LogText "风险： 没有 条目 用于 服务器 name [主机名] 在 /etc/hosts 可能 cause 异常 performance problems 用于 本地 连接"
             fi
         else
             LogText "结果：未配置主机名，跳过检查"
@@ -611,19 +611,19 @@
     # Test        : NAME-4406
     # Description : Check server hostname mapping
     if [ -n "${HOSTNAME}" -a -f ${ROOTDIR}etc/hosts ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no NAME-4406 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check server hostname mapping"
+    Register --test-no NAME-4406 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 服务器 主机名 映射"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Check server hostname not locally mapped in ${ROOTDIR}etc/hosts"
+        LogText "检查： 检查 服务器 主机名 不 locally mapped 在 ${ROOTDIR}etc/主机"
         DATA=$(${GREPBINARY} -E -v '^(#|$)' ${ROOTDIR}etc/hosts | ${GREPBINARY} -E '^(localhost|::1)\s' | ${GREPBINARY} -w ${HOSTNAME})
         if [ -n "${DATA}" ]; then
-            LogText "Result: Found this server hostname mapped to a local address"
-            LogText "Output: ${DATA}"
-            Display --indent 4 --text "- Hostname mapped to localhost" --result "${STATUS_FOUND}" --color YELLOW
-            LogText "Information: Linking the hostname to the localhost entry may break some resolving. Split resolving so that localhost resolves back to 127.0.0.1 (and ::1) and the hostname of the machine to the real IP address on the network interface."
-            ReportSuggestion "${TEST_NO}" "Split resolving between localhost and the hostname of the system"
+            LogText "结果： 发现 此 服务器 主机名 mapped 到 一个 本地 地址"
+            LogText "输出： ${DATA}"
+            Display --indent 4 --text "- 主机名 mapped 到 localhost" --result "${STATUS_FOUND}" --color YELLOW
+            LogText "信息： Linking 主机名 到 localhost 条目 可能 break 一些 resolving. Split resolving so 该 localhost resolves back 到 127.0.0.1 (和 ::1) 和 主机名 的 机器 到 real IP 地址 在 网络接口."
+            ReportSuggestion "${TEST_NO}" "Split resolving 之间 localhost 和 主机名 的 系统"
         else
-            LogText "Result: this server hostname is not mapped to a local address"
-            Display --indent 4 --text "- Hostname mapped to localhost" --result "${STATUS_NOT_FOUND}" --color GREEN
+            LogText "结果： 此 服务器 主机名 是 不 mapped 到 一个 本地 地址"
+            Display --indent 4 --text "- 主机名 mapped 到 localhost" --result "${STATUS_NOT_FOUND}" --color GREEN
         fi
     fi
 #
@@ -631,29 +631,29 @@
 #
     # Test        : NAME-4408
     # Description : Check localhost entry
-    if [ -n "${GETENT_BINARY}" ]; then PREQS_MET="YES"; SKIPREASON="No getent binary"; else PREQS_MET="NO"; SKIPREASON=""; fi
-    Register --test-no NAME-4408 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "Check localhost entry"
+    if [ -n "${GETENT_BINARY}" ]; then PREQS_MET="YES"; SKIPREASON="没有 getent 程序"; else PREQS_MET="NO"; SKIPREASON=""; fi
+    Register --test-no NAME-4408 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --weight L --network NO --category security --description "检查 localhost 条目"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Check server hostname not locally mapped in /etc/hosts"
+        LogText "检查： 检查 服务器 主机名 不 locally mapped 在 /etc/hosts"
         FIND=$(${GETENT_BINARY} hosts localhost | ${AWKBINARY} '{print $1}' | ${SORTBINARY} | ${TRBINARY} -d '\n')
         if [ "${FIND}" = "127.0.0.1" ]; then
-            LogText "Result: localhost mapped to 127.0.0.1"
-            Display --indent 4 --text "- Localhost mapping to IP address" --result "${STATUS_OK}" --color GREEN
+            LogText "结果： localhost mapped 到 127.0.0.1"
+            Display --indent 4 --text "- Localhost 映射 到 IP 地址" --result "${STATUS_OK}" --color GREEN
             Report "localhost-mapped-to=${FIND}"
         elif [ "${FIND}" = "::1" ]; then
-            LogText "Result: localhost mapped to ::1"
-            Display --indent 4 --text "- Localhost mapping to IP address" --result "${STATUS_OK}" --color GREEN
+            LogText "结果： localhost mapped 到 ：：1"
+            Display --indent 4 --text "- Localhost 映射 到 IP 地址" --result "${STATUS_OK}" --color GREEN
             Report "localhost-mapped-to=${FIND}"
         elif [ "${FIND}" = "127.0.0.1::1" ]; then
-            LogText "Result: localhost mapped to 127.0.0.1 and ::1"
-            Display --indent 4 --text "- Localhost mapping to IP address" --result "${STATUS_OK}" --color GREEN
+            LogText "结果： localhost mapped 到 127.0.0.1 和 ：：1"
+            Display --indent 4 --text "- Localhost 映射 到 IP 地址" --result "${STATUS_OK}" --color GREEN
             Report "localhost-mapped-to=${FIND}"
         else
-            LogText "Output: ${FIND}"
-            LogText "Result: this server hostname is not mapped to a local address"
-            Display --indent 4 --text "- Localhost mapping to IP address" --result "${STATUS_SUGGESTION}" --color YELLOW
-            LogText "Information: Ensure that localhost resolves back to 127.0.0.1 (and/or ::1)."
-            ReportSuggestion "${TEST_NO}" "Split resolving between localhost and the hostname of the system" "/etc/hosts" "text:Check your localhost line"
+            LogText "输出： ${FIND}"
+            LogText "结果： 此 服务器 主机名 是 不 mapped 到 一个 本地 地址"
+            Display --indent 4 --text "- Localhost 映射 到 IP 地址" --result "${STATUS_SUGGESTION}" --color YELLOW
+            LogText "信息： Ensure 该 localhost resolves back 到 127.0.0.1 (和/或 ::1)."
+            ReportSuggestion "${TEST_NO}" "Split resolving 之间 localhost 和 主机名 的 系统" "/etc/hosts" "text：检查 你的 localhost 行"
         fi
     fi
 #

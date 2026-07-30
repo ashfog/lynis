@@ -131,13 +131,13 @@
                     N=$((N + 1))
                 done
                 if [ ${N} -eq 1 ]; then
-                    LogText "结果：在 ${ROOTDIR}etc/profile 中发现已配置的 TMOUT 值"
+                    LogText "结果：在 ${ROOTDIR}etc/配置文件 中发现已配置的 TMOUT 值"
                 else
-                    LogText "结果：在 ${ROOTDIR}etc/profile 中发现多个 TMOUT 值"
+                    LogText "结果：在 ${ROOTDIR}etc/配置文件 中发现多个 TMOUT 值"
                 fi
                 IDLE_TIMEOUT_METHOD="profile"
             else
-                LogText "结果：在 ${ROOTDIR}etc/profile 中未找到 TMOUT 设置"
+                LogText "结果：在 ${ROOTDIR}etc/配置文件 中未找到 TMOUT 设置"
             fi
 
             if [ -n "${FIND2}" ]; then
@@ -149,17 +149,17 @@
                     fi
                 done
                 if [ ${N} -gt 0 ]; then
-                    LogText "结果：在 ${ROOTDIR}etc/profile 中发现只读设置（readonly 或 typeset -r）"
+                    LogText "结果：在 ${ROOTDIR}etc/配置文件 中发现只读设置（readonly 或 typeset -r）"
                     IDLE_TIMEOUT_READONLY=1
                 else
-                    LogText "结果：在 ${ROOTDIR}etc/profile 中未发现只读设置（readonly 或 typeset -r）"
+                    LogText "结果：在 ${ROOTDIR}etc/配置文件 中未发现只读设置（readonly 或 typeset -r）"
                     IDLE_TIMEOUT_READONLY=0
                 fi
             else
-                LogText "结果：在 ${ROOTDIR}etc/profile 中未找到 export、readonly 或 typeset -r"
+                LogText "结果：在 ${ROOTDIR}etc/配置文件 中未找到 export、readonly 或 typeset -r"
             fi
         else
-            LogText "结果：本系统没有 ${ROOTDIR}etc/profile 文件，已跳过该项检查"
+            LogText "结果：本系统没有 ${ROOTDIR}etc/配置文件 文件，已跳过该项检查"
         fi
 
         if [ -d ${ROOTDIR}etc/profile.d ]; then
@@ -195,14 +195,14 @@
                         fi
                     done
                     if [ ${N} -gt 0 ]; then
-                        LogText "结果：在 ${ROOTDIR}etc/profile 中发现只读设置（readonly 或 typeset -r）"
+                        LogText "结果：在 ${ROOTDIR}etc/配置文件 中发现只读设置（readonly 或 typeset -r）"
                         IDLE_TIMEOUT_READONLY=1
                     else
-                        LogText "结果：在 ${ROOTDIR}etc/profile 中未发现只读设置（readonly 或 typeset -r）"
+                        LogText "结果：在 ${ROOTDIR}etc/配置文件 中未发现只读设置（readonly 或 typeset -r）"
                         IDLE_TIMEOUT_READONLY=0
                     fi
                 else
-                    LogText "结果：在 ${ROOTDIR}etc/profile 中未找到 export、readonly 或 typeset -r"
+                    LogText "结果：在 ${ROOTDIR}etc/配置文件 中未找到 export、readonly 或 typeset -r"
                 fi
             fi
         else

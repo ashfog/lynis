@@ -226,20 +226,20 @@
 #
     # Test        : PHP-2211
     # Description : Check php.ini presence
-    Register --test-no PHP-2211 --weight L --network NO --category security --description "Check php.ini presence"
+    Register --test-no PHP-2211 --weight L --network NO --category security --description "检查 php.ini presence"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking for presence php.ini"
+        LogText "检查： 检查 用于 presence php.ini"
         PHPINIFILE=""
         PHPINI_ALLFILES=""
         for FILE in ${PHPINILOCS}; do
-            LogText "Test: checking presence ${FILE}"
+            LogText "检查： 检查 presence ${FILE}"
             if [ -f ${FILE} ]; then
                 PHPINIFILE="${FILE}"
-                LogText "Result: Found php.ini file (${PHPINIFILE})"
-                LogText "Note: Adding file to php.ini array"
+                LogText "结果： 发现 php.ini 文件 (${PHPINIFILE})"
+                LogText "说明： Adding 文件 到 php.ini 数组"
                 PHPINI_ALLFILES="${PHPINI_ALLFILES} ${PHPINIFILE}"
             else
-                LogText "Result: file ${FILE} not found"
+                LogText "结果： 文件 ${FILE} 未找到"
             fi
         done
 
@@ -247,7 +247,7 @@
         for DIR in ${PHPINIDIRS}; do
             FIND=$(ls ${DIR}/*.ini 2> /dev/null)
             if [ -z "${FIND}" ]; then
-                LogText "Result: no files found for ${DIR}"
+                LogText "结果： 没有 文件 发现 用于 ${DIR}"
             else
                 LogText "结果：在位置 ${DIR} 中发现文件，正在检查"
                 for FILE in ${FIND}; do
@@ -260,12 +260,12 @@
         done
 
         if [ -n "${PHPINIFILE}" ]; then
-            Display --indent 2 --text "- Checking PHP" --result "${STATUS_FOUND}" --color GREEN
-            LogText "Result: using single file ${PHPINIFILE} for main php.ini tests"
-            LogText "Result: using php.ini array ${PHPINI_ALLFILES} for further tests"
+            Display --indent 2 --text "- 检查 PHP" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果： 使用 single 文件 ${PHPINIFILE} 用于 main php.ini 检查"
+            LogText "结果： 使用 php.ini 数组 ${PHPINI_ALLFILES} 用于 further 检查"
         else
-            Display --indent 2 --text "- Checking PHP" --result "${STATUS_NOT_FOUND}" --color WHITE
-            LogText "Result: no php.ini file found"
+            Display --indent 2 --text "- 检查 PHP" --result "${STATUS_NOT_FOUND}" --color WHITE
+            LogText "结果： 没有 php.ini 文件 发现"
         fi
         unset DIR FILE FIND
     fi
@@ -275,36 +275,36 @@
     # Test        : PHP-2320
     # Description : Check php disable functions option
     if [ -n "${PHPINI_ALLFILES}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PHP-2320 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check PHP disabled functions"
+    Register --test-no PHP-2320 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 PHP 已禁用 functions"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         for I in ${PHPINI_ALLFILES}; do
-            LogText "Test: Checking for PHP function hardening disabled_functions or suhosin.executor.func.blacklist in file ${I}"
+            LogText "检查： 检查 用于 PHP 函数 加固 已禁用_functions 或 suhosin.executor.func.blacklist 在 文件 ${I}"
             FIND=$(${GREPBINARY} "^disable_functions.*=" ${I})
             if [ -z "${FIND}" ]; then
-                LogText "Result: ${I}: disabled_functions not found"
+                LogText "结果： ${I}: 已禁用_functions 未找到"
             else
-                LogText "Result: ${I}: found disabled_functions"
+                LogText "结果： ${I}: 发现 已禁用_functions"
                 FOUND=1
             fi
 
             FIND=$(${GREPBINARY} "^suhosin.executor.func.blacklist=" ${I})
             if [ -z "${FIND}" ]; then
-                LogText "Result: ${I}: suhosin.executor.func.blacklist not found"
+                LogText "结果： ${I}: suhosin.executor.func.blacklist 未找到"
             else
-                LogText "Result: ${I}: found suhosin.executor.func.blacklist"
+                LogText "结果： ${I}: 发现 suhosin.executor.func.blacklist"
                 FOUND=1
             fi
         done
         if [ ${FOUND} -eq 0 ]; then
-            LogText "Result: all PHP functions can be executed"
-            Display --indent 4 --text "- Checking PHP disabled functions" --result "${STATUS_NONE}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "Harden PHP by disabling risky functions"
-            LogText "建议评估或禁用的函数： chown, diskfreespace, disk_free_space, disk_total_space, dl, exec, escapeshellarg, escapeshellcmd, fileinode, highlight_file, max_execution_time, passthru, pclose, phpinfo, popen, proc_close, proc_open, proc_get_status, proc_nice, proc_open, proc_terminate, set_time_limit, shell_exec, show_source, system)"
+            LogText "结果： 所有 PHP functions 可以 为 executed"
+            Display --indent 4 --text "- 检查 PHP 已禁用 functions" --result "${STATUS_NONE}" --color YELLOW
+            ReportSuggestion "${TEST_NO}" "Harden PHP 由 disabling risky functions"
+            LogText "建议评估或禁用的函数： chown, diskfreespace, 磁盘_free_space, 磁盘_总计_space, dl, exec, escapeshellarg, escapeshellcmd, fileinode, highlight_文件, max_execution_时间, passthru, pclose, phpinfo, popen, proc_close, proc_打开, proc_get_状态, proc_nice, proc_打开, proc_terminate, 设置_时间_limit, Shell_exec, show_来源, 系统)"
             AddHP 0 1
         else
-            LogText "Result: one or more PHP functions are disabled/blacklisted"
-            Display --indent 4 --text "- Checking PHP disabled functions" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果： 一个 或 更多 PHP functions 是 已禁用/blacklisted"
+            Display --indent 4 --text "- 检查 PHP 已禁用 functions" --result "${STATUS_FOUND}" --color GREEN
             AddHP 3 3
         fi
     fi
@@ -331,19 +331,19 @@
         Debug "php.ini: ${PHPINIFILE}"
         Debug "version: ${PHPVERSION}"
     fi
-    Register --test-no PHP-2368 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check PHP register_globals option"
+    Register --test-no PHP-2368 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 PHP register_globals 选项"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking PHP register_globals option"
+        LogText "检查： 检查 PHP register_globals 选项"
         FIND=$(${GREPBINARY} -E -i 'register_globals.*(on|yes|1)' ${PHPINIFILE} | ${GREPBINARY} -v '^;')
         if [ -n "${FIND}" ]; then
-            Display --indent 4 --text "- Checking register_globals option" --result "${STATUS_WARNING}" --color RED
+            Display --indent 4 --text "- 检查 register_globals 选项" --result "${STATUS_WARNING}" --color RED
             ReportWarning "${TEST_NO}" "PHP 的 register_globals 选项已开启，可能存在变量值被覆盖的风险"
-            ReportSuggestion "${TEST_NO}" "Change the register_globals line to: register_globals = Off"
+            ReportSuggestion "${TEST_NO}" "更改 register_globals 行 到： register_globals = Off"
             LogText "结果：register_globals 选项已开启，可能存在变量值被覆盖的风险。"
             AddHP 1 2
         else
-            Display --indent 4 --text "- Checking register_globals option" --result "${STATUS_OK}" --color GREEN
-            LogText "结果：未找到 'register_globals'，它很可能处于禁用状态（0、no 或 off），这是当前默认且较安全的值。"
+            Display --indent 4 --text "- 检查 register_globals 选项" --result "${STATUS_OK}" --color GREEN
+            LogText "结果：未找到 'register_globals'，它很可能处于禁用状态（0、没有 或 off），这是当前默认且较安全的值。"
             ReportManual ${TEST_NO}:01
             AddHP 2 2
         fi
@@ -356,7 +356,7 @@
     # Background  : When this option is turned on, PHP will show its version number in the HTTP headers
     # Notes       : TODO - Extend test to check all PHP files
     if [ -n "${PHPINI_ALLFILES}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PHP-2372 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check PHP expose_php option"
+    Register --test-no PHP-2372 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 PHP expose_php 选项"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         for FILE in ${PHPINI_ALLFILES}; do
@@ -366,23 +366,23 @@
                     continue
                     ;;
             esac
-            LogText "Test: Checking file ${FILE}"
+            LogText "检查： 检查 文件 ${FILE}"
             FIND=$(${GREPBINARY} -E -i 'expose_php.*(on|yes|1)' ${FILE} | ${GREPBINARY} -v '^;')
             if HasData "${FIND}"; then
-                LogText "Result: found a a possible match on expose_php setting"
-                LogText "Data: ${FIND}"
+                LogText "结果： 发现 一个 一个 可能 match 在 expose_php 设置"
+                LogText "数据： ${FIND}"
                 FOUND=1
             fi
         done
 
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 4 --text "- Checking expose_php option" --result "${STATUS_ON}" --color RED
-            ReportSuggestion "${TEST_NO}" "Turn off PHP information exposure" "expose_php = Off" "-"
+            Display --indent 4 --text "- 检查 expose_php 选项" --result "${STATUS_ON}" --color RED
+            ReportSuggestion "${TEST_NO}" "Turn off PHP 信息 exposure" "expose_php = Off" "-"
             Report "Result: expose_php option is turned on, which can expose useful information for an attacker"
             AddHP 1 3
         else
-            Display --indent 4 --text "- Checking expose_php option" --result "${STATUS_OFF}" --color GREEN
-            LogText "结果：发现 'expose_php' 处于禁用状态（0、no 或 off）"
+            Display --indent 4 --text "- 检查 expose_php 选项" --result "${STATUS_OFF}" --color GREEN
+            LogText "结果：发现 'expose_php' 处于禁用状态（0、没有 或 off）"
             AddHP 2 2
         fi
     fi
@@ -393,18 +393,18 @@
     # Description : Check PHP enable_dl option
     # Notes       : Extend test to check all PHP files
     if [ -n "${PHPINIFILE}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PHP-2374 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check PHP enable_dl option"
+    Register --test-no PHP-2374 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 PHP 启用_dl 选项"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking PHP enable_dl option"
+        LogText "检查： 检查 PHP 启用_dl 选项"
         FIND=$(${GREPBINARY} -E -i 'enable_dl.*(on|yes|1)' ${PHPINIFILE} | ${GREPBINARY} -v '^;')
         if [ -n "${FIND}" ]; then
-            Display --indent 4 --text "- Checking enable_dl option" --result "${STATUS_ON}" --color YELLOW
+            Display --indent 4 --text "- 检查 启用_dl 选项" --result "${STATUS_ON}" --color YELLOW
             Report "Result: enable_dl option is turned on, which can be used to enable more modules dynamically and circumventing security controls"
-            ReportSuggestion "${TEST_NO}" "将 enable_dl 行改为 enable_dl = Off，以禁用动态加载新模块"
+            ReportSuggestion "${TEST_NO}" "将 启用_dl 行改为 启用_dl = Off，以禁用动态加载新模块"
             AddHP 0 1
         else
-            Display --indent 4 --text "- Checking enable_dl option" --result "${STATUS_OFF}" --color GREEN
-            LogText "结果：发现 'enable_dl' 处于禁用状态（未配置、0、no 或 off）"
+            Display --indent 4 --text "- 检查 启用_dl 选项" --result "${STATUS_OFF}" --color GREEN
+            LogText "结果：发现 'enable_dl' 处于禁用状态（未配置、0、没有 或 off）"
             AddHP 2 2
         fi
     fi
@@ -415,18 +415,18 @@
     # Description : Check PHP allow_url_fopen option
     # Notes       : Extend test to check all PHP files YYY
     if [ -n "${PHPINIFILE}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PHP-2376 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check PHP allow_url_fopen option"
+    Register --test-no PHP-2376 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 PHP allow_url_fopen 选项"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking PHP allow_url_fopen option"
+        LogText "检查： 检查 PHP allow_url_fopen 选项"
         FIND=$(${GREPBINARY} -E -i 'allow_url_fopen.*(off|no|0)' ${PHPINIFILE} | ${GREPBINARY} -v '^;')
         if [ -z "${FIND}" ]; then
-            Display --indent 4 --text "- Checking allow_url_fopen option" --result "${STATUS_ON}" --color YELLOW
+            Display --indent 4 --text "- 检查 allow_url_fopen 选项" --result "${STATUS_ON}" --color YELLOW
             LogText "结果：allow_url_fopen 选项已开启，可通过 PHP 下载内容，存在安全风险"
             ReportSuggestion "${TEST_NO}" "将 allow_url_fopen 行改为 allow_url_fopen = Off，以禁用通过 PHP 下载内容"
             AddHP 0 1
         else
-            Display --indent 4 --text "- Checking allow_url_fopen option" --result "${STATUS_OFF}" --color GREEN
-            LogText "结果：发现 'allow_url_fopen' 处于禁用状态（0、no 或 off）"
+            Display --indent 4 --text "- 检查 allow_url_fopen 选项" --result "${STATUS_OFF}" --color GREEN
+            LogText "结果：发现 'allow_url_fopen' 处于禁用状态（0、没有 或 off）"
             AddHP 2 2
         fi
         # TODO Check through all files
@@ -438,18 +438,18 @@
     # Description : Check PHP allow_url_include option
     # Notes       : Extend test to check all PHP files YYY
     if [ -n "${PHPINIFILE}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PHP-2378 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check PHP allow_url_include option"
+    Register --test-no PHP-2378 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 PHP allow_url_包含 选项"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: Checking PHP allow_url_include option"
+        LogText "检查： 检查 PHP allow_url_包含 选项"
         FIND=$(${GREPBINARY} -E -i 'allow_url_include.*(off|no|0)' ${PHPINIFILE} | ${GREPBINARY} -v '^;')
         if [ -z "${FIND}" ]; then
-            Display --indent 4 --text "- Checking allow_url_include option" --result "${STATUS_ON}" --color YELLOW
+            Display --indent 4 --text "- 检查 allow_url_包含 选项" --result "${STATUS_ON}" --color YELLOW
             Report "Result: allow_url_include option is turned on, which can be used for downloads via PHP and is a risk"
-            ReportSuggestion "${TEST_NO}" "将 allow_url_include 行改为 allow_url_include = Off，以禁用通过 PHP 包含远程内容"
+            ReportSuggestion "${TEST_NO}" "将 allow_url_包含 行改为 allow_url_包含 = Off，以禁用通过 PHP 包含远程内容"
             AddHP 0 1
         else
-            Display --indent 4 --text "- Checking allow_url_include option" --result "${STATUS_OFF}" --color GREEN
-            LogText "结果：发现 'allow_url_include' 处于禁用状态（0、no 或 off）"
+            Display --indent 4 --text "- 检查 allow_url_包含 选项" --result "${STATUS_OFF}" --color GREEN
+            LogText "结果：发现 'allow_url_include' 处于禁用状态（0、没有 或 off）"
             AddHP 2 2
         fi
     fi
@@ -537,7 +537,7 @@
     # Description : Check listen option
     # Background  : https://github.com/CISOfy/lynis/issues/837
     if [ -n "${PHPINI_ALLFILES}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PHP-2382 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check PHP expose_php option"
+    Register --test-no PHP-2382 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 PHP expose_php 选项"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         for FILE in ${PHPINI_ALLFILES}; do
@@ -547,22 +547,22 @@
                     continue
                     ;;
             esac
-            LogText "Test: Checking file ${FILE}"
+            LogText "检查： 检查 文件 ${FILE}"
             FIND=$(${GREPBINARY} -E -i "^listen = [0-9]{1,5}$" ${FILE})
             if HasData "${FIND}"; then
-                LogText "Result: found listen on just a port number"
-                LogText "Data: ${FIND}"
+                LogText "结果： 发现 listen 在 just 一个 端口 数量"
+                LogText "数据： ${FIND}"
                 LogText "注意：条件允许时，请将访问限制为仅 localhost，避免外部访问"
                 FOUND=1
             fi
         done
 
         if [ ${FOUND} -eq 1 ]; then
-            Display --indent 4 --text "- Checking listen option" --result "${STATUS_SUGGESTION}" --color YELLOW
+            Display --indent 4 --text "- 检查 listen 选项" --result "${STATUS_SUGGESTION}" --color YELLOW
             #ReportSuggestion "${TEST_NO}" "Limit the listening of FastCGI to just localhost or a local socket" "listen = 127.0.0.1:9000" "-"
             AddHP 1 3
         else
-            Display --indent 4 --text "- Checking listen option" --result "${STATUS_OK}" --color GREEN
+            Display --indent 4 --text "- 检查 listen 选项" --result "${STATUS_OK}" --color GREEN
             AddHP 2 2
         fi
     fi

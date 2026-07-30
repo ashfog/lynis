@@ -356,7 +356,7 @@ EOF
         if [ -z "${ARCH_AUDIT_BINARY}" ]; then
             LogText "结果：未找到 arch-audit 可执行文件"
             AddHP 1 2
-            ReportSuggestion "${TEST_NO}" "建议安装 arch-audit，以检测存在漏洞的软件包" "arch-audit" "text:安装 arch-audit"
+            ReportSuggestion "${TEST_NO}" "建议安装 arch-audit，以检测存在漏洞的软件包" "arch-audit" "text：安装 arch-audit"
         else
             PACKAGE_AUDIT_TOOL_FOUND=1
             PACKAGE_AUDIT_TOOL="arch-audit"
@@ -385,7 +385,7 @@ EOF
                 Report "vulnerable_package[]=${ITEM}"
                 AddHP 1 2
             done
-            ReportWarning "${TEST_NO}" "发现存在漏洞的软件包" "arch-audit 返回了结果" "text:运行 arch-audit 查看结果，并在需要时使用 pacman -Suy 更新软件包"
+            ReportWarning "${TEST_NO}" "发现存在漏洞的软件包" "arch-audit 返回了结果" "text：运行 arch-audit 查看结果，并在需要时使用 pacman -Suy 更新软件包"
         fi
     fi
 #
@@ -446,16 +446,16 @@ EOF
     # Test        : PKGS-7332
     # Description : Query macOS ports
     if [ -x ${ROOTDIR}opt/local/bin/port ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PKGS-7332 --os "macOS" --preqs-met ${PREQS_MET} --weight L --network NO --description "查询 macOS ports"
+    Register --test-no PKGS-7332 --os "macOS" --preqs-met ${PREQS_MET} --weight L --network NO --description "查询 macOS 端口"
     if [ ${SKIPTEST} -eq 0 ]; then
         FIND=$(${ROOTDIR}opt/local/bin/port installed 2>&1 | ${GREPBINARY} active | ${SORTBINARY}; ${ROOTDIR}bin/echo $?)
         if [ "${FIND}" = "0" ]; then
-            Display --indent 4 --text "- 使用 port 搜索软件包" --result "{STATUS_FOUND}" --color GREEN
+            Display --indent 4 --text "- 使用 端口 搜索软件包" --result "{STATUS_FOUND}" --color GREEN
             Report "package_manager[]=port"
             PACKAGE_MGR_PKG=1
-            LogText "结果：发现 port 工具"
-            LogText "检查：查询 port 获取软件包列表"
-            Display --indent 6 --text "- 使用 port 查询已安装的软件包"
+            LogText "结果：发现 端口 工具"
+            LogText "检查：查询 端口 获取软件包列表"
+            Display --indent 6 --text "- 使用 端口 查询已安装的软件包"
             LogText "输出："; LogText "-----"
             SPACKAGES=$(${ROOTDIR}opt/local/bin/port installed | ${GREPBINARY} active)
             for ITEM in ${SPACKAGES}; do
@@ -472,10 +472,10 @@ EOF
     # Test        : PKGS-7334
     # Description : Query macOS ports for available port upgrades
     if [ -x ${ROOTDIR}opt/local/bin/port ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PKGS-7334 --os "macOS" --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "使用 port 查询可用升级"
+    Register --test-no PKGS-7334 --os "macOS" --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "使用 端口 查询可用升级"
     if [ ${SKIPTEST} -eq 0 ]; then
         COUNT=0
-        LogText "检查：查询 ports 的可用升级"
+        LogText "检查：查询 端口 的可用升级"
         UPACKAGES=$(${ROOTDIR}opt/local/bin/port outdated 2> /dev/null | ${CUTBINARY} -d' ' -f1)
         for J in ${UPACKAGES}; do
             COUNT=$((COUNT + 1))
@@ -485,10 +485,10 @@ EOF
         Report "upgrade_available_count=${COUNT}"
         if [ ${COUNT} -eq 0 ]; then
             LogText "结果：未发现可用升级"
-            Display --indent 2 --text "- 检查 ports 更新" --result "${STATUS_NONE}" --color GREEN
+            Display --indent 2 --text "- 检查 端口 更新" --result "${STATUS_NONE}" --color GREEN
             AddHP 2 2
         else
-            Display --indent 2 --text "- 检查 ports 更新" --result "${STATUS_FOUND}" --color YELLOW
+            Display --indent 2 --text "- 检查 端口 更新" --result "${STATUS_FOUND}" --color YELLOW
         fi
     fi
 #
@@ -616,7 +616,7 @@ EOF
                 # Decrease hardening points for every found vulnerable package
                 AddHP 1 2
             done
-            ReportWarning "${TEST_NO}" "发现一个或多个存在漏洞的软件包。请运行：dnf upgrade"
+            ReportWarning "${TEST_NO}" "发现一个或多个存在漏洞的软件包。请运行：dnf 升级"
             Display --indent 2 --text "- 使用 DNF 查找存在漏洞的软件包" --result "${STATUS_WARNING}" --color RED
         else
             LogText "结果：未发现安全更新"
@@ -730,7 +730,7 @@ EOF
     # Test        : PKGS-7378
     # Description : Query FreeBSD portmaster for available port upgrades
     if [ -x ${ROOTDIR}usr/local/sbin/portmaster ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PKGS-7378 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "使用 portmaster 查询 port 升级"
+    Register --test-no PKGS-7378 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "使用 portmaster 查询 端口 升级"
     if [ ${SKIPTEST} -eq 0 ]; then
         COUNT=0
         LogText "检查：查询 portmaster 的可用升级"
@@ -762,12 +762,12 @@ EOF
             if [ -f ${ROOTDIR}var/db/pkg/pkg-vulnerabilities ]; then
                 FIND=$(${ROOTDIR}usr/sbin/pkg_admin audit)
                 if [ -z "${FIND}" ]; then
-                    LogText "结果：pkg_admin audit 检查结果正常"
-                    Display --indent 2 --text "- 使用 pkg_admin audit 检查漏洞软件包" --result "${STATUS_NONE}" --color GREEN
+                    LogText "结果：pkg_admin 审计 检查结果正常"
+                    Display --indent 2 --text "- 使用 pkg_admin 审计 检查漏洞软件包" --result "${STATUS_NONE}" --color GREEN
                     AddHP 10 10
                 else
-                    Display --indent 2 --text "- 使用 pkg_admin audit 检查漏洞软件包" --result "${STATUS_WARNING}" --color RED
-                    LogText "结果：pkg_admin audit 发现一个或多个已安装软件包存在漏洞。"
+                    Display --indent 2 --text "- 使用 pkg_admin 审计 检查漏洞软件包" --result "${STATUS_WARNING}" --color RED
+                    LogText "结果：pkg_admin 审计 发现一个或多个已安装软件包存在漏洞。"
                     ReportWarning "${TEST_NO}" "发现一个或多个存在漏洞的软件包。"
                     LogText "存在漏洞的软件包/版本列表："
                     for I in $(${ROOTDIR}usr/sbin/pkg_admin audit | ${AWKBINARY} '{ print $2 }' | ${SORTBINARY} -u); do
@@ -783,8 +783,8 @@ EOF
                 AddHP 0 2
             fi
         else
-            Display --indent 2 --text "- 未安装 pkg_admin audit" --result "${STATUS_NOT_FOUND}" --color WHITE
-            LogText "结果：未安装 pkg_admin audit，跳过此漏洞检查。"
+            Display --indent 2 --text "- 未安装 pkg_admin 审计" --result "${STATUS_NOT_FOUND}" --color WHITE
+            LogText "结果：未安装 pkg_admin 审计，跳过此漏洞检查。"
         fi
     fi
 #
@@ -808,30 +808,30 @@ EOF
                 FIND=$(${PKG_BINARY} audit -q 2> /dev/null)
             fi
             if [ $? -eq 0 ]; then
-                LogText "结果：pkg audit 检查结果正常"
-                Display --indent 2 --text "- 使用 pkg audit 检查漏洞软件包" --result "${STATUS_NONE}" --color GREEN
+                LogText "结果：pkg 审计 检查结果正常"
+                Display --indent 2 --text "- 使用 pkg 审计 检查漏洞软件包" --result "${STATUS_NONE}" --color GREEN
                 AddHP 10 10
             elif [ $? -eq 1 ]; then
                 if [ -n "${FIND}" ]; then
                     VULNERABLE_PACKAGES_FOUND=1
-                    Display --indent 2 --text "- 使用 pkg audit 检查漏洞软件包" --result "${STATUS_FOUND}" --color YELLOW
+                    Display --indent 2 --text "- 使用 pkg 审计 检查漏洞软件包" --result "${STATUS_FOUND}" --color YELLOW
                     for ITEM in ${FIND}; do
                         COUNT=$((COUNT + 1))
                         Report "vulnerable_package[]=${ITEM}"
-                        LogText "Vulnerable package: ${ITEM}"
+                        LogText "Vulnerable 软件包： ${ITEM}"
                         AddHP 1 2
                     done
-                    ReportWarning "${TEST_NO}" "发现存在漏洞的软件包" "${COUNT} 个存在漏洞的软件包" "text:运行 pkg audit"
+                    ReportWarning "${TEST_NO}" "发现存在漏洞的软件包" "${COUNT} 个存在漏洞的软件包" "text：运行 pkg 审计"
                 else
                     LogText "结果：退出码大于零，但没有输出"
                 fi
             else
                 LogText "结果：退出码为 $?"
-                ReportException "${TEST_NO}" "pkg audit 返回未知退出码，请在 ${PROJECT_SOURCE} 提交问题"
+                ReportException "${TEST_NO}" "pkg 审计 返回未知退出码，请在 ${PROJECT_SOURCE} 提交问题"
             fi
         else
             LogText "结果：未找到漏洞数据库"
-            ReportWarning "${TEST_NO}" "没有可用的漏洞数据库" "pkg audit" "text:运行 pkg audit -F"
+            ReportWarning "${TEST_NO}" "没有可用的漏洞数据库" "pkg 审计" "text：运行 pkg 审计 -F"
         fi
     fi
 #
@@ -936,7 +936,7 @@ EOF
     #             : RHEL 6: yum-security-plugin (plugin)
     #             : RHEL 5: yum-security (plugin)
     if [ -x ${ROOTDIR}usr/bin/yum -a -z "${DNFBINARY}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no PKGS-7386 --preqs-met ${PREQS_MET} --os Linux --weight L --network NO --category security --description "检查 YUM security 软件包"
+    Register --test-no PKGS-7386 --preqs-met ${PREQS_MET} --os Linux --weight L --network NO --category security --description "检查 YUM 安全 软件包"
     if [ ${SKIPTEST} -eq 0 ]; then
         DO_TEST=0
         LogText "检查：确认是否安装 yum-security 软件包"
@@ -947,7 +947,7 @@ EOF
             if [ ${FILE_FOUND} -eq 1 ]; then
                 if SearchItem "\-\-security" "${ROOTDIR}usr/share/yum-cli/cli.py"; then
                     DO_TEST=1
-                    LogText "结果：发现 yum 内置的 security 支持"
+                    LogText "结果：发现 yum 内置的 安全 支持"
                 else
                     LogText "结果：在 ${ROOTDIR}usr/share/yum-cli/cli.py 中未找到 --security"
                 fi
@@ -998,7 +998,7 @@ EOF
         else
             LogText "结果：未找到 yum-security 软件包"
             Display --indent 2 --text "- 检查缺失的安全软件包" --result "${STATUS_SKIPPED}" --color YELLOW
-            ReportSuggestion "${TEST_NO}" "尽可能安装 yum-plugin-security，以便更容易维护安全更新（yum install yum-plugin-security）"
+            ReportSuggestion "${TEST_NO}" "尽可能安装 yum-plugin-security，以便更容易维护安全更新（yum 安装 yum-plugin-security）"
         fi
     fi
 #
@@ -1096,7 +1096,7 @@ EOF
                 LogText "结果：发现安全软件仓库"
                 AddHP 3 3
             else
-                Display --indent 2 --text "- 检查 sources.list 中的安全仓库 or directory" --result "${STATUS_WARNING}" --color RED
+                Display --indent 2 --text "- 检查 sources.list 中的安全仓库 或 目录" --result "${STATUS_WARNING}" --color RED
                 ReportWarning "${TEST_NO}" "在 /etc/apt/sources.list 或 sources.list.d 目录中未找到安全仓库"
                 AddHP 0 3
             fi
@@ -1119,7 +1119,7 @@ EOF
 
     Register --test-no PKGS-7390 --os Linux --preqs-met ${PREQS_MET} --root-only YES --weight L --network NO --category security --description "检查 Ubuntu 软件包数据库一致性"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "检查：运行 apt-get check 检查软件包数据库一致性"
+        LogText "检查：运行 apt-get 检查 检查软件包数据库一致性"
         FIND=$(${ROOTDIR}usr/bin/apt-get -q=2 check 2> /dev/null; echo $?)
         if [ "${FIND}" = "0" ]; then
             Display --indent 2 --text "- 检查 APT 软件包数据库" --result "${STATUS_OK}" --color GREEN
@@ -1127,7 +1127,7 @@ EOF
         else
             LogText "结果：软件包数据库很可能不一致"
             Display --indent 2 --text "- 检查 APT 软件包数据库" --result "${STATUS_WARNING}" --color RED
-            ReportWarning "${TEST_NO}" "apt-get check 返回了非成功退出码。"
+            ReportWarning "${TEST_NO}" "apt-get 检查 返回了非成功退出码。"
             ReportSuggestion "${TEST_NO}" "运行 apt-get 手动检查软件包数据库一致性。"
         fi
     fi
@@ -1189,7 +1189,7 @@ EOF
         if [ -n "${FIND}" ]; then
             VULNERABLE_PACKAGES_FOUND=1
             SCAN_PERFORMED=1
-            LogText "结果：apt-get 在 -security 渠道中发现存在漏洞的软件包"
+            LogText "结果：apt-get 在 -安全 渠道中发现存在漏洞的软件包"
             PACKAGE_AUDIT_TOOL="apt-get"
             PACKAGE_AUDIT_TOOL_FOUND=1
             for PKG in ${FIND}; do
@@ -1200,14 +1200,14 @@ EOF
         if [ ${SCAN_PERFORMED} -eq 1 ]; then
             if [ ${VULNERABLE_PACKAGES_FOUND} -eq 1 ]; then
                 ReportWarning "${TEST_NO}" "发现一个或多个存在漏洞的软件包。"
-                ReportSuggestion "${TEST_NO}" "使用 apt-get update、apt-get upgrade、apt-get dist-upgrade 和/或 unattended-upgrades 更新系统"
+                ReportSuggestion "${TEST_NO}" "使用 apt-get 更新、apt-get 升级、apt-get dist-upgrade 和/或 unattended-upgrades 更新系统"
                 Display --indent 2 --text "- 检查存在漏洞的软件包" --result "${STATUS_WARNING}" --color RED
             else
                 Display --indent 2 --text "- 检查存在漏洞的软件包" --result "${STATUS_OK}" --color GREEN
                 LogText "结果：未发现存在漏洞的软件包"
             fi
         else
-            Display --indent 2 --text "- 检查存在漏洞的软件包 (apt-get only)" --result "${STATUS_DONE}" --color GREEN
+            Display --indent 2 --text "- 检查存在漏洞的软件包 (apt-get 仅)" --result "${STATUS_DONE}" --color GREEN
             LogText "结果：检查未完整执行（缺少 apt-check 输出）"
         fi
     fi
@@ -1253,7 +1253,7 @@ EOF
                     Display --indent 2 --text "- 检查存在漏洞的软件包 (glsa-check)" --result "${STATUS_FOUND}" --color RED
                     LogText "结果：glsa-check 发现 ${FIND} 个安全更新"
                     ReportWarning "${TEST_NO}" "glsa-check 发现 ${FIND} 个安全更新。"
-                    LogText "说明：运行 glsa-check -t all 查看识别出的 GLSA。"
+                    LogText "说明：运行 glsa-check -t 所有 查看识别出的 GLSA。"
                     AddHP 0 25
                 fi
             fi
@@ -1321,7 +1321,7 @@ EOF
         else
             LogText "结果：配置已禁用仓库更新，当前使用的软件仓库信息可能已过期"
         fi
-        LogText "检查：使用 apk version -l 查询可升级的软件包"
+        LogText "检查：使用 apk 版本 -l 查询可升级的软件包"
         FIND=$(${ROOTDIR}sbin/apk version -l '<' | ${GREPBINARY} '<' | ${SEDBINARY} 's/\s\+<\s/</g')
         if [ -z "${FIND}" ]; then
             LogText "结果：未发现可升级的软件包"
@@ -1383,7 +1383,7 @@ EOF
                 LogText "结果：dpkg -l 输出中未发现内核软件包，情况异常"
             elif [ ${KERNELS} -gt 5 ]; then
                 LogText "结果：系统中发现超过 5 个内核软件包，可能未定期清理"
-                ReportSuggestion "${TEST_NO}" "删除不需要的内核软件包" "${KERNELS} 个内核" "text:检查 dpkg -l 输出，并使用 apt autoremove 清理"
+                ReportSuggestion "${TEST_NO}" "删除不需要的内核软件包" "${KERNELS} 个内核" "text：检查 dpkg -l 输出，并使用 apt autoremove 清理"
             else
                 LogText "结果：系统中发现 ${KERNELS} 个内核软件包，数量正常"
             fi
@@ -1392,7 +1392,7 @@ EOF
             TESTED=1
             KERNELS=$(${RPMBINARY} -q kernel 2> /dev/null | ${WCBINARY} -l)
             if [ ${KERNELS} -eq 0 ]; then
-                LogText "结果：rpm -q kernel 输出中未发现内核软件包，情况异常"
+                LogText "结果：rpm -q 内核 输出中未发现内核软件包，情况异常"
             elif [ ${KERNELS} -gt 5 ]; then
                 LogText "结果：系统中发现超过 5 个内核软件包，可能未定期清理"
                 ReportSuggestion "${TEST_NO}" "使用 package-cleanup --old-kernels 删除不需要的内核软件包"

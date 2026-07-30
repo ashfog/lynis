@@ -35,7 +35,7 @@
             Display --indent 4 --text "- 已安装的编译器" --result "${STATUS_NOT_FOUND}" --color GREEN
             AddHP 3 3
         else
-            LogText "结果：发现已安装的编译器；请查看日志文件开头列出的编译器，或使用 ${GREPBINARY} 过滤 'compiler'"
+            LogText "结果：发现已安装的编译器；请查看日志文件开头列出的编译器，或使用 ${GREPBINARY} 过滤 '编译器'"
             Display --indent 4 --text "- 已安装的编译器" --result "${STATUS_FOUND}" --color RED
             AddHP 1 3
         fi
@@ -74,8 +74,8 @@
 
             # Report suggestion is one or more compilers can be better hardened
             if [ ${HARDEN_COMPILERS_NEEDED} -eq 1 ]; then
-                LogText "结果：至少一个编译器可以通过仅允许 root 或指定组执行来进一步加固"
-                ReportSuggestion "${TEST_NO}" "加固编译器，例如仅允许 root 用户访问"
+                LogText "结果：至少一个编译器可以通过仅允许 根 或指定组执行来进一步加固"
+                ReportSuggestion "${TEST_NO}" "加固编译器，例如仅允许 根 用户访问"
             fi
         fi
     fi
