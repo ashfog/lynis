@@ -252,7 +252,7 @@
     else
         PREQS_MET="NO"
     fi
-    Register --test-no NETW-2706 --preqs-met "${PREQS_MET}" --weight L --network YES --category security --description "Check systemd-resolved and upstream DNSSEC status"
+    Register --test-no NETW-2706 --preqs-met "${PREQS_MET}" --weight L --network YES --category security --description "检查 systemd-resolved 与上游 DNSSEC 状态"
     if [ ${SKIPTEST} -eq 0 ]; then
         SKIP=0
         DNSSEC_STATUS=$(${RESOLVE_CMD} ${RESOLVE_CMD_PARAM} 2> /dev/null | ${AWKBINARY} -F ":" '/DNSSEC supported/ { print $2 }' | ${TRBINARY} -d ' ')
@@ -633,7 +633,7 @@
                         ReportWarning "${TEST_NO}" "发现混杂模式接口" "${I}" "text:确认是否需要此模式，或在配置文件中将接口加入白名单"
                         LogText "说明：某些工具会将接口设为混杂模式，以捕获或记录网络流量"
                     else
-                        LogText "Result: 发现混杂模式接口 ${I} (*whitelisted via profile*)"
+                        LogText "结果：发现混杂模式接口 ${I}（已通过配置文件加入白名单）"
                     fi
                 fi
             done
