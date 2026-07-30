@@ -1,0 +1,64 @@
+name: One-time final visible English audit
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/audit-visible-english-final.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+      - name: Scan remaining active user-visible English
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          visible_markers = (
+              'Register ', 'Display ', 'LogText ', 'ReportWarning ',
+              'ReportSuggestion ', 'ReportException ', 'SKIPREASON=',
+              'DisplayError ', 'DisplayWarning ', 'DisplaySuggestion ',
+              'echo ', 'printf '
+          )
+          cjk = re.compile(r'[\u3400-\u9fff]')
+          strong_prefix = re.compile(r'(^|[" ])(Result|Test|Check|Checking|Search|Searching|Found|Finding|Query|Querying|Notice|Note|Info|Information|Warning|Error|Risk|Outcome|Exception|Skipping|Skipped|Security alert|Fatal error|Can not|Cannot|Could not|Unable|Unknown|Please|Thank you|Install|Enable|Disable|Determine|Review|Consider|Missing|Running|Not running|Not found|No |Using|Retrieving|Gathering|Validate|Verify|Status|Available|Configured|Configuration|File|Directory|Service|Process|Package|Software|System|User|Group|Password|Network|Protocol|Port|Listening|Remote|Local|Audit)\b', re.I)
+          english_phrase = re.compile(r'\b(?:[A-Za-z]{3,}\s+){2,}[A-Za-z]{3,}\b')
+          files = [Path('lynis')] + sorted(p for p in Path('include').rglob('*') if p.is_file())
+          out = []
+          for path in files:
+              try:
+                  lines = path.read_text(encoding='utf-8').splitlines()
+              except UnicodeDecodeError:
+                  continue
+              for n, raw in enumerate(lines, 1):
+                  s = raw.lstrip()
+                  if not s or s.startswith('#') or not any(m in raw for m in visible_markers):
+                      continue
+                  quoted = ' '.join(re.findall(r'"([^"\\]*(?:\\.[^"\\]*)*)"', raw)) or raw
+                  if strong_prefix.search(quoted):
+                      out.append(f'{path}:{n}: {raw}')
+                      continue
+                  if not cjk.search(quoted) and english_phrase.search(quoted):
+                      out.append(f'{path}:{n}: {raw}')
+          report = ['# Final remaining active user-visible English candidates', f'# Count: {len(out)}', '', *out, '']
+          Path('VISIBLE_ENGLISH_REPORT.txt').write_text('\n'.join(report), encoding='utf-8')
+          print(f'found {len(out)} candidates')
+          PY
+      - name: Commit report and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/audit-visible-english-final.yml
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add VISIBLE_ENGLISH_REPORT.txt .github/workflows/audit-visible-english-final.yml
+          git commit -m "chore: refresh final visible English report"
+          git push origin HEAD:master
