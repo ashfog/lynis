@@ -470,7 +470,7 @@
                     elif [ "${MACHINE_ROLE}" = "personal" ]; then
                         Display --indent 4 --text "- 密码选项 " --result "${STATUS_WARNING}" --color yellow
                         LogText "结果：LILO 未设置密码，可能被用于进入单用户模式或未经授权访问设备和数据。"
-                        ReportSuggestion "${TEST_NO}" "LILO 启动加载器未设置密码. 为 LILO 添加密码：在 lilo.conf 中第一个 'image=<name>' 行之前添加 password=<password>"
+                        ReportSuggestion "${TEST_NO}" "LILO 启动加载器未设置密码。为 LILO 添加密码：在 lilo.conf 中第一个 'image=<name>' 行之前添加 password=<password>"
                         AddHP 1 2
                     else
                         LogText "结果：LILO 未设置密码，且计算机角色未知"
@@ -560,7 +560,7 @@
         # Configuration file
         if [ -f ${ROOTDIR}etc/boot.conf ]; then
             FOUND=1
-            Display --indent 2 --text "- Checking ${ROOTDIR}etc/boot.conf" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 2 --text "- 检查 ${ROOTDIR}etc/boot.conf" --result "${STATUS_FOUND}" --color GREEN
             FIND=$(${GREPBINARY} '^boot' ${ROOTDIR}etc/boot.conf)
             if [ -z "${FIND}" ]; then
                 Display --indent 4 --text "- 检查 boot 选项" --result "${STATUS_WARNING}" --color RED
@@ -571,7 +571,7 @@
                 LogText "正常，boot 选项已启用。"
             fi
         else
-            Display --indent 2 --text "- Checking ${ROOTDIR}etc/boot.conf" --result "${STATUS_NOT_FOUND}" --color YELLOW
+            Display --indent 2 --text "- 检查 ${ROOTDIR}etc/boot.conf" --result "${STATUS_NOT_FOUND}" --color YELLOW
             LogText "结果：未找到 ${ROOTDIR}etc/boot.conf。使用默认启动加载器时，具有物理"
             LogText "访问权限的人员可能进入单用户模式。"
             ReportSuggestion "${TEST_NO}" "在 ${ROOTDIR}etc/boot.conf 中添加 'boot'，禁用默认的 5 秒等待时间。"
@@ -1005,12 +1005,12 @@
 #################################################################################
 #
     # Test        : BOOT-5263
-    # Description : Check OpenBSD world writable startup scripts
+    # Description : 检查 OpenBSD 可被所有用户写入的启动脚本
     Register --test-no BOOT-5263 --os OpenBSD --weight L --network NO --category security --description "检查启动文件和脚本权限"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
         CHECKDIR="${ROOTDIR}etc/rc.d"
-        LogText "Result: checking ${ROOTDIR}etc/rc.d scripts for writable bit"
+        LogText "结果：检查 ${ROOTDIR}etc/rc.d 脚本的可写权限"
         LogText "检查：确认目录 ${DIR} 是否存在"
         if [ -d ${CHECKDIR} ]; then
             LogText "结果：发现目录 ${DIR}"
@@ -1039,7 +1039,7 @@
                 LogText "结果：目录中未发现文件。"
             fi
         else
-            LogText "Result: directory ${CHECKDIR} not found. Skipping.."
+            LogText "结果：未找到目录 ${CHECKDIR}，跳过。"
         fi
 
         # Other files
@@ -1087,7 +1087,7 @@
     fi
     Register --test-no BOOT-5264 --preqs-met ${PREQS_MET} --skip-reason "${SKIPREASON}" --os Linux --weight L --network NO --category security --description "运行 systemd-analyze security"
     if [ ${SKIPTEST} -eq 0 ]; then
-        LogText "Test: 运行 systemd-analyze security"
+        LogText "检查：运行 systemd-analyze security"
         Display --indent 2 --text "- 运行 'systemd-analyze security'"
         Display --indent 6 --text "单元名称（暴露值）和安全等级"
         Display --indent 6 --text "--------------------------------"
