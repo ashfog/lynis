@@ -36,22 +36,22 @@
 #################################################################################
 #
     # Test        : BOOT-5102
-    # Description : Check for AIX boot device
+    # Description : 检查 AIX 启动设备
     # Notes       : The AIX bootstrap is called as software ROS. Bootstrap contains IPL (Initial Program loader)
     #               TODO - binary detection of bootinfo and replace with variable
-    Register --test-no BOOT-5102 --os AIX --weight L --network NO --root-only YES --category security --description "Check for AIX boot device"
+    Register --test-no BOOT-5102 --os AIX --weight L --network NO --root-only YES --category security --description "检查 AIX 启动设备"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
-        LogText "Test: Query bootinfo for AIX boot device"
+        LogText "检查：通过 bootinfo 查询 AIX 启动设备"
         if [ -x /usr/sbin/bootinfo ]; then
             FIND=$(/usr/sbin/bootinfo -b)
             if [ -n "${FIND}" ]; then
-                LogText "Result: found boot device ${FIND}"
-                Display --indent 2 --text "- Checking boot device (bootinfo)" --result "${STATUS_FOUND}" --color GREEN
+                LogText "结果：发现启动设备 ${FIND}"
+                Display --indent 2 --text "- 检查启动设备（bootinfo）" --result "${STATUS_FOUND}" --color GREEN
                 BOOT_LOADER="ROS"
                 BOOT_LOADER_FOUND=1
             else
-                LogText "Result: no data received from bootinfo, most likely boot device not found"
+                LogText "结果：bootinfo 未返回数据，可能未找到启动设备"
             fi
         fi
     fi
@@ -59,22 +59,22 @@
 #################################################################################
 #
     # Test        : BOOT-5104
-    # Description : Determine service manager
+    # Description : 确定服务管理器
     # Notes       :
     # initscripts     - Used by Arch before
     # runit           - Used by Artix, Devuan, Dragora and Void
     # systemd         - Common option with more Linux distros implementing it
     # upstart         - Used by Debian/Ubuntu
-    Register --test-no BOOT-5104 --weight L --network NO --category security --description "Determine service manager"
+    Register --test-no BOOT-5104 --weight L --network NO --category security --description "确定服务管理器"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         case ${OS} in
             "Linux")
                 if [ -f /proc/1/cmdline ]; then
                     OUTPUT=$(${AWKBINARY} '/(^\/|init|runit)/ { print $1 }' /proc/1/cmdline | ${TRBINARY} '\0' ' ' | ${SEDBINARY} 's/ $//')
-                    LogText "Result: cmdline found = ${OUTPUT}"
+                    LogText "结果：发现命令行 = ${OUTPUT}"
                     FILENAME=$(echo "${OUTPUT}" | ${AWKBINARY} '{print $1}')
-                    LogText "Result: file on disk = ${FILENAME}"
+                    LogText "结果：磁盘上的文件 = ${FILENAME}"
                     ISFILE=$(echo ${FILENAME} | ${GREPBINARY} "^/")
                     if [ -n "${ISFILE}" ]; then
                         if [ -L ${ISFILE} ]; then
@@ -83,12 +83,12 @@
                         elif [ -f ${ISFILE} ]; then
                             FILENAME="${ISFILE}"
                         else
-                            LogText "Result: cmdline of PID 1 is not a file"
+                            LogText "结果：PID 1 的命令行不是文件路径"
                         fi
                     fi
                     if [ -n "${FILENAME}" ]; then
                         SHORTNAME=$(echo ${FILENAME} | ${AWKBINARY} -F/ '{ print $NF }')
-                        LogText "Found: ${SHORTNAME}"
+                        LogText "发现：${SHORTNAME}"
                         if [ "${SERVICE_MANAGER}" = "unknown" ]; then
                             case ${SHORTNAME} in
                                 busybox)
@@ -119,15 +119,15 @@
                                     if [ -n "${CONTAINS_SYSTEMD}" ]; then
                                         SERVICE_MANAGER="systemd"
                                     else
-                                        LogText "Found ${SHORTNAME}. Unclear what service manager this is"
-                                        ReportException "${TEST_NO}:001" "Unknown service manager"
+                                        LogText "发现 ${SHORTNAME}，无法确定其服务管理器类型"
+                                        ReportException "${TEST_NO}:001" "未知服务管理器"
                                     fi
                                 ;;
                             esac
                         fi
                     else
-                        LogText "Result: /proc/1/cmdline seems to be empty"
-                        ReportException "${TEST_NO}:002" "No data found in /proc/1/cmdline"
+                        LogText "结果：/proc/1/cmdline 似乎为空"
+                        ReportException "${TEST_NO}:002" "/proc/1/cmdline 中未发现数据"
                     fi
                 fi
                 # Continue testing if we didn't find it yet
@@ -153,14 +153,14 @@
                 fi
             ;;
             *)
-                LogText "Result: unknown service manager"
+                LogText "结果：未知服务管理器"
             ;;
         esac
-        LogText "Result: service manager found = ${SERVICE_MANAGER}"
+        LogText "结果：发现服务管理器 = ${SERVICE_MANAGER}"
         if [ "${SERVICE_MANAGER}" = "" -o "${SERVICE_MANAGER}" = "unknown" ]; then
-            Display --indent 2 --text "- Service Manager" --result "${STATUS_UNKNOWN}" --color YELLOW
+            Display --indent 2 --text "- 服务管理器" --result "${STATUS_UNKNOWN}" --color YELLOW
         else
-            Display --indent 2 --text "- Service Manager" --result "${SERVICE_MANAGER}" --color GREEN
+            Display --indent 2 --text "- 服务管理器" --result "${SERVICE_MANAGER}" --color GREEN
         fi
     fi
 #
@@ -168,12 +168,12 @@
 #
     # Test        : BOOT-5106
     # Description : Check if boot.efi is found on macOS/macOS
-    Register --test-no BOOT-5106 --os "macOS" --weight L --network NO --root-only YES --category security --description "Check EFI boot file on Mac OS X/macOS"
+    Register --test-no BOOT-5106 --os "macOS" --weight L --network NO --root-only YES --category security --description "检查 Mac OS X/macOS 的 EFI 启动文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         FileExists ${ROOTDIR}System/Library/CoreServices/boot.efi
         if [ ${FILE_FOUND} -eq 1 ]; then
-            LogText "Result: found macOS/Mac OS X boot.efi file"
+            LogText "结果：发现 macOS/Mac OS X boot.efi 文件"
             BOOT_LOADER="macOS-boot-EFI"
             BOOT_LOADER_FOUND=1
         fi
@@ -183,12 +183,12 @@
 #
     # Test        : BOOT-5108
     # Description : Check for Syslinux
-    Register --test-no BOOT-5108 --os "Linux" --weight L --network NO --root-only YES --category security --description "Check Syslinux as bootloader"
+    Register --test-no BOOT-5108 --os "Linux" --weight L --network NO --root-only YES --category security --description "检查 Syslinux 启动加载器"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         FileExists ${ROOTDIR}boot/syslinux/syslinux.cfg
         if [ ${FILE_FOUND} -eq 1 ]; then
-            LogText "Result: found Syslinux"
+            LogText "结果：发现 Syslinux"
             BOOT_LOADER="Syslinux"
             BOOT_LOADER_FOUND=1
         fi
@@ -198,12 +198,12 @@
 #
     # Test        : BOOT-5109
     # Description : Check for rEFInd
-    Register --test-no BOOT-5109 --os "Linux" --weight L --network NO --root-only YES --category security --description "Check rEFInd as bootloader"
+    Register --test-no BOOT-5109 --os "Linux" --weight L --network NO --root-only YES --category security --description "检查 rEFInd 启动加载器"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         FileExists ${ROOTDIR}boot/refind_linux.conf
         if [ ${FILE_FOUND} -eq 1 ]; then
-            LogText "Result: found rEFInd"
+            LogText "结果：发现 rEFInd"
             BOOT_LOADER="rEFInd"
             BOOT_LOADER_FOUND=1
         fi
@@ -212,60 +212,60 @@
 #################################################################################
 #
     # Test        : BOOT-5116
-    # Description : Check if system is booted in UEFI mode
-    Register --test-no BOOT-5116 --weight L --network NO --root-only YES --category security --description "Check if system is booted in UEFI mode"
+    # Description : 检查系统是否以 UEFI 模式启动
+    Register --test-no BOOT-5116 --weight L --network NO --root-only YES --category security --description "检查系统是否以 UEFI 模式启动"
     if [ ${SKIPTEST} -eq 0 ]; then
         UEFI_TESTS_PERFORMED=0
         case ${OS} in
             Linux)
                 UEFI_TESTS_PERFORMED=1
                 # Check if UEFI is available in this boot
-                LogText "Test: checking if UEFI is used"
+                LogText "检查：确认是否使用 UEFI"
                 if [ -d ${ROOTDIR}sys/firmware/efi ]; then
-                    LogText "Result: system booted in UEFI mode"
+                    LogText "结果：系统以 UEFI 模式启动"
                     UEFI_BOOTED=1
                 else
-                    LogText "Result: UEFI not used, can't find /sys/firmware/efi directory"
+                    LogText "结果：未使用 UEFI，找不到 /sys/firmware/efi 目录"
                 fi
 
                 # Test if Secure Boot is enabled
-                LogText "Test: determine if Secure Boot is used"
+                LogText "检查：确定是否使用 Secure Boot"
                 if [ -d ${ROOTDIR}sys/firmware/efi/efivars ]; then
                     FIND=$(${LSBINARY} ${ROOTDIR}sys/firmware/efi/efivars/SecureBoot-* 2> /dev/null)
                     if [ -n "${FIND}" ]; then
                         for FILE in ${FIND}; do
-                            LogText "Test: checking file ${FILE}"
+                            LogText "检查：检查文件 ${FILE}"
                             # TODO: add detection for od
                             J=$(od -An -t u1 ${FILE} | ${AWKBINARY} '{ print $5 }')
                             if [ "${J}" = "1" ]; then
-                                LogText "Result: found SecureBoot file with enabled status"
+                                LogText "结果：发现已启用状态的 SecureBoot 文件"
                                 UEFI_BOOTED_SECURE=1
                             else
-                                LogText "Result: system not booted with Secure Boot (status 0 in file ${FILE})"
+                                LogText "结果：系统未通过 Secure Boot 启动（文件 ${FILE} 中状态为 0）"
                             fi
                         done
                     fi
                 else
-                    LogText "Result: system not booted with Secure Boot (no SecureBoot file found)"
+                    LogText "结果：系统未通过 Secure Boot 启动（未找到 SecureBoot 文件）"
                 fi
             ;;
             #macOS)
             # TODO: macOS ioreg -l -p IODeviceTree | ${GREPBINARY} firmware-abi
             #;;
             *)
-                LogText "Result: no test implemented yet to test for UEFI on this platform"
+                LogText "结果：尚未为此平台实现 UEFI 检查"
             ;;
         esac
         if [ ${UEFI_BOOTED} -eq 1 ]; then
-            Display --indent 2 --text "- Checking UEFI boot" --result "${STATUS_ENABLED}" --color GREEN
+            Display --indent 2 --text "- 检查 UEFI 启动" --result "${STATUS_ENABLED}" --color GREEN
             if [ ${UEFI_BOOTED_SECURE} -eq 1 ]; then
-                Display --indent 2 --text "- Checking Secure Boot" --result "${STATUS_ENABLED}" --color GREEN
+                Display --indent 2 --text "- 检查 Secure Boot" --result "${STATUS_ENABLED}" --color GREEN
             else
-                Display --indent 2 --text "- Checking Secure Boot" --result "${STATUS_DISABLED}" --color YELLOW
+                Display --indent 2 --text "- 检查 Secure Boot" --result "${STATUS_DISABLED}" --color YELLOW
             fi
         else
             if [ ${UEFI_TESTS_PERFORMED} -eq 1 ]; then
-                Display --indent 2 --text "- Checking UEFI boot" --result "${STATUS_DISABLED}" --color WHITE
+                Display --indent 2 --text "- 检查 UEFI 启动" --result "${STATUS_DISABLED}" --color WHITE
             fi
         fi
     fi
@@ -275,13 +275,13 @@
     # Test        : BOOT-5117
     # Description : Check for systemd-boot boot loader
     if [ ! "${BOOTCTLBINARY}" = "" -a ${HAS_SYSTEMD} -eq 1 -a ${UEFI_BOOTED} -eq 1 ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no BOOT-5117 --preqs-met ${PREQS_MET} --os "Linux" --weight L --network NO --category security --description "Check for systemd-boot bootloader presence"
+    Register --test-no BOOT-5117 --preqs-met ${PREQS_MET} --os "Linux" --weight L --network NO --category security --description "检查 systemd-boot 启动加载器"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         CURRENT_BOOT_LOADER=$(${BOOTCTLBINARY} status --no-pager 2>/dev/null | ${AWKBINARY} '/Current Boot Loader/{ getline; print $2 }')
         if [ "${CURRENT_BOOT_LOADER}" = "systemd-boot" ]; then
-	    Display --indent 2 --text "- Checking systemd-boot presence" --result "${STATUS_FOUND}" --color GREEN
-            LogText "Result: found systemd-boot"
+	    Display --indent 2 --text "- 检查 systemd-boot" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：发现 systemd-boot"
             BOOT_LOADER="systemd-boot"
             BOOT_LOADER_FOUND=1
         fi
@@ -291,17 +291,17 @@
 #
     # Test        : BOOT-5121
     # Description : Check for GRUB boot loader
-    Register --test-no BOOT-5121 --weight L --network NO --category security --description "Check for GRUB boot loader presence"
+    Register --test-no BOOT-5121 --weight L --network NO --category security --description "检查 GRUB 启动加载器"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         FOUND=0
-        LogText "Test: Checking for presence GRUB conf file (/boot/grub/grub.conf or /boot/grub/menu.lst)"
+        LogText "检查：查找 GRUB 配置文件（/boot/grub/grub.conf 或 /boot/grub/menu.lst）"
         if [ -f /boot/grub/grub.conf -o -f /boot/grub/menu.lst ]; then
             FOUND=1
             BOOT_LOADER="GRUB"
             BOOT_LOADER_FOUND=1
             GRUB_VERSION=1
-            Display --indent 2 --text "- Checking presence GRUB" --result "${STATUS_OK}" --color GREEN
+            Display --indent 2 --text "- 检查 GRUB" --result "${STATUS_OK}" --color GREEN
             if [ -f /boot/grub/grub.conf ]; then GRUBCONFFILE="/boot/grub/grub.conf"; else GRUBCONFFILE="/boot/grub/menu.lst"; fi
         fi
 
@@ -311,13 +311,13 @@
             BOOT_LOADER="GRUB2"
             BOOT_LOADER_FOUND=1
             GRUB_VERSION=2
-            Display --indent 2 --text "- Checking presence GRUB2" --result "${STATUS_FOUND}" --color GREEN
+            Display --indent 2 --text "- 检查 GRUB2" --result "${STATUS_FOUND}" --color GREEN
             if [ -f /boot/grub/grub.cfg ]; then
                 GRUBCONFFILE="/boot/grub/grub.cfg"
             elif [ -f /boot/grub2/grub.cfg ]; then
                 GRUBCONFFILE="/boot/grub2/grub.cfg"
             fi
-            LogText "Result: found GRUB2 configuration file (${GRUBCONFFILE})"
+            LogText "结果：发现 GRUB2 配置文件（${GRUBCONFFILE}）"
         fi
 
         # Some OSes like Gentoo do not have /boot mounted by default
@@ -325,14 +325,14 @@
         if [ -d /boot ]; then
             if [ "$(ls /boot/* 2> /dev/null)" = "" -a -n "${GRUB2INSTALLBINARY}" ]; then
                 BOOT_LOADER_FOUND=1
-                LogText "Result: found empty /boot, however with GRUB2 binary installed. Best guess is that GRUB2 is actually installed, but /boot not mounted"
-                Display --indent 2 --text "- Checking presence GRUB2" --result "POSSIBLE MATCH" --color YELLOW
+                LogText "结果：/boot 为空，但已安装 GRUB2 可执行文件；可能已安装 GRUB2，只是 /boot 尚未挂载"
+                Display --indent 2 --text "- 检查 GRUB2" --result "可能匹配" --color YELLOW
                 ReportManual "${TEST_NO}:01"
             fi
         fi
 
         if [ ${FOUND} -eq 0 ]; then
-            LogText "Result: no GRUB configuration file found."
+            LogText "结果：未找到 GRUB 配置文件。"
         fi
     fi
 #
@@ -341,7 +341,7 @@
     # Test        : BOOT-5122
     # Description : Check for GRUB boot loader configuration
     if [ -n "${GRUBCONFFILE}" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no BOOT-5122 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check for GRUB boot password"
+    Register --test-no BOOT-5122 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "检查 GRUB 启动密码"
     if [ ${SKIPTEST} -eq 0 ]; then
         FOUND=0
 
@@ -354,7 +354,7 @@
 
         for FILE in ${CONF_FILES}; do
             if [ -f "${FILE}" ]; then
-                LogText "Found file ${FILE}, proceeding with tests."
+                LogText "发现文件 ${FILE}，继续执行检查。"
                 if FileIsReadable "${FILE}"; then
                     FIND=$(${GREPBINARY} 'password --md5' ${FILE} | ${GREPBINARY} -v '^#')
                     FIND2=$(${GREPBINARY} 'password --encrypted' ${FILE} | ${GREPBINARY} -v '^#')
@@ -368,23 +368,23 @@
                     elif [ -n "${FIND3}" ]; then
                         if [ -n "${FIND4}" -o -n "${FIND5}" ]; then FOUND=1; fi
                     else
-                        LogText "Result: did not find hashed password line in this file"
+                        LogText "结果：此文件中未找到密码哈希配置行"
                     fi
                 else
-                    LogText "Result: Can not read '${FILE}' (no permission?)"
+                    LogText "结果：无法读取 '${FILE}'（权限不足？）"
                 fi
             else
-                LogText "Result: File '${FILE}' does not exist"
+                LogText "结果：文件 '${FILE}' 不存在"
             fi
         done
         if [ ${FOUND} -eq 1 ]; then
-                Display --indent 4 --text "- Checking for password protection" --result "${STATUS_OK}" --color GREEN
-                LogText "Result: GRUB has password protection."
+                Display --indent 4 --text "- 检查密码保护" --result "${STATUS_OK}" --color GREEN
+                LogText "结果：GRUB 已配置密码保护。"
                 AddHP 4 4
         else
-                Display --indent 4 --text "- Checking for password protection" --result "${STATUS_NONE}" --color RED
-                LogText "Result: Didn't find hashed password line in GRUB configuration"
-                ReportSuggestion "${TEST_NO}" "Set a password on GRUB boot loader to prevent altering boot configuration (e.g. boot in single user mode without password)"
+                Display --indent 4 --text "- 检查密码保护" --result "${STATUS_NONE}" --color RED
+                LogText "结果：GRUB 配置中未找到密码哈希配置行"
+                ReportSuggestion "${TEST_NO}" "为 GRUB 启动加载器设置密码，防止启动配置被修改（例如无需密码进入单用户模式）"
                 AddHP 0 2
         fi
         unset CONF_FILES FILE FIND FIND2 FIND3 FIND4 FIND5 FOUND
@@ -394,16 +394,16 @@
 #
     # Test        : BOOT-5124
     # Description : Check for FreeBSD boot loader
-    Register --test-no BOOT-5124 --os FreeBSD --weight L --network NO --category security --description "Check for FreeBSD boot loader presence"
+    Register --test-no BOOT-5124 --os FreeBSD --weight L --network NO --category security --description "检查 FreeBSD 启动加载器"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         if [ -f ${ROOTDIR}boot/boot1 -a -f ${ROOTDIR}boot/boot2 -a -f ${ROOTDIR}boot/loader ]; then
-            LogText "Result: found boot1, boot2 and loader files in ${ROOTDIR}boot"
-            Display --indent 2 --text "- Checking presence FreeBSD loader" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：在 ${ROOTDIR}boot 中发现 boot1、boot2 和 loader 文件"
+            Display --indent 2 --text "- 检查 FreeBSD 启动加载器" --result "${STATUS_FOUND}" --color GREEN
             BOOT_LOADER="FreeBSD"
             BOOT_LOADER_FOUND=1
         else
-            LogText "Result: Not all expected files found in ${ROOTDIR}boot"
+            LogText "结果：${ROOTDIR}boot 中未找到全部预期文件"
         fi
     fi
 #
@@ -411,16 +411,16 @@
 #
     # Test        : BOOT-5261
     # Description : Check for DragonFly boot loader
-    Register --test-no BOOT-5261 --os DragonFly --weight L --network NO --category security --description "Check for DragonFly boot loader presence"
+    Register --test-no BOOT-5261 --os DragonFly --weight L --network NO --category security --description "检查 DragonFly 启动加载器"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         if [ -f ${ROOTDIR}boot/boot1 -a -f ${ROOTDIR}boot/boot2 -a -f ${ROOTDIR}boot/loader ]; then
-            LogText "Result: found boot1, boot2 and loader files in ${ROOTDIR}boot"
-            Display --indent 2 --text "- Checking presence DragonFly loader" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：在 ${ROOTDIR}boot 中发现 boot1、boot2 和 loader 文件"
+            Display --indent 2 --text "- 检查 DragonFly 启动加载器" --result "${STATUS_FOUND}" --color GREEN
             BOOT_LOADER="DragonFly"
             BOOT_LOADER_FOUND=1
         else
-            LogText "Result: Not all expected files found in ${ROOTDIR}boot"
+            LogText "结果：${ROOTDIR}boot 中未找到全部预期文件"
         fi
     fi
 #
@@ -428,17 +428,17 @@
 #
     # Test        : BOOT-5126
     # Description : Check for NetBSD boot loader
-    Register --test-no BOOT-5126 --os NetBSD --weight L --network NO --category security --description "Check for NetBSD boot loader presence"
+    Register --test-no BOOT-5126 --os NetBSD --weight L --network NO --category security --description "检查 NetBSD 启动加载器"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         if [ -f ${ROOTDIR}boot.${HARDWARE} -o -f ${ROOTDIR}boot -o -f ${ROOTDIR}ofwboot ]; then
-            LogText "Result: found NetBSD secondary bootstrap"
-            Display --indent 2 --text "- Checking presence NetBSD loader" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：发现 NetBSD 第二阶段启动程序"
+            Display --indent 2 --text "- 检查 NetBSD 启动加载器" --result "${STATUS_FOUND}" --color GREEN
             BOOT_LOADER="NetBSD"
             BOOT_LOADER_FOUND=1
         else
-            LogText "Result: NetBSD secondary bootstrap not found"
-            ReportException "${TEST_NO}:1" "No boot loader found on NetBSD"
+            LogText "结果：未找到 NetBSD 第二阶段启动程序"
+            ReportException "${TEST_NO}:1" "NetBSD 上未找到启动加载器"
         fi
     fi
 #
@@ -447,44 +447,44 @@
     # Test        : BOOT-5139
     # Description : Check for LILO boot loader
     # Notes       : password= or password =
-    Register --test-no BOOT-5139 --weight L --network NO --category security --description "Check for LILO boot loader presence"
+    Register --test-no BOOT-5139 --weight L --network NO --category security --description "检查 LILO 启动加载器"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         LILOCONFFILE="${ROOTDIR}etc/lilo.conf"
-        LogText "Test: checking for presence LILO configuration file"
+        LogText "检查：查找 LILO 配置文件"
         if [ -f ${LILOCONFFILE} ]; then
             FileIsReadable ${LILOCONFFILE}
             if [ ${CANREAD} -eq 1 ]; then
                 BOOT_LOADER="LILO"
                 BOOT_LOADER_FOUND=1
-                Display --indent 2 --text "- Checking presence LILO" --result "${STATUS_OK}" --color GREEN
-                LogText "Checking password option LILO"
+                Display --indent 2 --text "- 检查 LILO" --result "${STATUS_OK}" --color GREEN
+                LogText "检查 LILO 密码选项"
                 FIND=$(${GREPBINARY} -E 'password[[:space:]]?=' ${LILOCONFFILE} | ${GREPBINARY} -v "^#")
                 if [ -z "${FIND}" ]; then
                     if [ "${MACHINE_ROLE}" = "server" -o "${MACHINE_ROLE}" = "workstation" ]; then
-                        Display --indent 4 --text "- Password option presence " --result "${STATUS_WARNING}" --color RED
-                        LogText "Result: no password set for LILO. Bootloader is unprotected to dropping to single user mode or unauthorized access to devices/data."
-                        ReportSuggestion "${TEST_NO}" "Add a password to LILO, by adding a line to the lilo.conf file, above the first line saying 'image=<name>': password=<password>"
-                        ReportWarning "${TEST_NO}" "No password set on LILO bootloader"
+                        Display --indent 4 --text "- 密码选项 " --result "${STATUS_WARNING}" --color RED
+                        LogText "结果：LILO 未设置密码，可能被用于进入单用户模式或未经授权访问设备和数据。"
+                        ReportSuggestion "${TEST_NO}" "为 LILO 添加密码：在 lilo.conf 中第一个 'image=<name>' 行之前添加 password=<password>"
+                        ReportWarning "${TEST_NO}" "LILO 启动加载器未设置密码"
                         AddHP 0 2
                     elif [ "${MACHINE_ROLE}" = "personal" ]; then
-                        Display --indent 4 --text "- Password option presence " --result "${STATUS_WARNING}" --color yellow
-                        LogText "Result: no password set for LILO. Bootloader is unprotected to dropping to single user mode or unauthorized access to devices/data."
-                        ReportSuggestion "${TEST_NO}" "No password set on LILO bootloader. Add a password to LILO, by adding a line to the lilo.conf file, above the first line saying 'image=<name>': password=<password>"
+                        Display --indent 4 --text "- 密码选项 " --result "${STATUS_WARNING}" --color yellow
+                        LogText "结果：LILO 未设置密码，可能被用于进入单用户模式或未经授权访问设备和数据。"
+                        ReportSuggestion "${TEST_NO}" "LILO 启动加载器未设置密码. 为 LILO 添加密码：在 lilo.conf 中第一个 'image=<name>' 行之前添加 password=<password>"
                         AddHP 1 2
                     else
-                        LogText "Result: no password set for LILO, with unknown machine role"
+                        LogText "结果：LILO 未设置密码，且计算机角色未知"
                     fi
                 else
-                    Display --indent 4 --text "- Password option presence " --result "${STATUS_OK}" --color GREEN
-                    LogText "Result: LILO password option set"
+                    Display --indent 4 --text "- 密码选项 " --result "${STATUS_OK}" --color GREEN
+                    LogText "结果：已设置 LILO 密码选项"
                     AddHP 4 4
                 fi
             else
-                LogText "Result: can not read ${LILOCONFFILE} (no permission)"
+                LogText "结果：无法读取 ${LILOCONFFILE}（权限不足）"
             fi
         else
-            LogText "Result: LILO configuration file not found"
+            LogText "结果：未找到 LILO 配置文件"
         fi
     fi
 #
@@ -492,15 +492,15 @@
 #
     # Test        : BOOT-5140
     # Description : Check for ELILO boot loader
-    Register --test-no BOOT-5140 --os "Linux" --weight L --network NO --root-only YES --category security --description "Check for ELILO boot loader presence"
+    Register --test-no BOOT-5140 --os "Linux" --weight L --network NO --root-only YES --category security --description "检查 ELILO 启动加载器"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         CONF_FILES="${ROOTDIR}etc/elilo.conf ${ROOTDIR}boot/efi/EFI/${LINUX_VERSION}/elilo.conf"
         for FILE in ${CONF_FILES}; do
             FileExists ${FILE}
             if [ ${FILE_FOUND} -eq 1 ]; then
-                Display --indent 2 --text "- Checking boot loader ELILO" --result "${STATUS_FOUND}" --color GREEN
-                LogText "Result: found ELILO boot loader"
+                Display --indent 2 --text "- 检查 ELILO 启动加载器" --result "${STATUS_FOUND}" --color GREEN
+                LogText "结果：发现 ELILO 启动加载器"
                 BOOT_LOADER="ELILO"
                 BOOT_LOADER_FOUND=1
             fi
@@ -511,16 +511,16 @@
 #
     # Test        : BOOT-5142
     # Description : Check for SILO boot loader
-    Register --test-no BOOT-5142 --weight L --network NO --category security --description "Check SPARC Improved boot loader (SILO)"
+    Register --test-no BOOT-5142 --weight L --network NO --category security --description "检查 SPARC Improved 启动加载器（SILO）"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         if [ -f ${ROOTDIR}etc/silo.conf ]; then
-            LogText "Result: Found SILO configuration file (/etc/silo.conf)"
-            Display --indent 2 --text "- Checking boot loader SILO" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：发现 SILO 配置文件（/etc/silo.conf）"
+            Display --indent 2 --text "- 检查 SILO 启动加载器" --result "${STATUS_FOUND}" --color GREEN
             BOOT_LOADER="SILO"
             BOOT_LOADER_FOUND=1
         else
-            LogText "Result: no SILO configuration file found."
+            LogText "结果：未找到 SILO 配置文件。"
         fi
     fi
 #
@@ -528,17 +528,17 @@
 #
     # Test        : BOOT-5155
     # Description : Check for YABOOT boot loader
-    Register --test-no BOOT-5155 --weight L --network NO --category security --description "Check for YABOOT boot loader configuration file"
+    Register --test-no BOOT-5155 --weight L --network NO --category security --description "检查 YABOOT 启动加载器配置文件"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
-        LogText "Test: Check for /etc/yaboot.conf"
+        LogText "检查：查找 /etc/yaboot.conf"
         if [ -f /etc/yaboot.conf ]; then
-            LogText "Result: Found YABOOT configuration file (/etc/yaboot.conf)"
-            Display --indent 4 --text "- Checking boot loader YABOOT" --result "${STATUS_FOUND}" --color GREEN
+            LogText "结果：发现 YABOOT 配置文件（/etc/yaboot.conf）"
+            Display --indent 4 --text "- 检查 YABOOT 启动加载器" --result "${STATUS_FOUND}" --color GREEN
             BOOT_LOADER="YABOOT"
             BOOT_LOADER_FOUND=1
         else
-            LogText "Result: no YABOOT configuration file found."
+            LogText "结果：未找到 YABOOT 配置文件。"
         fi
     fi
 #
@@ -547,7 +547,7 @@
     # Test        : BOOT-5159
     # Description : Check for OpenBSD boot loader
     # More info   : Only OpenBSD
-    Register --test-no BOOT-5159 --os OpenBSD --weight L --network NO --category security --description "Check for OpenBSD boot loader presence"
+    Register --test-no BOOT-5159 --os OpenBSD --weight L --network NO --category security --description "检查 OpenBSD 启动加载器"
     if [ ${SKIPTEST} -eq 0 ]; then
         BOOT_LOADER_SEARCHED=1
         FOUND=0
@@ -563,21 +563,21 @@
             Display --indent 2 --text "- Checking ${ROOTDIR}etc/boot.conf" --result "${STATUS_FOUND}" --color GREEN
             FIND=$(${GREPBINARY} '^boot' ${ROOTDIR}etc/boot.conf)
             if [ -z "${FIND}" ]; then
-                Display --indent 4 --text "- Checking boot option" --result "${STATUS_WARNING}" --color RED
+                Display --indent 4 --text "- 检查 boot 选项" --result "${STATUS_WARNING}" --color RED
                 #ReportSuggestion "${TEST_NO}" "Add 'boot' to the ${ROOTDIR}etc/boot.conf file to disable the default 5 seconds waiting time, to disallow booting into single user mode."
-                ReportWarning "${TEST_NO}" "System can be booted into single user mode without password"
+                ReportWarning "${TEST_NO}" "系统可以在无需密码的情况下进入单用户模式"
             else
-                Display --indent 4 --text "- Checking boot option" --result "${STATUS_OK}" --color GREEN
-                LogText "Ok, boot option is enabled."
+                Display --indent 4 --text "- 检查 boot 选项" --result "${STATUS_OK}" --color GREEN
+                LogText "正常，boot 选项已启用。"
             fi
         else
             Display --indent 2 --text "- Checking ${ROOTDIR}etc/boot.conf" --result "${STATUS_NOT_FOUND}" --color YELLOW
-            LogText "Result: no ${ROOTDIR}etc/boot.conf found. When using the default boot loader, physical"
-            LogText "access to the server can be used to possibly enter single user mode."
-            ReportSuggestion "${TEST_NO}" "Add 'boot' to the ${ROOTDIR}etc/boot.conf file to disable the default 5 seconds waiting time."
+            LogText "结果：未找到 ${ROOTDIR}etc/boot.conf。使用默认启动加载器时，具有物理"
+            LogText "访问权限的人员可能进入单用户模式。"
+            ReportSuggestion "${TEST_NO}" "在 ${ROOTDIR}etc/boot.conf 中添加 'boot'，禁用默认的 5 秒等待时间。"
         fi
         if [ ${FOUND} -eq 1 ]; then
-            LogText "Result: found OpenBSD boot loader"
+            LogText "结果：发现 OpenBSD 启动加载器"
             BOOT_LOADER="OpenBSD"
             BOOT_LOADER_FOUND=1
         fi
@@ -588,7 +588,7 @@
     if [ ${BOOT_LOADER_FOUND} -eq 0 -a ${BOOT_LOADER_SEARCHED} -eq 1 ]; then
         # Your boot loader is not detected. Want to help supporting it, see the README
         # ReportException "BOOTLOADER" "No boot loader found"
-        Display --indent 4 --text "- Boot loader" --result "NONE FOUND" --color YELLOW
+        Display --indent 4 --text "- 启动加载器" --result "未找到" --color YELLOW
     fi
 #
 #################################################################################
