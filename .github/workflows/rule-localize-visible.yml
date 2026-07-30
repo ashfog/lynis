@@ -1,0 +1,402 @@
+name: One-time rule localization of visible strings
+
+on:
+  push:
+    branches: [master]
+    paths: [.github/workflows/rule-localize-visible.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  localize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+      - name: Localize user-visible string arguments
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          cjk = re.compile(r'[\u3400-\u9fff]')
+          qre = re.compile(r'"((?:\\.|[^"\\])*)"')
+
+          exact = {
+            '- Clearing log file (${LOGFILE})... ': '- 清空日志文件（${LOGFILE}）…… ',
+            'Check your hostname configuration': '检查主机名配置',
+            'Language is set to ${LANGUAGE}': '语言已设置为 ${LANGUAGE}',
+            '- Detecting language and localization': '- 检测语言和本地化设置',
+            'See https://github.com/CISOfy/lynis-sdk/blob/master/documentation/10-translations.md for more details to help translate Lynis': '有关协助翻译 Lynis 的更多信息，请参阅 https://github.com/CISOfy/lynis-sdk/blob/master/documentation/10-translations.md',
+            'Importing language file (${DBDIR}/languages/${LANGUAGE})': '正在导入语言文件（${DBDIR}/languages/${LANGUAGE}）',
+            'Translation file (db/languages/${LANGUAGE}) needs an update': '翻译文件（db/languages/${LANGUAGE}）需要更新',
+            'Help other users and translate the missing lines:': '请帮助其他用户翻译缺失的内容：',
+            '1) Go to: https://github.com/CISOfy/lynis/edit/master/db/languages/${LANGUAGE}': '1）打开：https://github.com/CISOfy/lynis/edit/master/db/languages/${LANGUAGE}',
+            '3) Commit the changes': '3）提交更改',
+            'Could not import language file due to incorrect permissions': '由于权限不正确，无法导入语言文件',
+            'This version ${OS_VERSION} is marked end-of-life as of ${EOL_DATE}': '版本 ${OS_VERSION} 已于 ${EOL_DATE} 结束生命周期',
+            'Test: Checking for program update...': '检查：检查程序更新……',
+            'Upgrade test skipped due profile option set (skip_upgrade_test)': '由于配置文件启用了 skip_upgrade_test，跳过升级检查',
+            '- Program update status... ': '- 程序更新状态…… ',
+            'Version of Lynis is very old and should be updated': 'Lynis 版本非常旧，应进行更新',
+            'No ${PROGRAM_NAME} update available.': '没有可用的 ${PROGRAM_NAME} 更新。',
+            'Update check skipped due to constraints (e.g. missing dig binary)': '由于条件受限（例如缺少 dig 程序），跳过更新检查',
+            '${WHITE}Please update to the latest version.${NORMAL}': '${WHITE}请更新到最新版本。${NORMAL}',
+            '${CYAN}${PROGRAM_NAME} might be outdated${NORMAL}': '${CYAN}${PROGRAM_NAME} 可能已过时${NORMAL}',
+            '${YELLOW}Current version is more than 6 months old${NORMAL}': '${YELLOW}当前版本已超过 6 个月${NORMAL}',
+            'This version might be ${WHITE}Please check if there is a more recent version available.${NORMAL}': '当前版本可能已过时。${WHITE}请检查是否有更新版本。${NORMAL}',
+            '${WHITE}Please check if there is a more recent version available.${NORMAL}': '${WHITE}请检查是否有更新版本。${NORMAL}',
+            'Download locations:': '下载位置：',
+            'Packages (DEB/RPM) -  https://packages.cisofy.com/': '软件包（DEB/RPM）-  https://packages.cisofy.com/',
+            'Website (TAR)      -  https://cisofy.com/downloads/': '网站（TAR）      -  https://cisofy.com/downloads/',
+            'Program ended successfully': '程序已成功结束',
+            '${PROGRAM_NAME} ended successfully.': '${PROGRAM_NAME} 已成功结束。',
+            '${PROGRAM_NAME} ended with exit code $1.': '${PROGRAM_NAME} 已结束，退出码为 $1。',
+            '${PROGRAM_NAME} ended with exit code 1.': '${PROGRAM_NAME} 已结束，退出码为 1。',
+            '[ Press [ENTER] to continue, or [CTRL]+C to stop ]': '[ 按 [ENTER] 继续，或按 [CTRL]+C 停止 ]',
+          }
+
+          phrases = [
+            ('Found known binary', '发现已知程序'),
+            ('known binary', '已知程序'),
+            ('Scanning available tools', '扫描可用工具'),
+            ('Start scanning for available audit binaries and tools', '开始扫描可用的审计程序和工具'),
+            ('Check all system binaries', '检查所有系统程序'),
+            ('Checking system binaries', '检查系统程序'),
+            ('Starting binary scan', '开始程序扫描'),
+            ('suspicious location', '可疑位置'),
+            ('in PATH discovered', '在 PATH 中被发现'),
+            ('Checking binaries in directory', '检查目录中的程序'),
+            ('Skipping this directory as it was already scanned', '该目录已经扫描，正在跳过'),
+            ('Starting directory scanning', '开始扫描目录'),
+            ('does NOT exist', '不存在'),
+            ('does not exist', '不存在'),
+            ('NOT found', '未找到'),
+            ('not found', '未找到'),
+            ('could not find', '无法找到'),
+            ('Can not find', '无法找到'),
+            ('Can not determine', '无法确定'),
+            ('Could not determine', '无法确定'),
+            ('could not determine', '无法确定'),
+            ('Unable to determine', '无法确定'),
+            ('No support for this OS', '当前操作系统不受支持'),
+            ('not implemented for this operating system', '尚未为此操作系统实现'),
+            ('Incorrect number of arguments', '参数数量不正确'),
+            ('incorrect number of arguments', '参数数量不正确'),
+            ('Invalid permissions', '权限无效'),
+            ('bad file permissions', '文件权限不安全'),
+            ('file permissions', '文件权限'),
+            ('configuration file', '配置文件'),
+            ('configuration files', '配置文件'),
+            ('default value', '默认值'),
+            ('default option', '默认选项'),
+            ('default gateway', '默认网关'),
+            ('default run level', '默认运行级别'),
+            ('run level', '运行级别'),
+            ('operating system', '操作系统'),
+            ('Operating system', '操作系统'),
+            ('Kernel version', '内核版本'),
+            ('kernel version', '内核版本'),
+            ('Hardware platform', '硬件平台'),
+            ('hardware platform', '硬件平台'),
+            ('Program version', '程序版本'),
+            ('Current version', '当前版本'),
+            ('Latest version', '最新版本'),
+            ('Current installed version', '当前安装版本'),
+            ('Latest stable version', '最新稳定版本'),
+            ('Minimum required version', '最低要求版本'),
+            ('End-of-life', '生命周期结束'),
+            ('EOL check', '生命周期检查'),
+            ('Log file', '日志文件'),
+            ('Report file', '报告文件'),
+            ('Report version', '报告版本'),
+            ('Plugin directory', '插件目录'),
+            ('Include directory', '包含目录'),
+            ('Work directory', '工作目录'),
+            ('Root directory', '根目录'),
+            ('Test category', '检查类别'),
+            ('Test group', '检查组'),
+            ('BusyBox used', '使用 BusyBox'),
+            ('Program update status', '程序更新状态'),
+            ('Download locations', '下载位置'),
+            ('package manager', '软件包管理器'),
+            ('Package manager', '软件包管理器'),
+            ('software package administration', '软件包管理'),
+            ('package management', '软件包管理'),
+            ('package vulnerability checking', '软件包漏洞检查'),
+            ('package integrity checking', '软件包完整性检查'),
+            ('vulnerable packages', '存在漏洞的软件包'),
+            ('file integrity checker', '文件完整性检查器'),
+            ('file integrity', '文件完整性'),
+            ('integrity tool', '完整性工具'),
+            ('malware scanner', '恶意软件扫描器'),
+            ('AV scanner', '杀毒扫描器'),
+            ('audit framework', '审计框架'),
+            ('auditing utility', '审计工具'),
+            ('control utility', '控制工具'),
+            ('administration tool', '管理工具'),
+            ('configuration tool', '配置工具'),
+            ('automation tooling', '自动化工具'),
+            ('system utility', '系统工具'),
+            ('generic file handling', '通用文件处理'),
+            ('file type detection', '文件类型检测'),
+            ('file information', '文件信息'),
+            ('file attributes', '文件属性'),
+            ('file listing', '文件列表'),
+            ('file database', '文件数据库'),
+            ('file compare', '文件比较'),
+            ('search tool', '搜索工具'),
+            ('text search', '文本搜索'),
+            ('text filter', '文本过滤器'),
+            ('text stream editor', '文本流编辑器'),
+            ('text transformation', '文本转换'),
+            ('text manipulation utility', '文本处理工具'),
+            ('string tool', '字符串工具'),
+            ('encoding tool', '编码工具'),
+            ('hashing tool', '哈希工具'),
+            ('hash tool', '哈希工具'),
+            ('crypto hashing', '加密哈希'),
+            ('compressing utility', '压缩工具'),
+            ('command output redirection', '命令输出重定向'),
+            ('word count', '字数统计'),
+            ('sort data streams', '排序数据流'),
+            ('block device encryption', '块设备加密'),
+            ('block devices', '块设备'),
+            ('disk utility', '磁盘工具'),
+            ('file system tool', '文件系统工具'),
+            ('volume manager', '卷管理器'),
+            ('LVM tool', 'LVM 工具'),
+            ('kernel modules', '内核模块'),
+            ('kernel parameters', '内核参数'),
+            ('kernel capabilities', '内核能力'),
+            ('kernel statistics', '内核统计'),
+            ('hardware collector tool', '硬件信息收集工具'),
+            ('web server', 'Web 服务器'),
+            ('proxy server', '代理服务器'),
+            ('network statistics', '网络统计'),
+            ('network sockets', '网络套接字'),
+            ('show sockets', '显示套接字'),
+            ('network tool', '网络工具'),
+            ('DNS domain', 'DNS 域'),
+            ('NIS domain', 'NIS 域'),
+            ('DNS resolver manager', 'DNS 解析器管理器'),
+            ('firewall', '防火墙'),
+            ('service manager', '服务管理器'),
+            ('system services', '系统服务'),
+            ('services and daemons configuration and control', '服务与守护进程的配置和控制'),
+            ('service analysis tool', '服务分析工具'),
+            ('idle session killer', '空闲会话终止工具'),
+            ('programming language interpreter', '编程语言解释器'),
+            ('compiler', '编译器'),
+            ('browser', '浏览器'),
+            ('download utility', '下载工具'),
+            ('IDS', '入侵检测系统'),
+            ('IPS tool', '入侵防御工具'),
+            ('RPC information', 'RPC 信息'),
+            ('NFS mounts', 'NFS 挂载'),
+            ('open files', '打开的文件'),
+            ('open network sockets', '打开的网络套接字'),
+            ('system optimizer', '系统优化器'),
+            ('process listing', '进程列表'),
+            ('search in process list', '搜索进程列表'),
+            ('wrapper for shells', 'Shell 包装器'),
+            ('scanner for SSH keys', 'SSH 密钥扫描器'),
+            ('USB security tool', 'USB 安全工具'),
+            ('operating system details', '操作系统详情'),
+            ('container technology', '容器技术'),
+            ('systemd journal', 'systemd 日志'),
+            ('time daemon client', '时间守护进程客户端'),
+            ('timedate client', '时间日期客户端'),
+            ('systemd-boot manager utility', 'systemd-boot 管理工具'),
+            ('installer for boot loader', '引导加载器安装工具'),
+            ('control groups', '控制组'),
+            ('virtual machine', '虚拟机'),
+            ('physical machine', '物理机'),
+            ('machine type', '机器类型'),
+            ('machine ID', '机器 ID'),
+            ('network interface', '网络接口'),
+            ('MAC address', 'MAC 地址'),
+            ('hardware address', '硬件地址'),
+            ('temporary file', '临时文件'),
+            ('symbolic link', '符号链接'),
+            ('symlink', '符号链接'),
+            ('block device', '块设备'),
+            ('character device', '字符设备'),
+            ('core dump', '核心转储'),
+            ('core dumps', '核心转储'),
+            ('mount option', '挂载选项'),
+            ('mount options', '挂载选项'),
+            ('search domain', '搜索域'),
+            ('search domains', '搜索域'),
+            ('name service', '名称服务'),
+            ('security update', '安全更新'),
+            ('security updates', '安全更新'),
+            ('security risk', '安全风险'),
+            ('security warning', '安全警告'),
+            ('Security alert', '安全警报'),
+            ('Fatal error', '致命错误'),
+            ('fatal error', '致命错误'),
+            ('Interrupt detected', '检测到中断'),
+            ('Cleaning up', '正在清理'),
+            ('ended successfully', '已成功结束'),
+            ('exit code', '退出码'),
+            ('Action:', '操作：'),
+            ('Result:', '结果：'),
+            ('result:', '结果：'),
+            ('Test:', '检查：'),
+            ('Check:', '检查：'),
+            ('Status:', '状态：'),
+            ('Warning:', '警告：'),
+            ('Error:', '错误：'),
+            ('Notice:', '注意：'),
+            ('Note:', '说明：'),
+            ('Notes:', '说明：'),
+            ('Info:', '信息：'),
+            ('Informational:', '信息：'),
+            ('Information:', '信息：'),
+            ('Risk:', '风险：'),
+            ('Outcome:', '结果：'),
+            ('Exception:', '异常：'),
+            ('Suggestion:', '建议：'),
+            ('Found ', '发现 '),
+            ('found ', '发现 '),
+            ('Checking ', '检查 '),
+            ('checking ', '检查 '),
+            ('Searching ', '搜索 '),
+            ('searching ', '搜索 '),
+            ('Scanning ', '扫描 '),
+            ('scanning ', '扫描 '),
+            ('Skipping ', '跳过 '),
+            ('skipping ', '跳过 '),
+          ]
+
+          words = {
+            'a':'一个','an':'一个','the':'','and':'和','or':'或','to':'到','of':'的','for':'用于','in':'在','on':'在','with':'使用','from':'从','as':'作为','by':'由','at':'在','into':'到','via':'通过','without':'没有','within':'在其中','between':'之间','than':'比','that':'该','this':'此','these':'这些','those':'那些','it':'它','its':'其','your':'你的','our':'我们的','their':'其','is':'是','are':'是','was':'是','were':'是','be':'为','been':'已','being':'正在','has':'有','have':'有','had':'有','having':'具有','can':'可以','cannot':'无法','could':'可以','should':'应','would':'将','may':'可能','might':'可能','must':'必须','will':'将','do':'执行','does':'','did':'','not':'不','no':'没有','yes':'是','all':'所有','any':'任何','some':'一些','none':'无','one':'一个','two':'两个','more':'更多','less':'更少','most':'大多数','many':'多个','multiple':'多个','minimum':'最小','maximum':'最大','total':'总计','number':'数量','count':'数量','first':'第一个','last':'最后','new':'新','old':'旧','older':'较旧','newer':'更新','current':'当前','latest':'最新','available':'可用','unavailable':'不可用','active':'活跃','inactive':'未激活','enabled':'已启用','disabled':'已禁用','running':'正在运行','installed':'已安装','loaded':'已加载','configured':'已配置','missing':'缺少','invalid':'无效','valid':'有效','unexpected':'异常','unknown':'未知','known':'已知','correct':'正确','incorrect':'不正确','good':'正常','bad':'不正常','weak':'较弱','strong':'较强','empty':'为空','readable':'可读','writable':'可写','accessible':'可访问','required':'必需','needed':'需要','possible':'可能','likely':'很可能','properly':'正确地','successfully':'成功地','explicitly':'明确地','currently':'当前','usually':'通常','normally':'通常','already':'已经','still':'仍然','only':'仅','also':'也','again':'再次','here':'此处','there':'那里','then':'然后','now':'现在','before':'之前','after':'之后','when':'当','while':'当','if':'如果','because':'因为','due':'由于','according':'根据','instead':'改为','please':'请','help':'帮助','consider':'考虑','determine':'确定','review':'检查','verify':'验证','validate':'验证','change':'更改','set':'设置','add':'添加','remove':'移除','delete':'删除','create':'创建','start':'开始','stop':'停止','restart':'重启','run':'运行','running':'运行中','perform':'执行','performed':'已执行','use':'使用','using':'使用','used':'已使用','try':'尝试','trying':'正在尝试','read':'读取','write':'写入','load':'加载','import':'导入','include':'包含','including':'包括','exclude':'排除','enable':'启用','disable':'禁用','install':'安装','update':'更新','upgrade':'升级','download':'下载','scan':'扫描','search':'搜索','check':'检查','test':'检查','tests':'检查','report':'报告','log':'日志','file':'文件','files':'文件','directory':'目录','directories':'目录','folder':'目录','path':'路径','location':'位置','value':'值','values':'值','option':'选项','options':'选项','setting':'设置','settings':'设置','configuration':'配置','status':'状态','program':'程序','tool':'工具','tools':'工具','binary':'程序','binaries':'程序','command':'命令','commands':'命令','output':'输出','data':'数据','details':'详情','method':'方法','mode':'模式','type':'类型','version':'版本','release':'版本','system':'系统','service':'服务','services':'服务','daemon':'守护进程','process':'进程','processes':'进程','package':'软件包','packages':'软件包','manager':'管理器','client':'客户端','server':'服务器','module':'模块','modules':'模块','kernel':'内核','boot':'启动','network':'网络','protocol':'协议','port':'端口','ports':'端口','remote':'远程','local':'本地','user':'用户','users':'用户','group':'组','groups':'组','owner':'所有者','permissions':'权限','permission':'权限','password':'密码','security':'安全','audit':'审计','hardening':'加固','points':'得分','point':'得分','item':'项目','items':'项目','assigned':'已分配','partial':'部分','full':'完整','failure':'失败','failed':'失败','success':'成功','successful':'成功','warning':'警告','error':'错误','notice':'注意','note':'说明','information':'信息','risk':'风险','suggestion':'建议','exception':'异常','result':'结果','action':'操作','outcome':'结果','profile':'配置文件','plugin':'插件','plugins':'插件','phase':'阶段','category':'类别','custom':'自定义','language':'语言','translation':'翻译','hostname':'主机名','hardware':'硬件','platform':'平台','work':'工作','root':'根','busybox':'BusyBox','end':'结束','life':'生命周期','marked':'标记','date':'日期','month':'月','months':'个月','year':'年','years':'年','day':'天','days':'天','time':'时间','source':'来源','sources':'来源','candidate':'候选项','candidates':'候选项','entry':'条目','entries':'条目','line':'行','lines':'行','list':'列表','array':'数组','queue':'队列','key':'键','keys':'键','string':'字符串','strings':'字符串','device':'设备','devices':'设备','interface':'接口','interfaces':'接口','address':'地址','addresses':'地址','vendor':'厂商','product':'产品','physical':'物理','container':'容器','virtualization':'虚拟化','virtual':'虚拟','machine':'机器','task':'任务','tasks':'任务','memory':'内存','disk':'磁盘','volume':'卷','partition':'分区','swap':'交换分区','scheduler':'调度器','statistics':'统计','database':'数据库','framework':'框架','policy':'策略','policies':'策略','domain':'域','domains':'域','resolver':'解析器','host':'主机','hosts':'主机','connection':'连接','connections':'连接','socket':'套接字','sockets':'套接字','traffic':'流量','certificate':'证书','certificates':'证书','encryption':'加密','hash':'哈希','integrity':'完整性','vulnerability':'漏洞','vulnerabilities':'漏洞','authentication':'身份验证','shell':'Shell','session':'会话','idle':'空闲','printer':'打印机','printing':'打印','job':'任务','jobs':'任务','web':'Web','mail':'邮件','message':'消息','messages':'消息','proxy':'代理','compiler':'编译器','interpreter':'解释器','component':'组件','utility':'工具','administration':'管理','control':'控制','collector':'收集器','filter':'过滤器','editor':'编辑器','handling':'处理','compare':'比较','rotation':'轮转','mapping':'映射','tree':'树','capabilities':'能力','parameters':'参数','parameter':'参数','analysis':'分析','support':'支持','details':'详情','reboot':'重启','rebooting':'重启','required':'必需','same':'相同','different':'不同','difference':'差异','exists':'存在','exist':'存在','missing':'缺少','discover':'发现','discovered':'发现','finished':'完成','ended':'结束','skipped':'已跳过','skip':'跳过','retrieve':'获取','retrieving':'正在获取','gather':'收集','gathering':'正在收集','return':'返回','returned':'已返回','returning':'正在返回','open':'打开','closed':'关闭','read':'读取','write':'写入','generated':'生成','generation':'生成','looks':'看起来','looks':'看起来','fine':'正常','unsafe':'不安全','suspicious':'可疑','harmful':'有害','strict':'严格','enough':'足够','unexpectedly':'异常地','unsupported':'不受支持','implemented':'已实现','implementation':'实现','assigned':'已分配','maximum':'最大','minimum':'最小','currently':'当前','out':'满分','points':'分','argument':'参数','arguments':'参数','function':'函数','call':'调用','called':'已调用','cleaning':'清理','interrupt':'中断','detected':'检测到','created':'已创建','temporary':'临时','belongs':'属于','package':'软件包','probably':'可能','most':'大多数','likely':'很可能','readable':'可读','symlink':'符号链接','owned':'所有','current':'当前','accessible':'可访问','unclear':'不确定','generate':'生成','generation':'生成','fetching':'正在获取','trying':'正在尝试','supported':'受支持','unique':'唯一','source':'来源','candidate':'候选项','available':'可用','expected':'预期','matching':'匹配','maximum':'最大','partial':'部分','control':'控制','groups':'组','environment':'环境','processes':'进程','Amazon':'Amazon','vendor':'厂商','permissions':'权限','non-privileged':'非特权','found':'发现','option':'选项','already':'已','additions':'附加项','random':'随机','prerequisites':'前置条件','met':'满足','distribution':'发行版','invalid':'无效','temporary':'临时','removed':'已删除','alert':'警报','active':'当前','strict':'严格','denied':'拒绝','read-only':'只读','search':'搜索','pointing':'指向','finally':'最终','seems':'似乎','complicated':'复杂','often':'经常','linked':'链接','invalid':'无效','continue':'继续','press':'按','stop':'停止'
+          }
+
+          protected = {
+            'Linux','FreeBSD','OpenBSD','NetBSD','DragonFly','Solaris','AIX','macOS','BSD','UNIX','Unix','Lynis','systemd','syslog','rsyslog','syslog-ng','journald','nginx','Apache','Postfix','Exim','PHP','SSH','SSL','TLS','NTP','DNS','DNSSEC','IPv4','IPv6','TCP','UDP','PAM','RPM','APT','apt','dpkg','YUM','yum','DNF','dnf','pacman','apk','pkg','Docker','Podman','KVM','Xen','LXC','MySQL','MariaDB','PostgreSQL','Redis','MongoDB','Oracle','DB2','Squid','SNMP','NFS','USB','UEFI','GRUB','LILO','SELinux','AppArmor','iptables','nftables','OpenSSL','CVE','UID','GID','FQDN','MTU','ARP','DHCP','LDAP','NIS','Cron','cron','sudo','doas','BusyBox','Wazuh','auditd','chrony','OpenNTPD','timesyncd','HostID','HOSTID','MAC','PATH','API','URL','GitHub','CISOfy','ClamAV','BIND','CUPS','TraceEnable','VM','EC2','AWS','GCP','Azure','SCTP','DCCP','RDS','TIPC','OOM','ACL','I/O','IO','LSM','LUKS','GPG','GLSA','PID','EOL','TXT','SDK','CLI','IDS','AV','CSF','OSSEC','LMD','LVM','RPC','TAR','DEB','VMWare','SaltStack','OpenSMTPD','Grsecurity','TOMOYO','tomoyo','IMA','EVM','krb5','nftables','openntpd','launchd','upstart'
+          }
+
+          def mask(text):
+            saved=[]
+            patterns=[r'\$\{[^}]+\}',r'\$[A-Za-z_][A-Za-z0-9_]*',r'\$\([^)]*\)',r'https?://\S+',r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}',r'(?<!\w)/(?:[^\s,;:()\[\]{}]+/?)+',r'--[A-Za-z0-9_-]+(?:=[^\s]+)?',r"'[^']*'",r'`[^`]*`',r'%[-+0-9.]*[sdifouxXeEgGc]',r'\\[ntr]',r'\b[A-Z][A-Z0-9_/-]{1,}\b',r'\b[A-Za-z0-9_]+(?:\.[A-Za-z0-9_*?-]+)+\b',r'\b[A-Za-z0-9_]+(?:-[A-Za-z0-9_]+)+\b']
+            rx=re.compile('|'.join(f'(?:{p})' for p in patterns))
+            def sub(m):
+              k=f'ZZZPH{len(saved)}ZZZ'; saved.append(m.group(0)); return k
+            text=rx.sub(sub,text)
+            terms=sorted(protected,key=len,reverse=True)
+            trx=re.compile(r'(?<![A-Za-z0-9_])(?:'+'|'.join(re.escape(x) for x in terms)+r')(?![A-Za-z0-9_])')
+            def tsub(m):
+              k=f'ZZZPH{len(saved)}ZZZ'; saved.append(m.group(0)); return k
+            return trx.sub(tsub,text),saved
+
+          def unmask(text,saved):
+            for i,v in enumerate(saved): text=text.replace(f'ZZZPH{i}ZZZ',v)
+            return text
+
+          def trans_desc(d):
+            x=d
+            for a,b in sorted(phrases,key=lambda z:len(z[0]),reverse=True): x=x.replace(a,b)
+            m,s=mask(x)
+            def repl(mm):
+              w=mm.group(0); return words.get(w.lower(),w)
+            m=re.sub(r"[A-Za-z][A-Za-z'-]*",repl,m)
+            return unmask(m,s).strip()
+
+          def translate(text):
+            if text in exact: return exact[text]
+            original=text
+            # Standardize known binary discovery lines while preserving binary names.
+            m=re.match(r'^(\s*)Found known binary:?\s+(.+?)(?:\s+\((.*?)\))?\s+-\s+(.+)$',text)
+            if m:
+              indent,name,desc,path=m.groups()
+              return f'{indent}发现已知程序：{name}' + (f'（{trans_desc(desc)}）' if desc else '') + f' - {path}'
+            m=re.match(r'^(\s*)Found (known binary:?\s+)?(.+?)\s+\(version:?\s*(.+)\)$',text)
+            if m:
+              indent,known,name,ver=m.groups(); return f'{indent}发现' + ('已知程序：' if known else ' ') + f'{name}（版本 {ver}）'
+            x=text
+            for a,b in sorted(phrases,key=lambda z:len(z[0]),reverse=True): x=x.replace(a,b)
+            masked,saved=mask(x)
+            def repl(mm):
+              w=mm.group(0)
+              return words.get(w.lower(),w)
+            masked=re.sub(r"[A-Za-z][A-Za-z'-]*",repl,masked)
+            x=unmask(masked,saved)
+            x=re.sub(r'\s+([，。；：！？）])',r'\1',x)
+            x=re.sub(r'([（])\s+',r'\1',x)
+            x=x.replace(':', '：') if re.match(r'^[^$/:]{1,40}:',x) else x
+            x=re.sub(r' {2,}',' ',x)
+            return x
+
+          def indexes(line,spans):
+            s=line.lstrip(); out=set()
+            if not s or s.startswith('#'): return out
+            if 'Register ' in line and '--description' in line:
+              p=line.find('--description')
+              for i,m in enumerate(spans):
+                if m.start()>p: out.add(i); break
+            if 'Display ' in line:
+              for flag in ('--text','--result'):
+                p=line.find(flag)
+                if p>=0:
+                  for i,m in enumerate(spans):
+                    if m.start()>p: out.add(i); break
+            if any(x in line for x in ('DisplayError ','DisplayWarning ','DisplaySuggestion ')) and spans: out.add(0)
+            if 'LogText ' in line:
+              p=line.find('LogText ')
+              for i,m in enumerate(spans):
+                if m.start()>p: out.add(i); break
+            for fn in ('ReportWarning ','ReportSuggestion ','ReportException '):
+              p=line.find(fn)
+              if p>=0:
+                arr=[i for i,m in enumerate(spans) if m.start()>p]
+                out.update(arr[1:])
+            if 'SKIPREASON=' in line:
+              p=line.find('SKIPREASON=')
+              for i,m in enumerate(spans):
+                if m.start()>p: out.add(i); break
+            if s.startswith(('echo ','printf ')) or re.match(r'^(?:if .*; then )?(?:echo|printf) ',s):
+              if not re.search(r'>\s*\$?\{?(?:LOGFILE|REPORTFILE|SETTINGS_FILE|TMPFILE)',line): out.update(range(len(spans)))
+            return out
+
+          files=[Path('lynis')]+sorted(p for p in Path('include').iterdir() if p.is_file())
+          changed=[]; n=0
+          for path in files:
+            try: original=path.read_text(encoding='utf-8')
+            except UnicodeDecodeError: continue
+            lines=original.splitlines(keepends=True); new=[]; fc=0
+            for line in lines:
+              spans=list(qre.finditer(line)); ids=indexes(line,spans)
+              if not ids: new.append(line); continue
+              parts=[]; last=0
+              for i,m in enumerate(spans):
+                parts.append(line[last:m.start(1)]); value=m.group(1)
+                if i in ids and re.search(r'[A-Za-z]{2,}',value):
+                  nv=translate(value)
+                  if nv!=value: value=nv.replace('"','\\"'); fc+=1
+                parts.append(value); last=m.end(1)
+              parts.append(line[last:]); new.append(''.join(parts))
+            updated=''.join(new)
+            if updated!=original:
+              path.write_text(updated,encoding='utf-8'); changed.append(str(path)); n+=fc; print(path,fc)
+          if n<500: raise SystemExit(f'too few strings localized: {n}')
+          Path('/tmp/rule-localized-files').write_text('\n'.join(changed),encoding='utf-8')
+          print('localized strings',n,'files',len(changed))
+          PY
+          while IFS= read -r file; do
+            [ -n "$file" ] && sh -n "$file"
+          done < /tmp/rule-localized-files
+      - name: Commit localization and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/rule-localize-visible.yml
+          git config user.name "AshFog Localization Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add lynis include .github/workflows/rule-localize-visible.yml
+          git commit -m "i18n: localize all remaining visible strings"
+          git push origin HEAD:master
